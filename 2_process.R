@@ -1,0 +1,177 @@
+source('1_fetch/src/file_utils.R')
+source('2_process/src/spatial_utils.R')
+source('2_process/src/data_utils.R')
+
+p2_targets <- list(
+  ##### Set up state spatial data #####
+
+  # CONUS states
+  tar_target(p2_conus_sf,
+             spData::us_states %>% 
+               st_transform(p1_proj) %>%
+               add_centroids() %>%
+               mutate(location = 'mainland')),
+  
+  ##### Munge site inventory data ######
+  tar_target(p2_inventory_sites,
+             munge_inventory_data(p1_inventory)),
+  
+  tar_target(p2_inventory_sites_sf,
+             p2_inventory_sites %>%
+               # FOR NOW, filter out 4 sites w/ bad coordinates
+               # previously also bad: 'CA6457', 'NH0293',
+               # 1/13/23 new bad: 'MD0682' and 'MD0721'
+               filter(!(Bottling.Facility.ID %in% c('HI0229', 'PR0060', 'AK0263', 'VI0002', 'MD0682', 'MD0721'))) %>%
+               filter(!(is.na(Longitude)) & !(is.na(Latitude))) %>%
+               st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326, remove = FALSE) %>%
+               st_transform(p1_proj)),
+
+  ##### Regional statistics #####
+
+  # get region areas
+  tar_target(p2_region_areas,
+             p1_regions_sf %>%
+               mutate(area_m2 = st_area(p1_regions_sf),
+                      area_km2 = set_units(area_m2, km^2),
+                      area_ha = set_units(area_m2, hectares),
+                      area_mi2 = set_units(area_m2, mi^2)) %>% 
+               st_drop_geometry()),
+  
+  # Identify which states each region overlaps
+  tar_target(p2_region_state_summary,
+             p2_conus_sf %>%
+               sf::st_intersection(p1_regions_sf) %>%
+               group_by(region) %>% 
+               summarize(states = list(NAME)) %>%
+               st_drop_geometry()),
+  
+  # Number of bottling facilities in each region
+  tar_target(p2_region_facility_count,
+             p1_regions_sf %>%
+               mutate(facility_count = lengths(st_intersects(p1_regions_sf, p2_inventory_sites_sf))) %>%
+               st_drop_geometry() %>%
+               dplyr::select(region, facility_count)),
+  
+  # Get intersection of facilities and each region
+  # (may use for mapping later)
+  tar_target(p2_region_facilities,
+             p2_inventory_sites_sf %>%
+               st_intersection(p1_regions_sf) %>%
+               group_by(region) %>%
+               tar_group(),
+             pattern = map(p1_regions_sf),
+             iteration = 'group'),
+  
+  # Summary of facility type and sources, by region
+  tar_target(p2_region_facility_summary,
+             p2_region_facilities %>% 
+               group_by(region, WB_TYPE, water_source, source_category) %>% 
+               summarise(total_count=n(),.groups = 'drop')),
+  
+  # Get population in each region
+  tar_target(p2_region_pop,
+             {
+               # read in world pop tiff
+               world_pop <- raster(p1_population_tif)
+               
+               # crop raster to states, including buffer so that extends into Canada
+               pop_cropped <- crop_to_buffered_conus(world_pop, buffer = 250000)
+
+               # get total pop for each region
+               region_pop <- summarize_raster_for_regions(pop_cropped, p1_regions_sf, 
+                                                          summary_fxn = 'sum', summary_name = 'population',
+                                                          id_col_to_include = 'region')
+             }),
+  
+  # Get mean 30-year ppt in each region
+  tar_target(p2_region_ppt,
+             {
+               # use PRISM package function to identify correct subset
+               lowRes <- prism_archive_subset(type = "ppt", temp_period = "annual normals", resolution = "4km")
+               
+               # for targets dependency tracking, ensure that matches tracked directory
+               tar_assert_identical(lowRes, basename(p1_PRISM_4km_dir), "identified prism subset doesn't match tracked directory")
+               
+               # convert to raster
+               lowRes_rast <- raster(pd_to_file(lowRes))
+               
+               # get ppt means for each region
+               region_ppt <- summarize_raster_for_regions(lowRes_rast, p1_regions_sf, 
+                                                          summary_fxn = 'mean', summary_name = 'mean_ppt_mm',
+                                                          id_col_to_include = 'region')
+             }),
+  
+  # Get mean percent impervious for each region
+  tar_target(p2_region_impervious,
+             {
+               # get percent impervious means for each region
+               region_imper <- summarize_raster_for_regions(p1_NLCD, p1_regions_sf, 
+                                                          summary_fxn = 'mean', summary_name = 'mean_per_imperv',
+                                                          id_col_to_include = 'region')
+             },
+             pattern = map(p1_NLCD, p1_regions_sf)),
+  
+  # Get Koppen climate types in each region
+  tar_target(p2_region_climate,
+             {
+               climate <- raster(p1_climate_tif)
+               
+               # crop raster to states, including buffer so that extends into Canada
+               climate_cropped <- crop_to_buffered_conus(climate, buffer = 250000)
+               
+               # get mean % imperviousness
+               check <- summarize_categorical_raster_for_regions(climate_cropped, p1_regions_sf, id_col_to_include = 'region') %>%
+                 # join w/ legend to add climate categories
+                 left_join(p1_climate_legend, by = 'value') %>%
+                 dplyr::select(region, climate, percent)
+               
+             }),
+
+  # Load stream polylines
+  tar_target(
+    p2_streams_sf,
+    st_read(p1_hydro_gdb, quiet = TRUE, layer='Stream') %>%
+      st_zm() %>%
+      st_transform(crs = st_crs(p1_proj))),
+  
+  # Get intersection of streams and each region
+  # (may use for mapping later)
+  tar_target(
+    p2_region_streams,
+    p2_streams_sf %>%
+      st_intersection(p1_regions_sf) %>%
+      group_by(region) %>%
+      tar_group(),
+    pattern = map(p1_regions_sf),
+    iteration = 'group'),
+  
+  # Identify major stream w/i each region
+  tar_target(
+    p2_region_stream_summary,
+    identify_major_stream(p2_region_streams),
+    pattern = map(p2_region_streams)),
+  
+  # Compile regional statistics
+  tar_target(p2_region_summary,
+             purrr::reduce(list(p1_region_info, p2_region_facility_count, 
+                                dplyr::select(p2_region_stream_summary, region, primary_river) %>% st_drop_geometry(), 
+                                p2_region_areas, p2_region_state_summary, p2_region_pop, p2_region_ppt, p2_region_impervious), 
+                           dplyr::left_join, by = 'region')),
+
+  # Save regional output
+  tar_target(p2_region_summary_csv,
+             write_to_csv(p2_region_summary %>%
+                            dplyr::select(-tar_group) %>%
+                            rowwise() %>%
+                            mutate(states = paste(unlist(states), sep='', collapse=', ')), 
+                          '2_process/out/region_summary.csv'),
+             format = 'file'),
+  
+  tar_target(p2_region_summary_facility_csv,
+             write_to_csv(p2_region_facility_summary, '2_process/out/region_facilities.csv'),
+             format = 'file'),
+  
+  tar_target(p2_region_summary_climate_csv,
+             write_to_csv(p2_region_climate, '2_process/out/region_climate.csv'),
+             format = 'file')
+)
