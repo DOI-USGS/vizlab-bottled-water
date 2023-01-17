@@ -119,8 +119,8 @@ p2_targets <- list(
                # crop raster to states, including buffer so that extends into Canada
                climate_cropped <- crop_to_buffered_conus(climate, buffer = 250000)
                
-               # get mean % imperviousness
-               check <- summarize_categorical_raster_for_regions(climate_cropped, p1_regions_sf, id_col_to_include = 'region') %>%
+               # get climate types in each region
+               region_climate <- summarize_categorical_raster_for_regions(climate_cropped, p1_regions_sf, id_col_to_include = 'region') %>%
                  # join w/ legend to add climate categories
                  left_join(p1_climate_legend, by = 'value') %>%
                  dplyr::select(region, climate, percent)
