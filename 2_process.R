@@ -146,15 +146,23 @@ p2_targets <- list(
     iteration = 'group'),
   
   # Identify major stream w/i each region
+  # retain geometry here for use in mapping in 3_visualize
+  # but iterate as list to handle multilinestrings
+  tar_target(
+    p2_region_stream_summary_sf,
+    identify_major_stream(p2_region_streams),
+    pattern = map(p2_region_streams),
+    iteration = 'list'),
+  
+  # drop geometry and combine into summary
   tar_target(
     p2_region_stream_summary,
-    identify_major_stream(p2_region_streams),
-    pattern = map(p2_region_streams)),
+    purrr::map_dfr(p2_region_stream_summary_sf, ~st_drop_geometry(.x))),
   
   # Compile regional statistics
   tar_target(p2_region_summary,
              purrr::reduce(list(p1_region_info, p2_region_facility_count, 
-                                dplyr::select(p2_region_stream_summary, region, primary_river) %>% st_drop_geometry(), 
+                                dplyr::select(p2_region_stream_summary, region, primary_river), 
                                 p2_region_areas, p2_region_state_summary, p2_region_pop, p2_region_ppt, p2_region_impervious), 
                            dplyr::left_join, by = 'region')),
 
