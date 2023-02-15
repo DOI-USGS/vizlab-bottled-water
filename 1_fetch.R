@@ -42,6 +42,28 @@ p1_targets <- list(
              st_read(p1_ne_countries_shp) %>%
                filter(ADMIN=='United States of America')),
   
+  ## U.S. states, for mapping
+  tar_target(p1_nws_states_zip,
+             {
+               outfile = '1_fetch/out/nws_states.zip'
+               download_code <- download.file(destfile = outfile, "https://www.weather.gov/source/gis/Shapefiles/County/s_22mr22.zip")
+               if (download_code == 0) {
+                 return(outfile) }
+               else {
+                 stop('file download failed')
+               } 
+             },
+             format = 'file'),
+  
+  tar_target(p1_nws_states_shp,
+             open_highres_spatial_zip('1_fetch/out/nws_states.shp', p1_nws_states_zip, '1_fetch/tmp')),
+  
+  ##### Water use data #####
+  tar_target(p1_water_use_csv,
+             sbtools::item_file_download('5af3311be4b0da30c1b245d8', 
+                                         names = 'usco2015v2.0.csv', 
+                                         destinations = '1_fetch/out/usco2015v2.0.csv')),
+  
   ##### Inventory data #####
   tar_target(p1_inventory_xlsx,
              '1_fetch/in/WB_FACILITY_DATAVIZ_Records-01132023.xlsx',
