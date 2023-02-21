@@ -805,9 +805,9 @@ annotate_shifted_map <- function(shifted_map, text_color, plot_title_font_size, 
   right_x <- 0.96
   a_x <- 0.143
   a_y <- 0.17
-  b_x <- 0.17
-  b_y <- 0.505
-  c_x <- 0.23
+  b_x <- 0.155
+  b_y <- 0.625
+  c_x <- 0.2
   c_y <- 0.37
   d_x <- 0.35
   d_y <- 0.3
@@ -907,8 +907,8 @@ annotate_shifted_map <- function(shifted_map, text_color, plot_title_font_size, 
     ) +
     draw_label(
       'American Samoa',
-      x = 0.032, 
-      y = 0.152, 
+      x = 0.029, 
+      y = 0.148, 
       size = plot_title_font_size, 
       hjust = 0, 
       vjust = 1,
@@ -918,8 +918,8 @@ annotate_shifted_map <- function(shifted_map, text_color, plot_title_font_size, 
     ) +
     draw_label(
       'Guam',
-      x = 0.06, 
-      y = 0.24, 
+      x = 0.075, 
+      y = 0.23, 
       size = plot_title_font_size, 
       hjust = 0, 
       vjust = 1,
@@ -929,8 +929,8 @@ annotate_shifted_map <- function(shifted_map, text_color, plot_title_font_size, 
     ) +
     draw_label(
       stringr::str_wrap('Northern Mariana Islands', 8),
-      x = 0.085, 
-      y = 0.4, 
+      x = 0.055, 
+      y = 0.47, 
       size = plot_title_font_size, 
       hjust = 0, 
       vjust = 1,

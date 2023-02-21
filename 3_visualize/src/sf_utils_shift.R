@@ -17,9 +17,9 @@ get_shift <- function(region_abbr){
     HI = list(scale = 1.25, shift = c(-115, 30), rotation_deg = 5, proj_str = "EPSG:2784"),
     PR = list(scale = 2.8, shift = c(210, -10), rotation_deg=0, proj_str = "EPSG:2866"),
     VI = list(scale = 2.8, shift = c(210, -10), rotation_deg=0, proj_str = "EPSG:2866"),
-    GU = list(scale = 2, shift = c(475, -50), rotation_deg=0, proj_str = "+proj=poly +lat_0=13.47246635277778 +lon_0=-144.7487507055556 +x_0=50000 +y_0=50000 +ellps=GRS80 +datum=NAD83 +units=m +no_defs"),
+    GU = list(scale = 1.5, shift = c(445, -50), rotation_deg=0, proj_str = "+proj=poly +lat_0=13.47246635277778 +lon_0=-144.7487507055556 +x_0=50000 +y_0=50000 +ellps=GRS80 +datum=NAD83 +units=m +no_defs"),
     AS = list(scale = 1, shift = c(-330, -20), rotation_deg=0, proj_str = "EPSG:3102"),
-    MP = list(scale = 2, shift = c(475, -50), rotation_deg=0, proj_str = "+proj=poly +lat_0=13.47246635277778 +lon_0=-144.7487507055556 +x_0=50000 +y_0=50000 +ellps=GRS80 +datum=NAD83 +units=m +no_defs"),
+    MP = list(scale = 1.5, shift = c(445, -50), rotation_deg=0, proj_str = "+proj=poly +lat_0=13.47246635277778 +lon_0=-144.7487507055556 +x_0=50000 +y_0=50000 +ellps=GRS80 +datum=NAD83 +units=m +no_defs"),
     # If there is no match, default to doing nothing to the object
     list(scale = 1, shift = c(0,0), rotation_deg=0)
   )
