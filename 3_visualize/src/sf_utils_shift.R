@@ -132,6 +132,11 @@ build_oconus_sf <- function(proj_str, states_shp) {
         st_cast("POLYGON") %>% 
         mutate(ID = sprintf("%s_%s", ID, row_number()))
       
+      # If AS, filter out last row (deserted Swains Island in American Samoa)
+      if (region[1] == 'AS') {
+        obj_sf_shifted_poly <- filter(obj_sf_shifted_poly, !(ID == 'AS_6'))
+      }
+      
       return(obj_sf_shifted_poly)
     }
   ) %>% bind_rows()

@@ -929,7 +929,7 @@ annotate_shifted_map <- function(shifted_map, text_color, plot_title_font_size, 
     ) +
     draw_label(
       stringr::str_wrap('Northern Mariana Islands', 8),
-      x = 0.055, 
+      x = 0.052, 
       y = 0.47, 
       size = plot_title_font_size, 
       hjust = 0, 
