@@ -4,7 +4,7 @@ source('2_process/src/data_utils.R')
 
 p2_targets <- list(
   ##### Set up state spatial data #####
-
+  
   # CONUS states
   tar_target(p2_conus_sf,
              spData::us_states %>% 
@@ -19,9 +19,11 @@ p2_targets <- list(
   
   tar_target(p2_spatial_groups,
              tibble(
-               name = c('CONUS', 'Alaska', 'Hawaii', 'Puerto Rico', 'U.S. Virgin Islands', 'Guam'),
-               entities = c(list('conus' = state.abb[! state.abb %in% c('AK', 'HI')]), 'AK', 'HI','PR', 'VI','GU'),
-               proj = c(p1_proj, "EPSG:3338", "EPSG:2784", "EPSG:2866", "EPSG:2866", "+proj=poly +lat_0=13.47246635277778 +lon_0=-144.7487507055556 +x_0=50000 +y_0=50000 +ellps=GRS80 +datum=NAD83 +units=m +no_defs")
+               name = c('CONUS', 'Alaska', 'Hawaii', 'Puerto Rico and the U.S. Virgin Islands', 'Guam and the Northern Mariana Islands', 'American Samoa'),
+               entities = c(list('conus' = state.abb[! state.abb %in% c('AK', 'HI')]), 'AK', 'HI', list(c('PR', 'VI')), list(c('GU','MP')), 'AS'),
+               proj = c(p1_proj, "EPSG:3338", "EPSG:2784", "EPSG:2866", 
+                        "+proj=poly +lat_0=13.47246635277778 +lon_0=-144.7487507055556 +x_0=50000 +y_0=50000 +ellps=GRS80 +datum=NAD83 +units=m +no_defs",
+                        "EPSG:3102")
              ) %>%
                group_by(entities) %>%
                tar_group()),
@@ -40,13 +42,14 @@ p2_targets <- list(
   # U.S. counties
   tar_target(p2_counties_sf,
              tigris::counties() %>%
-               st_transform(crs=p1_proj)),
+               st_transform(crs=p1_proj)  %>%
+               add_centroids()),
   
   ##### Munge water use data #####
   tar_target(p2_water_use,
              read_csv(p1_water_use_csv, col_types = cols(), skip=1) %>%
                na_if('--') %>%
-               dplyr::select(STATE, STATEFIPS, COUNTY, COUNTYFIPS, FIPS, YEAR, 
+               dplyr::select(STATE, STATEFIPS, COUNTY, COUNTYFIPS, FIPS, YEAR, population = `TP-TotPop`,
                              `public supply` = `PS-Wtotl`, domestic = `DO-WFrTo`, industrial = `IN-Wtotl`, 
                              irrigation = `IR-WFrTo`, livestock = `LI-WFrTo`, aquaculture = `AQ-Wtotl`, 
                              mining = `MI-Wtotl`, thermoelectric = `PT-Wtotl`) %>%
@@ -54,7 +57,9 @@ p2_targets <- list(
                             names_to = c('wu_type'),
                             values_to = c('withdrawals_mgd')) %>%
                group_by(FIPS) %>%
-               mutate(per_of_total = withdrawals_mgd/sum(withdrawals_mgd)*100)),
+               mutate(per_of_total = withdrawals_mgd/sum(withdrawals_mgd)*100,
+                      population = population*1000, # raw population is in thousands
+                      gd_per_capita = (withdrawals_mgd*1000000)/population)),
   
   tar_target(p2_water_use_total,
              p2_water_use %>%
@@ -90,17 +95,6 @@ p2_targets <- list(
                arrange(WB_TYPE) %>%
                pull(WB_TYPE) %>%
                unique()),
-  
-  ###### CONUS ######
-  # get CONUS subset - have to manually filter by lat/long for now b/c of sites w/ incorrect coordinates
-  tar_target(p2_inventory_sites_sf_CONUS,
-             filter(p2_inventory_sites_sf, 
-                    state_name %in% state.name, 
-                    !(state_abbr %in% c('AK','HI')),
-                    Latitude > 24.5,
-                    Latitude < 49.3,
-                    Longitude < -66.95,
-                    Longitude > -124.8)),
   
   ###### All U.S. states and territories ######
   # spatially grouped sites for all U.S. states and territories
@@ -141,13 +135,24 @@ p2_targets <- list(
   tar_target(p2_supply_summary, 
              p2_inventory_sites_types %>%
                mutate(WB_TYPE = factor(WB_TYPE, levels=p2_facility_type_summary$WB_TYPE)) %>%
-               group_by(source_category, WB_TYPE) %>%
+               group_by(WB_TYPE, source_category) %>%
+               summarize(site_count = n()) %>%
+               mutate(source_category = factor(source_category, levels=c('undetermined', 'both', 'self supply', 'public supply'))) %>%
+               group_by(WB_TYPE) %>%
+               mutate(percent = site_count/sum(site_count)*100)),
+  
+  # Get summary of facility supply sources, by type and by state
+  tar_target(p2_supply_summary_state, 
+             p2_inventory_sites_types %>%
+               mutate(WB_TYPE = factor(WB_TYPE, levels=p2_facility_type_summary$WB_TYPE)) %>%
+               group_by(state_name, state_abbr, WB_TYPE, source_category) %>%
                summarize(site_count = n()) %>%
                mutate(source_category = factor(source_category, levels=c('undetermined', 'both', 'self supply', 'public supply')))),
   
   # Intersect facility data with county data
   tar_target(p2_inventory_sites_counties_sf,
-             p2_inventory_sites_sf %>% st_intersection(p2_counties_sf)),
+             p2_inventory_sites_sf %>% 
+               st_intersection(p2_counties_sf)),
   
   # Get count of facilities in each county
   tar_target(p2_facility_count_county,
@@ -155,6 +160,7 @@ p2_targets <- list(
                filter(WB_TYPE %in% p2_facility_types) %>%
                group_by(STATEFP, COUNTYFP, GEOID, NAME, NAMELSAD) %>%
                summarize(site_count = n()) %>%
+               ungroup() %>%
                mutate(WB_TYPE = 'All') %>%
                st_drop_geometry()),
   
@@ -169,6 +175,47 @@ p2_targets <- list(
   
   tar_target(p2_facility_summary_county,
              bind_rows(p2_facility_count_county, p2_facility_type_count_county)),
+  
+  # get count of facilities in each county, by water source category
+  tar_target(p2_facility_source_count_county,
+             p2_inventory_sites_counties_sf %>%
+               filter(WB_TYPE %in% p2_facility_types) %>%
+               group_by(STATEFP, COUNTYFP, GEOID, NAME, NAMELSAD, source_category) %>%
+               summarize(site_count = n()) %>%
+               mutate(WB_TYPE = 'All') %>%
+               st_drop_geometry()),
+  
+  # get count of facilities in each county, by water source category and type
+  tar_target(p2_facility_source_type_count_county,
+             p2_inventory_sites_counties_sf %>%
+               filter(WB_TYPE %in% p2_facility_types) %>%
+               group_by(STATEFP, COUNTYFP, GEOID, NAME, NAMELSAD, WB_TYPE, source_category) %>%
+               summarize(site_count = n()) %>%
+               mutate(WB_TYPE = factor(WB_TYPE, levels=p2_facility_type_summary$WB_TYPE)) %>%
+               st_drop_geometry()),
+  
+  tar_target(p2_facility_source_summary_county,
+             bind_rows(p2_facility_source_count_county, p2_facility_source_type_count_county)),
+  
+  ###### CONUS ######
+  # get CONUS subset - have to manually filter by lat/long for now b/c of sites w/ incorrect coordinates
+  tar_target(p2_inventory_sites_sf_CONUS,
+             filter(p2_inventory_sites_sf, 
+                    state_name %in% state.name, 
+                    !(state_abbr %in% c('AK','HI')),
+                    Latitude > 24.5,
+                    Latitude < 49.3,
+                    Longitude < -66.95,
+                    Longitude > -124.8)),
+  
+  # get CONUS subset of county level counts (overall and by type)
+  tar_target(p2_facility_summary_county_CONUS,
+             p2_facility_summary_county %>%
+               left_join(p2_states_sf %>% 
+                           st_drop_geometry() %>% 
+                           dplyr::select(STATE, STATE_NAME = NAME, FIPS), 
+                         by=c('STATEFP'='FIPS')) %>%
+               filter((STATE_NAME %in% state.name) & !(STATE %in% c('AK','HI')))),
   
   ##### Regional statistics #####
 

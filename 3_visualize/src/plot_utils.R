@@ -1183,6 +1183,125 @@ generate_facility_type_facet_map <- function(type_summary, type_summary_state, c
   return(outfile)
 }
 
+generate_facility_source_facet_map <- function(supply_summary, supply_summary_state, supply_colors, selected_facility_type, 
+                                               width, height,bkgd_color, text_color, outfile_template, dpi) {
+  
+  if (!(selected_facility_type == 'All')) {
+    supply_summary_state <- supply_summary_state %>% 
+      filter(WB_TYPE == selected_facility_type) %>%
+      arrange(state_name) %>% 
+      group_by(state_name, state_abbr) %>%
+      mutate(percent = site_count/sum(site_count)*100)
+    supply_summary <- supply_summary %>% 
+      filter(WB_TYPE == selected_facility_type) %>%
+      mutate(percent = site_count/sum(site_count)*100) 
+  } else {
+    supply_summary_state <- supply_summary_state %>% 
+      arrange(state_name) %>% 
+      group_by(state_name, state_abbr, source_category) %>%
+      summarize(site_count = sum(site_count)) %>%
+      group_by(state_name, state_abbr) %>%
+      mutate(percent = site_count/sum(site_count)*100)
+    supply_summary <- supply_summary %>% 
+      group_by(source_category) %>%
+      summarize(site_count = sum(site_count)) %>%
+      mutate(percent = site_count/sum(site_count)*100) 
+  }
+  
+  grid <- geofacet::us_state_grid1 %>% 
+    add_row(row = 7, col = 10, code = "PR", name = "Puerto Rico") %>% # add PR
+    add_row(row = 7, col = 11, code = "VI", name = "U.S. Virgin Islands") %>% # add VI
+    add_row(row = 6, col = 1, code = "GU", name = "Guam") # add GU
+  
+  state_cartogram <- supply_summary_state %>%
+    ggplot(aes(1, y = percent)) +
+    geom_bar(aes(fill = source_category), stat='identity') +
+    scale_fill_manual(name = 'source_category', values = supply_colors) +
+    theme_bw() +
+    theme_facet(base = 12, bkgd_color = bkgd_color, text_color = text_color) +
+    geofacet::facet_geo(~ state_abbr, grid = grid, move_axes = TRUE)
+  
+  national_plot <- supply_summary %>%
+    ggplot(aes(1, y = percent)) +
+    geom_bar(aes(fill = source_category), stat='identity') +
+    scale_fill_manual(name = 'source_category', values=supply_colors) +
+    scale_x_discrete(expand = c(0,0)) +
+    scale_y_continuous(breaks = rev(c(0, 25, 50, 75, 100)),
+                       labels = rev(c(0, 25, 50, 75, "100%")),
+                       expand = c(0,0)) +
+    theme_minimal() +
+    theme(
+      axis.title = element_blank(),
+      panel.grid = element_blank(),
+      axis.ticks.y = element_line(color = "lightgrey", size = 0.5),
+      axis.text.x = element_blank(),
+      legend.position = 'bottom',
+      plot.title = element_text(hjust = 0.5, size=20),
+      axis.text.y = element_text(size=14),
+      legend.title.align = 0.5,
+      panel.margin = margin(0, 0, 0, 0, "pt")
+    ) +
+    ggtitle('Nationally')
+  
+  
+  plot_margin <- 0.005
+  
+  # background
+  canvas <- grid::rectGrob(
+    x = 0, y = 0, 
+    width = width, height = height,
+    gp = grid::gpar(fill = bkgd_color, alpha = 1, col = bkgd_color)
+  )
+  
+  # Extract from plot
+  facet_legend <- get_legend(national_plot + 
+                               theme(legend.position = 'left',
+                                     text = element_text(size=16)) + 
+                               guides(
+                                 fill = guide_legend(title="Water source", ncol=1, reverse = TRUE)
+                               ))
+  
+  # compose final plot
+  facet_plot <- ggdraw(ylim = c(0,1), 
+                       xlim = c(0,1)) +
+    # a background
+    draw_grob(canvas,
+              x = 0, y = 1,
+              height = height, width = width,
+              hjust = 0, vjust = 1) +
+    # national-level plot
+    draw_plot(national_plot + theme(legend.position = 'none'),
+              x = 0.025,
+              y = 0.3,
+              height = 0.45 ,
+              width = 0.32 - plot_margin * 2) +
+    # state cartogram
+    draw_plot(state_cartogram + theme(legend.position = 'none'),
+              x = 0.975,
+              y = 0.15,
+              height = 0.7, 
+              width = 1 - (0.4 + plot_margin * 3),
+              hjust = 1,
+              vjust = 0) +
+    # add legend
+    draw_plot(facet_legend,
+              x = 0.05,
+              y = 0.15,
+              height = 0.13 ,
+              width = 0.3 - plot_margin) +
+    draw_label(sprintf('Distribution of water sources for %s facilities', tolower(selected_facility_type)),
+               x = 0.025, y = 0.93, 
+               size = 36, 
+               hjust = 0, 
+               vjust = 1,
+               color = 'black',
+               lineheight = 1)
+  
+  outfile <- ifelse(selected_facility_type=='All', outfile_template, sprintf(outfile_template, selected_facility_type))
+  ggsave(outfile, facet_plot, width = width, height = height, dpi = dpi)
+  return(outfile)
+}
+
 #' @title 
 #' @description 
 #' @param 
@@ -1229,15 +1348,18 @@ generate_supply_summary <- function(supply_summary, supply_colors, title_text_si
     scale_x_discrete(labels = function(x) str_wrap(x, width = 6),
                      expand = c(0,0)) +
     scale_fill_manual(name = 'source_category', values = supply_colors) +
+    scale_y_continuous(labels = unit_format(unit = "k", scale = 1e-3)) +
     theme_minimal() +
+    ylab(label = 'Number of facilities') +
     theme(
-      axis.title = element_blank(),
+      axis.title.y = element_text(size = title_text_size),
+      axis.title.x = element_blank(),
       panel.grid = element_blank(),
       panel.grid.major.y = element_line(color = "lightgrey", size = 0.5),
       axis.ticks.y = element_line(color = "lightgrey", size = 0.5),
       legend.position = 'bottom',
       plot.title = element_text(hjust = 0.5, size = title_text_size, margin=margin(0,0,15,0)),
-      axis.text = element_text(size = axis_text_size),
+      axis.text = element_text(size = axis_text_size, color = 'black'),
       legend.title.align = 0.5,
       legend.text = element_text(size = legend_text_size),
       legend.title = element_text(size = legend_text_size),
@@ -1245,7 +1367,7 @@ generate_supply_summary <- function(supply_summary, supply_colors, title_text_si
     ) +
     ggtitle('Source of water by facility type, nationally')+ 
     guides(
-      fill=guide_legend(title="Water source", nrow=1)
+      fill=guide_legend(title="Water source", nrow=2)
     )
   
   ggsave(outfile, supply_plot, width = width, height = height, dpi = dpi)
@@ -1351,4 +1473,56 @@ map_region_on_states <- function(region, region_states, states, region_fill, reg
     geom_sf(data = region, fill = region_fill, color = region_color, alpha=0.5) +
     theme_void()
   
+}
+
+#' @title 
+#' @description 
+#' @param 
+#' @param 
+#' @return
+generate_source_summary_bar_chart <- function(supply_summary_state, supply_colors, selected_facility_type,
+                                              title_text_size, axis_text_size, legend_text_size, width, 
+                                              height, bkgd_color, text_color, outfile_template, dpi) {
+  
+  bottled_water_summary <- supply_summary_state %>% 
+    filter(WB_TYPE == selected_facility_type) %>%
+    arrange(state_name) %>% 
+    group_by(state_name) %>%
+    mutate(percent = site_count/sum(site_count)*100)
+  
+  states <- unique(bottled_water_summary$state_abbr)
+  
+  supply_ranking <- bottled_water_summary %>%
+    filter(source_category == 'public supply') %>%
+    arrange(desc(percent)) %>%
+    pull(state_abbr)
+  
+  supply_ranking <- c(supply_ranking, states[!(states %in% supply_ranking)])
+  
+  bottled_water_summary <- bottled_water_summary %>%
+    mutate(state_abbr = factor(state_abbr, levels = supply_ranking))
+  
+  ggplot(bottled_water_summary, aes(state_abbr, y = percent)) +
+    geom_bar(aes(fill = source_category), stat='identity') +
+    scale_fill_manual(name = 'source_category', values = supply_colors) +
+    scale_y_continuous(breaks = rev(c(0, 25, 50, 75, 100)),
+                       labels = rev(c("0%", "25%", "50%","75%", "100%")),
+                       expand = c(0,0)) +
+    theme_minimal() +
+    theme(
+      axis.title = element_blank(),
+      plot.title = element_text(hjust = 0.5, size = title_text_size, color = text_color, margin=margin(0,0,15,0)),
+      axis.text.x = element_text(size = axis_text_size, color = text_color),
+      axis.text.y = element_text(size = legend_text_size, color = text_color),
+      panel.grid.major.y = element_blank(),
+      axis.ticks.y = element_line(color = "grey60", size = 0.5),
+      legend.position = 'bottom',
+      legend.text = element_text(size = legend_text_size, color = text_color),
+      legend.title = element_text(size = legend_text_size, color = text_color)) +
+    guides(fill = guide_legend(title = 'Source category')) +
+    ggtitle('Distribution of Water Sources by State for Bottled Water Facilities')
+  
+  outfile <- sprintf(outfile_template, selected_facility_type)
+  
+  ggsave(outfile, width = width, height = height, dpi=dpi, bg=bkgd_color)
 }

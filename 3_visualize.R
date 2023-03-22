@@ -23,10 +23,10 @@ p3_targets <- list(
   tar_target(p3_conus_sf,
              rmapshaper::ms_simplify(p2_conus_sf, keep=0.7)),
   
-  # get simplified and cropped counties, for plotting
-  tar_target(p3_counties_sf,
+  # get simplified and cropped CONUS counties, for plotting
+  tar_target(p3_counties_CONUS_sf,
              p2_counties_sf %>% 
-               rmapshaper::ms_simplify(keep = 0.01) %>%
+               rmapshaper::ms_simplify(keep = 0.2) %>% # may need to raise to include Nantucket and Island counties
                st_intersection(st_union(p3_conus_sf)) %>%
                add_centroids() %>%
                left_join(p2_states_sf %>% 
@@ -437,42 +437,53 @@ p3_targets <- list(
                          bkgd_color = "#ffffff", width = 16, height = 9, dpi = 300),
              format = 'file'),
 
-  # proportional symbol map, by county
-  # NOTE NOT USING SIZE_ADJ variable to plot right now, just count
-  tar_target(p3_facility_summary_county,
-             p2_facility_summary_county %>%
-               mutate(size_adj = calcPropRadius(site_count, min(p2_facility_summary_county$site_count), min_radius = 5))),
+  # # proportional symbol map, by county
+  # # NOTE NOT USING SIZE_ADJ variable to plot right now, just count
+  # tar_target(p3_facility_summary_county,
+  #            p2_facility_summary_county %>%
+  #              mutate(size_adj = calcPropRadius(site_count, min(p2_facility_summary_county$site_count), min_radius = 5))),
   
-  # join the summary data and state names to the cropped county data
-  tar_target(p3_county_data_sf,
-             p3_counties_sf %>%
-               left_join(p2_facility_summary_county, by=c('STATEFP', 'COUNTYFP', 'GEOID', 'NAME', 'NAMELSAD'))),
+  # join the CONUS summary data to the cropped CONUS county data
+  tar_target(p3_county_data_ALL_CONUS_sf,
+             p3_counties_CONUS_sf %>%
+               left_join(p2_facility_summary_county_CONUS %>%
+                           filter(WB_TYPE == 'All') %>%
+                           dplyr::select(GEOID, site_count, WB_TYPE), 
+                         by = c('GEOID'))),
   
-  # get CONUS subset
-  tar_target(p3_county_data_conus_sf,
-             filter(p3_county_data_sf, (STATE_NAME %in% state.name) & !(STATE %in% c('AK','HI')))),
+  tar_target(p3_county_data_types_CONUS_sf,
+             p3_counties_CONUS_sf %>%
+               left_join(p2_facility_summary_county_CONUS %>%
+                           filter(WB_TYPE == p2_facility_types) %>%
+                           dplyr::select(GEOID, site_count, WB_TYPE), 
+                         by = c('GEOID')),
+             pattern = map(p2_facility_types)),
+  
+  # # get CONUS subset
+  # tar_target(p3_county_data_CONUS_sf,
+  #            filter(p3_county_data_sf, (STATE_NAME %in% state.name) & !(STATE %in% c('AK','HI')))),
   
   # Map total county of facilities, by county
   tar_target(p3_county_site_counts_png,
-             map_county_counts_total(p3_county_data_conus_sf,
+             map_county_counts_total(p3_county_data_ALL_CONUS_sf,
                                      p3_conus_sf,
                                      outfile = '3_visualize/out/county_site_count_total.png')),
   
   # Map total county of facilities, by county and by type
   tar_target(p3_min_count_across_types,
-             min(filter(p3_county_data_conus_sf, !(WB_TYPE=='All')) %>% pull(site_count),  na.rm = TRUE)),
+             min(p3_county_data_types_CONUS_sf %>% pull(site_count),  na.rm = TRUE)),
   tar_target(p3_max_count_across_types,
-             max(filter(p3_county_data_conus_sf, !(WB_TYPE=='All')) %>% pull(site_count),  na.rm = TRUE)),
+             max(p3_county_data_types_CONUS_sf %>% pull(site_count),  na.rm = TRUE)),
   
   tar_target(p3_county_site_counts_types_png,
-             map_county_counts_type(p3_county_data_conus_sf,
+             map_county_counts_type(p3_county_data_types_CONUS_sf,
                                     p3_conus_sf,
                                     min_count = p3_min_count_across_types,
                                     max_count = p3_max_count_across_types,
                                     type = p2_facility_types,
                                     site_colors = p3_site_type_colors,
                                     outfile_template = '3_visualize/out/county_site_count_%s.png'),
-             pattern = map(p2_facility_types)),
+             pattern = map(p3_county_data_types_CONUS_sf, p2_facility_types)),
   
   ##### Water source figures #####
   tar_target(p3_supply_colors,
@@ -486,9 +497,9 @@ p3_targets <- list(
   tar_target(p3_supply_summary_png,
              generate_supply_summary(supply_summary = p2_supply_summary,
                                      supply_colors = p3_supply_colors,
-                                     title_text_size = 20,
-                                     axis_text_size = 16,
-                                     legend_text_size = 16,
+                                     title_text_size = 24,
+                                     axis_text_size = 20,
+                                     legend_text_size = 20,
                                      bkgd_color = 'white',
                                      width = 8, height = 6,
                                      outfile = '3_visualize/out/supply_summary.png',
@@ -507,6 +518,45 @@ p3_targets <- list(
                                      dpi = 300),
              format = 'file'),
   
+  tar_target(p3_source_summary_bar_pngs,
+             generate_source_summary_bar_chart(supply_summary_state = p2_supply_summary_state,
+                                               supply_colors = p3_supply_colors,
+                                               selected_facility_type = p2_facility_types,
+                                               title_text_size = 28,
+                                               axis_text_size = 12,
+                                               legend_text_size = 20,
+                                               width = 16, height = 9,
+                                               bkgd_color = 'white',
+                                               text_color = 'black',
+                                               outfile_template = '3_visualize/out/source_bar_chart_%s.png',
+                                               dpi = 300),
+             pattern = map(p2_facility_types),
+             format = 'file'),
+  
+  tar_target(p3_source_facet_map_pngs,
+             generate_facility_source_facet_map(supply_summary = p2_supply_summary,
+                                                supply_summary_state = p2_supply_summary_state,
+                                                supply_colors = p3_supply_colors,
+                                                selected_facility_type = p2_facility_types,
+                                                width = 16, height = 9,
+                                                bkgd_color = 'white',
+                                                text_color = 'black',
+                                                outfile_template = '3_visualize/out/state_sources_facet_%s.png',
+                                                dpi = 300),
+             pattern = map(p2_facility_types),
+             format = 'file'),
+  
+  tar_target(p3_source_facet_map_all_types_png,
+             generate_facility_source_facet_map(supply_summary = p2_supply_summary,
+                                                supply_summary_state = p2_supply_summary_state,
+                                                supply_colors = p3_supply_colors,
+                                                selected_facility_type = 'All',
+                                                width = 16, height = 9,
+                                                bkgd_color = 'white',
+                                                text_color = 'black',
+                                                outfile_template = '3_visualize/out/state_sources_facet.png',
+                                                dpi = 300),
+             format = 'file'),
   
   ##### Regional data maps and plots  ##### 
   # TODO:
