@@ -19,21 +19,6 @@ p3_targets <- list(
                                    outline_states = TRUE, 
                                    states_shp = p1_nws_states_shp)),
   
-  # get simplified state geometries, for plotting
-  tar_target(p3_conus_sf,
-             rmapshaper::ms_simplify(p2_conus_sf, keep=0.7)),
-  
-  # get simplified and cropped CONUS counties, for plotting
-  tar_target(p3_counties_CONUS_sf,
-             p2_counties_sf %>% 
-               rmapshaper::ms_simplify(keep = 0.2) %>% # may need to raise to include Nantucket and Island counties
-               st_intersection(st_union(p3_conus_sf)) %>%
-               add_centroids() %>%
-               left_join(p2_states_sf %>% 
-                           st_drop_geometry() %>% 
-                           dplyr::select(STATE, STATE_NAME = NAME, FIPS), 
-                         by=c('STATEFP'='FIPS'))),
-
   ##### Figure parameters #####
   tar_target(p3_site_type_colors,
              {
@@ -132,42 +117,6 @@ p3_targets <- list(
   tar_target(p3_sites_map_conus_png,
              save_figure(p3_sites_map_conus, outfile = '3_visualize/out/sites_map_conus.png', 
                        bkgd_color = "#ffffff", width = 16, height = 9, dpi = 300),
-             format = 'file'),
-  
-  
-  ###### National maps - not shifted ######
-  tar_target(p3_sites_maps,
-             map_sites(p2_inventory_site_groups_sf,
-                       states = p2_spatial_sf,
-                       site_size = p3_sites_map_params$site_size,
-                       fill_by_type = FALSE,
-                       site_fill_colors = p3_sites_map_params$site_fill_colors, 
-                       site_color = p3_sites_map_params$site_color,
-                       site_alpha = p3_sites_map_params$site_alpha,
-                       site_pch = p3_sites_map_params$site_pch, 
-                       site_stroke = p3_sites_map_params$site_stroke,
-                       state_fill = p3_sites_map_params$state_fill, 
-                       state_color = p3_sites_map_params$state_color,
-                       state_size = p3_sites_map_params$state_size,
-                       simplify = TRUE, 
-                       simplification_keep = 0.7,
-                       legend_position = c(0.9, 0.3), 
-                       legend_title_size = 24, 
-                       legend_text_size = 20),
-             pattern = map(p2_inventory_site_groups_sf, p2_spatial_sf),
-             iteration = 'list'),
-  
-  tar_target(p3_sites_map,
-             combine_into_national_map(maps = p3_sites_maps,
-                                       spatial_data = p2_spatial_sf,
-                                       groups = p2_spatial_groups,
-                                       width = 16, height = 9, text_color = 'black',
-                                       title_font_size = 36,
-                                       legend_font_size = 14)),
-  # INCOMPLETE
-  tar_target(p3_sites_map_png,
-             save_figure(p3_sites_map, outfile = '3_visualize/out/sites_map_national_to_scale.png', bkgd_color = '#ffffff',
-                       width = 16, height = 9, dpi = 300),
              format = 'file'),
   
   ###### National maps - shifted ######
@@ -333,7 +282,7 @@ p3_targets <- list(
                       bkgd_color = "#ffffff", width = 16, height = 9, dpi = 300),
              format = 'file'),
   
-  ###### Facility types (maps and figures) ######
+  ##### Facility types (maps and figures) #####
   tar_target(p3_sites_map_conus_type,
              map_sites(filter(p2_inventory_sites_sf_CONUS, WB_TYPE == p2_facility_types),
                        states = p2_conus_sf, 
@@ -414,77 +363,7 @@ p3_targets <- list(
                                         outfile = '3_visualize/out/state_count_matrix.png',
                                         dpi = 300),
              format = 'file'),
-  
-  # proportional symbol map of counts by state
-  tar_target(p3_state_site_counts,
-             map_site_counts(p2_facility_summary_state,
-                             states = p2_conus_sf, conus = TRUE,
-                             site_color = '#ffffff',
-                             min_radius = 10,
-                             palette = "acton", 
-                             palette_dir = -1,
-                             state_fill = '#ffffff', 
-                             state_color = "#7A7A7A",
-                             state_size = p3_sites_map_params$state_size,
-                             simplify = TRUE, 
-                             simplification_keep = 0.7,
-                             width = 16, 
-                             height = 9, 
-                             bkgd_color = '#ffffff')),
-  
-  tar_target(p3_state_site_counts_png,
-             save_figure(p3_state_site_counts, outfile = '3_visualize/out/state_site_counts_conus.png', 
-                         bkgd_color = "#ffffff", width = 16, height = 9, dpi = 300),
-             format = 'file'),
 
-  # # proportional symbol map, by county
-  # # NOTE NOT USING SIZE_ADJ variable to plot right now, just count
-  # tar_target(p3_facility_summary_county,
-  #            p2_facility_summary_county %>%
-  #              mutate(size_adj = calcPropRadius(site_count, min(p2_facility_summary_county$site_count), min_radius = 5))),
-  
-  # join the CONUS summary data to the cropped CONUS county data
-  tar_target(p3_county_data_ALL_CONUS_sf,
-             p3_counties_CONUS_sf %>%
-               left_join(p2_facility_summary_county_CONUS %>%
-                           filter(WB_TYPE == 'All') %>%
-                           dplyr::select(GEOID, site_count, WB_TYPE), 
-                         by = c('GEOID'))),
-  
-  tar_target(p3_county_data_types_CONUS_sf,
-             p3_counties_CONUS_sf %>%
-               left_join(p2_facility_summary_county_CONUS %>%
-                           filter(WB_TYPE == p2_facility_types) %>%
-                           dplyr::select(GEOID, site_count, WB_TYPE), 
-                         by = c('GEOID')),
-             pattern = map(p2_facility_types)),
-  
-  # # get CONUS subset
-  # tar_target(p3_county_data_CONUS_sf,
-  #            filter(p3_county_data_sf, (STATE_NAME %in% state.name) & !(STATE %in% c('AK','HI')))),
-  
-  # Map total county of facilities, by county
-  tar_target(p3_county_site_counts_png,
-             map_county_counts_total(p3_county_data_ALL_CONUS_sf,
-                                     p3_conus_sf,
-                                     outfile = '3_visualize/out/county_site_count_total.png')),
-  
-  # Map total county of facilities, by county and by type
-  tar_target(p3_min_count_across_types,
-             min(p3_county_data_types_CONUS_sf %>% pull(site_count),  na.rm = TRUE)),
-  tar_target(p3_max_count_across_types,
-             max(p3_county_data_types_CONUS_sf %>% pull(site_count),  na.rm = TRUE)),
-  
-  tar_target(p3_county_site_counts_types_png,
-             map_county_counts_type(p3_county_data_types_CONUS_sf,
-                                    p3_conus_sf,
-                                    min_count = p3_min_count_across_types,
-                                    max_count = p3_max_count_across_types,
-                                    type = p2_facility_types,
-                                    site_colors = p3_site_type_colors,
-                                    outfile_template = '3_visualize/out/county_site_count_%s.png'),
-             pattern = map(p3_county_data_types_CONUS_sf, p2_facility_types)),
-  
   ##### Water source figures #####
   tar_target(p3_supply_colors,
              {
@@ -573,18 +452,5 @@ p3_targets <- list(
   tar_target(p3_regions_map_png,
              save_figure(p3_regions_map, outfile = '3_visualize/out/region_map.png', 
                       bkgd_color = "#ffffff", width = 16, height = 9, dpi = 300),
-             format = 'file'),
-  
-  # in progress
-  tar_target(p3_region_stream_sites_map,
-             map_region_streams_sites(p1_regions_sf_unique_proj, p2_region_streams, p2_region_facilities, site_colors = p3_site_type_colors),
-             pattern = map(p1_regions_sf_unique_proj, p2_region_streams, p2_region_facilities),
-             iteration = 'list'),
-  
-  tar_target(p3_region_states_map,
-             map_region_on_states(p1_regions_sf_unique_proj, p2_region_state_summary, p2_conus_sf,
-                                  region_fill = "#000000", region_color = "#E2E2E2",
-                                  state_fill = "#E2E2E2", state_color = "#ffffff"),
-             pattern = map(p1_regions_sf_unique_proj, p2_region_state_summary),
-             iteration = 'list')
+             format = 'file')
 )
