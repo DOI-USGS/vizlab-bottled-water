@@ -121,7 +121,7 @@ build_oconus_sf <- function(proj_str, states_shp) {
       # Get the appropriately matched shifting criteria 
       # Use region[1] so that the `PR` & `VI` shifting criteria only
       # returns one list of shifting criteria.
-      shift_criteria <- get_shift(region[1])
+      shift_criteria <- get_shift(region[[1]])
       
       # Apply the shifting criteria to the current `obj_sf`
       obj_sf_shifted <- do.call(shift_sf, c(obj_sf = list(obj_sf), 
@@ -133,7 +133,7 @@ build_oconus_sf <- function(proj_str, states_shp) {
         mutate(ID = sprintf("%s_%s", ID, row_number()))
       
       # If AS, filter out last row (deserted Swains Island in American Samoa)
-      if (region[1] == 'AS') {
+      if (region[[1]] == 'AS') {
         obj_sf_shifted_poly <- filter(obj_sf_shifted_poly, !(ID == 'AS_6'))
       }
       
@@ -229,7 +229,7 @@ apply_shifts_to_sites <- function(sites_sf, proj_str, states_shp) {
       # Get the appropriately matched shifting criteria 
       # Use region[1] so that the `PR` & `VI` shifting criteria only
       # returns one list of shifting criteria.
-      shift_criteria <- get_shift(region[1])
+      shift_criteria <- get_shift(region[[1]])
       
       # Apply the shifting criteria to the current `obj_sf`
       obj_sf_shifted <- do.call(shift_points_sf, c(pts_sf = list(pts_sf), 
