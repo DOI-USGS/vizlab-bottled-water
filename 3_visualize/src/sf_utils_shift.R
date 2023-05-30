@@ -1,6 +1,6 @@
 
 # Utility functions for shifting
-# Adapted from https://github.com/USGS-VIZLAB/gw-conditions/blob/main/3_visualize/src/sf_utils_shift.R
+# Adapted from https://github.com/DOI-USGS/gw-conditions/blob/main/3_visualize/src/sf_utils_shift.R
 
 #' @title extract and define shifting criteria
 #' @description defines and extracts shifting criteria
