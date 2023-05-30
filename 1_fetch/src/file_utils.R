@@ -32,3 +32,18 @@ write_to_csv <- function(data, outfile) {
   readr::write_csv(data, outfile)
   return(outfile)
 }
+
+#' @title 
+#' @description 
+#' @param 
+#' @param 
+#' @return 
+#' 
+download_file_from_url <- funcion(url, outfile) {
+  download_code <- download.file(destfile = outfile, url)
+  if (download_code == 0) {
+    return(outfile) }
+  else {
+    stop('file download failed')
+  }
+}
