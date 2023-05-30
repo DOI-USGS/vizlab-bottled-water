@@ -958,7 +958,7 @@ generate_facility_source_facet_map <- function(supply_summary, supply_summary_st
                                theme(legend.position = 'left',
                                      text = element_text(size=16)) + 
                                guides(
-                                 fill = guide_legend(title="Water source", ncol=1, reverse = TRUE)
+                                 fill = guide_legend(title="Water source", ncol=1)
                                ))
   
   # compose final plot
@@ -1067,7 +1067,7 @@ generate_supply_summary <- function(supply_summary, supply_colors, title_text_si
     ) +
     ggtitle('Source of water by facility type, nationally')+ 
     guides(
-      fill=guide_legend(title="Water source", nrow=2)
+      fill=guide_legend(title="Water source", nrow=2, reverse = TRUE)
     )
   
   ggsave(outfile, supply_plot, width = width, height = height, dpi = dpi)
@@ -1103,7 +1103,7 @@ generate_supply_summary_percent <- function(supply_summary, supply_colors, title
     ) +
     ggtitle('Source of water by facility type, nationally') + 
     guides(
-      fill=guide_legend(title="Water source", nrow=1)
+      fill=guide_legend(title="Water source", nrow=1, reverse = TRUE)
     )
   
   ggsave(outfile, supply_plot_percent, width = width, height = height, dpi = dpi)
@@ -1200,7 +1200,7 @@ generate_source_summary_bar_chart <- function(supply_summary_state, supply_color
       legend.position = 'bottom',
       legend.text = element_text(size = legend_text_size, color = text_color),
       legend.title = element_text(size = legend_text_size, color = text_color)) +
-    guides(fill = guide_legend(title = 'Source category')) +
+    guides(fill = guide_legend(title = 'Source category', reverse = TRUE)) +
     ggtitle('Distribution of Water Sources by State for Bottled Water Facilities')
   
   outfile <- sprintf(outfile_template, selected_facility_type)
