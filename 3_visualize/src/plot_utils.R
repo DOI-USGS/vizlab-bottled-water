@@ -30,22 +30,33 @@ save_figure <- function(figure, outfile, bkgd_color, width, height, dpi) {
     draw_plot(figure,
               x = plot_margin,
               y = plot_margin,
-              height = 1-plot_margin*2 ,
-              width = 1-plot_margin*2)
+              height = 1 - plot_margin*2 ,
+              width = 1 - plot_margin*2)
   
-  ggsave(outfile, width = width, height = height, dpi = 300) #, bg = "transparent", limitsize = FALSE)
+  ggsave(outfile, width = width, height = height, dpi = 300)
   return(outfile)
 }
 
-#' @title 
-#' @description 
-#' @param 
-#' @param 
-#' @return 
-map_data_on_us <- function(states, plot_in, state_fill, state_color, state_size, simplify=TRUE, simplification_keep=NA, legend=TRUE) {
+#' @title map data on us
+#' @description Map passed spatial data on top of of the passed spatial data for
+#' the U.S./CONUS
+#' @param states sf object of U.S. states - either CONUS or CONUS + OCONUS
+#' @param plot_in existing map to be added to basemap of U.S. states
+#' @param state_fill color for fill for states
+#' @param state_color color for border for states
+#' @param state_size size of border for states
+#' @param simplify logical, whether or not to simplify the passed state geometry.
+#' Defaults to TRUE
+#' @param simplification_keep if simplify = TRUE, percentage of points to retain
+#' @param legend logical, whether on to to include the map legend
+#' @return plot object with `plot_in` added to basemap built from `states`
+map_data_on_us <- function(states, plot_in, state_fill, state_color, state_size, 
+                           simplify = TRUE, simplification_keep = NA, 
+                           legend = TRUE) {
   
   if (simplify) {
-    if (is.na(simplification_keep)) message('Using default of 0.05 for proportion of points to retain')
+    if (is.na(simplification_keep)) message('Using default of 0.05 for proportion 
+                                            of points to retain')
     states <- ms_simplify(states, keep = simplification_keep)
   }
 
@@ -71,12 +82,19 @@ map_data_on_us <- function(states, plot_in, state_fill, state_color, state_size,
   return(p)
 }
 
-#' @title 
-#' @description 
-#' @param 
-#' @param 
-#' @return 
-map_regions <- function(regions, region_info, states, state_fill, state_color, state_size, simplify=TRUE, simplification_keep=0.5) {
+#' @title map regions
+#' @description map location of regions on CONUS basemap
+#' @param regions sf object of study regions
+#' @param region_info dataframe of information for each region
+#' @param state_fill color for fill for states
+#' @param state_color color for border for states
+#' @param state_size size of border for states
+#' @param simplify logical, whether or not to simplify the passed state geometry.
+#' Defaults to TRUE
+#' @param simplification_keep if simplify = TRUE, percentage of points to retain
+#' @return plot object - CONUS basemap with regions added and labeled
+map_regions <- function(regions, region_info, states, state_fill, state_color, 
+                        state_size, simplify = TRUE, simplification_keep = 0.5) {
   
   regions <- regions %>% 
     left_join(region_info, by = 'region')
@@ -89,7 +107,10 @@ map_regions <- function(regions, region_info, states, state_fill, state_color, s
     
     
   
-  regions_on_conus <- map_data_on_us(states, plot_in = region_plot, state_fill, state_color, state_size, simplify=simplify, simplification_keep=simplification_keep, legend=TRUE)
+  regions_on_conus <- map_data_on_us(states, plot_in = region_plot, state_fill, 
+                                     state_color, state_size, simplify = simplify, 
+                                     simplification_keep = simplification_keep, 
+                                     legend=TRUE)
   
   ca_inset_area <- regions %>%
     filter(region == 'california') %>%
@@ -105,17 +126,19 @@ map_regions <- function(regions, region_info, states, state_fill, state_color, s
   y_offsets <- c(-1000000, 105000, 600000, -100000, -350000, -5000)
   
   conus_w_inset <- regions_on_conus +
-    geom_sf(data = ca_inset_area, fill=NA, color='grey20', size=0.25) +
+    geom_sf(data = ca_inset_area, fill = NA, color = 'grey20', size = 0.25) +
     geom_text_repel(data = regions, aes(label = stringr::str_wrap(full_name, 30), 
-                                        fill = NA, color = region, geometry = geometry), 
+                                        fill = NA, color = region, 
+                                        geometry = geometry), 
                     nudge_x = x_offsets, nudge_y = y_offsets,
                     min.segment.length = 15, stat = "sf_coordinates",
                     size = 6, hjust = 0) +
     theme(legend.position = "none")
   
   ca_region_map <- ggplot() +
-    geom_sf(data = ca_inset_area, fill='white', color='grey20', size=0.5) +
-    geom_sf(data = filter(regions, region=='california'), aes(fill = region, color = region)) +
+    geom_sf(data = ca_inset_area, fill = 'white', color = 'grey20', size = 0.5) +
+    geom_sf(data = filter(regions, region == 'california'), aes(fill = region, 
+                                                              color = region)) +
     theme_void()
   
   final_plot <- ggdraw() +
@@ -150,13 +173,32 @@ map_regions <- function(regions, region_info, states, state_fill, state_color, s
   return(final_plot)
 }
 
-#' @title 
-#' @description 
-#' @param 
-#' @param 
-#' @return 
-map_sites <- function(sites, states, site_size, fill_by_type, site_fill_colors, site_color, site_alpha, 
-                      site_pch, site_stroke, state_fill, state_color, state_size, simplify=TRUE, simplification_keep=NA,
+#' @title map sites
+#' @description map location of inventoried facilities on the passed state 
+#' geometry (CONUS OR CONUS + OCONUS)
+#' @param sites sf object of inventory sites
+#' @param states sf object of U.S. states - either CONUS or CONUS + OCONUS
+#' @param site_size size of site points
+#' @param fill_by_type logical, whether or not to color the fill of the sites
+#' according to the type of the facility
+#' @param site_fill_colors color(s) for fill of site points
+#' @param site_color color for border of site points
+#' @param site_alpha alpha for site points
+#' @param site_pch type of symbol to use for site points
+#' @param site_stroke size of border for site points
+#' @param state_fill color for fill for states
+#' @param state_color color for border for states
+#' @param state_size size of border for states
+#' @param simplify logical, whether or not to simplify the passed state geometry.
+#' Defaults to TRUE
+#' @param simplification_keep if simplify = TRUE, percentage of points to retain
+#' @param legend_position position for the legend: c(x_offset, y_offset)
+#' @param legend_title_size font size for the legend title
+#' @param legend_text_size font size for the legend text
+#' @return plot object - map of `sites` locations within `states`
+map_sites <- function(sites, states, site_size, fill_by_type, site_fill_colors, 
+                      site_color, site_alpha, site_pch, site_stroke, state_fill, 
+                      state_color, state_size, simplify = TRUE, simplification_keep = NA,
                       legend_position, legend_title_size, legend_text_size) {
   
   if (fill_by_type) {
@@ -166,7 +208,7 @@ map_sites <- function(sites, states, site_size, fill_by_type, site_fill_colors, 
                          pch = site_pch,
                          size = site_size,
                          stroke = site_stroke,
-                         alpha= site_alpha)
+                         alpha = site_alpha)
   } else {
     site_plot <- geom_sf(data = sites,
                          aes(fill = facility_category,
@@ -174,30 +216,35 @@ map_sites <- function(sites, states, site_size, fill_by_type, site_fill_colors, 
                          pch = site_pch,
                          size = site_size,
                          stroke = site_stroke,
-                         alpha= site_alpha) 
+                         alpha = site_alpha) 
   }
 
-  final_plot <- map_data_on_us(states, plot_in = site_plot, state_fill, state_color, state_size, simplify=simplify, simplification_keep=simplification_keep, legend=TRUE)
+  final_plot <- map_data_on_us(states, plot_in = site_plot, state_fill, 
+                               state_color, state_size, simplify = simplify, 
+                               simplification_keep = simplification_keep, 
+                               legend = TRUE)
   
   if (fill_by_type) {
     final_plot <- final_plot +
-      scale_fill_manual(name='WB_TYPE', values = site_fill_colors) +
+      scale_fill_manual(name = 'WB_TYPE', values = site_fill_colors) +
       theme(legend.position = legend_position,
-            legend.title = element_text(size=legend_title_size),
-            legend.text = element_text(size=legend_text_size)) +
+            legend.title = element_text(size = legend_title_size),
+            legend.text = element_text(size = legend_text_size)) +
       guides(
         fill = guide_legend(title="Facility type"),
         color = 'none'
       )
   } else {
     final_plot <- final_plot + 
-      scale_fill_manual(name='Bottling facility', breaks=c('Bottling facility'),values=c(site_fill_colors)) +
-      scale_color_manual(name='Bottling facility', breaks=c('Bottling facility'),values=c(site_color)) +
+      scale_fill_manual(name = 'Bottling facility', breaks = c('Bottling facility'),
+                        values = c(site_fill_colors)) +
+      scale_color_manual(name = 'Bottling facility', breaks = c('Bottling facility'),
+                         values = c(site_color)) +
       theme(legend.position = legend_position,
-            legend.title = element_text(size=legend_title_size),
-            legend.text = element_text(size=legend_text_size)) +
+            legend.title = element_text(size = legend_title_size),
+            legend.text = element_text(size = legend_text_size)) +
       guides(
-        fill = guide_legend(title=element_blank()),
+        fill = guide_legend(title = element_blank()),
         color = 'none'
       )
   }
@@ -205,14 +252,31 @@ map_sites <- function(sites, states, site_size, fill_by_type, site_fill_colors, 
   return(final_plot)
 }
 
-#' @title 
-#' @description 
-#' @param 
-#' @param 
-#' @return
-map_wateruse_sites <- function(map_of_all_sites, site_size, site_fill_colors, site_color, site_pch, site_stroke, wu_sites, 
-                               wu_site_size, wu_site_fill_colors, wu_site_color, wu_site_alpha, wu_site_pch, wu_site_stroke,
-                               legend_position, legend_title_size, legend_text_size) {
+#' @title map water use sites
+#' @description on map of all sites, indicate which have water use data
+#' @param map_of_all_sites plot object - map of all sites in CONUS
+#' @param site_size size of site points
+#' @param site_fill_colors color(s) for fill of site points
+#' @param site_color color for border of site points
+#' @param site_pch type of symbol to use for site points
+#' @param site_stroke size of border for site points
+#' @param wu_sites sf object of sites with water use data
+#' @param wu_site_size size of points for sites with water use data
+#' @param wu_site_fill_colors fill color of points for sites with water use data
+#' @param wu_site_color border color of points for sites with water use data
+#' @param wu_site_alpha alpha of points for sites with water use data
+#' @param wu_site_pch type of symbol for points for sites with water use data
+#' @param wu_site_stroke size of border for points for sites with water use data
+#' @param legend_position position for the legend: c(x_offset, y_offset)
+#' @param legend_title_size font size for the legend title
+#' @param legend_text_size font size for the legend text
+#' @return map of all sites, with sites with water use data highlighted
+map_wateruse_sites <- function(map_of_all_sites, site_size, site_fill_colors, 
+                               site_color, site_pch, site_stroke, wu_sites, 
+                               wu_site_size, wu_site_fill_colors, wu_site_color, 
+                               wu_site_alpha, wu_site_pch, wu_site_stroke,
+                               legend_position, legend_title_size, 
+                               legend_text_size) {
   
   map <- map_of_all_sites +  
     geom_sf(data = wu_sites, 
@@ -221,36 +285,46 @@ map_wateruse_sites <- function(map_of_all_sites, site_size, site_fill_colors, si
             pch = wu_site_pch,
             size = wu_site_size,
             stroke = wu_site_stroke,
-            alpha= wu_site_alpha) + 
+            alpha = wu_site_alpha) + 
     theme_void() +
-    scale_fill_manual(name=c('Bottling facility', unique(wu_sites$WUDataFlag)), breaks = c('Bottling facility', unique(wu_sites$WUDataFlag)), 
-                      values = c(site_fill_colors, wu_site_fill_colors), labels=c('Bottling facility', 'Has water use data')) +
-    scale_color_manual(name=c('Bottling facility', unique(wu_sites$WUDataFlag)), breaks = c('Bottling facility', unique(wu_sites$WUDataFlag)),
-                      values = c(site_color, wu_site_color), labels=c('Bottling facility', 'Has water use data')) +
+    scale_fill_manual(name = c('Bottling facility', unique(wu_sites$WUDataFlag)), 
+                      breaks = c('Bottling facility', unique(wu_sites$WUDataFlag)), 
+                      values = c(site_fill_colors, wu_site_fill_colors), 
+                      labels = c('Bottling facility', 'Has water use data')) +
+    scale_color_manual(name = c('Bottling facility', unique(wu_sites$WUDataFlag)), 
+                       breaks = c('Bottling facility', unique(wu_sites$WUDataFlag)),
+                       values = c(site_color, wu_site_color), 
+                       labels = c('Bottling facility', 'Has water use data')) +
     theme(legend.position = legend_position,
-          legend.title=element_text(size=legend_title_size),
-          legend.text=element_text(size=legend_text_size)) +
+          legend.title = element_text(size = legend_title_size),
+          legend.text = element_text(size = legend_text_size)) +
     guides(
-      fill = guide_legend(title=element_blank(), override.aes = list(pch = c(site_pch, wu_site_pch), 
-                                                                     fill = c(site_fill_colors, wu_site_fill_colors),
-                                                                     color = c(site_color, wu_site_color),
-                                                                     stroke = c(site_stroke, wu_site_stroke),
-                                                                     size = c(site_size, wu_site_size))),
+      fill = guide_legend(title = element_blank(), 
+                          override.aes = list(pch = c(site_pch, wu_site_pch), 
+                                              fill = c(site_fill_colors, wu_site_fill_colors),
+                                              color = c(site_color, wu_site_color),
+                                              stroke = c(site_stroke, wu_site_stroke),
+                                              size = c(site_size, wu_site_size))),
       color = "none"
     )
-  
-  
-  # fill = c(site_fill_colors,wu_site_fill_colors),
   
   return(map)
 }
 
-#' @title 
-#' @description 
-#' @param 
-#' @param 
-#' @return 
-combine_small_multiples <- function(plots, plot_types, title_font_size, legend_font_size, plot_title_font_size, text_color, point_layer, point_size) {
+#' @title combine small multiples
+#' @description combine series of maps into small multiples arrangement
+#' @param plots vector of plot grobs of facility locations to be combined
+#' @param plot_types vector of facility types represented in `plots`
+#' @param title_font_size font size for title
+#' @param legend_font_size font size for legend
+#' @param plot_title_font_size font size for individual plot titles
+#' @param text_color color for text
+#' @param point_layer number of layer within passed plots that represents points
+#' @param point_size desired size for points on small multiples plots
+#' @return a final plot with the input `plots` arranged as small multiples
+combine_small_multiples <- function(plots, plot_types, title_font_size, 
+                                    legend_font_size, plot_title_font_size, 
+                                    text_color, point_layer, point_size) {
 
   # import fonts
   font_legend <- 'Source Sans Pro'
@@ -271,9 +345,10 @@ combine_small_multiples <- function(plots, plot_types, title_font_size, legend_f
   plot_legend <- get_legend(
     plots[[1]] + 
       theme(legend.position = 'bottom',
-            text = element_text(family = font_legend, color = text_color, size=legend_font_size)) + 
+            text = element_text(family = font_legend, color = text_color, 
+                                size = legend_font_size)) + 
       guides(
-        fill=guide_legend(title="Facility type", nrow=1)
+        fill = guide_legend(title = "Facility type", nrow = 1)
       ))
   
   final_plot <-  ggdraw(ylim = c(0,1), 
@@ -291,13 +366,14 @@ combine_small_multiples <- function(plots, plot_types, title_font_size, legend_f
     column <- ifelse(i <= length(plots)/2, i, i-(length(plots)/2))
     y = ifelse(row == 1, 0.4, plot_margin)
     plot <- plots[[i]]
-    plot <- modify_size(plot, layer=point_layer, size=point_size)
+    plot <- modify_size(plot, layer = point_layer, size = point_size)
     mod_plot <- draw_plot(
       plot + 
         ggtitle(plot_types[i]) +
         theme(legend.position = 'none',
               plot.title = element_text(hjust = 0.5),
-              text = element_text(family = font_legend, color = text_color, size=plot_title_font_size)),
+              text = element_text(family = font_legend, color = text_color, 
+                                  size = plot_title_font_size)),
       x = plot_margin+((column-1)*subplot_width),
       y = y,
       height = 0.5 ,
@@ -323,22 +399,33 @@ combine_small_multiples <- function(plots, plot_types, title_font_size, legend_f
   return(final_plot)
 }
 
-#' @title 
-#' @description 
-#' @param 
-#' @param 
-#' @return 
+#' @title modify size
+#' @description modify size of points on existing plot
+#' @param plot existing plot w/ points layer
+#' @param layer number indicating layer that contains plotted points
+#' @param size replacement size for points within existing plot
+#' @return a plot object with resized points
 modify_size <- function(plot, layer, size) {
   plot$layers[[layer]]$aes_params$size <-  size
   return(plot)
 }
 
-#' @title 
-#' @description 
-#' @param 
-#' @param 
-#' @return 
-combine_conus_maps <- function(map1, map2, title1, title2, width, height, text_color, title_font_size, legend_font_size, plot_title_font_size) {
+#' @title combine conus maps
+#' @description combine two map plot objects, arranging them side by side
+#' @param map1 the first map
+#' @param map2 the second map
+#' @param title1 title for the first map
+#' @param title2 title for the second map
+#' @param width width for the combined plot canvas
+#' @param height height for the combined plot canvas
+#' @param text_color color for text
+#' @param title_font_size font size for title
+#' @param legend_font_size font size for legend
+#' @param plot_title_font_size font size for individual plot titles
+#' @return plot object with the two maps arranged side by side with a legend
+combine_conus_maps <- function(map1, map2, title1, title2, width, height, 
+                               text_color, title_font_size, legend_font_size, 
+                               plot_title_font_size) {
   font_legend <- 'Source Sans Pro'
   font_add_google(font_legend)
   showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 700)
@@ -357,9 +444,10 @@ combine_conus_maps <- function(map1, map2, title1, title2, width, height, text_c
   plot_legend <- get_legend(
     map2 + 
       theme(legend.position = 'top',
-            text = element_text(family = font_legend, color = text_color, size=legend_font_size)) + 
+            text = element_text(family = font_legend, color = text_color, 
+                                size = legend_font_size)) + 
       guides(
-        fill=guide_legend(title="Facility type", nrow=1)
+        fill = guide_legend(title = "Facility type", nrow = 1)
       ))
   
   final_plot <-  ggdraw(ylim = c(0,1), 
@@ -376,7 +464,9 @@ combine_conus_maps <- function(map1, map2, title1, title2, width, height, text_c
                 ggtitle(title1) +
                 theme(legend.position = 'none',
                       plot.title = element_text(hjust = 0.5),
-                      text = element_text(family = font_legend, color = text_color, size=plot_title_font_size)),
+                      text = element_text(family = font_legend, 
+                                          color = text_color, 
+                                          size = plot_title_font_size)),
               x = 0,
               y = 0,
               height = 0.8,
@@ -385,7 +475,9 @@ combine_conus_maps <- function(map1, map2, title1, title2, width, height, text_c
                 ggtitle(title2) +
                 theme(legend.position = 'none',
                       plot.title = element_text(hjust = 0.5),
-                      text = element_text(family = font_legend, color = text_color, size=plot_title_font_size)),
+                      text = element_text(family = font_legend, 
+                                          color = text_color, 
+                                          size = plot_title_font_size)),
               x = ((1 - plot_margin*2) / 2) + plot_margin*2,
               y = 0,
               height = 0.8,
@@ -400,11 +492,15 @@ combine_conus_maps <- function(map1, map2, title1, title2, width, height, text_c
                color = text_color)
 }
 
-#' @title 
-#' @description 
-#' @param 
-#' @param 
-#' @return
+#' @title chart water use availability
+#' @description chart the availability of water use data across sites as a stacked
+#' bar chart
+#' @param sites dataframe of inventory sites w/ attribute information indicating
+#' if the site has water use data or does not
+#' @param has_wu_color color to use if site has water use data
+#' @param no_wu_color color to use if site does not have water use data
+#' @return stacked bar chart indicating percent of sites that have water use data
+#' and percent of sites that do not
 chart_wateruse_availability <- function(sites, has_wu_color, no_wu_color) {
   wu_summary <- sites %>%
     group_by(WUDataFlag, facility_category) %>% 
@@ -414,31 +510,38 @@ chart_wateruse_availability <- function(sites, has_wu_color, no_wu_color) {
   min_per <- min(wu_summary$percent)
   wu_summary_plot <- wu_summary %>%
     ggplot() +
-    geom_bar(aes(x=facility_category, y=count, fill=WUDataFlag), stat='identity', position="fill") +
-    scale_fill_manual(name = 'WUDataFlag', values = has_wu_color, na.value = no_wu_color) +
+    geom_bar(aes(x = facility_category, y = count, fill = WUDataFlag), 
+             stat = 'identity', position = "fill") +
+    scale_fill_manual(name = 'WUDataFlag', values = has_wu_color, 
+                      na.value = no_wu_color) +
     theme_void() +
     scale_y_continuous(position = 'right',
                        breaks = rev(c(max_per/2, max_per + min_per/2)),
-                       labels = rev(c(sprintf('%s%% do not have water use data', round(max_per*100, 1)), 
-                                      sprintf("%s%% have water use data", round(min_per*100,1)))),
+                       labels = rev(c(sprintf('%s%% do not have water use data', 
+                                              round(max_per*100, 1)), 
+                                      sprintf("%s%% have water use data", 
+                                              round(min_per*100,1)))),
                        expand = c(0,0)) +
     scale_x_discrete(expand = c(0,0)) +
     theme(
       axis.title = element_blank(),
-      axis.text.y = element_text(size = 20, hjust = 0, margin=margin(0,0,0,5)),
-      axis.text.x =element_blank(),
+      axis.text.y = element_text(size = 20, hjust = 0, margin = margin(0,0,0,5)),
+      axis.text.x = element_blank(),
       legend.position = 'none',
-      plot.title = element_text(hjust = 0, size=24, margin=margin(0,0,15,0))
+      plot.title = element_text(hjust = 0, size = 24, margin = margin(0,0,15,0))
     ) +
     ggtitle('Bottling facilities')
   return(wu_summary_plot)
 }
 
-#' @title 
-#' @description 
-#' @param 
-#' @param 
-#' @return
+#' @title combine water use map and chart
+#' @description combine the map of sites with water use data with the bar chart
+#' indicating the percent of sites that do and do not have water use data
+#' @param wu_map the water use map
+#' @param wu_chart the water use bar chart
+#' @param width width for the combined plot canvas
+#' @param height height for the combined plot canvas
+#' @return the final plot with the map and chart arranged side by side
 combine_wu_map_and_chart <- function(wu_map, wu_chart, width, height) {
 
   font_legend <- 'Source Sans Pro'
@@ -480,12 +583,17 @@ combine_wu_map_and_chart <- function(wu_map, wu_chart, width, height) {
   return(final_plot)
 }
 
-#' @title 
-#' @description 
-#' @param 
-#' @param 
-#' @return
-annotate_shifted_map <- function(shifted_map, text_color, plot_title_font_size, width, height) {
+#' @title annotate shifted map
+#' @description annotated a U.S. map with OCONUS entities shifted to plot next
+#' to CONUS
+#' @param shifted_map the map plot object
+#' @param text_color color for text
+#' @param plot_title_font_size font size for individual plot titles
+#' @param width width for the final plot canvas
+#' @param height height for the final plot canvas
+#' @return an annotated version of `shifted_map`
+annotate_shifted_map <- function(shifted_map, text_color, plot_title_font_size, 
+                                 width, height) {
   font_legend <- 'Source Sans Pro'
   font_add_google(font_legend)
   showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 700)
@@ -643,35 +751,48 @@ annotate_shifted_map <- function(shifted_map, text_color, plot_title_font_size, 
   return(final_plot)
 }
 
-#' @title 
-#' @description 
-#' @param 
-#' @param 
-#' @return
-generate_site_count_matrix <- function(type_summary, type_summary_state, state_summary,
-                                       palette, palette_dir, bar_fill, width, height, outfile, dpi) {
+#' @title generate site count matrix
+#' @description generate a matrix of facility types, by state, with each matrix
+#' cell filled according to the number of that facility type in that state. The
+#' matrix has a bar chart of counts by type at right, and a bar chart of counts
+#' by state below
+#' @param type_summary dataframe with count of facilities by type
+#' @param type_summary_state dataframe with count of facilities by type, by state
+#' @param state_summary dataframe with count of facilities by state
+#' @param palette name of scico palette to use for the matrix fill (site count)
+#' @param palette_dir direction to use for the specified palette
+#' @param bar_fill color for the fill of bars in the two bar charts
+#' @param width width for the final plot
+#' @param height height for the final plot
+#' @param outfile filepath for saving the final plot
+#' @param dpi dpi at which to save the final plot
+#' @return the filepath of the saved plot
+generate_site_count_matrix <- function(type_summary, type_summary_state, 
+                                       state_summary, palette, palette_dir, 
+                                       bar_fill, width, height, outfile, dpi) {
   # main matrix
   state_matrix <- type_summary_state %>% 
     arrange(state_name) %>%
-    ggplot(aes(x=reorder(state_abbr, state_abbr), y=WB_TYPE)) +
-    geom_tile(aes(fill=site_count), color='white', width=1, height=1) +
+    ggplot(aes(x = reorder(state_abbr, state_abbr), y = WB_TYPE)) +
+    geom_tile(aes(fill = site_count), color = 'white', width = 1, height = 1) +
     theme_minimal() +
-    scico::scale_fill_scico(palette = palette, begin = 0, end = 1, direction = palette_dir) +
+    scico::scale_fill_scico(palette = palette, begin = 0, end = 1, 
+                            direction = palette_dir) +
     scale_x_discrete(position = 'top') +
     scale_y_discrete(labels = function(x) str_wrap(x, width = 10)) +
     theme(
       axis.title = element_blank(),
       legend.position = 'top',
-      axis.text = element_text(size=10),
+      axis.text = element_text(size = 10),
       legend.title.align = 0.5,
-      legend.background = element_rect(fill='#ffffff', color=NA)
+      legend.background = element_rect(fill = '#ffffff', color = NA)
     ) +
-    guides(fill=guide_colourbar(title="Facility count", title.position = "top"))
+    guides(fill = guide_colourbar(title = "Facility count", title.position = "top"))
   
   # bottom bar chart
   type_totals <- type_summary %>%
-    ggplot(aes(x = site_count, y=WB_TYPE)) +
-    geom_bar(stat='identity', fill=bar_fill, color='#ffffff', width=1) +
+    ggplot(aes(x = site_count, y = WB_TYPE)) +
+    geom_bar(stat = 'identity', fill = bar_fill, color = '#ffffff', width = 1) +
     scale_x_continuous(position = 'top',
                        breaks = c(0, 5000, 10000, 15000, 20000),
                        labels = c(0, "5k", "10k", "15k", "20k sites")) + 
@@ -681,12 +802,12 @@ generate_site_count_matrix <- function(type_summary, type_summary_state, state_s
       panel.grid.major.x = element_line(color = 'grey90', size=0.5),
       axis.text.y = element_blank(),
       axis.title = element_blank(),
-      axis.text.x=element_text(size=10))
+      axis.text.x = element_text(size = 10))
   
   # right-hand bar chart
   state_totals <- state_summary %>%
-    ggplot(aes(x = reorder(state_abbr, state_abbr), y=site_count)) +
-    geom_bar(fill=bar_fill, color='white', stat='identity', width=1) +
+    ggplot(aes(x = reorder(state_abbr, state_abbr), y = site_count)) +
+    geom_bar(fill = bar_fill, color = 'white', stat = 'identity', width = 1) +
     scale_x_discrete(position = 'top') +
     scale_y_continuous(trans = "reverse",
                        breaks = rev(c(0, 1000, 2000, 3000, 4000, 5000, 6000)), 
@@ -695,8 +816,8 @@ generate_site_count_matrix <- function(type_summary, type_summary_state, state_s
     theme(
       panel.grid = element_blank(),
       axis.title = element_blank(),
-      panel.grid.major.y = element_line(color = 'grey90', size=0.5), 
-      axis.text=element_text(size=10)
+      panel.grid.major.y = element_line(color = 'grey90', size = 0.5), 
+      axis.text = element_text(size = 10)
     )
   
   canvas <- grid::rectGrob(
@@ -715,9 +836,12 @@ generate_site_count_matrix <- function(type_summary, type_summary_state, state_s
   
   # arrange plots
   plots <- align_plots(main_plot, bottom_plot, align = 'v', axis = 'l')
-  top_row <- plot_grid(plots[[1]], right_plot, ncol = 2, align = 'h', axis = 'tb', rel_widths = c(1, 0.15))
-  bottom_row <- plot_grid(plots[[2]], NULL, ncol = 2, align = 'h', axis = 'tb', rel_widths = c(1, 0.15))
-  all <- plot_grid(top_row, bottom_row, ncol = 1, axis = 'lb', rel_heights = c(1, 0.5))
+  top_row <- plot_grid(plots[[1]], right_plot, ncol = 2, align = 'h', 
+                       axis = 'tb', rel_widths = c(1, 0.15))
+  bottom_row <- plot_grid(plots[[2]], NULL, ncol = 2, align = 'h', axis = 'tb', 
+                          rel_widths = c(1, 0.15))
+  all <- plot_grid(top_row, bottom_row, ncol = 1, axis = 'lb', 
+                   rel_heights = c(1, 0.5))
   
   plot_margin = 0.015
   
@@ -748,15 +872,16 @@ generate_site_count_matrix <- function(type_summary, type_summary_state, state_s
                color = 'black',
                lineheight = 1)
   
-  ggsave(outfile, final_plot, width = width, height = height, dpi=dpi)
+  ggsave(outfile, final_plot, width = width, height = height, dpi = dpi)
   return(outfile)
 }
 
-#' @title 
-#' @description 
-#' @param 
-#' @param 
-#' @return
+#' @title theme facet
+#' @description a function specifying a theme for a facet map
+#' @param base base size for text
+#' @param bkgd_color background color for the plot
+#' @param text_color color for text
+#' @return the applied theme
 theme_facet <- function(base = 12, bkgd_color, text_color){
   theme(
     strip.background = element_blank(),
@@ -779,13 +904,22 @@ theme_facet <- function(base = 12, bkgd_color, text_color){
   
 }
 
-#' @title 
-#' @description 
-#' @param 
-#' @param 
-#' @return
-generate_facility_type_facet_map <- function(type_summary, type_summary_state, colors, width, height,
-                                 bkgd_color, text_color, outfile, dpi) {
+#' @title generate facility type facet map
+#' @description generate a facet map showing the distribution of facilities
+#' nationally and by state
+#' @param type_summary dataframe with count of facilities by type
+#' @param type_summary_state dataframe with count of facilities by type, by state
+#' @param colors vector of colors to use for facility types
+#' @param width width for the final plot
+#' @param height height for the final plot
+#' @param bkgd_color background color for the plot
+#' @param text_color color for text
+#' @param outfile filepath for saving the final plot
+#' @param dpi dpi at which to save the final plot
+#' @return the filepath of the saved plot
+generate_facility_type_facet_map <- function(type_summary, type_summary_state, 
+                                             colors, width, height, bkgd_color, 
+                                             text_color, outfile, dpi) {
 
   grid <- geofacet::us_state_grid1 %>% 
     add_row(row = 7, col = 10, code = "PR", name = "Puerto Rico") %>% # add PR
@@ -797,7 +931,7 @@ generate_facility_type_facet_map <- function(type_summary, type_summary_state, c
     group_by(state_name) %>%
     mutate(percent = site_count/sum(site_count)*100) %>%
     ggplot(aes(1, y = percent)) +
-    geom_bar(aes(fill = WB_TYPE), stat='identity') +
+    geom_bar(aes(fill = WB_TYPE), stat = 'identity') +
     scale_fill_manual(name = 'WB_TYPE', values = colors) +
     theme_bw() +
     theme_facet(base = 12, bkgd_color = bkgd_color, text_color = text_color) +
@@ -806,8 +940,8 @@ generate_facility_type_facet_map <- function(type_summary, type_summary_state, c
   national_plot <- type_summary %>% 
     mutate(percent = site_count/sum(site_count)*100) %>%
     ggplot(aes(1, y = percent)) +
-    geom_bar(aes(fill = WB_TYPE), stat='identity') +
-    scale_fill_manual(name = 'WB_TYPE', values=colors) +
+    geom_bar(aes(fill = WB_TYPE), stat = 'identity') +
+    scale_fill_manual(name = 'WB_TYPE', values = colors) +
     scale_x_discrete(expand = c(0,0)) +
     scale_y_continuous(breaks = rev(c(0, 25, 50, 75, 100)),
                        labels = rev(c(0, 25, 50, 75, "100%")),
@@ -819,8 +953,8 @@ generate_facility_type_facet_map <- function(type_summary, type_summary_state, c
       axis.ticks.y = element_line(color = "lightgrey", size = 0.5),
       axis.text.x = element_blank(),
       legend.position = 'bottom',
-      plot.title = element_text(hjust = 0.5, size=20),
-      axis.text.y = element_text(size=14),
+      plot.title = element_text(hjust = 0.5, size = 20),
+      axis.text.y = element_text(size = 14),
       legend.title.align = 0.5,
       panel.margin = margin(0, 0, 0, 0, "pt")
     ) +
@@ -838,9 +972,10 @@ generate_facility_type_facet_map <- function(type_summary, type_summary_state, c
   # Extract from plot
   facet_legend <- get_legend(national_plot + 
                                theme(legend.position = 'left',
-                                     text = element_text(size=16)) + 
+                                     text = element_text(size = 16)) + 
                                guides(
-                                 fill = guide_legend(title="Facility type", ncol=3)
+                                 fill = guide_legend(title = "Facility type", 
+                                                     ncol = 3)
                                ))
   
   # compose final plot
@@ -883,8 +1018,26 @@ generate_facility_type_facet_map <- function(type_summary, type_summary_state, c
   return(outfile)
 }
 
-generate_facility_source_facet_map <- function(supply_summary, supply_summary_state, supply_colors, selected_facility_type, 
-                                               width, height,bkgd_color, text_color, outfile_template, dpi) {
+#' @title generate facility source facet map
+#' @description generate a facet map showing the distribution of facility water
+#' sources nationally and by state
+#' @param supply_summary dataframe with count of facilities by water source
+#' @param supply_summary_state dataframe with count of facilities by water 
+#' source, by state
+#' @param supply_colors vector of colors to use for water source categories
+#' @param selected_facility_type type of facility to plot. If 'All', summary
+#' across facility types is plotted
+#' @param width width for the final plot
+#' @param height height for the final plot
+#' @param bkgd_color background color for the plot
+#' @param text_color color for text
+#' @param outfile_template filepath template for saving the final plot
+#' @param dpi dpi at which to save the final plot
+#' @return the filepath of the saved plot
+generate_facility_source_facet_map <- function(supply_summary, supply_summary_state, 
+                                               supply_colors, selected_facility_type, 
+                                               width, height, bkgd_color, text_color, 
+                                               outfile_template, dpi) {
   
   if (!(selected_facility_type == 'All')) {
     supply_summary_state <- supply_summary_state %>% 
@@ -915,7 +1068,7 @@ generate_facility_source_facet_map <- function(supply_summary, supply_summary_st
   
   state_cartogram <- supply_summary_state %>%
     ggplot(aes(1, y = percent)) +
-    geom_bar(aes(fill = source_category), stat='identity') +
+    geom_bar(aes(fill = source_category), stat = 'identity') +
     scale_fill_manual(name = 'source_category', values = supply_colors) +
     theme_bw() +
     theme_facet(base = 12, bkgd_color = bkgd_color, text_color = text_color) +
@@ -923,8 +1076,8 @@ generate_facility_source_facet_map <- function(supply_summary, supply_summary_st
   
   national_plot <- supply_summary %>%
     ggplot(aes(1, y = percent)) +
-    geom_bar(aes(fill = source_category), stat='identity') +
-    scale_fill_manual(name = 'source_category', values=supply_colors) +
+    geom_bar(aes(fill = source_category), stat = 'identity') +
+    scale_fill_manual(name = 'source_category', values = supply_colors) +
     scale_x_discrete(expand = c(0,0)) +
     scale_y_continuous(breaks = rev(c(0, 25, 50, 75, 100)),
                        labels = rev(c(0, 25, 50, 75, "100%")),
@@ -936,8 +1089,8 @@ generate_facility_source_facet_map <- function(supply_summary, supply_summary_st
       axis.ticks.y = element_line(color = "lightgrey", size = 0.5),
       axis.text.x = element_blank(),
       legend.position = 'bottom',
-      plot.title = element_text(hjust = 0.5, size=20),
-      axis.text.y = element_text(size=14),
+      plot.title = element_text(hjust = 0.5, size = 20),
+      axis.text.y = element_text(size = 14),
       legend.title.align = 0.5,
       panel.margin = margin(0, 0, 0, 0, "pt")
     ) +
@@ -956,9 +1109,10 @@ generate_facility_source_facet_map <- function(supply_summary, supply_summary_st
   # Extract from plot
   facet_legend <- get_legend(national_plot + 
                                theme(legend.position = 'left',
-                                     text = element_text(size=16)) + 
+                                     text = element_text(size = 16)) + 
                                guides(
-                                 fill = guide_legend(title="Water source", ncol=1)
+                                 fill = guide_legend(title = "Water source", 
+                                                     ncol = 1)
                                ))
   
   # compose final plot
@@ -989,7 +1143,8 @@ generate_facility_source_facet_map <- function(supply_summary, supply_summary_st
               y = 0.15,
               height = 0.13 ,
               width = 0.3 - plot_margin) +
-    draw_label(sprintf('Distribution of water sources for %s facilities', tolower(selected_facility_type)),
+    draw_label(sprintf('Distribution of water sources for %s facilities', 
+                       tolower(selected_facility_type)),
                x = 0.025, y = 0.93, 
                size = 36, 
                hjust = 0, 
@@ -997,26 +1152,36 @@ generate_facility_source_facet_map <- function(supply_summary, supply_summary_st
                color = 'black',
                lineheight = 1)
   
-  outfile <- ifelse(selected_facility_type=='All', outfile_template, sprintf(outfile_template, selected_facility_type))
+  outfile <- ifelse(selected_facility_type == 'All', outfile_template, 
+                    sprintf(outfile_template, selected_facility_type))
   ggsave(outfile, facet_plot, width = width, height = height, dpi = dpi)
   return(outfile)
 }
 
-#' @title 
-#' @description 
-#' @param 
-#' @param 
-#' @return
-generate_type_summary_chart <- function(type_summary, colors, title_text_size, axis_text_size, bkgd_color,
-                            width, height, outfile, dpi) {
+#' @title generate type summary chart
+#' @description generate summary of counts of facilities by facility type
+#' @param type_summary dataframe with count of facilities by type
+#' @param colors vector of colors to use for facility types
+#' @param title_text_size font size for plot title
+#' @param axis_text_size font size for plot axes
+#' @param bkgd_color background color for the plot
+#' @param width width for the final plot
+#' @param height height for the final plot
+#' @param outfile filepath for saving the final plot
+#' @param dpi dpi at which to save the final plot
+#' @return the filepath of the saved plot
+generate_type_summary_chart <- function(type_summary, colors, title_text_size, 
+                                        axis_text_size, bkgd_color,
+                                        width, height, outfile, dpi) {
   
   type_summmary_plot <- type_summary %>% ggplot() +
     geom_bar(aes(x = WB_TYPE, y = site_count, fill = WB_TYPE), stat = 'identity') +
-    geom_text(aes(WB_TYPE, site_count + 800, label = comma(site_count), fill = NULL), data = type_summary, size = axis_text_size/2.6) +
+    geom_text(aes(WB_TYPE, site_count + 800, label = comma(site_count), fill = NULL), 
+              data = type_summary, size = axis_text_size/2.6) +
     scale_fill_manual(name = 'WB_TYPE', values = colors) +
     scale_x_discrete(labels = function(x) str_wrap(x, width = 6), expand = c(0,0)) +
     ylim(0, 20000) +
-    scale_y_continuous(label=comma, 
+    scale_y_continuous(label = comma, 
                        breaks = rev(c(0, 5000, 10000, 15000, 20000))) +
     theme_minimal() +
     theme(
@@ -1025,7 +1190,8 @@ generate_type_summary_chart <- function(type_summary, colors, title_text_size, a
       panel.grid.major.y = element_line(color = "lightgrey", size = 0.5),
       axis.ticks.y = element_line(color = "lightgrey", size = 0.5),
       legend.position = 'none',
-      plot.title = element_text(hjust = 0.5, size = title_text_size, margin = margin(0,0,15,0)),
+      plot.title = element_text(hjust = 0.5, size = title_text_size, 
+                                margin = margin(0,0,15,0)),
       axis.text = element_text(size = axis_text_size),
       legend.title.align = 0.5,
       plot.background = element_rect(fill = bkgd_color, color = NA)
@@ -1036,15 +1202,25 @@ generate_type_summary_chart <- function(type_summary, colors, title_text_size, a
   return(outfile)
 }
 
-#' @title 
-#' @description 
-#' @param 
-#' @param 
-#' @return
+#' @title generate suppy summary 
+#' @description generate summary of water supply by facility type
+#' @param supply_summary dataframe with count of facilities by water source
+#' @param supply_colors vector of colors to use for water source categories
+#' @param title_text_size font size for plot title
+#' @param axis_text_size font size for plot axes
+#' @param legend_text_size font size for plot legend
+#' @param bkgd_color background color for the plot
+#' @param width width for the final plot
+#' @param height height for the final plot
+#' @param outfile filepath for saving the final plot
+#' @param dpi dpi at which to save the final plot
+#' @return the filepath of the saved plot
 generate_supply_summary <- function(supply_summary, supply_colors, title_text_size,
-                        axis_text_size, legend_text_size, bkgd_color, width, height, outfile, dpi) {
+                        axis_text_size, legend_text_size, bkgd_color, width, 
+                        height, outfile, dpi) {
   supply_plot <- supply_summary %>% ggplot() +
-    geom_bar(aes(x = WB_TYPE, y = site_count, fill=source_category), stat="identity") +
+    geom_bar(aes(x = WB_TYPE, y = site_count, fill = source_category), 
+             stat = "identity") +
     scale_x_discrete(labels = function(x) str_wrap(x, width = 6),
                      expand = c(0,0)) +
     scale_fill_manual(name = 'source_category', values = supply_colors) +
@@ -1058,7 +1234,8 @@ generate_supply_summary <- function(supply_summary, supply_colors, title_text_si
       panel.grid.major.y = element_line(color = "lightgrey", size = 0.5),
       axis.ticks.y = element_line(color = "lightgrey", size = 0.5),
       legend.position = 'bottom',
-      plot.title = element_text(hjust = 0.5, size = title_text_size, margin=margin(0,0,15,0)),
+      plot.title = element_text(hjust = 0.5, size = title_text_size, 
+                                margin = margin(0,0,15,0)),
       axis.text = element_text(size = axis_text_size, color = 'black'),
       legend.title.align = 0.5,
       legend.text = element_text(size = legend_text_size),
@@ -1067,23 +1244,37 @@ generate_supply_summary <- function(supply_summary, supply_colors, title_text_si
     ) +
     ggtitle('Source of water by facility type, nationally')+ 
     guides(
-      fill=guide_legend(title="Water source", nrow=2, reverse = TRUE)
+      fill = guide_legend(title = "Water source", nrow = 2, reverse = TRUE)
     )
   
   ggsave(outfile, supply_plot, width = width, height = height, dpi = dpi)
   return(outfile)
 }
 
-#' @title 
-#' @description 
-#' @param 
-#' @param 
-#' @return
-generate_supply_summary_percent <- function(supply_summary, supply_colors, title_text_size,
-                                    axis_text_size, legend_text_size, bkgd_color, width, height, outfile, dpi) {
+#' @title generate supply summary percent
+#' @description generate summary of water supply by facility type, as a stacked
+#' bar chart showing the percent of water derived from the various water sources 
+#' for each facility type
+#' @param supply_summary dataframe with count of facilities by water source
+#' @param supply_colors vector of colors to use for water source categories
+#' @param title_text_size font size for plot title
+#' @param axis_text_size font size for plot axes
+#' @param legend_text_size font size for plot legend
+#' @param bkgd_color background color for the plot
+#' @param width width for the final plot
+#' @param height height for the final plot
+#' @param outfile filepath for saving the final plot
+#' @param dpi dpi at which to save the final plot
+#' @return the filepath of the saved plot
+generate_supply_summary_percent <- function(supply_summary, supply_colors, 
+                                            title_text_size, axis_text_size, 
+                                            legend_text_size, bkgd_color, width, 
+                                            height, outfile, dpi) {
   supply_plot_percent <- supply_summary %>% ggplot() +
-    geom_bar(aes(x = WB_TYPE, y = site_count, fill = source_category), stat="identity", position="fill") +
-    scale_x_discrete(labels = function(x) str_wrap(x, width = 6), expand = c(0,0)) +
+    geom_bar(aes(x = WB_TYPE, y = site_count, fill = source_category), 
+             stat = "identity", position = "fill") +
+    scale_x_discrete(labels = function(x) str_wrap(x, width = 6), 
+                     expand = c(0,0)) +
     scale_y_continuous(breaks = rev(c(0, 0.25, 0.50, 0.75, 1)),
                        labels = rev(c(0, 25, 50, 75, "100%")),
                        expand = c(0,0)) +
@@ -1094,7 +1285,8 @@ generate_supply_summary_percent <- function(supply_summary, supply_colors, title
       panel.grid = element_blank(),
       axis.ticks.y = element_line(color = "lightgrey", size = 0.5),
       legend.position = 'bottom',
-      plot.title = element_text(hjust = 0.5, size = title_text_size, margin = margin(0, 0, 15, 0)),
+      plot.title = element_text(hjust = 0.5, size = title_text_size, 
+                                margin = margin(0, 0, 15, 0)),
       axis.text =  element_text(size = axis_text_size),
       legend.title.align = 0.5,
       legend.text = element_text(size = legend_text_size),
@@ -1103,19 +1295,25 @@ generate_supply_summary_percent <- function(supply_summary, supply_colors, title
     ) +
     ggtitle('Source of water by facility type, nationally') + 
     guides(
-      fill=guide_legend(title="Water source", nrow=1, reverse = TRUE)
+      fill = guide_legend(title = "Water source", nrow = 1, reverse = TRUE)
     )
   
   ggsave(outfile, supply_plot_percent, width = width, height = height, dpi = dpi)
   return(outfile)
 }
 
-#' @title 
-#' @description 
-#' @param 
-#' @param 
-#' @return
-combine_two_images <- function(image_1_file, image_2_file,image_1_title, image_2_title , width, height, bkgd_color) {
+#' @title combine two images
+#' @description combine two images into a single plot
+#' @param image_1_file filepath for the first image
+#' @param image_2_file filepath for the second image
+#' @param image_1_title title for the first image
+#' @param image_2_title title for the second image
+#' @param width width for the final plot
+#' @param height height for the final plot
+#' @param bkgd_color background color for the plot
+#' @return a plot object with the two plot images arranged side by side
+combine_two_images <- function(image_1_file, image_2_file, image_1_title, 
+                               image_2_title, width, height, bkgd_color) {
   image_1 <- magick::image_read(image_1_file)
   image_2 <- magick::image_read(image_2_file)
   
@@ -1156,14 +1354,31 @@ combine_two_images <- function(image_1_file, image_2_file,image_1_title, image_2
   return(plot)
 }
 
-#' @title 
-#' @description 
-#' @param 
-#' @param 
-#' @return
-generate_source_summary_bar_chart <- function(supply_summary_state, supply_colors, selected_facility_type,
-                                              title_text_size, axis_text_size, legend_text_size, width, 
-                                              height, bkgd_color, text_color, outfile_template, dpi) {
+#' @title generate source summary bar chart
+#' @description generate a bar chart showing the distribution of water sources
+#' (as a percentage of total) for facilities of `selected_facility_type` in 
+#' each state 
+#' @param supply_summary_state dataframe with count of facilities by water 
+#' source, by state
+#' @param supply_colors vector of colors to use for water source categories
+#' @param selected_facility_type type of facility to plot. If 'All', summary
+#' across facility types is plotted
+#' @param title_text_size font size for plot title
+#' @param legend_text_size font size for plot legend
+#' @param axis_text_size font size for plot axes
+#' @param width width for the final plot
+#' @param height height for the final plot
+#' @param bkgd_color background color for the plot
+#' @param text_color color for text
+#' @param outfile_template filepath template for saving the final plot
+#' @param dpi dpi at which to save the final plot
+#' @return the filepath of the saved plot
+generate_source_summary_bar_chart <- function(supply_summary_state, supply_colors, 
+                                              selected_facility_type, 
+                                              title_text_size, axis_text_size, 
+                                              legend_text_size, width, height, 
+                                              bkgd_color, text_color, 
+                                              outfile_template, dpi) {
   
   bottled_water_summary <- supply_summary_state %>% 
     filter(WB_TYPE == selected_facility_type) %>%
@@ -1184,7 +1399,7 @@ generate_source_summary_bar_chart <- function(supply_summary_state, supply_color
     mutate(state_abbr = factor(state_abbr, levels = supply_ranking))
   
   ggplot(bottled_water_summary, aes(state_abbr, y = percent)) +
-    geom_bar(aes(fill = source_category), stat='identity') +
+    geom_bar(aes(fill = source_category), stat = 'identity') +
     scale_fill_manual(name = 'source_category', values = supply_colors) +
     scale_y_continuous(breaks = rev(c(0, 25, 50, 75, 100)),
                        labels = rev(c("0%", "25%", "50%","75%", "100%")),
@@ -1192,7 +1407,8 @@ generate_source_summary_bar_chart <- function(supply_summary_state, supply_color
     theme_minimal() +
     theme(
       axis.title = element_blank(),
-      plot.title = element_text(hjust = 0.5, size = title_text_size, color = text_color, margin=margin(0,0,15,0)),
+      plot.title = element_text(hjust = 0.5, size = title_text_size, 
+                                color = text_color, margin = margin(0,0,15,0)),
       axis.text.x = element_text(size = axis_text_size, color = text_color),
       axis.text.y = element_text(size = legend_text_size, color = text_color),
       panel.grid.major.y = element_blank(),
@@ -1205,5 +1421,5 @@ generate_source_summary_bar_chart <- function(supply_summary_state, supply_color
   
   outfile <- sprintf(outfile_template, selected_facility_type)
   
-  ggsave(outfile, width = width, height = height, dpi=dpi, bg=bkgd_color)
+  ggsave(outfile, width = width, height = height, dpi = dpi, bg = bkgd_color)
 }
