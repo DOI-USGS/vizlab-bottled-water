@@ -1,55 +1,4 @@
-# Adapted from https://github.com/USGS-VIZLAB/gw-conditions/blob/main/3_visualize/src/svg_utils_mapping.R
-
-# add_background_map <- function(svg, svg_width, outline_states, digits) {
-#   map_data <- generate_usa_map_data(outline_states = outline_states)
-#   
-#   bkgrd_grp <- xml_add_child(svg, 'g', 
-#                              id = "bkgrd-map-grp", 
-#                              class='map-bkgrd',
-#                              transform="translate(-10, 20)")
-#   purrr::map(map_data$ID, function(polygon_id, map_data, svg_width) {
-#     d <- map_data %>% 
-#       filter(ID == polygon_id) %>% 
-#       convert_coords_to_svg(view_bbox = st_bbox(map_data), svg_width, digits) %>% 
-#       build_path(connect = TRUE)
-#     xml_add_child(bkgrd_grp, 'path', 
-#                   d = d, 
-#                   class='map-bkgrd')
-#   }, map_data, svg_width)
-#   
-# }
-
-# convert_coords_to_svg <- function(sf_obj, svg_width, view_bbox = NULL, digits = 6) {
-#   
-#   coords <- st_coordinates(sf_obj)
-#   x_dec <- coords[,1]
-#   y_dec <- coords[,2]
-#   
-#   # Using the whole view, figure out coordinates
-#   # If view_bbox isn't provided, assume sf_obj is the whole view
-#   if(is.null(view_bbox)) view_bbox <- st_bbox(sf_obj)
-#   
-#   x_extent <- c(view_bbox$xmin, view_bbox$xmax)
-#   y_extent <- c(view_bbox$ymin, view_bbox$ymax)
-#   
-#   # Calculate aspect ratio
-#   aspect_ratio <- diff(x_extent)/diff(y_extent)
-#   
-#   # Figure out what the svg_height is based on svg_width, maintaining the aspect ratio
-#   svg_height <- svg_width / aspect_ratio
-#   
-#   # Convert longitude and latitude to SVG horizontal and vertical positions
-#   # Remember that SVG vertical position has 0 on top
-#   x_extent_pixels <- x_extent - view_bbox$xmin
-#   y_extent_pixels <- y_extent - view_bbox$ymin
-#   x_pixels <- x_dec - view_bbox$xmin # Make it so that the minimum longitude = 0 pixels
-#   y_pixels <- y_dec - view_bbox$ymin # Make it so that the maximum latitude = 0
-#   
-#   data.frame(
-#     x = round(approx(x_extent_pixels, c(0, svg_width), x_pixels)$y, digits),
-#     y = round(approx(y_extent_pixels, c(svg_height, 0), y_pixels)$y, digits)
-#   )
-# }
+# Adapted from https://github.com/DOI-USGS/gw-conditions/blob/main/3_visualize/src/svg_utils_mapping.R
 
 #' @title generate map data for U.S. states and territories
 #' @description generate an sf object containing polygons for all
@@ -192,11 +141,6 @@ generate_addl_islands <- function(proj_str) {
     group_by(ID) %>% 
     summarize(geom = st_union(geom))
 }
-
-# list_state_counties <- function(state_abbr) {
-#   tolower(gsub(" County", "", countyCd$COUNTY_NAME[which(countyCd$STUSAB == state_abbr)]))
-# }
-
 
 #' @title erase spatial geometries
 #' @description erase specified geometries `y` from `x`

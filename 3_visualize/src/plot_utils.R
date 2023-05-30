@@ -42,64 +42,6 @@ save_figure <- function(figure, outfile, bkgd_color, width, height, dpi) {
 #' @param 
 #' @param 
 #' @return 
-map_region_streams_sites <- function(region, region_streams, region_facilities, site_colors) {
-  region <- region[[1]]
-  
-  region_streams <- region_streams %>%
-    filter(!(is.na(Strahler)), !(Strahler == -999))
-  
-  orig_levels <- unique(region_streams$Strahler)
-  if (length(levels) > 3) {
-    region_streams <- filter(region_streams, Strahler >= max(orig_levels) - 3)
-  }
-  
-  region_streams_joined <- region_streams %>%
-    st_transform(crs = st_crs(region)) %>%
-    group_by(Name, Strahler) %>%
-    group_modify(~ {
-      if (nrow(.x) > 1 & 'MULTILINESTRING' %in% st_geometry_type(.x)) {
-        merged <- .x$Shape %>%  
-          st_union() %>%
-          st_line_merge() %>%
-          st_as_sf()%>%
-          rename(geometry = x)
-      } else if (nrow(.x) > 1) {
-        merged <- .x$Shape %>%  
-          st_union() %>%
-          st_as_sf()%>%
-          rename(geometry = x)
-      } else {
-        merged <- dplyr::select(.x, geometry = Shape)
-      }
-      return(merged)
-    }) 
-
-  max_level <- max(region_streams_joined$Strahler)
-  region_streams_joined <- region_streams_joined %>%
-    mutate(width = case_when(
-      Strahler == max_level ~ 1.5,
-      Strahler == max_level - 1 ~ 1,
-      Strahler == max_level - 2 ~ 0.8,
-      TRUE ~ 0.5
-    ))
-
-  region_facilities <- st_transform(region_facilities, crs = st_crs(region))
-
-  ggplot() +
-    geom_sf(data = region, fill='white', color='grey80') +
-    geom_sf(data = region_streams_joined, aes(size = width, geometry=geometry), color = 'lightblue') +
-    scale_size_identity("Strahler") +
-    geom_sf(data = region_facilities, aes(fill = WB_TYPE), color="white", pch=21, size=2, stroke = 0.5) +
-    scale_fill_manual(name = 'WB_TYPE', values = site_colors) +
-    theme_void() +
-    ggtitle(region$region)
-}
-
-#' @title 
-#' @description 
-#' @param 
-#' @param 
-#' @return 
 map_data_on_us <- function(states, plot_in, state_fill, state_color, state_size, simplify=TRUE, simplification_keep=NA, legend=TRUE) {
   
   if (simplify) {
@@ -309,7 +251,7 @@ map_wateruse_sites <- function(map_of_all_sites, site_size, site_fill_colors, si
 #' @param 
 #' @return 
 combine_small_multiples <- function(plots, plot_types, title_font_size, legend_font_size, plot_title_font_size, text_color, point_layer, point_size) {
-  # browser()
+
   # import fonts
   font_legend <- 'Source Sans Pro'
   font_add_google(font_legend)
@@ -420,8 +362,6 @@ combine_conus_maps <- function(map1, map2, title1, title2, width, height, text_c
         fill=guide_legend(title="Facility type", nrow=1)
       ))
   
-  # browser()
-  
   final_plot <-  ggdraw(ylim = c(0,1), 
                         xlim = c(0,1)) +
     # a background
@@ -465,105 +405,6 @@ combine_conus_maps <- function(map1, map2, title1, title2, width, height, text_c
 #' @param 
 #' @param 
 #' @return
-combine_into_national_map <- function(maps, spatial_data, groups, width, height, text_color, 
-                          title_font_size, legend_font_size) {
-  
-  font_legend <- 'Source Sans Pro'
-  font_add_google(font_legend)
-  showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 700)
-  showtext_auto(enable = TRUE)
-  
-  plot_margin <- 0.005
-  
-  # background
-  canvas <- grid::rectGrob(
-    x = 0, y = 0, 
-    width = width, height = height,
-    gp = grid::gpar(fill = '#ffffff', alpha = 1, col = 'white')
-  )
-  
-  # browser()
-  conus_index <- which(groups$name == 'CONUS')
-  conus_bbox <- sf::st_bbox(spatial_data[[conus_index]])
-  conus_x_extent <- conus_bbox$xmax - conus_bbox$xmin
-  conus_y_extent <- conus_bbox$ymax - conus_bbox$ymin
-  conus_width <- 0.6
-  
-  spatial_extents <- purrr::map2_df(spatial_data, groups$name, function(spatial_area, name) {
-    bbox <- sf::st_bbox(spatial_area)
-    extent_df <- tibble(
-      name = name,
-      x_extent = bbox$xmax - bbox$xmin,
-      y_extent = bbox$ymax - bbox$ymin
-    )
-    return(extent_df)
-  }) %>%
-    mutate(
-      x = case_when(
-        name == 'CONUS' ~ 0.2,
-        name == 'Alaska' ~ -0.01,
-        name == 'Hawaii' ~ 0.05,
-        name == 'Puerto Rico' ~ 0.8,
-        name == 'U.S. Virgin Islands' ~ 0.9,
-        name == 'Guam' ~ 0.05
-      ),
-      y = case_when(
-        name == 'CONUS' ~ -0.2,
-        name == 'Alaska' ~ 0.3,
-        name == 'Hawaii' ~ -0.3,
-        name == 'Puerto Rico' ~ -0.4,
-        name == 'U.S. Virgin Islands' ~ -0.45,
-        name == 'Guam' ~ -0.45
-      ),
-      width = conus_width * (x_extent/conus_x_extent),
-      text_x = case_when(
-        name == 'CONUS' ~ -0.5,
-        name == 'Alaska' ~ x + width/2 - 0.1,
-        name == 'Hawaii' ~ x + width/2 - 0.05,
-        TRUE ~ x + width/2
-      ),
-      text_y = case_when(
-        name == 'CONUS' ~ -0.5,
-        name == 'Hawaii' ~ y + 0.5,
-        TRUE ~ y + 0.5 + 0.025
-      ))
-  
-  final_plot <-  ggdraw(ylim = c(0,1), 
-                        xlim = c(0,1)) +
-    # a background
-    draw_grob(canvas,
-              x = 0, y = 1,
-              height = 9, width = 16,
-              hjust = 0, vjust = 1) +
-    purrr::map2(maps, spatial_extents$name, function(map, group_name) {
-      placement <- filter(spatial_extents, name == group_name)
-      plot <- draw_plot(map,
-                        x = placement$x,
-                        y = placement$y,
-                        width = placement$width)
-      return(plot)
-    }) +
-    purrr::map2(maps, spatial_extents$name, function(map, group_name) {
-      placement <- filter(spatial_extents, name == group_name)
-      label <- draw_label(group_name,
-                   x = placement$text_x, 
-                   y = placement$text_y, 
-                   hjust = 0.5,
-                   vjust = 0.5,
-                   size = 6, 
-                   fontfamily = font_legend,
-                   color = text_color)
-      return(label)
-    })
-  
-  return(final_plot)
-}
-
-#' @title 
-#' @description 
-#' @param 
-#' @param 
-#' @return
 chart_wateruse_availability <- function(sites, has_wu_color, no_wu_color) {
   wu_summary <- sites %>%
     group_by(WUDataFlag, facility_category) %>% 
@@ -599,7 +440,7 @@ chart_wateruse_availability <- function(sites, has_wu_color, no_wu_color) {
 #' @param 
 #' @return
 combine_wu_map_and_chart <- function(wu_map, wu_chart, width, height) {
-  # browser()
+
   font_legend <- 'Source Sans Pro'
   font_add_google(font_legend)
   showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 700)
@@ -613,7 +454,7 @@ combine_wu_map_and_chart <- function(wu_map, wu_chart, width, height) {
     width = width, height = height,
     gp = grid::gpar(fill = '#ffffff', alpha = 1, col = 'white')
   )
-  # browser()
+
   final_plot <-  ggdraw(ylim = c(0,1), 
                         xlim = c(0,1)) +
     # a background
@@ -985,7 +826,6 @@ generate_facility_type_facet_map <- function(type_summary, type_summary_state, c
     ) +
     ggtitle('Nationally')
   
-  
   plot_margin <- 0.005
   
   # background
@@ -1314,25 +1154,6 @@ combine_two_images <- function(image_1_file, image_2_file,image_1_title, image_2
                hjust = 0.5)
   
   return(plot)
-}
-
-#' @title 
-#' @description 
-#' @param 
-#' @param 
-#' @return
-map_region_on_states <- function(region, region_states, states, region_fill, region_color, state_fill, state_color) {
-  
-  region <- region[[1]]
-  states_subset <- states %>%
-    filter(NAME %in% region_states$states) %>%
-    st_transform(sf::st_crs(region))
-  
-  ggplot() +
-    geom_sf(data = states_subset, fill = state_fill, color = state_color, stroke = 0.5) +
-    geom_sf(data = region, fill = region_fill, color = region_color, alpha=0.5) +
-    theme_void()
-  
 }
 
 #' @title 
