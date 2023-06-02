@@ -4,8 +4,20 @@ tar_option_set(packages = c("tidyverse",
                             'utils',
                             'tools',
                             'readxl',
+                            'sbtools',
                             'httr',
                             'sf',
+                            'rmapshaper',
+                            'spData',
+                            'tigris',
+                            'ggspatial',
+                            'ggrepel',
+                            'cowplot',
+                            'sysfonts',
+                            'showtext',
+                            'grid',
+                            'magick',
+                            'scales',
                             'units',
                             'prism',
                             'raster',
@@ -15,6 +27,7 @@ tar_option_set(packages = c("tidyverse",
 # Phase target makefiles
 source("1_fetch.R")
 source("2_process.R")
+source("3_visualize.R")
 
 # Combined list of target outputs
-c(p1_targets, p2_targets)
+c(p1_targets, p2_targets, p3_targets)

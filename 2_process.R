@@ -4,7 +4,7 @@ source('2_process/src/data_utils.R')
 
 p2_targets <- list(
   ##### Set up state spatial data #####
-
+  
   # CONUS states
   tar_target(p2_conus_sf,
              spData::us_states %>% 
@@ -16,6 +16,13 @@ p2_targets <- list(
   tar_target(p2_inventory_sites,
              munge_inventory_data(p1_inventory)),
   
+  # Get unique facility types
+  tar_target(p2_facility_types,
+             p2_inventory_sites %>%
+               arrange(WB_TYPE) %>%
+               pull(WB_TYPE) %>%
+               unique()),
+  
   tar_target(p2_inventory_sites_sf,
              p2_inventory_sites %>%
                # FOR NOW, filter out 4 sites w/ bad coordinates
@@ -25,7 +32,59 @@ p2_targets <- list(
                filter(!(is.na(Longitude)) & !(is.na(Latitude))) %>%
                st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326, remove = FALSE) %>%
                st_transform(p1_proj)),
+  
+  ###### All U.S. states and territories ######
 
+  # Get count of facilities, by type
+  tar_target(p2_facility_type_summary,
+             p2_inventory_sites %>%
+               group_by(WB_TYPE) %>%
+               summarize(site_count = n()) %>%
+               arrange(desc(site_count)) %>%
+               mutate(WB_TYPE = factor(WB_TYPE, levels=WB_TYPE))),
+  
+  # Get count of facilities, by state
+  tar_target(p2_facility_summary_state,
+             p2_inventory_sites %>%
+               group_by(state_name, state_abbr) %>%
+               summarize(site_count = n())),
+  
+  # Get count of facilities, by state and by type
+  tar_target(p2_facility_type_summary_state,
+             p2_inventory_sites%>%
+               group_by(state_name, state_abbr, WB_TYPE) %>%
+               summarize(site_count = n()) %>%
+               mutate(WB_TYPE = factor(WB_TYPE, levels=p2_facility_type_summary$WB_TYPE))),
+  
+  # Get summary of facility supply sources, by type
+  tar_target(p2_supply_summary, 
+             p2_inventory_sites %>%
+               mutate(WB_TYPE = factor(WB_TYPE, levels=p2_facility_type_summary$WB_TYPE)) %>%
+               group_by(WB_TYPE, source_category) %>%
+               summarize(site_count = n()) %>%
+               mutate(source_category = factor(source_category, levels=c('undetermined', 'both', 'self supply', 'public supply'))) %>%
+               group_by(WB_TYPE) %>%
+               mutate(percent = site_count/sum(site_count)*100)),
+  
+  # Get summary of facility supply sources, by type and by state
+  tar_target(p2_supply_summary_state, 
+             p2_inventory_sites %>%
+               mutate(WB_TYPE = factor(WB_TYPE, levels=p2_facility_type_summary$WB_TYPE)) %>%
+               group_by(state_name, state_abbr, WB_TYPE, source_category) %>%
+               summarize(site_count = n()) %>%
+               mutate(source_category = factor(source_category, levels=c('undetermined', 'both', 'self supply', 'public supply')))),
+  
+  ###### CONUS ######
+  # get CONUS subset - have to manually filter by lat/long for now b/c of sites w/ incorrect coordinates
+  tar_target(p2_inventory_sites_sf_CONUS,
+             filter(p2_inventory_sites_sf, 
+                    state_name %in% state.name, 
+                    !(state_abbr %in% c('AK','HI')),
+                    Latitude > 24.5,
+                    Latitude < 49.3,
+                    Longitude < -66.95,
+                    Longitude > -124.8)),
+  
   ##### Regional statistics #####
 
   # get region areas

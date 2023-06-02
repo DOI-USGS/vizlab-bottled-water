@@ -37,7 +37,9 @@ munge_inventory_data <- function(inventory) {
       ),
       # set shared attribute for all entries
       facility_category = 'Bottling facility'
-      ) #%>%
+    ) %>%
+    # For now filter out secondary bottled water, since only 4 sites in FL
+    filter(!(WB_TYPE == 'Bottled Water-secondary'))
   # COMMENTED OUT for now b/c of missing values
     # # pull state and county fips
     # separate(State, c('state_fips', NA), sep=':', remove = FALSE) %>%

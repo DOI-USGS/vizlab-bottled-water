@@ -23,15 +23,8 @@ p1_targets <- list(
   
   # U.S. polgyon, for clipping
   tar_target(p1_ne_countries_zip,
-             {
-               outfile = '1_fetch/out/ne_countries.zip'
-               download_code <- download.file(destfile = outfile, "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_admin_0_countries_lakes.zip")
-               if (download_code == 0) {
-                 return(outfile) }
-               else {
-                 stop('file download failed')
-               } 
-             },
+             download_file_from_url(url = "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_admin_0_countries_lakes.zip",
+                                    outfile = '1_fetch/out/ne_countries.zip'),
              format = 'file'),
   
   tar_target(p1_ne_countries_shp,
@@ -41,6 +34,21 @@ p1_targets <- list(
   tar_target(p1_us_poly_sf,
              st_read(p1_ne_countries_shp) %>%
                filter(ADMIN=='United States of America')),
+  
+  ## U.S. states, for mapping
+  tar_target(p1_nws_states_zip,
+             download_file_from_url(url = "https://www.weather.gov/source/gis/Shapefiles/County/s_22mr22.zip",
+                                    outfile = '1_fetch/out/nws_states.zip'),
+             format = 'file'),
+  
+  tar_target(p1_nws_states_shp,
+             open_highres_spatial_zip('1_fetch/out/nws_states.shp', p1_nws_states_zip, '1_fetch/tmp')),
+  
+  ##### Water use data #####
+  tar_target(p1_water_use_csv,
+             sbtools::item_file_download('5af3311be4b0da30c1b245d8', 
+                                         names = 'usco2015v2.0.csv', 
+                                         destinations = '1_fetch/out/usco2015v2.0.csv')),
   
   ##### Inventory data #####
   tar_target(p1_inventory_xlsx,
@@ -70,15 +78,16 @@ p1_targets <- list(
   # retaining for now in case I'm sent an updated zip file, as these boundaries may shift
   tar_target(p1_spatial_zip, 
              '1_fetch/in/RegionalStudySites.zip',
-  format = 'file'),
+             format = 'file'),
   
-  tar_target(p1_spatial_unzip, {
-    exdir <- sprintf("1_fetch/out/%s",file_path_sans_ext(basename(p1_spatial_zip)))
-    utils::unzip(zipfile = p1_spatial_zip,
-                 exdir = exdir, overwrite = TRUE)
-    return(exdir)
-  },
-  format = 'file'),
+  tar_target(p1_spatial_unzip, 
+             {
+               exdir <- sprintf("1_fetch/out/%s",file_path_sans_ext(basename(p1_spatial_zip)))
+               utils::unzip(zipfile = p1_spatial_zip,
+                            exdir = exdir, overwrite = TRUE)
+               return(exdir)
+             },
+             format = 'file'),
   
   tar_target(p1_spatial_dirs,
              list.dirs(p1_spatial_unzip, recursive=FALSE),
@@ -203,13 +212,14 @@ p1_targets <- list(
              '1_fetch/in/Beck_KG_V1.zip',
              format = 'file'),
   
-  tar_target(p1_climate_unzip, {
-    exdir <- sprintf("1_fetch/out/%s",file_path_sans_ext(basename(p1_climate_zip)))
-    utils::unzip(zipfile = p1_climate_zip,
-                 exdir = exdir, overwrite = TRUE)
-    return(exdir)
-  },
-  format = 'file'),
+  tar_target(p1_climate_unzip, 
+             {
+               exdir <- sprintf("1_fetch/out/%s",file_path_sans_ext(basename(p1_climate_zip)))
+               utils::unzip(zipfile = p1_climate_zip,
+                            exdir = exdir, overwrite = TRUE)
+               return(exdir)
+             },
+             format = 'file'),
   
   tar_target(p1_climate_files,
              file.path(p1_climate_unzip, list.files(p1_climate_unzip, recursive=FALSE)),
@@ -236,15 +246,16 @@ p1_targets <- list(
              )),
   
   # PRISM precip - 30-year normals
-  tar_target(p1_PRISM_4km_dir, {
-    dest_dir <- prism_get_dl_dir()
-    resolution <- "4km"
-    get_prism_normals(type = "ppt", resolution = resolution, annual = TRUE, keepZip = FALSE)
-    data_dirs <- list.dirs(dest_dir, recursive=FALSE)
-    data_dir <- data_dirs[grepl(resolution, data_dirs)]
-    return(data_dir)
-  },
-  format = 'file'),
+  tar_target(p1_PRISM_4km_dir, 
+             {
+               dest_dir <- prism_get_dl_dir()
+               resolution <- "4km"
+               get_prism_normals(type = "ppt", resolution = resolution, annual = TRUE, keepZip = FALSE)
+               data_dirs <- list.dirs(dest_dir, recursive=FALSE)
+               data_dir <- data_dirs[grepl(resolution, data_dirs)]
+               return(data_dir)
+             },
+             format = 'file'),
   
   # NLCD - imperviousness
   # https://search.r-project.org/CRAN/refmans/FedData/html/get_nlcd.html
