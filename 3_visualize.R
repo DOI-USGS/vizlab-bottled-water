@@ -20,6 +20,16 @@ p3_targets <- list(
                                    states_shp = p1_nws_states_shp)),
   
   ##### Figure parameters #####
+  tar_target(p3_font_legend,
+             {
+               # import font
+               font_legend <- 'Source Sans Pro'
+               font_add_google(font_legend)
+               showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 700)
+               showtext_auto(enable = TRUE)
+               return(font_legend)
+             }),
+  
   tar_target(p3_site_type_colors,
              {
                colors <-  MetBrewer::met.brewer("Archambault", n=length(p2_facility_types), type="discrete")
@@ -40,6 +50,14 @@ p3_targets <- list(
                state_color = "#ffffff",
                state_size = 0.5
              )),
+  
+  tar_target(p3_supply_colors,
+             {
+               supply_colors <- c('#4DC49D', '#D8BF32', '#BD5EC6', '#D4D4D4')
+               color_names <- c('public supply', 'self supply', 'both', 'undetermined')
+               names(supply_colors) <- color_names
+               return(supply_colors)
+             }),
   
   ##### Site location maps + figures #####
   
@@ -89,7 +107,8 @@ p3_targets <- list(
                                 width = 16, height = 9, text_color = 'black',
                                 title_font_size = 36,
                                 legend_font_size = 14,
-                                plot_title_font_size = 18)),
+                                plot_title_font_size = 18,
+                                font_legend = p3_font_legend)),
   
   tar_target(p3_sites_map_conus_fy_comparison_png,
              save_figure(figure = p3_sites_map_conus_fy_comparison, 
@@ -145,7 +164,7 @@ p3_targets <- list(
   tar_target(p3_sites_map_shifted_annotated,
              annotate_shifted_map(shifted_map = p3_sites_map_shifted, 
                                   text_color = 'black', plot_title_font_size = 16, 
-                                  width = 16, height = 9)),
+                                  width = 16, height = 9, font_legend = p3_font_legend)),
   
   tar_target(p3_sites_map_shifted_png,
              save_figure(figure = p3_sites_map_shifted_annotated, 
@@ -175,7 +194,7 @@ p3_targets <- list(
   tar_target(p3_sites_map_shifted_annotated_FY21,
              annotate_shifted_map(shifted_map = p3_sites_map_shifted_FY21, 
                                   text_color = 'black', plot_title_font_size = 16, 
-                                  width = 16, height = 9)),
+                                  width = 16, height = 9, font_legend = p3_font_legend)),
   
   tar_target(p3_sites_map_shifted_FY21_png,
              save_figure(figure = p3_sites_map_shifted_annotated_FY21, 
@@ -205,7 +224,7 @@ p3_targets <- list(
   tar_target(p3_sites_map_shifted_annotated_FY22,
              annotate_shifted_map(shifted_map = p3_sites_map_shifted_FY22, 
                                   text_color = 'black', plot_title_font_size = 16, 
-                                  width = 16, height = 9)),
+                                  width = 16, height = 9, font_legend = p3_font_legend)),
 
   tar_target(p3_sites_map_shifted_FY22_png,
              save_figure(p3_sites_map_shifted_annotated_FY22, 
@@ -235,7 +254,7 @@ p3_targets <- list(
   tar_target(p3_sites_map_shifted_annotated_FY23,
              annotate_shifted_map(shifted_map = p3_sites_map_shifted_FY23, 
                                   text_color = 'black', plot_title_font_size = 16, 
-                                  width = 16, height = 9)),
+                                  width = 16, height = 9, font_legend = p3_font_legend)),
   
   tar_target(p3_sites_map_shifted_FY23_png,
              save_figure(figure = p3_sites_map_shifted_annotated_FY23, 
@@ -290,7 +309,8 @@ p3_targets <- list(
              combine_wu_map_and_chart(wu_map = p3_sites_map_conus_wateruse,
                                       wu_chart = p3_sites_wateruse_chart,
                                       width = 16,
-                                      height = 9)),
+                                      height = 9,
+                                      font_legend = p3_font_legend)),
   
   tar_target(p3_sites_figure_wateruse_png,
              save_figure(figure = p3_sites_figure_wateruse, 
@@ -326,6 +346,7 @@ p3_targets <- list(
                                      title_font_size = 36,
                                      legend_font_size = 12,
                                      plot_title_font_size = 14,
+                                     font_legend = p3_font_legend,
                                      text_color = 'grey20',
                                      point_layer = 2,
                                      point_size = 1)),
@@ -381,14 +402,6 @@ p3_targets <- list(
              format = 'file'),
 
   ##### Water source figures #####
-  tar_target(p3_supply_colors,
-             {
-               supply_colors <- c('#4DC49D', '#D8BF32', '#BD5EC6', '#D4D4D4')
-               color_names <- c('public supply', 'self supply', 'both', 'undetermined')
-               names(supply_colors) <- color_names
-               return(supply_colors)
-             }),
-  
   tar_target(p3_supply_summary_png,
              generate_supply_summary(supply_summary = p2_supply_summary,
                                      supply_colors = p3_supply_colors,

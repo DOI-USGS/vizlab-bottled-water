@@ -318,20 +318,16 @@ map_wateruse_sites <- function(map_of_all_sites, site_size, site_fill_colors,
 #' @param title_font_size font size for title
 #' @param legend_font_size font size for legend
 #' @param plot_title_font_size font size for individual plot titles
+#' @param font_legend font for the legend text
 #' @param text_color color for text
 #' @param point_layer number of layer within passed plots that represents points
 #' @param point_size desired size for points on small multiples plots
 #' @return a final plot with the input `plots` arranged as small multiples
 combine_small_multiples <- function(plots, plot_types, title_font_size, 
                                     legend_font_size, plot_title_font_size, 
-                                    text_color, point_layer, point_size) {
+                                    font_legend, text_color, point_layer, 
+                                    point_size) {
 
-  # import fonts
-  font_legend <- 'Source Sans Pro'
-  font_add_google(font_legend)
-  showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 700)
-  showtext_auto(enable = TRUE)
-  
   plot_margin <- 0.005
   
   # background
@@ -422,15 +418,12 @@ modify_size <- function(plot, layer, size) {
 #' @param title_font_size font size for title
 #' @param legend_font_size font size for legend
 #' @param plot_title_font_size font size for individual plot titles
+#' @param font_legend font for the legend text
 #' @return plot object with the two maps arranged side by side with a legend
 combine_conus_maps <- function(map1, map2, title1, title2, width, height, 
                                text_color, title_font_size, legend_font_size, 
-                               plot_title_font_size) {
-  font_legend <- 'Source Sans Pro'
-  font_add_google(font_legend)
-  showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 700)
-  showtext_auto(enable = TRUE)
-  
+                               plot_title_font_size, font_legend) {
+
   plot_margin <- 0.005
   
   # background
@@ -541,14 +534,10 @@ chart_wateruse_availability <- function(sites, has_wu_color, no_wu_color) {
 #' @param wu_chart the water use bar chart
 #' @param width width for the combined plot canvas
 #' @param height height for the combined plot canvas
+#' @param font_legend font for the legend text
 #' @return the final plot with the map and chart arranged side by side
-combine_wu_map_and_chart <- function(wu_map, wu_chart, width, height) {
+combine_wu_map_and_chart <- function(wu_map, wu_chart, width, height, font_legend) {
 
-  font_legend <- 'Source Sans Pro'
-  font_add_google(font_legend)
-  showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 700)
-  showtext_auto(enable = TRUE)
-  
   plot_margin <- 0.005
   
   # background
@@ -591,13 +580,10 @@ combine_wu_map_and_chart <- function(wu_map, wu_chart, width, height) {
 #' @param plot_title_font_size font size for individual plot titles
 #' @param width width for the final plot canvas
 #' @param height height for the final plot canvas
+#' @param font_legend font for the legend text
 #' @return an annotated version of `shifted_map`
 annotate_shifted_map <- function(shifted_map, text_color, plot_title_font_size, 
-                                 width, height) {
-  font_legend <- 'Source Sans Pro'
-  font_add_google(font_legend)
-  showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 700)
-  showtext_auto(enable = TRUE)
+                                 width, height, font_legend) {
   
   plot_margin <- 0.005
   
