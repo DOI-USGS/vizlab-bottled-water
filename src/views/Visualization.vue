@@ -9,8 +9,7 @@
 export default {
     name: 'Visualization',
     components: {
-      OCONUS: () => import( /* webpackPreload: true */ /*webpackChunkName: "section"*/ "./../components/OCONUS"),
-      //References: () => import( /*webpackChunkName: "References"*/ "./../components/References")
+      OCONUS: () => import("./../components/OCONUS.vue"),
     },
     computed: {
     },

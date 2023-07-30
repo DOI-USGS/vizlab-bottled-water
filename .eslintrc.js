@@ -1,7 +1,7 @@
 module.exports = {
-  'extends': 'plugin:vue/recommended',
-  parser: "@babel/eslint-parser",
-  'parserOptions': {
-    'parser': '@babel/eslint-parser'
-  }
+  "env": {
+    node: true,
+    es2022: true
+  },
+  'extends': 'plugin:vue/recommended'
 }
