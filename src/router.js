@@ -20,7 +20,7 @@ const routes = [
     },
  ];
 
-const router = new Router({
+const router = new çRouter({
   mode: "history",
   base: import.meta.env.BASE_URL,
   routes,
