@@ -11,11 +11,19 @@ export default {
     components: {
       OCONUS: () => import("./../components/OCONUS.vue"),
     },
+    data() {
+      return {
+
+      };
+    },
     computed: {
     },
     mounted(){
+      console.log("App loaded");
+
     },
     methods:{
+
     }
 } 
 </script>

@@ -9,6 +9,9 @@ export default defineConfig({
   outputDir: "dist",
   assetsDir: "static",
   plugins: [vue()],
+  define: {
+    'process.env': {}
+  },
   resolve: {
     extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.vue'],
     alias: {

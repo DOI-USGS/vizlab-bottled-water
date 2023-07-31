@@ -2,9 +2,17 @@
   <section id="main-container">
     <section id="grid-container">
       <div id="title-container">
-        <h2>Bottled water facilities across the United States</h2>
+        <div id="title">
+               <h2> Bottling facilities in 
+                <span id = "state-dropdown-container"></span>
+                extended title
+                </h2>
+            </div>
+
       </div>
-      <div id="intro-container"></div>
+      <div id="map-container">
+
+      </div>
     </section>
   </section>
 </template>
@@ -17,17 +25,24 @@ export default {
 
     },
     props: {
+      data: Object
     },
     data() {
       return {
         d3: null,
         publicPath: import.meta.env.BASE_URL, // find the files when on different deployment roots
         mobileView: isMobile, // test for mobile
-       
+        statePolyJSON: null,
+        countyPolyJSON: null,
+        countyPointJSON: null,
+        dataRaw: null,
       }
   },
   mounted(){      
     this.d3 = Object.assign(d3Base);
+
+    const self = this;
+    this.loadData() // read in data 
  
   },
     methods:{
@@ -38,6 +53,40 @@ export default {
                   return false
               }
       },
+      loadData(data) {
+        const self = this;
+
+        let promises = [
+          self.d3.json(self.publicPath + "states_poly.geojson"),
+          self.d3.json(self.publicPath + "counties_crop_poly.geojson"),
+          self.d3.json(self.publicPath + "counties_crop_centroids.geojson"),
+          self.d3.csv(self.publicPath + 'state_facility_type_summary.csv')
+        ];
+        Promise.all(promises).then(self.callback)
+      },
+      callback(data){
+        const self = this;
+
+        this.statePolyJSON = data[0];
+        const statePolys = this.statePolyJSON.features;
+        console.log(statePolys)
+
+        this.countyPolyJSON = data[1];
+        const countyPolys = this.countyPolyJSON.features;
+        console.log(countyPolys)
+
+        this.countyPointJSON = data[2];
+        const countyPoints = this.countyPointJSON.features;
+        console.log(countyPoints)
+
+        this.dataRaw = data[3];
+        const dataAll = this.dataRaw
+
+      },
+
+      drawBars() {
+
+      }
     }
 }
 </script>
