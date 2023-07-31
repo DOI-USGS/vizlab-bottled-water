@@ -19,6 +19,7 @@
     "file-loader": "^4.3.0",
     "html-loader": "^2.0.0",
     "lint": "^0.7.0",
+    "lodash": "^4.17.21",
     "mobile-device-detect": "^0.4.3",
     "uswds": "^2.13.3",
     "v-img": "^0.2.0",
