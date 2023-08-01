@@ -52,3 +52,4 @@ _targets
 
 # R Environment Variables
 .Renviron
+node_modules
