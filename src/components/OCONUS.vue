@@ -3,10 +3,9 @@
     <section id="grid-container">
       <div id="title-container">
         <div id="title">
-               <h2> Bottling facilities in 
+               <h3> Bottling facilities in 
                 <span id = "state-dropdown-container"></span>
-                extended title
-                </h2>
+                </h3>
             </div>
 
       </div>
@@ -81,6 +80,43 @@ export default {
 
         this.dataRaw = data[3];
         const dataAll = this.dataRaw
+
+        // get list of unique states
+        const stateList = [... new Set(dataAll.map(d => d.state_name))]
+        stateList.unshift('All')
+        let currentState = 'All'//stateList[0]
+        let currentType = 'All'
+
+        // add dropdown
+        const dropdown = this.d3.select("#state-dropdown-container")
+          .append("select")
+          .attr("class", "dropdown")
+          .attr("id", "state-dropdown")
+          .on("change", function() { 
+            let selectedText = this.options[this.selectedIndex].text;
+            this.style.width = 20 + (selectedText.length * 12) + "px";
+
+            drawHistogram(this.value) 
+            drawCounties(this.value)
+            drawMap(this.value)
+            drawCountyPoints(this.value, currentType)
+          })
+
+        const dropdownDefaultText = 'all states and territories'
+        let titleOption = dropdown.append("option")
+          .attr("class", "option title")
+          .attr("disabled", "true")
+          .text(dropdownDefaultText)
+
+        let stateOptions = dropdown.selectAll("stateOptions")
+          .data(stateList)
+          .enter()
+          .append("option")
+          .attr("class", "option stateName")
+          .attr("value", d => d)
+          .text(d => d)
+
+
 
       },
 
