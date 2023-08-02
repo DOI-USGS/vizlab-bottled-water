@@ -4,12 +4,12 @@ export default {
     references: [
       {
         reference:
-          "What is streamflow drought?",
+          "What do we know about bottled water?",
         num: "1",
-        authors: "Archer, A.A., Corson-Dosch, H, and Nell, C. (2023)",
-        title: "What is streamflow drought?",
-        link: "https://labs.waterdata.usgs.gov/visualizations/what-is-drought/index.html#/",
-        ref: " https://labs.waterdata.usgs.gov/visualizations/what-is-drought/index.html#/"
+        authors: "Corson-Dosch, H, Azadpour, E., Carr, A., and Nell, C. (2023)",
+        title: "What do we know about bottled water?",
+        link: "https://labs.waterdata.usgs.gov/visualizations/water-bottling/index.html#/",
+        ref: " https://labs.waterdata.usgs.gov/visualizations/water-bottling/index.html#/"
         
       }
     ],

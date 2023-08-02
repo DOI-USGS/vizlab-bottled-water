@@ -14,10 +14,10 @@ RUN curl -sL https://deb.nodesource.com/setup_current.x | bash - && \
       apt-get install nodejs -y
 
 # Create temp directory for building viz app
-RUN mkdir -p /tmp/drought-timeline
+RUN mkdir -p /tmp/water-bottling
 
 # Copy source code
-WORKDIR /tmp/drought-timeline
+WORKDIR /tmp/water-bottling
 COPY . .
 # Set environment variables for build target and tile source and then run config.sh
 ARG BUILDTARGET="test"
