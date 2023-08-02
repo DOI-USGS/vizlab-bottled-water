@@ -16,6 +16,7 @@ _targets
 
 # for now, ignore exploratory markdown output
 *.html
+!index.html
 
 # History files
 .Rhistory

@@ -1,6 +1,5 @@
 <template>
   <section id="main-container">
-    <section id="grid-container">
       <div id="title-container">
         <div id="title">
                <h3> Bottling facilities in 
@@ -13,7 +12,6 @@
 
       </div>
     </section>
-  </section>
 </template>
 <script>
 import * as d3Base from 'd3';
@@ -307,13 +305,13 @@ export default {
             
             // draw data
 
-            // const updateTransition = d3.transition()
-            //   .duration(1000)
-            //   .delay(1000)
-            //   .ease(d3.easeCubicInOut)
-            // const exitTransition = d3.transition()
-            //   .duration(1000)
-            //   .ease(d3.easeCubicInOut)
+             const getUpdateTransition = this.d3.transition()
+               .duration(1000)
+               .delay(1000)
+               .ease(this.d3.easeCubicInOut)
+             const getExitTransition = this.d3.transition()
+               .duration(1000)
+               .ease(this.d3.easeCubicInOut)
 
             let rectGroups = bounds.selectAll(".rects")
               .selectAll(".rect")
@@ -390,11 +388,11 @@ export default {
                 drawCountyPoints(state, currentType)
 
                this.d3.selectAll('.bar')
-                  .transition(getUpdateTransition())
+                  //.transition(getUpdateTransition())
                   .style("opacity", 0.5)
 
                this.d3.selectAll('#rect-' + currentIdentifier)
-                  .transition(getUpdateTransition())
+                  //.transition(getUpdateTransition())
                   .style("opacity", 1)
               })
               .on("mouseout", (event, d) => {
@@ -402,7 +400,7 @@ export default {
                 drawCountyPoints(state, currentType)
 
                this.d3.selectAll('.bar')
-                  .transition(getUpdateTransition())
+                  //.transition(getUpdateTransition())
                   .style("opacity", 1)
               })
 
@@ -789,28 +787,42 @@ export default {
 @import url('https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap');
 $writeFont: 'Nanum Pen Script', cursive;
 
-#grid-container {
-  display: grid;
-  padding: 20px 0 20px 0;
-  gap: 5px;
-  grid-template-columns: 100%;
-  grid-template-rows: max-content max-content max-content max-content;
-  grid-template-areas:
-    "title"
-    "intro"
-    "buttons"
-    "chart";
-  justify-content: center;
-  margin: auto;
-  max-width: 90vw;
-  min-width: 90vw;
+#wrapper {
+    display: grid;
+    grid-template-columns: 2.5fr 1fr;
+    grid-template-rows: 0.5fr 3fr;
+    grid-template-areas:
+      "title title"
+      "map chart";
+    justify-content: center;
+    margin: auto;
+    max-width: 1600px;
+    height: 88vh;
 }
-#title-container {
-  grid-area: title;
+
+#map-svg {
+    grid-area: map;
+    align-self: center;
 }
-#intro-container {
-  grid-area: intro;
-  padding-left: 5px;
+
+#chart-svg {
+    grid-area: chart;
+    align-self: center;
+}
+
+#title {
+    grid-area: title;
+    align-self: center;
+    font-size: 20px;
+    font-family: sans-serif;
+}
+
+.dropdown {
+    font-size: 20px;
+    /* display: flex;
+    flex-direction: row;
+    transition: width 2s, height 2s, transform 2s;
+    will-change: width; */
 }
 
 
