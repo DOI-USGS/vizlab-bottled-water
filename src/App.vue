@@ -16,30 +16,29 @@
 </template>
 
 <script>
-    import WindowSize from "./components/WindowSize";
-    import HeaderUSGS from './components/HeaderUSGS';
+    import WindowSize from "./components/WindowSize.vue";
+    import HeaderUSGS from './components/HeaderUSGS.vue';
     import { isMobile } from 'mobile-device-detect';
     export default {
         name: 'App',
         components: {
             WindowSize,
             HeaderUSGS,
-            InternetExplorerPage: () => import( /* webpackPrefetch: true */ /*webpackChunkName: "internet-explorer-page"*/ "./components/InternetExplorerPage"),
-            // PreFooterVisualizationsLinks: () => import( /* webpackPreload: true */ /*webpackChunkName: "pre-footer-links-visualizations"*/ "./components/PreFooterVisualizationsLinks"),
-            PreFooterCodeLinks: () => import( /* webpackPrefetch: true */ /*webpackChunkName: "pre-footer-links-code"*/ "./components/PreFooterCodeLinks"),
-            FooterUSGS: () => import( /* webpackPrefetch: true */ /*webpackChunkName: "usgs-footer"*/ "./components/FooterUSGS") // Have Webpack put the footer in a separate chunk so we can load it conditionally (with a v-if) if we desire
+            InternetExplorerPage: () => import( "./components/InternetExplorerPage.vue"),
+            PreFooterCodeLinks: () => import(  "./components/PreFooterCodeLinks.vue"),
+            FooterUSGS: () => import(  "./components/FooterUSGS.vue") 
         },
         data() {
             return {
                 isInternetExplorer: false,
-                title: process.env.VUE_APP_TITLE,
-                publicPath: process.env.BASE_URL, // this is need for the data files in the public folder
+                title: import.meta.env.VITE_APP_TITLE,
+                publicPath: import.meta.env.BASE_URL, // this is need for the data files in the public folder
                 mobileView: isMobile,
             }
         },
         computed: {
           checkTypeOfEnv() {
-              return process.env.VUE_APP_TIER
+              return import.meta.env.VITE_APP_TIER
           },
           windowWidth: function() {
             return this.$store.state.windowWidth

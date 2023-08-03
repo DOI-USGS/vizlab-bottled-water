@@ -21,7 +21,7 @@ export default {
     data() {
       return {
         d3: null,
-        publicPath: process.env.BASE_URL, // find the files when on different deployment roots
+        publicPath: import.meta.env.BASE_URL, // find the files when on different deployment roots
         mobileView: isMobile, // test for mobile
        
       }

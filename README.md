@@ -14,4 +14,4 @@ tar_make()
 ## To build the website locally
 Clone the repo. In the directory, run `npm install` to install the required modules. This repository requires `npm v20` to run. If you are using a later version of `npm`, you may [try using `nvm` to manage multiple versions of npm](https://betterprogramming.pub/how-to-change-node-js-version-between-projects-using-nvm-3ad2416bda7e).
 
-Once the dependencies have been installed, run `npm run serve` to run locally from your browser.
+Once the dependencies have been installed, run `npm run dev` to run locally from your browser.

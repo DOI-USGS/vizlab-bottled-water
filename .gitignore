@@ -13,10 +13,6 @@ _targets
 !1_fetch/in/WB_FACILITY_DATAVIZ_Records-01132023.xlsx
 !1_fetch/in/RegionalStudySites.zip
 
-
-# for now, ignore exploratory markdown output
-*.html
-
 # History files
 .Rhistory
 .Rapp.history
@@ -52,4 +48,5 @@ _targets
 
 # R Environment Variables
 .Renviron
+node_modules
 node_modules

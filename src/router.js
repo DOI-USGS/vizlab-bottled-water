@@ -3,8 +3,7 @@ import Router from "vue-router";
 
 Vue.use(Router);
 
-export default new Router({
-  routes: [
+const routes = [
     {
       path: "/",
       name: "Visualization",
@@ -19,5 +18,13 @@ export default new Router({
       path: "*",
       redirect: { name: "error404" },
     },
-  ],
+ ];
+
+const router = new Router({
+  mode: "history",
+  base: import.meta.env.BASE_URL,
+  routes,
+
 });
+
+export default router;
