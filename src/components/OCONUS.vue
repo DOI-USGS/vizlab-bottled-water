@@ -1,17 +1,13 @@
 <template>
-  <section id="main-container">
-      <div id="title-container">
+  <div id="grid-container">
+    <div id="map-container">
         <div id="title">
-               <h3> Bottling facilities in 
-                <span id = "state-dropdown-container"></span>
-                </h3>
-            </div>
-
-      </div>
-      <div id="wrapper">
-
-      </div>
-    </section>
+            <h3> Bottling facilities in 
+              <span id = "state-dropdown-container"></span>
+            </h3>
+        </div>
+    </div>
+  </div>
 </template>
 <script>
 import * as d3Base from 'd3';
@@ -149,7 +145,7 @@ export default {
           dimensions.boundedHeight = dimensions.height - dimensions.margin.top - dimensions.margin.bottom
 
           // draw canvas for map
-          const mapWrapper = this.d3.select("#wrapper")
+          const wrapper = this.d3.select("#map-container")
             .append("svg")
               .attr("viewBox", [0, 0, (mapDimensions.width), (mapDimensions.height)].join(' '))
               .attr("width", "100%")
@@ -159,11 +155,11 @@ export default {
               .attr("id", "map-svg")
 
           // assign role for accessibility
-          mapWrapper.attr("role", "figure")
+          wrapper.attr("role", "figure")
             .attr("tabindex", 0)
             .append("title")
 
-          const mapBounds = mapWrapper.append("g")
+          const mapBounds = wrapper.append("g")
             .style("transform", `translate(${
               mapDimensions.margin.left
             }px, ${
@@ -201,7 +197,7 @@ export default {
             .attr("aria-label", "county centroids")
 
           // draw canvas for histogram
-          const wrapper = this.d3.select("#wrapper")
+          const chartSVG = this.d3.select("#map-container")
             .append("svg")
               .attr("viewBox", [0, 0, (dimensions.width), (dimensions.height)].join(' '))
               .attr("width", "100%")
@@ -211,11 +207,11 @@ export default {
               .attr("id", "chart-svg")
 
           // assign role for accessibility
-          wrapper.attr("role", "figure")
+          chartSVG.attr("role", "figure")
             .attr("tabindex", 0)
             .append("title")
 
-          const bounds = wrapper.append("g")
+          const bounds = chartSVG.append("g")
             .style("transform", `translate(${
               dimensions.margin.left
             }px, ${
@@ -787,7 +783,7 @@ export default {
 @import url('https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap');
 $writeFont: 'Nanum Pen Script', cursive;
 
-#wrapper {
+#map-container {
     display: grid;
     grid-template-columns: 2.5fr 1fr;
     grid-template-rows: 0.5fr 3fr;
@@ -797,16 +793,19 @@ $writeFont: 'Nanum Pen Script', cursive;
     justify-content: center;
     margin: auto;
     max-width: 1600px;
-    height: 88vh;
+    //height: 88vh;
+    background-color: blue;
 }
 
 #map-svg {
     grid-area: map;
     align-self: center;
+    background-color: yellow;
 }
 
 #chart-svg {
     grid-area: chart;
+    background-color: green;
     align-self: center;
 }
 
@@ -815,6 +814,7 @@ $writeFont: 'Nanum Pen Script', cursive;
     align-self: center;
     font-size: 20px;
     font-family: sans-serif;
+    background-color: red;
 }
 
 .dropdown {

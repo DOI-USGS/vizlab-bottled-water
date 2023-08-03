@@ -42,7 +42,6 @@
     "postcss": "^8.4.27",
     "sass": "^1.62.1",
     "vite": "^2.9.16",
-    "vite-plugin-vue2": "2.0.3",
-    "yorkie": "^2.0.0"
+    "vite-plugin-vue2": "1.9.0"
   }
 }

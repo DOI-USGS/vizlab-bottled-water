@@ -33,6 +33,7 @@ export default {
   width: 100vw;
   position: relative;
   top: 0;
+  left: 20px;
 
 }
 
