@@ -3,7 +3,7 @@
     <div id="map-container">
         <div id="title">
             <h3> Bottling facilities in 
-              <span id = "state-dropdown-container"></span>
+              <Dropdown v-model="selectedOption" :options="dropdownOptions"/>
             </h3>
         </div>
     </div>
@@ -11,17 +11,24 @@
 </template>
 <script>
 import * as d3Base from 'd3';
+import { csv } from 'd3';
 import { isMobile } from 'mobile-device-detect';
+import Dropdown from '@/components/Dropdown.vue'
+import { ref, onMounted } from 'vue'
+
 export default {
   name: "OCONUS",
     components: {
-
+      Dropdown
     },
     props: {
       data: Object
     },
     data() {
       return {
+        selectedOption: 'all states and territories',
+        dropdownOptions: [],
+
         d3: null,
         publicPath: import.meta.env.BASE_URL, // find the files when on different deployment roots
         mobileView: isMobile, // test for mobile
@@ -38,6 +45,30 @@ export default {
     this.loadData() // read in data 
  
   },
+  setup() {
+    const self = this;
+    const selectedOption = ref('')
+    const dropdownOptions = ref([])
+    publicPath = import.meta.env.BASE_URL;
+
+    onMounted(async () => {
+      const data = await csv(self.publicPath + 'state_facility_type_summary.csv')
+
+      // Assuming the column name in the CSV is 'name'
+      dropdownOptions.value = data.map(d => d.state_name)
+    })
+
+    return { selectedOption, dropdownOptions }
+  },
+  /* computed: {
+    computedDropdownOptions() {
+      const dataAll = this.dataRaw
+
+      // get list of unique states
+      const stateList = [... new Set(dataAll.map(d => d.state_name))]
+      return stateList.map(data => `Option: ${data}`)
+    }
+  }, */
     methods:{
       isMobile() {
               if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
@@ -46,6 +77,7 @@ export default {
                   return false
               }
       },
+
       loadData(data) {
         const self = this;
 
@@ -60,17 +92,15 @@ export default {
       callback(data){
         const self = this;
 
+        // assign data
         this.statePolyJSON = data[0];
         const statePolys = this.statePolyJSON.features;
-        console.log(statePolys)
 
         this.countyPolyJSON = data[1];
         const countyPolys = this.countyPolyJSON.features;
-        console.log(countyPolys)
 
         this.countyPointJSON = data[2];
         const countyPoints = this.countyPointJSON.features;
-        console.log(countyPoints)
 
         this.dataRaw = data[3];
         const dataAll = this.dataRaw
@@ -80,8 +110,9 @@ export default {
         stateList.unshift('All')
         let currentState = 'All'//stateList[0]
         let currentType = 'All'
+        this.dropdownOptions = stateList
 
-        // add dropdown
+     /*    // add dropdown
         const dropdown = this.d3.select("#state-dropdown-container")
           .append("select")
           .attr("class", "dropdown")
@@ -112,7 +143,7 @@ export default {
 
           var selectId = document.getElementById("state-dropdown");
           let selectedText = selectId.options[selectId.selectedIndex].text;
-          selectId.style.width = 20 + (selectedText.length * 8.5) + "px";
+          selectId.style.width = 20 + (selectedText.length * 8.5) + "px"; */
 
           // set universal map frame dimensions
           const map_width = 900
@@ -281,7 +312,7 @@ export default {
             const identifierAccessor = d => d.WB_TYPE.replace(' ', '-')
 
             //add title
-            wrapper.select("Title")
+            chartSVG.select("Title")
               .text(`Bar chart of distribution of facility types for ${state}`)
 
             // create scales   
@@ -794,7 +825,7 @@ $writeFont: 'Nanum Pen Script', cursive;
     margin: auto;
     max-width: 1600px;
     //height: 88vh;
-    background-color: blue;
+    //background-color: blue;
 }
 
 #map-svg {
@@ -814,7 +845,7 @@ $writeFont: 'Nanum Pen Script', cursive;
     align-self: center;
     font-size: 20px;
     font-family: sans-serif;
-    background-color: red;
+    //background-color: red;
 }
 
 .dropdown {

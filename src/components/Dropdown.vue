@@ -53,6 +53,7 @@ export default {
 <style scoped>
 .dropdown {
   position: relative;
+  width: 50vw;
 }
 .dropdown-content {
   position: absolute;
