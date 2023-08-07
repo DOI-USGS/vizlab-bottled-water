@@ -400,9 +400,9 @@ export default {
             barRects
               .on("click", (event, d) => {
                 currentType = colorAccessor(d)
-                let currentIdentifier = currentType.replace(' ', '')
+                let currentIdentifier = currentType.replace(' ', '-')
                 drawCountyPoints(state, currentType)
-
+               console.log(currentIdentifier)
                this.d3.selectAll('.bar')
                   .style("opacity", 0.5)
 
@@ -411,7 +411,7 @@ export default {
               })
               .on("mouseover", (event, d) => {
                 currentType = colorAccessor(d)
-                let currentIdentifier = currentType.replace(' ', '')
+                let currentIdentifier = currentType.replace(' ', '-')
                 drawCountyPoints(state, currentType)
 
                this.d3.selectAll('.bar')
