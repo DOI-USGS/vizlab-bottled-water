@@ -1,0 +1,302 @@
+state_name,state_abbr,WB_TYPE,site_count
+Alabama,AL,Bottled Water,103
+Alabama,AL,Brewery,95
+Alabama,AL,Distillery,23
+Alabama,AL,Ice,18
+Alabama,AL,Soft Drinks,21
+Alaska,AK,Bottled Water,60
+Alaska,AK,Brewery,150
+Alaska,AK,Distillery,23
+Alaska,AK,Ice,2
+Alaska,AK,Soft Drinks,10
+Arizona,AZ,Bottled Water,332
+Arizona,AZ,Brewery,250
+Arizona,AZ,Distillery,53
+Arizona,AZ,Ice,16
+Arizona,AZ,Soft Drinks,24
+Arizona,AZ,Winery,2
+Arkansas,AR,Bottled Water,98
+Arkansas,AR,Brewery,162
+Arkansas,AR,Distillery,22
+Arkansas,AR,Ice,18
+Arkansas,AR,Soft Drinks,29
+Arkansas,AR,Winery,7
+California,CA,Bottled Water,2583
+California,CA,Brewery,2934
+California,CA,Distillery,518
+California,CA,Ice,36
+California,CA,Soft Drinks,262
+California,CA,Winery,128
+Colorado,CO,Bottled Water,224
+Colorado,CO,Brewery,613
+Colorado,CO,Distillery,92
+Colorado,CO,Ice,9
+Colorado,CO,Soft Drinks,32
+Colorado,CO,Winery,4
+Connecticut,CT,Bottled Water,119
+Connecticut,CT,Brewery,265
+Connecticut,CT,Distillery,46
+Connecticut,CT,Ice,5
+Connecticut,CT,Soft Drinks,17
+Delaware,DE,Bottled Water,27
+Delaware,DE,Brewery,61
+Delaware,DE,Distillery,6
+Delaware,DE,Ice,1
+District of Columbia,DC,Bottled Water,6
+District of Columbia,DC,Brewery,25
+District of Columbia,DC,Distillery,9
+District of Columbia,DC,Ice,1
+District of Columbia,DC,Winery,1
+Florida,FL,Bottled Water,959
+Florida,FL,Brewery,1659
+Florida,FL,Distillery,291
+Florida,FL,Ice,38
+Florida,FL,Soft Drinks,146
+Florida,FL,Winery,8
+Georgia,GA,Bottled Water,293
+Georgia,GA,Brewery,273
+Georgia,GA,Distillery,32
+Georgia,GA,Ice,27
+Georgia,GA,Soft Drinks,51
+Guam,GU,Bottled Water,4
+Guam,GU,Soft Drinks,2
+Hawaii,HI,Bottled Water,89
+Hawaii,HI,Brewery,103
+Hawaii,HI,Distillery,27
+Hawaii,HI,Ice,3
+Hawaii,HI,Soft Drinks,7
+Idaho,ID,Bottled Water,121
+Idaho,ID,Brewery,187
+Idaho,ID,Distillery,31
+Idaho,ID,Ice,4
+Idaho,ID,Soft Drinks,9
+Idaho,ID,Winery,3
+Illinois,IL,Bottled Water,307
+Illinois,IL,Brewery,452
+Illinois,IL,Distillery,78
+Illinois,IL,Ice,38
+Illinois,IL,Soft Drinks,50
+Illinois,IL,Winery,7
+Indiana,IN,Bottled Water,154
+Indiana,IN,Brewery,353
+Indiana,IN,Distillery,49
+Indiana,IN,Ice,34
+Indiana,IN,Soft Drinks,32
+Indiana,IN,Winery,1
+Iowa,IA,Bottled Water,59
+Iowa,IA,Brewery,263
+Iowa,IA,Distillery,50
+Iowa,IA,Ice,13
+Iowa,IA,Soft Drinks,46
+Iowa,IA,Winery,101
+Kansas,KS,Bottled Water,96
+Kansas,KS,Brewery,133
+Kansas,KS,Distillery,34
+Kansas,KS,Ice,7
+Kansas,KS,Soft Drinks,14
+Kansas,KS,Winery,3
+Kentucky,KY,Bottled Water,126
+Kentucky,KY,Brewery,237
+Kentucky,KY,Distillery,221
+Kentucky,KY,Ice,19
+Kentucky,KY,Soft Drinks,43
+Kentucky,KY,Winery,2
+Louisiana,LA,Bottled Water,208
+Louisiana,LA,Brewery,213
+Louisiana,LA,Distillery,56
+Louisiana,LA,Ice,26
+Louisiana,LA,Soft Drinks,26
+Louisiana,LA,Winery,1
+Maine,ME,Bottled Water,64
+Maine,ME,Brewery,152
+Maine,ME,Distillery,11
+Maine,ME,Ice,4
+Maine,ME,Soft Drinks,5
+Maryland,MD,Bottled Water,124
+Maryland,MD,Brewery,396
+Maryland,MD,Distillery,113
+Maryland,MD,Ice,11
+Maryland,MD,Soft Drinks,30
+Maryland,MD,Winery,97
+Massachusetts,MA,Bottled Water,214
+Massachusetts,MA,Brewery,315
+Massachusetts,MA,Distillery,38
+Massachusetts,MA,Ice,21
+Massachusetts,MA,Soft Drinks,15
+Massachusetts,MA,Winery,1
+Michigan,MI,Bottled Water,282
+Michigan,MI,Brewery,508
+Michigan,MI,Distillery,76
+Michigan,MI,Ice,45
+Michigan,MI,Soft Drinks,38
+Michigan,MI,Winery,9
+Minnesota,MN,Bottled Water,97
+Minnesota,MN,Brewery,393
+Minnesota,MN,Distillery,51
+Minnesota,MN,Ice,26
+Minnesota,MN,Soft Drinks,26
+Minnesota,MN,Winery,10
+Mississippi,MS,Bottled Water,93
+Mississippi,MS,Brewery,61
+Mississippi,MS,Distillery,11
+Mississippi,MS,Ice,20
+Mississippi,MS,Soft Drinks,37
+Missouri,MO,Bottled Water,125
+Missouri,MO,Brewery,253
+Missouri,MO,Distillery,96
+Missouri,MO,Ice,38
+Missouri,MO,Soft Drinks,56
+Missouri,MO,Winery,10
+Montana,MT,Bottled Water,64
+Montana,MT,Brewery,170
+Montana,MT,Distillery,33
+Montana,MT,Ice,3
+Montana,MT,Soft Drinks,11
+Nebraska,NE,Bottled Water,48
+Nebraska,NE,Brewery,118
+Nebraska,NE,Distillery,17
+Nebraska,NE,Ice,4
+Nebraska,NE,Soft Drinks,7
+Nebraska,NE,Winery,2
+Nevada,NV,Bottled Water,152
+Nevada,NV,Brewery,100
+Nevada,NV,Distillery,17
+Nevada,NV,Ice,2
+Nevada,NV,Soft Drinks,13
+New Hampshire,NH,Bottled Water,41
+New Hampshire,NH,Brewery,186
+New Hampshire,NH,Distillery,44
+New Hampshire,NH,Ice,4
+New Hampshire,NH,Soft Drinks,9
+New Hampshire,NH,Winery,2
+New Jersey,NJ,Bottled Water,235
+New Jersey,NJ,Brewery,238
+New Jersey,NJ,Distillery,58
+New Jersey,NJ,Ice,9
+New Jersey,NJ,Soft Drinks,34
+New Jersey,NJ,Winery,6
+New Mexico,NM,Bottled Water,100
+New Mexico,NM,Brewery,163
+New Mexico,NM,Distillery,4
+New Mexico,NM,Ice,6
+New Mexico,NM,Soft Drinks,5
+New Mexico,NM,Winery,2
+New York,NY,Bottled Water,503
+New York,NY,Brewery,1205
+New York,NY,Distillery,312
+New York,NY,Ice,35
+New York,NY,Soft Drinks,116
+New York,NY,Winery,12
+North Carolina,NC,Bottled Water,335
+North Carolina,NC,Brewery,1006
+North Carolina,NC,Distillery,190
+North Carolina,NC,Ice,10
+North Carolina,NC,Soft Drinks,84
+North Carolina,NC,Winery,9
+North Dakota,ND,Bottled Water,39
+North Dakota,ND,Brewery,55
+North Dakota,ND,Distillery,5
+North Dakota,ND,Ice,4
+North Dakota,ND,Soft Drinks,9
+North Dakota,ND,Winery,10
+Ohio,OH,Bottled Water,316
+Ohio,OH,Brewery,899
+Ohio,OH,Distillery,115
+Ohio,OH,Ice,36
+Ohio,OH,Soft Drinks,100
+Ohio,OH,Winery,3
+Oklahoma,OK,Bottled Water,102
+Oklahoma,OK,Brewery,174
+Oklahoma,OK,Distillery,29
+Oklahoma,OK,Ice,10
+Oklahoma,OK,Soft Drinks,20
+Oklahoma,OK,Winery,7
+Oregon,OR,Bottled Water,174
+Oregon,OR,Brewery,731
+Oregon,OR,Distillery,190
+Oregon,OR,Ice,10
+Oregon,OR,Soft Drinks,32
+Oregon,OR,Winery,24
+Pennsylvania,PA,Bottled Water,373
+Pennsylvania,PA,Brewery,721
+Pennsylvania,PA,Distillery,103
+Pennsylvania,PA,Ice,28
+Pennsylvania,PA,Soft Drinks,56
+Pennsylvania,PA,Winery,33
+Puerto Rico,PR,Bottled Water,12
+Puerto Rico,PR,Brewery,10
+Puerto Rico,PR,Distillery,10
+Puerto Rico,PR,Ice,24
+Puerto Rico,PR,Soft Drinks,12
+Rhode Island,RI,Bottled Water,18
+Rhode Island,RI,Brewery,53
+Rhode Island,RI,Distillery,7
+Rhode Island,RI,Ice,6
+Rhode Island,RI,Soft Drinks,11
+Rhode Island,RI,Winery,1
+South Carolina,SC,Bottled Water,122
+South Carolina,SC,Brewery,260
+South Carolina,SC,Distillery,78
+South Carolina,SC,Ice,10
+South Carolina,SC,Soft Drinks,25
+South Dakota,SD,Bottled Water,42
+South Dakota,SD,Brewery,70
+South Dakota,SD,Distillery,16
+South Dakota,SD,Ice,6
+South Dakota,SD,Soft Drinks,3
+South Dakota,SD,Winery,2
+Tennessee,TN,Bottled Water,170
+Tennessee,TN,Brewery,224
+Tennessee,TN,Distillery,83
+Tennessee,TN,Ice,13
+Tennessee,TN,Soft Drinks,33
+Tennessee,TN,Winery,8
+Texas,TX,Bottled Water,1231
+Texas,TX,Brewery,866
+Texas,TX,Distillery,347
+Texas,TX,Ice,60
+Texas,TX,Soft Drinks,193
+Texas,TX,Winery,39
+Utah,UT,Bottled Water,83
+Utah,UT,Brewery,70
+Utah,UT,Distillery,10
+Utah,UT,Ice,3
+Utah,UT,Soft Drinks,14
+Utah,UT,Winery,1
+Vermont,VT,Bottled Water,23
+Vermont,VT,Brewery,72
+Vermont,VT,Distillery,22
+Vermont,VT,Ice,2
+Vermont,VT,Soft Drinks,6
+Vermont,VT,Winery,1
+Virgin Islands,VI,Bottled Water,2
+Virgin Islands,VI,Distillery,2
+Virginia,VA,Bottled Water,146
+Virginia,VA,Brewery,382
+Virginia,VA,Distillery,62
+Virginia,VA,Ice,12
+Virginia,VA,Soft Drinks,33
+Virginia,VA,Winery,6
+Washington,WA,Bottled Water,229
+Washington,WA,Brewery,840
+Washington,WA,Distillery,167
+Washington,WA,Ice,11
+Washington,WA,Soft Drinks,36
+Washington,WA,Winery,39
+West Virginia,WV,Bottled Water,53
+West Virginia,WV,Brewery,32
+West Virginia,WV,Distillery,8
+West Virginia,WV,Ice,14
+West Virginia,WV,Soft Drinks,9
+West Virginia,WV,Winery,4
+Wisconsin,WI,Bottled Water,145
+Wisconsin,WI,Brewery,684
+Wisconsin,WI,Distillery,97
+Wisconsin,WI,Ice,17
+Wisconsin,WI,Soft Drinks,33
+Wisconsin,WI,Winery,20
+Wyoming,WY,Bottled Water,31
+Wyoming,WY,Brewery,52
+Wyoming,WY,Distillery,8
+Wyoming,WY,Ice,3
+Wyoming,WY,Soft Drinks,2
