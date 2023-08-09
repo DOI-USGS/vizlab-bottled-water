@@ -1403,7 +1403,8 @@ generate_source_summary_bar_chart <- function(supply_summary_state, supply_color
       legend.text = element_text(size = legend_text_size, color = text_color),
       legend.title = element_text(size = legend_text_size, color = text_color)) +
     guides(fill = guide_legend(title = 'Source category', reverse = TRUE)) +
-    ggtitle('Distribution of Water Sources by State for Bottled Water Facilities')
+    ggtitle(sprintf('Distribution of Water Sources by State for %s Facilities', 
+                    selected_facility_type))
   
   outfile <- sprintf(outfile_template, selected_facility_type)
   
