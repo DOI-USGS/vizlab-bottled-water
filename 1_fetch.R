@@ -46,19 +46,13 @@ p1_targets <- list(
   
   ##### Water use data #####
   tar_target(p1_water_use_csv,
-             sbtools::item_file_download('5af3311be4b0da30c1b245d8', 
-                                         names = 'usco2015v2.0.csv', 
-                                         destinations = '1_fetch/out/usco2015v2.0.csv')),
+             '1_fetch/in/For_Amy_WaterBottlingInventory_DR/WBinventory_WaterUse.csv',
+             format = 'file'),
   
   ##### Inventory data #####
-  tar_target(p1_inventory_xlsx,
-             '1_fetch/in/WB_FACILITY_DATAVIZ_Records-01132023.xlsx',
+  tar_target(p1_inventory_csv,
+             '1_fetch/in/For_Amy_WaterBottlingInventory_DR/WBinventory_Facility.csv',
              format='file'),
-  
-  tar_target(p1_inventory,
-             read_excel(p1_inventory_xlsx, sheet='BottlingFacilities-SelVizLab') %>%
-               mutate(state_name = gsub(':','',gsub('[0-9]+','',State))) %>%
-               left_join(p1_state_info, by='state_name')),
   
   ##### Regional data #####
   ###### Regional spatial data ######
