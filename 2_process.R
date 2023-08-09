@@ -14,7 +14,7 @@ p2_targets <- list(
   
   ##### Munge site inventory data ######
   tar_target(p2_inventory_sites,
-             munge_inventory_data(p1_inventory)),
+             munge_inventory_data(p1_inventory_csv)),
   
   # Get unique facility types
   tar_target(p2_facility_types,
@@ -25,12 +25,7 @@ p2_targets <- list(
   
   tar_target(p2_inventory_sites_sf,
              p2_inventory_sites %>%
-               # FOR NOW, filter out 4 sites w/ bad coordinates
-               # previously also bad: 'CA6457', 'NH0293',
-               # 1/13/23 new bad: 'MD0682' and 'MD0721'
-               filter(!(Bottling.Facility.ID %in% c('HI0229', 'PR0060', 'AK0263', 'VI0002', 'MD0682', 'MD0721'))) %>%
-               filter(!(is.na(Longitude)) & !(is.na(Latitude))) %>%
-               st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326, remove = FALSE) %>%
+               st_as_sf(coords = c("LONGITUDE", "LATITUDE"), crs = 4326, remove = FALSE) %>%
                st_transform(p1_proj)),
   
   ###### All U.S. states and territories ######
@@ -75,15 +70,11 @@ p2_targets <- list(
                mutate(source_category = factor(source_category, levels=c('undetermined', 'both', 'self supply', 'public supply')))),
   
   ###### CONUS ######
-  # get CONUS subset - have to manually filter by lat/long for now b/c of sites w/ incorrect coordinates
+  # get CONUS subset
   tar_target(p2_inventory_sites_sf_CONUS,
              filter(p2_inventory_sites_sf, 
                     state_name %in% state.name, 
-                    !(state_abbr %in% c('AK','HI')),
-                    Latitude > 24.5,
-                    Latitude < 49.3,
-                    Longitude < -66.95,
-                    Longitude > -124.8)),
+                    !(state_abbr %in% c('AK','HI')))),
   
   ##### Regional statistics #####
 

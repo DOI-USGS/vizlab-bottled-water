@@ -1,19 +1,18 @@
 #' @title munge inventory data
 #' @description function that cleans the raw inventory data,
 #' correcting variable names and data entry errors
-#' @param inventory  the raw inventory data provided by 
-#' collaborators and read in from .xlsx
+#' @param inventory_csv the raw inventory data provided by 
+#' collaborators as a csv file
 #' @return a dataframe of cleaned data w/ all spaces removed
 #' from variable names, cleaned water source info, and source
 #' category information
-munge_inventory_data <- function(inventory) {
-  inventory %>%
-    # replace all spaces in variable names with '.'
-    rename_all(~ make.names(.)) %>%
+munge_inventory_data <- function(inventory_csv) {
+  # read in csv, with empty, 9999, and -9999 values as NA
+  readr::read_csv(inventory_csv, col_types = cols(), na = c('', 'NA', '9999', '-9999')) %>%
+    # Remove columns w/ entirely NA values
+    dplyr::select(where(function(x) !all(is.na(x)))) %>%
     # clean data
     mutate(
-      # set -9999 lat and long values to NA
-      across(Latitude:Longitude, ~na_if(., -9999)),
       # fix types in WB_TYPE
       WB_TYPE = case_when(
         WB_TYPE == 'Bottled water' ~ 'Bottled Water',
@@ -21,11 +20,12 @@ munge_inventory_data <- function(inventory) {
         TRUE ~ WB_TYPE),
       # standardize water source variables
       water_source = case_when(
-        Water.Source.s. == 'Well(s)' ~ 'well',
-        Water.Source.s. == 'Spring(s)' ~ 'spring',
-        Water.Source.s. == 'SW Intake(s)' ~ 'sw intake',
-        tolower(Water.Source.s.) == 'public supply' ~ 'public supply',
-        Water.Source.s. == 'Combination of different sources' ~ 'combination',
+        WTRSRC == 'Well(s)' ~ 'well',
+        WTRSRC == 'Spring(s)' ~ 'spring',
+        WTRSRC == 'SW Intake(s)' ~ 'sw intake',
+        tolower(WTRSRC) == 'public supply' ~ 'public supply',
+        WTRSRC == 'Combination of different sources' ~ 'combination',
+        WTRSRC == 'Other (e.g., humidity, sea water)' ~ 'other',
         TRUE ~ NA_character_
       ),
       # define source category based on water source
@@ -38,12 +38,17 @@ munge_inventory_data <- function(inventory) {
       # set shared attribute for all entries
       facility_category = 'Bottling facility'
     ) %>%
-    # For now filter out secondary bottled water, since only 4 sites in FL
-    filter(!(WB_TYPE == 'Bottled Water-secondary'))
-  # COMMENTED OUT for now b/c of missing values
-    # # pull state and county fips
-    # separate(State, c('state_fips', NA), sep=':', remove = FALSE) %>%
-    # separate(County, c('full_fips', NA), sep=':', remove = FALSE) %>%
-    # # need to drop first 2 digits to get county fips b/c refers to state
-    # mutate(county_fips = sub('..', '', full_fips))
+    # pull state and county fips
+    separate_wider_delim(STATE_NAME, delim = ':', names = c('state_fips', 'state_name'), cols_remove = FALSE) %>%
+    separate_wider_delim(COUNTY, delim = ':', names = c('full_fips', 'county_name'), cols_remove = FALSE) %>%
+    # need to drop first 2 digits to get county fips b/c refers to state
+    mutate(county_fips = sub('..', '', full_fips),
+           # fix bad STATE_ABBV values
+           state_abbr = case_when(
+             state_name == 'Illinois' ~ 'IL',
+             state_name == 'Maryland' ~ 'MD',
+             state_name == 'Texas' ~ 'TX',
+             state_name == 'Virgin Islands' ~ 'VI',
+             TRUE ~ STATE_ABBV
+           ))
 }
