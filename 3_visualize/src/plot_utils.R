@@ -280,19 +280,19 @@ map_wateruse_sites <- function(map_of_all_sites, site_size, site_fill_colors,
   
   map <- map_of_all_sites +  
     geom_sf(data = wu_sites, 
-            aes(fill = WUDataFlag,
-                color = WUDataFlag),
+            aes(fill = WU_DATA_FLAG,
+                color = WU_DATA_FLAG),
             pch = wu_site_pch,
             size = wu_site_size,
             stroke = wu_site_stroke,
             alpha = wu_site_alpha) + 
     theme_void() +
-    scale_fill_manual(name = c('Bottling facility', unique(wu_sites$WUDataFlag)), 
-                      breaks = c('Bottling facility', unique(wu_sites$WUDataFlag)), 
+    scale_fill_manual(name = c('Bottling facility', unique(wu_sites$WU_DATA_FLAG)), 
+                      breaks = c('Bottling facility', unique(wu_sites$WU_DATA_FLAG)), 
                       values = c(site_fill_colors, wu_site_fill_colors), 
                       labels = c('Bottling facility', 'Has water use data')) +
-    scale_color_manual(name = c('Bottling facility', unique(wu_sites$WUDataFlag)), 
-                       breaks = c('Bottling facility', unique(wu_sites$WUDataFlag)),
+    scale_color_manual(name = c('Bottling facility', unique(wu_sites$WU_DATA_FLAG)), 
+                       breaks = c('Bottling facility', unique(wu_sites$WU_DATA_FLAG)),
                        values = c(site_color, wu_site_color), 
                        labels = c('Bottling facility', 'Has water use data')) +
     theme(legend.position = legend_position,
@@ -496,16 +496,16 @@ combine_conus_maps <- function(map1, map2, title1, title2, width, height,
 #' and percent of sites that do not
 chart_wateruse_availability <- function(sites, has_wu_color, no_wu_color) {
   wu_summary <- sites %>%
-    group_by(WUDataFlag, facility_category) %>% 
+    group_by(WU_DATA_FLAG, facility_category) %>% 
     summarize(count = n(), percent = count/nrow(sites)) %>%
-    mutate(type = ifelse(is.na(WUDataFlag), 'No water use data', 'Has water use data')) 
+    mutate(type = ifelse(is.na(WU_DATA_FLAG), 'No water use data', 'Has water use data')) 
   max_per <- max(wu_summary$percent)
   min_per <- min(wu_summary$percent)
   wu_summary_plot <- wu_summary %>%
     ggplot() +
-    geom_bar(aes(x = facility_category, y = count, fill = WUDataFlag), 
+    geom_bar(aes(x = facility_category, y = count, fill = WU_DATA_FLAG), 
              stat = 'identity', position = "fill") +
-    scale_fill_manual(name = 'WUDataFlag', values = has_wu_color, 
+    scale_fill_manual(name = 'WU_DATA_FLAG', values = has_wu_color, 
                       na.value = no_wu_color) +
     theme_void() +
     scale_y_continuous(position = 'right',
@@ -796,8 +796,8 @@ generate_site_count_matrix <- function(type_summary, type_summary_state,
     geom_bar(fill = bar_fill, color = 'white', stat = 'identity', width = 1) +
     scale_x_discrete(position = 'top') +
     scale_y_continuous(trans = "reverse",
-                       breaks = rev(c(0, 1000, 2000, 3000, 4000, 5000, 6000)), 
-                       labels = rev(c("0 sites", "1k", "2k", "3k", "4k", "5k", "6k"))) + 
+                       breaks = rev(c(0, 1000, 3000, 5000, 7000, 9000)), 
+                       labels = rev(c("0 sites", "1k", "3k", "5k", "7k", "9k"))) + 
     theme_minimal() +
     theme(
       panel.grid = element_blank(),
@@ -1403,7 +1403,8 @@ generate_source_summary_bar_chart <- function(supply_summary_state, supply_color
       legend.text = element_text(size = legend_text_size, color = text_color),
       legend.title = element_text(size = legend_text_size, color = text_color)) +
     guides(fill = guide_legend(title = 'Source category', reverse = TRUE)) +
-    ggtitle('Distribution of Water Sources by State for Bottled Water Facilities')
+    ggtitle(sprintf('Distribution of Water Sources by State for %s Facilities', 
+                    selected_facility_type))
   
   outfile <- sprintf(outfile_template, selected_facility_type)
   
