@@ -796,8 +796,8 @@ generate_site_count_matrix <- function(type_summary, type_summary_state,
     geom_bar(fill = bar_fill, color = 'white', stat = 'identity', width = 1) +
     scale_x_discrete(position = 'top') +
     scale_y_continuous(trans = "reverse",
-                       breaks = rev(c(0, 1000, 2000, 3000, 4000, 5000, 6000)), 
-                       labels = rev(c("0 sites", "1k", "2k", "3k", "4k", "5k", "6k"))) + 
+                       breaks = rev(c(0, 1000, 3000, 5000, 7000, 9000)), 
+                       labels = rev(c("0 sites", "1k", "3k", "5k", "7k", "9k"))) + 
     theme_minimal() +
     theme(
       panel.grid = element_blank(),
