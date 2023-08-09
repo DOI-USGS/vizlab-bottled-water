@@ -34,6 +34,11 @@ export default {
       publicPath: import.meta.env.BASE_URL, // find the files when on different deployment roots
       mobileView: isMobile, // test for mobile
       statePolys: null,
+      statePolysCONUS: null,
+      statePolyAK: null,
+      statePolysGUMP: null,
+      statePolysHI: null,
+      statePolysPRVI: null,
       countyPolys: null,
       countyPoints: null,
       dataAll: null,
@@ -94,7 +99,10 @@ export default {
         self.d3.json(self.publicPath + "counties_crop_poly_oconus.geojson"),
         self.d3.json(self.publicPath + "counties_crop_centroids_oconus.geojson"),
         self.d3.csv(self.publicPath + 'state_facility_type_summary.csv'),
-        self.d3.json(self.publicPath + "states_poly_AK.geojson")
+        self.d3.json(self.publicPath + "states_poly_AK.geojson"),
+        self.d3.json(self.publicPath + "states_poly_GU_MP.geojson"),
+        self.d3.json(self.publicPath + "states_poly_HI.geojson"),
+        self.d3.json(self.publicPath + "states_poly_PR_VI.geojson")
       ];
       Promise.all(promises).then(self.callback)
     },
@@ -102,9 +110,10 @@ export default {
       const self = this;
 
       // assign data
-      const statePolyJSON = data[0];
-      this.statePolys = statePolyJSON.features;
-      console.log(this.statePolys)
+      const statePolyCONUSJSON = data[0];
+      this.statePolysCONUS = statePolyCONUSJSON.features;
+       
+      console.log(this.statePolysCONUS)
       const countyPolyJSON = data[1];
       this.countyPolys = countyPolyJSON.features;
 
@@ -114,11 +123,23 @@ export default {
       this.dataAll = data[3];
 
       const statePolyAKJSON = data[4];
-      const statePolyAK = statePolyAKJSON.features;
+      this.statePolyAK = statePolyAKJSON.features;
+      console.log(this.statePolyAK)
 
+      const statePolysGUMPJSON = data[5];
+      this.statePolysGUMP = statePolysGUMPJSON.features;
+
+      const statePolysHIJSON = data[6];
+      this.statePolysHI = statePolysHIJSON.features;
+
+      const statePolysPRVIJSON = data[7];
+      this.statePolysPRVI = statePolysPRVIJSON.features;
+
+      this.statePolys = this.statePolysCONUS.concat(this.statePolyAK, this.statePolysHI, this.statePolysGUMP, this.statePolysPRVI)
+      console.log(this.statePolys)
       // get list of unique state groups
       const stateGroups = [... new Set(this.statePolys.map(d => d.properties.group))]
-      console.log(stateGroups)
+      // console.log(stateGroups)
       // const akGroup = statePolys.filter(d => d.properties.group === 'AK')
       // console.log(akGroup)
 
@@ -128,7 +149,7 @@ export default {
       let currentState = 'All'//stateList[0]
       this.currentType = 'All'
       this.dropdownOptions = stateList
-
+      console.log(stateList)
       // add dropdown
       self.addDropdown(stateList)
 
@@ -243,7 +264,7 @@ export default {
         .center([0, 38])
         .rotate([96, 0, 0])
         .parallels([29.5, 45.5])
-        .scale(500) // alabama : 3500 1200
+        .scale(400) // alabama : 3500 1200
         .translate([this.mapDimensions.width / 2, this.mapDimensions.height / 2]); // alabama : [-this.mapDimensions.width / 4, 20]
 
       this.mapPath = this.d3.geoPath()
@@ -259,8 +280,8 @@ export default {
       // const akMapPath = this.d3.geoPath()
       //   .projection(akMapProjection);
 
-      console.log(this.d3.geoBounds(this.statePolyJSON))
-      console.log(this.mapPath.bounds(this.statePolyJSON))
+      // console.log(this.d3.geoBounds(this.statePolyJSON))
+      // console.log(this.mapPath.bounds(this.statePolyJSON))
       // const akGroupDict = self.calculateScaleCenter(this.statePolyJSON, genericPath, this.mapDimensions.width, this.mapDimensions.height)
       // console.log(akGroupDict)
 
@@ -554,6 +575,10 @@ export default {
 
       if (state === 'All') {
         data = this.statePolys
+      } else if (state === 'Alaska') {
+        data = this.statePolyAK
+      } else if (state === 'Puerto Rico' | state === 'Virgin Islands') {
+        data = this.statePolysPRVI
       } else {
         data = this.statePolys.filter(d => 
           d.properties.NAME === state)
