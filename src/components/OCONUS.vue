@@ -34,10 +34,15 @@ export default {
       publicPath: import.meta.env.BASE_URL, // find the files when on different deployment roots
       mobileView: isMobile, // test for mobile
       statePolys: null,
+      statePolysCONUSJSON: null,
       statePolysCONUS: null,
+      statePolyAKJSON: null,
       statePolyAK: null,
+      statePolysGUMPJSON: null,
       statePolysGUMP: null,
+      statePolysHIJSON: null,
       statePolysHI: null,
+      statePolysPRVIJSON: null,
       statePolysPRVI: null,
       countyPolys: null,
       countyPoints: null,
@@ -47,9 +52,18 @@ export default {
       dimensions: null,
       wrapper: null,
       mapBounds: null,
+      mapProjection: null,
       mapPath: null,
+      akMapProjection: null,
+      mapPathAK: null,
+      genericPath: null,
+      genericProjection: null,
       chartBounds: null,
       currentType: null,
+      stateGroups: null,
+      countyGroups: null,
+      countyCentroidGroups: null,
+      active: null,
     }
   },
   mounted(){      
@@ -110,10 +124,9 @@ export default {
       const self = this;
 
       // assign data
-      const statePolyCONUSJSON = data[0];
-      this.statePolysCONUS = statePolyCONUSJSON.features;
-       
-      console.log(this.statePolysCONUS)
+      this.statePolysCONUSJSON = data[0];
+      this.statePolysCONUS = this.statePolysCONUSJSON.features;
+
       const countyPolyJSON = data[1];
       this.countyPolys = countyPolyJSON.features;
 
@@ -122,26 +135,28 @@ export default {
 
       this.dataAll = data[3];
 
-      const statePolyAKJSON = data[4];
-      this.statePolyAK = statePolyAKJSON.features;
-      console.log(this.statePolyAK)
+      this.statePolyAKJSON = data[4];
+      this.statePolyAK = this.statePolyAKJSON.features;
 
-      const statePolysGUMPJSON = data[5];
-      this.statePolysGUMP = statePolysGUMPJSON.features;
+      this.statePolysGUMPJSON = data[5];
+      this.statePolysGUMP = this.statePolysGUMPJSON.features;
 
-      const statePolysHIJSON = data[6];
-      this.statePolysHI = statePolysHIJSON.features;
+      this.statePolysHIJSON = data[6];
+      this.statePolysHI = this.statePolysHIJSON.features;
 
-      const statePolysPRVIJSON = data[7];
-      this.statePolysPRVI = statePolysPRVIJSON.features;
+      this.statePolysPRVIJSON = data[7];
+      this.statePolysPRVI = this.statePolysPRVIJSON.features;
 
       this.statePolys = this.statePolysCONUS.concat(this.statePolyAK, this.statePolysHI, this.statePolysGUMP, this.statePolysPRVI)
       console.log(this.statePolys)
       // get list of unique state groups
-      const stateGroups = [... new Set(this.statePolys.map(d => d.properties.group))]
+      // const stateGroups = [... new Set(this.statePolys.map(d => d.properties.group))]
       // console.log(stateGroups)
       // const akGroup = statePolys.filter(d => d.properties.group === 'AK')
       // console.log(akGroup)
+
+      // set active
+      this.active = '';//this.d3.select(null);
 
       // get list of unique states
       const stateList = [... new Set(this.dataAll.map(d => d.state_name))]
@@ -254,36 +269,50 @@ export default {
         .attr("id", "map-bounds")
 
       // init static elements for map
-      // const genericProjection = this.d3.geoAlbers()
-      //   .scale(1);
+      // this.genericProjection = this.d3.geoAlbers()
+      //   .scale(1)
+      //   .translate([0, 0]);
 
-      // const genericPath = this.d3.geoPath()
-      //   .projection(genericProjection);
+      // this.genericPath = this.d3.geoPath()
+      //   .projection(this.genericProjection);
 
-      const mapProjection = this.d3.geoAlbers()
+      // [[left, bottom], [right, top]]
+      const boundsStatePolysCONUS = this.d3.geoBounds(this.statePolysCONUSJSON)
+      console.log(boundsStatePolysCONUS)
+      const conusWidth = boundsStatePolysCONUS[1][0] - boundsStatePolysCONUS[0][0]
+      const conusHeight = boundsStatePolysCONUS[1][1] - boundsStatePolysCONUS[0][1]
+      console.log(conusWidth)
+
+      const boundsStatePolyAK = this.d3.geoBounds(this.statePolyAKJSON)
+      const akWidth = boundsStatePolyAK[1][0] - boundsStatePolyAK[0][0]
+      const akHeight = boundsStatePolyAK[1][1] - boundsStatePolyAK[0][1]
+      console.log(akWidth)
+
+      const akConusHeightRatio = akHeight/conusHeight
+
+      const conusHeightFraction = 0.4
+
+      const mapScale = 700
+
+      this.mapProjection = this.d3.geoAlbers()
         .center([0, 38])
         .rotate([96, 0, 0])
         .parallels([29.5, 45.5])
-        .scale(400) // alabama : 3500 1200
-        .translate([this.mapDimensions.width / 2, this.mapDimensions.height / 2]); // alabama : [-this.mapDimensions.width / 4, 20]
+        .scale(mapScale) // alabama : 3500 1200
+        .translate([this.mapDimensions.width / 2, this.mapDimensions.height / 2 + conusHeightFraction*this.mapDimensions.height/2]); // alabama : [-this.mapDimensions.width / 4, 20]
 
       this.mapPath = this.d3.geoPath()
-        .projection(mapProjection);
+        .projection(this.mapProjection);
 
-      // const akMapProjection = this.d3.geoAlbers()
-      //   .center([0, 38])
-      //   .rotate([138, 0, 0])
-      //   .parallels([58.5, 65])
-      //   .scale(500) // alabama : 3500 1200
-      //   .translate([this.mapDimensions.width / 2, this.mapDimensions.height / 2]); // alabama : [-this.mapDimensions.width / 4, 20]
+      this.akMapProjection = this.d3.geoAlbers()
+        .center([0, 64])
+        .rotate([151, 0, 0])
+        .parallels([58.5, 65])
+        .scale(mapScale) // alabama : 3500 1200
+        .translate([this.mapDimensions.width*0.9 / 2, this.mapDimensions.height*0.3 / 2]); // alabama : [-this.mapDimensions.width / 4, 20]
 
-      // const akMapPath = this.d3.geoPath()
-      //   .projection(akMapProjection);
-
-      // console.log(this.d3.geoBounds(this.statePolyJSON))
-      // console.log(this.mapPath.bounds(this.statePolyJSON))
-      // const akGroupDict = self.calculateScaleCenter(this.statePolyJSON, genericPath, this.mapDimensions.width, this.mapDimensions.height)
-      // console.log(akGroupDict)
+      this.mapPathAK = this.d3.geoPath()
+        .projection(this.akMapProjection);
 
       this.mapBounds.append("g")
         .attr("class", "counties")
@@ -302,6 +331,32 @@ export default {
         .attr("role", "list")
         // .attr("tabindex", 0)
         .attr("aria-label", "county centroids")
+
+      // this.mapBounds.append("g")
+      //   .attr("class", "testPaths")
+
+      // const testData = this.statePolysCONUS.filter(d => 
+      //     d.properties.NAME === 'Colorado')
+
+      // const squareGroup = this.mapBounds.selectAll(".testPaths")
+      //   .selectAll(".testPath")
+      //   .data(testData, d => d.properties.FIPS)
+      //   .enter()
+      //   .append("path") 
+      //   .attr("id", d => "state-" + d.properties.FIPS)
+      //   .attr("d", this.mapPath)
+      //   .style("stroke", "#000000")
+      //   .style("stroke-width", 1)
+      //   .style("fill", "#ffffff")
+      //   .on("click", self.zoomToState)
+
+        // .attr("x", 5)
+        // .attr("y", 15)
+        // .attr("width", 60)
+        // .attr("height", 60)
+        // .style("fill", "#000000")
+
+      
     },
     initChart() {
       // draw canvas for histogram
@@ -572,18 +627,29 @@ export default {
       const self = this;
 
       let data;
+      let selectedMapPath;
+      let featureBounds;
 
       if (state === 'All') {
         data = this.statePolys
+        selectedMapPath = this.mapPath
+        featureBounds = null;
       } else if (state === 'Alaska') {
         data = this.statePolyAK
+        selectedMapPath = this.mapPathAK
+        featureBounds = self.calculateScaleTranslation(data[0], selectedMapPath)
       } else if (state === 'Puerto Rico' | state === 'Virgin Islands') {
         data = this.statePolysPRVI
+        selectedMapPath = this.mapPath
+        featureBounds = self.calculateScaleTranslation(data, selectedMapPath)
       } else {
         data = this.statePolys.filter(d => 
           d.properties.NAME === state)
+        selectedMapPath = this.mapPath
+        featureBounds = self.calculateScaleTranslation(data, selectedMapPath)
       }
-
+      console.log(state)
+      console.log(featureBounds)
       // // set transitions
       // const updateTransition = d3.transition()
       //   .duration(1000)
@@ -594,20 +660,20 @@ export default {
       //   .duration(1000)
       //   .ease(d3.easeCubicInOut)
 
-      let stateGroups = this.mapBounds.selectAll(".states")
+      this.stateGroups = this.mapBounds.selectAll(".states")
         .selectAll(".state")
         .data(data, d => d.properties.FIPS)
 
-      const oldStateGroups = stateGroups.exit()
+      const oldStateGroups = this.stateGroups.exit()
 
       oldStateGroups.selectAll('path')
         .transition(self.getExitTransition())
         .style("stroke", "#ffffff")
         .style("fill", "#ffffff")
 
-      // oldStateGroups.transition(self.getExitTransition()).remove()
+      oldStateGroups.remove() //.transition(self.getExitTransition())
 
-      const newStateGroups = stateGroups.enter().append("g")
+      const newStateGroups = this.stateGroups.enter().append("g")
         .attr("class", "state")
         .attr("id", d => 'state-group-' + d.properties.FIPS)
         .attr("tabindex", "0")
@@ -617,14 +683,29 @@ export default {
       newStateGroups.append("path")
         .attr("class", "state-paths")
         .attr("id", d => "state-" + d.properties.FIPS)
-        .attr("d", this.mapPath)
+        .attr("d", d => {
+          // let computedBounds = self.calculateScaleTranslation(d, selectedMapPath)
+          // // console.log(d.properties.NAME)
+          // // console.log(computedBounds)
+          // // console.log(this.genericProjection)
+          // this.genericProjection
+          //   .scale(computedBounds.scale)
+          //   .translate(computedBounds.translation)
+          // // console.log(this.genericProjection)
+          // return this.genericPath(d)
+          return d.properties.NAME === 'Alaska' ? this.mapPathAK(d) : selectedMapPath(d)
+        })
         .style("stroke", "None")
         .style("stroke-width", 0)
         .style("fill", "None")
+        .on("click", (e, d) => {
+          let zoomPath = d.properties.NAME === 'Alaska' ? this.mapPathAK : selectedMapPath
+          self.zoomToState(event, d, zoomPath)
+        })
 
-      stateGroups = newStateGroups.merge(stateGroups)
+      this.stateGroups = newStateGroups.merge(this.stateGroups)
 
-      const stateShapes = stateGroups.select("path")
+      const stateShapes = this.stateGroups.select("path")
 
       if (!(state === "All")) {
         let selectedStateId = data[0].properties.FIPS
@@ -718,7 +799,7 @@ export default {
         data = this.countyPolys.filter(d => 
           d.properties.STATE_NAME === state)
       }
-
+      console.log(data)
       // // set transitions
       // const updateTransition = d3.transition()
       //   .duration(1000)
@@ -729,11 +810,11 @@ export default {
       //   .duration(1000)
       //   .ease(d3.easeCubicInOut)
       
-      let countyGroups = this.mapBounds.selectAll(".counties")
+      this.countyGroups = this.mapBounds.selectAll(".counties")
         .selectAll(".county")
         .data(data, d => d.properties.GEOID)
 
-      const oldCountyGroups = countyGroups.exit()
+      const oldCountyGroups = this.countyGroups.exit()
 
       oldCountyGroups.selectAll('path')
         .transition(self.getExitTransition())
@@ -742,33 +823,42 @@ export default {
 
       oldCountyGroups.transition(self.getExitTransition()).remove()
 
-      const newCountyGroups = countyGroups.enter().append("g")
+      const newCountyGroups = this.countyGroups.enter().append("g")
           .attr("class", "county")
           .attr("id", d => "county-group-" + d.properties.GEOID)
           .attr("tabindex", "0")
           .attr("role", "listitem")
-          .attr("aria-label", d => d.properties.NAMELSAD + ', ' + d.properties.STATE_NAME)
+          .attr("aria-label", d => d.properties.NAME + ', ' + d.properties.STATE_NAME)
 
       newCountyGroups.append("path")
           .attr("id", d => "county-" + d.properties.GEOID)
-          .attr("d", this.mapPath)
+          .attr("d", d => {
+            return d.properties.STATE_NAME === 'Alaska' ? this.mapPathAK(d) : this.mapPath(d)
+          })
+          // .attr("d", this.mapPath)
           .style("stroke", "None")
           .style("stroke-width", 0)
           .style("fill", "None")
 
-      countyGroups = newCountyGroups.merge(countyGroups)
+      this.countyGroups = newCountyGroups.merge(this.countyGroups)
 
-      const countyShapes = countyGroups.select("path")
+      const countyShapes = this.countyGroups.select("path")
       
       if (!(state === "All")) {
         countyShapes.transition(self.getUpdateTransition())
-            .attr("d", this.mapPath)
+            // .attr("d", d => {
+            //   return d.properties.STATE_NAME === 'Alaska' ? this.mapPathAK(d) : this.mapPath(d)
+            // })
+            // .attr("d", this.mapPath)
             .style("stroke", "#939393") //D1D1D1
             .style("stroke-width", 0.1)
             .style("fill", "#ffffff")
       } else {
         countyShapes.transition(self.getUpdateTransition())
-            .attr("d", this.mapPath)
+            // .attr("d", d => {
+            //   return d.properties.STATE_NAME === 'Alaska' ? this.mapPathAK(d) : this.mapPath(d)
+            // })
+            // .attr("d", this.mapPath)
             .style("stroke", "#D1D1D1") //D1D1D1
             .style("stroke-width", 0.1)
             .style("fill", "#ffffff")
@@ -822,11 +912,11 @@ export default {
       //   .ease(d3.easeCubicInOut)
 
       // county centroids
-      let countyCentroidGroups = this.mapBounds.selectAll(".county_centroids")
+      this.countyCentroidGroups = this.mapBounds.selectAll(".county_centroids")
         .selectAll(".county_centroid")
         .data(dataPoints, d => d.properties.GEOID)
 
-      const oldCountyCentroidGroups = countyCentroidGroups.exit()
+      const oldCountyCentroidGroups = this.countyCentroidGroups.exit()
 
       oldCountyCentroidGroups.selectAll('path')
         .transition(self.getExitTransition())
@@ -834,7 +924,7 @@ export default {
 
       oldCountyCentroidGroups.transition(self.getExitTransition()).remove()
 
-      const newCountyCentroidGroups = countyCentroidGroups.enter().append("g")
+      const newCountyCentroidGroups = this.countyCentroidGroups.enter().append("g")
         .attr("class", "county_centroid")
         .attr("id", d => "county-point-group" + d.properties.GEOID)
         .attr("tabindex", "0")
@@ -845,21 +935,27 @@ export default {
           d.properties.site_count
         }`)
     
-      // append rects and set default y and height, so that when appear, come up from bottom
+      // append points
       newCountyCentroidGroups.append("path")
         .attr("id", d => "county-point-" + d.properties.GEOID)
         .attr("d", this.mapPath.pointRadius(0))
+        // .attr("d", d => {
+        //   return d.properties.STATE_NAME === 'Alaska' ? this.mapPathAK(d).pointRadius(0) : this.mapPath(d).pointRadius(0)
+        // })
         .style("fill", d => colorScale(colorAccessor(d)))
         .style("stroke", "#ffffff")
 
       // update rectGroups to include new points
-      countyCentroidGroups = newCountyCentroidGroups.merge(countyCentroidGroups)
+      this.countyCentroidGroups = newCountyCentroidGroups.merge(this.countyCentroidGroups)
 
-      const countyCentroidPoints = countyCentroidGroups.select("path")
+      const countyCentroidPoints = this.countyCentroidGroups.select("path")
 
       countyCentroidPoints
           .transition(self.getUpdateTransition())
           .attr("d", this.mapPath.pointRadius(d => sizeScale(sizeAccessor(d))))
+          // .attr("d", d => {
+          //   return d.properties.STATE_NAME === 'Alaska' ? this.mapPathAK(d).pointRadius(d => sizeScale(sizeAccessor(d))) : this.mapPath(d).pointRadius(d => sizeScale(sizeAccessor(d)))
+          // })
           .style("stroke", "#ffffff")
           .style("stroke-width", 0.5)
           .style("fill", d => colorScale(colorAccessor(d)))
@@ -897,6 +993,17 @@ export default {
     drawBars() {
 
     },
+    calculateScaleTranslation(feature, path) {
+      const b = path.bounds(feature)
+
+      const s = .95 / Math.max((b[1][0] - b[0][0]) / this.mapDimensions.width, (b[1][1] - b[0][1]) / this.mapDimensions.height)
+      const t = [(this.mapDimensions.width - s * (b[1][0] + b[0][0])) / 2, (this.mapDimensions.height - s * (b[1][1] + b[0][1])) / 2];
+
+      return {
+        'scale': s,
+        'translation': t
+      };
+    },
     calculateScaleCenter(features, path, width, height) {
       const self = this;
 
@@ -920,6 +1027,89 @@ export default {
         'scale': scale,
         'center': center
       };
+    },
+    zoomToState(event, d, path) {
+      const self = this;
+      console.log("you clicked a state!")
+
+      let zoomedState = d.properties.NAME
+      if (this.active === zoomedState) return self.reset();
+      this.active = zoomedState
+
+      // const [[x0, y0], [x1, y1]] = this.mapPath.bounds(d);
+      // event.stopPropagation();
+
+      // function zoomed(event) {
+      //   console.log("called zoomed")
+      //   const {transform} = event;
+      //   console.log(transform)
+      //   self.mapBounds.attr("transform", transform);
+      //   self.mapBounds.attr("stroke-width", 1 / transform.k);
+      //   console.log("transformed mapBounds")
+      // }
+      
+      // const zoom = this.d3.zoom()
+      //   // .on('zoom', (event) => {
+      //   //   this.mapBounds.attr("transform", event.transform);
+      //   // })
+      //   .scaleExtent([1, 40])
+      //   .on("zoom", zoomed);
+
+      // this.wrapper.transition(self.getUpdateTransition()).call(
+      //   zoom.transform,
+      //   self.d3.zoomIdentity
+      //     .translate(this.mapDimensions.width / 2, this.mapDimensions.height / 2)
+      //     .scale(Math.min(8, 0.9 / Math.max((x1 - x0) / this.mapDimensions.width, (y1 - y0) / this.mapDimensions.height)))
+      //     .translate(-(x0 + x1) / 2, -(y0 + y1) / 2),
+      //   this.d3.pointer(event, this.wrapper.node())
+      // );
+
+      const bounds = path.bounds(d),
+          dx = bounds[1][0] - bounds[0][0],
+          dy = bounds[1][1] - bounds[0][1],
+          x = (bounds[0][0] + bounds[1][0]) / 2,
+          y = (bounds[0][1] + bounds[1][1]) / 2,
+          scale = .9 / Math.max(dx / this.mapDimensions.width, dy / this.mapDimensions.height),
+          translate = [this.mapDimensions.width / 2 - scale * x, this.mapDimensions.height / 2 - scale * y];
+
+      this.stateGroups.transition(self.getUpdateTransition)
+        .style("stroke-width", 1.5 / scale + "px")
+        .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+
+      this.countyGroups.transition(self.getUpdateTransition)
+        .style("stroke-width", 1.5 / scale + "px")
+        .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+
+      this.countyCentroidGroups.transition(self.getUpdateTransition)
+        .style("stroke-width", 1.5 / scale + "px")
+        .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+
+      self.drawHistogram(zoomedState)
+      self.drawCounties(zoomedState)
+      self.drawMap(zoomedState)
+      self.drawCountyPoints(zoomedState, this.currentType)
+    },
+    reset() {
+      const self = this;
+
+      this.active = this.d3.select(null);
+
+      self.drawHistogram('All')
+      self.drawCounties('All')
+      self.drawMap('All')
+      self.drawCountyPoints('All', this.currentType)
+
+      this.stateGroups.transition(self.getExitTransition)
+          .style("stroke-width", "1.5px")
+          .attr("transform", "");
+
+      this.countyGroups.transition(self.getExitTransition)
+        .style("stroke-width", "1.5px")
+        .attr("transform", "");
+
+      this.countyCentroidGroups.transition(self.getExitTransition)
+        .style("stroke-width", "1.5px")
+        .attr("transform", "");
     }
   }
 }
