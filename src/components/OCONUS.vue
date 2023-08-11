@@ -54,7 +54,7 @@ export default {
       mapBounds: null,
       mapProjection: null,
       mapPath: null,
-      akMapProjection: null,
+      mapProjectionAK: null,
       mapPathAK: null,
       genericPath: null,
       genericProjection: null,
@@ -64,6 +64,9 @@ export default {
       countyGroups: null,
       countyCentroidGroups: null,
       active: null,
+      selectedText: null,
+      stateList: null,
+      zoomed: false
     }
   },
   mounted(){      
@@ -148,7 +151,7 @@ export default {
       this.statePolysPRVI = this.statePolysPRVIJSON.features;
 
       this.statePolys = this.statePolysCONUS.concat(this.statePolyAK, this.statePolysHI, this.statePolysGUMP, this.statePolysPRVI)
-      console.log(this.statePolys)
+      
       // get list of unique state groups
       // const stateGroups = [... new Set(this.statePolys.map(d => d.properties.group))]
       // console.log(stateGroups)
@@ -159,14 +162,14 @@ export default {
       this.active = '';//this.d3.select(null);
 
       // get list of unique states
-      const stateList = [... new Set(this.dataAll.map(d => d.state_name))]
-      stateList.unshift('All')
-      let currentState = 'All'//stateList[0]
+      this.stateList = [... new Set(this.dataAll.map(d => d.state_name))]
+      this.stateList.unshift('All')
+      let currentState = 'All'//this.stateList[0]
       this.currentType = 'All'
-      this.dropdownOptions = stateList
-      console.log(stateList)
+      this.dropdownOptions = this.stateList
+      console.log(this.stateList)
       // add dropdown
-      self.addDropdown(stateList)
+      self.addDropdown(this.stateList)
 
       // set universal map frame dimensions
       const map_width = 900
@@ -217,14 +220,47 @@ export default {
         .attr("class", "dropdown")
         .attr("id", "state-dropdown")
         .on("change", function() { 
-          let selectedText = this.options[this.selectedIndex].text;
-          this.style.width = 20 + (selectedText.length * 12) + "px";
+          this.selectedText = this.options[this.selectedIndex].text;
+          this.style.width = 20 + (this.selectedText.length * 12) + "px";
 
-          self.drawHistogram(this.value) 
-          self.drawCounties(this.value)
-          self.drawMap(this.value)
-          self.drawCountyPoints(this.value, self.currentType)
+          let selectedArea = this.value
+
+          if (selectedArea === 'All') {
+            // If dropdown has _changed_ to 'All' that means we need to reset the map and zoom out
+            self.reset()
+          } else {
+            // If dropdown has _changed_ to a specific state that means we need to zoom into that state
+            // The zoom function will take care of redrawing the map and histogram
+            let stateData = self.statePolys.filter(d => d.properties.NAME === this.value)
+            
+            let zoomPath;
+            switch(selectedArea) {
+              case 'Alaska':
+                zoomPath = self.mapPathAK;
+                break;
+              case 'Hawaii':
+                zoomPath = self.mapPathHI;
+                break;
+              case 'Puerto Rico':
+                zoomPath = self.mapPathPRVI;
+                break;
+              case 'Virgin Islands':
+                zoomPath = self.mapPathPRVI;
+                break;
+              default:
+                zoomPath = self.mapPath;
+            }
+            
+            self.zoomToState(stateData[0], zoomPath, 'dropdown')
+          }
+
+          // self.drawHistogram(selectedArea) 
+          // self.drawCounties(selectedArea)
+          // self.drawMap(selectedArea)
+          // self.drawCountyPoints(selectedArea, self.currentType)
         })
+
+
 
       const dropdownDefaultText = 'all states and territories'
       let titleOption = dropdown.append("option")
@@ -240,9 +276,9 @@ export default {
         .attr("value", d => d)
         .text(d => d)
 
-        var selectId = document.getElementById("state-dropdown");
-        let selectedText = selectId.options[selectId.selectedIndex].text;
-        selectId.style.width = 20 + (selectedText.length * 8.5) + "px";
+      let selectId = document.getElementById("state-dropdown");
+      this.selectedText = selectId.options[selectId.selectedIndex].text;
+      selectId.style.width = 20 + (this.selectedText.length * 8.5) + "px";
     },
     initMap() {
       // draw canvas for map
@@ -278,15 +314,15 @@ export default {
 
       // [[left, bottom], [right, top]]
       const boundsStatePolysCONUS = this.d3.geoBounds(this.statePolysCONUSJSON)
-      console.log(boundsStatePolysCONUS)
+      // console.log(boundsStatePolysCONUS)
       const conusWidth = boundsStatePolysCONUS[1][0] - boundsStatePolysCONUS[0][0]
       const conusHeight = boundsStatePolysCONUS[1][1] - boundsStatePolysCONUS[0][1]
-      console.log(conusWidth)
+      // console.log(conusWidth)
 
       const boundsStatePolyAK = this.d3.geoBounds(this.statePolyAKJSON)
       const akWidth = boundsStatePolyAK[1][0] - boundsStatePolyAK[0][0]
       const akHeight = boundsStatePolyAK[1][1] - boundsStatePolyAK[0][1]
-      console.log(akWidth)
+      // console.log(akWidth)
 
       const akConusHeightRatio = akHeight/conusHeight
 
@@ -304,7 +340,7 @@ export default {
       this.mapPath = this.d3.geoPath()
         .projection(this.mapProjection);
 
-      this.akMapProjection = this.d3.geoAlbers()
+      this.mapProjectionAK = this.d3.geoAlbers()
         .center([0, 64])
         .rotate([151, 0, 0])
         .parallels([58.5, 65])
@@ -312,7 +348,27 @@ export default {
         .translate([this.mapDimensions.width*0.9 / 2, this.mapDimensions.height*0.3 / 2]); // alabama : [-this.mapDimensions.width / 4, 20]
 
       this.mapPathAK = this.d3.geoPath()
-        .projection(this.akMapProjection);
+        .projection(this.mapProjectionAK);
+
+      this.mapProjectionHI = this.d3.geoAlbers()
+        .center([0, 20.25])
+        .rotate([157, 0, 0])
+        .parallels([19.5, 21])
+        .scale(mapScale) // alabama : 3500 1200
+        .translate([this.mapDimensions.width*0.4 / 2, this.mapDimensions.height*1.8 / 2]); // alabama : [-this.mapDimensions.width / 4, 20]
+
+      this.mapPathHI = this.d3.geoPath()
+        .projection(this.mapProjectionHI);
+
+      this.mapProjectionPRVI = this.d3.geoAlbers()
+        .center([0, 18.1])
+        .rotate([65.9, 0, 0])
+        .parallels([17.9, 18.2])
+        .scale(mapScale) // alabama : 3500 1200
+        .translate([this.mapDimensions.width*1.5 / 2, this.mapDimensions.height*1.8 / 2]); // alabama : [-this.mapDimensions.width / 4, 20]
+
+      this.mapPathPRVI = this.d3.geoPath()
+        .projection(this.mapProjectionPRVI);
 
       this.mapBounds.append("g")
         .attr("class", "counties")
@@ -321,16 +377,16 @@ export default {
         .attr("aria-label", "county polygons")
 
       this.mapBounds.append("g")
-        .attr("class", "states")
-        .attr("role", "list")
-        .attr("tabindex", 0)
-        .attr("aria-label", "state polygons")
-
-      this.mapBounds.append("g")
         .attr("class", "county_centroids")
         .attr("role", "list")
         // .attr("tabindex", 0)
         .attr("aria-label", "county centroids")
+
+      this.mapBounds.append("g")
+        .attr("class", "states")
+        .attr("role", "list")
+        .attr("tabindex", 0)
+        .attr("aria-label", "state polygons")
 
       // this.mapBounds.append("g")
       //   .attr("class", "testPaths")
@@ -627,29 +683,48 @@ export default {
       const self = this;
 
       let data;
-      let selectedMapPath;
-      let featureBounds;
+      // let selectedMapPath;
+      // let featureBounds;
 
       if (state === 'All') {
         data = this.statePolys
-        selectedMapPath = this.mapPath
-        featureBounds = null;
-      } else if (state === 'Alaska') {
-        data = this.statePolyAK
-        selectedMapPath = this.mapPathAK
-        featureBounds = self.calculateScaleTranslation(data[0], selectedMapPath)
-      } else if (state === 'Puerto Rico' | state === 'Virgin Islands') {
-        data = this.statePolysPRVI
-        selectedMapPath = this.mapPath
-        featureBounds = self.calculateScaleTranslation(data, selectedMapPath)
+        // selectedMapPath = this.mapPath
+        // featureBounds = null;
+      // } else if (state === 'Alaska') {
+      //   data = this.statePolyAK
+      //   selectedMapPath = this.mapPathAK
+      //   featureBounds = self.calculateScaleTranslation(data[0], selectedMapPath)
+      // } else if (state === 'Puerto Rico' | state === 'Virgin Islands') {
+      //   data = this.statePolysPRVI
+      //   selectedMapPath = this.mapPath
+      //   featureBounds = self.calculateScaleTranslation(data, selectedMapPath)
       } else {
         data = this.statePolys.filter(d => 
           d.properties.NAME === state)
-        selectedMapPath = this.mapPath
-        featureBounds = self.calculateScaleTranslation(data, selectedMapPath)
+        
+        let stateMapPath;
+        switch(state) {
+            case 'Alaska':
+              stateMapPath =  this.mapPathAK;
+              break;
+            case 'Hawaii':
+              stateMapPath = this.mapPathHI;
+              break;
+            case 'Puerto Rico':
+              stateMapPath = this.mapPathPRVI;
+              break;
+            case 'Virgin Islands':
+              stateMapPath = this.mapPathPRVI;
+              break;
+            default:
+              stateMapPath = this.mapPath;
+          }
+
+        // selectedMapPath = this.mapPath
+        // featureBounds = self.calculateScaleTranslation(data, selectedMapPath)
       }
-      console.log(state)
-      console.log(featureBounds)
+      // console.log(state)
+      // console.log(featureBounds)
       // // set transitions
       // const updateTransition = d3.transition()
       //   .duration(1000)
@@ -693,14 +768,44 @@ export default {
           //   .translate(computedBounds.translation)
           // // console.log(this.genericProjection)
           // return this.genericPath(d)
-          return d.properties.NAME === 'Alaska' ? this.mapPathAK(d) : selectedMapPath(d)
+          // return d.properties.NAME === 'Alaska' ? this.mapPathAK(d) : this.mapPath(d)
+          switch(d.properties.NAME) {
+            case 'Alaska':
+              return this.mapPathAK(d);
+            case 'Hawaii':
+              return this.mapPathHI(d);
+            case 'Puerto Rico':
+              return this.mapPathPRVI(d);
+            case 'Virgin Islands':
+              return this.mapPathPRVI(d);
+            default:
+              return this.mapPath(d);
+          }
         })
         .style("stroke", "None")
         .style("stroke-width", 0)
-        .style("fill", "None")
+        .style("fill", "#ffffff") // "None"
+        .style("fill-opacity", 0)
         .on("click", (e, d) => {
-          let zoomPath = d.properties.NAME === 'Alaska' ? this.mapPathAK : selectedMapPath
-          self.zoomToState(event, d, zoomPath)
+          let zoomPath;
+          // let zoomPath = d.properties.NAME === 'Alaska' ? this.mapPathAK : selectedMapPath
+          switch(d.properties.NAME) {
+            case 'Alaska':
+              zoomPath = this.mapPathAK;
+              break;
+            case 'Hawaii':
+              zoomPath = this.mapPathHI;
+              break;
+            case 'Puerto Rico':
+              zoomPath = this.mapPathPRVI;
+              break;
+            case 'Virgin Islands':
+              zoomPath = this.mapPathPRVI;
+              break;
+            default:
+              zoomPath = this.mapPath;
+          }
+          self.zoomToState(d, zoomPath, 'click')
         })
 
       this.stateGroups = newStateGroups.merge(this.stateGroups)
@@ -713,7 +818,8 @@ export default {
           .raise()
         stateShapes
           .transition(self.getUpdateTransition())
-          .style("fill", "None")
+          .style("fill", "#ffffff") // "None"
+          .style("fill-opacity", 0)
           .style("stroke", "#636363")
           .style("stroke-width", 1)
       } else {
@@ -721,7 +827,8 @@ export default {
           .transition(self.getUpdateTransition())
           .style("stroke", "#949494") //#636363
           .style("stroke-width", 0.5)
-          .style("fill", "None")
+          .style("fill", "#ffffff") // "None"
+          .style("fill-opacity", 0)
       }
       
 
@@ -786,7 +893,6 @@ export default {
       //         .style("stroke-opacity", 1)
       //     })
       // }
-
     },
     drawCounties(state) {
       const self = this;
@@ -799,7 +905,7 @@ export default {
         data = this.countyPolys.filter(d => 
           d.properties.STATE_NAME === state)
       }
-      console.log(data)
+      
       // // set transitions
       // const updateTransition = d3.transition()
       //   .duration(1000)
@@ -833,7 +939,19 @@ export default {
       newCountyGroups.append("path")
           .attr("id", d => "county-" + d.properties.GEOID)
           .attr("d", d => {
-            return d.properties.STATE_NAME === 'Alaska' ? this.mapPathAK(d) : this.mapPath(d)
+            // return d.properties.STATE_NAME === 'Alaska' ? this.mapPathAK(d) : this.mapPath(d)
+            switch(d.properties.STATE_NAME) {
+              case 'Alaska':
+                return this.mapPathAK(d);
+              case 'Hawaii':
+                return this.mapPathHI(d);
+              case 'Puerto Rico':
+                return this.mapPathPRVI(d);
+              case 'Virgin Islands':
+                return this.mapPathPRVI(d);
+              default:
+                return this.mapPath(d);
+          }
           })
           // .attr("d", this.mapPath)
           .style("stroke", "None")
@@ -894,9 +1012,9 @@ export default {
 
       // create scales   
       const sizeScale = this.d3.scaleLinear()
-        .rangeRound([0.7, 10])
+        .range([0.7, 10]) // .rangeRound
         .domain([1, this.d3.max(dataPoints, sizeAccessor)])
-      
+
       const colorScale = this.d3.scaleOrdinal()
         .domain([... new Set(this.countyPoints.map(d => colorAccessor(d)))].sort())
         .range(["grey", "darkmagenta","teal","gold","indianred","steelblue","pink"])
@@ -921,6 +1039,20 @@ export default {
       oldCountyCentroidGroups.selectAll('path')
         .transition(self.getExitTransition())
         .attr("d", this.mapPath.pointRadius(0))
+        .attr("d", d => {
+          switch(d.properties.STATE_NAME) {
+            case 'Alaska':
+              return this.mapPathAK.pointRadius(0)(d);
+            case 'Hawaii':
+              return this.mapPathHI.pointRadius(0)(d);
+            case 'Puerto Rico':
+              return this.mapPathPRVI.pointRadius(0)(d);
+            case 'Virgin Islands':
+              return this.mapPathPRVI.pointRadius(0)(d);
+            default:
+              return this.mapPath.pointRadius(0)(d);
+          }
+        })
 
       oldCountyCentroidGroups.transition(self.getExitTransition()).remove()
 
@@ -932,16 +1064,28 @@ export default {
         .attr("aria-label", d => `There are ${
           sizeAccessor(d)
         } facilities in ${
-          d.properties.site_count
+          d.properties.NAMELSAD
         }`)
     
       // append points
       newCountyCentroidGroups.append("path")
         .attr("id", d => "county-point-" + d.properties.GEOID)
-        .attr("d", this.mapPath.pointRadius(0))
-        // .attr("d", d => {
-        //   return d.properties.STATE_NAME === 'Alaska' ? this.mapPathAK(d).pointRadius(0) : this.mapPath(d).pointRadius(0)
-        // })
+        // .attr("d", this.mapPath.pointRadius(0))
+        .attr("d", d => {
+          // return d.properties.STATE_NAME === 'Alaska' ? this.mapPathAK.pointRadius(0)(d) : this.mapPath.pointRadius(0)(d)
+          switch(d.properties.STATE_NAME) {
+            case 'Alaska':
+              return this.mapPathAK.pointRadius(0)(d);
+            case 'Hawaii':
+              return this.mapPathHI.pointRadius(0)(d);
+            case 'Puerto Rico':
+              return this.mapPathPRVI.pointRadius(0)(d);
+            case 'Virgin Islands':
+              return this.mapPathPRVI.pointRadius(0)(d);
+            default:
+              return this.mapPath.pointRadius(0)(d);
+          }
+        })
         .style("fill", d => colorScale(colorAccessor(d)))
         .style("stroke", "#ffffff")
 
@@ -952,10 +1096,22 @@ export default {
 
       countyCentroidPoints
           .transition(self.getUpdateTransition())
-          .attr("d", this.mapPath.pointRadius(d => sizeScale(sizeAccessor(d))))
-          // .attr("d", d => {
-          //   return d.properties.STATE_NAME === 'Alaska' ? this.mapPathAK(d).pointRadius(d => sizeScale(sizeAccessor(d))) : this.mapPath(d).pointRadius(d => sizeScale(sizeAccessor(d)))
-          // })
+          // .attr("d", this.mapPath.pointRadius(d => sizeScale(sizeAccessor(d))))
+          .attr("d", d => {
+            // return d.properties.STATE_NAME === 'Alaska' ? this.mapPathAK.pointRadius(sizeScale(sizeAccessor(d)))(d) : this.mapPath.pointRadius(sizeScale(sizeAccessor(d)))(d)
+            switch(d.properties.STATE_NAME) {
+              case 'Alaska':
+                return this.mapPathAK.pointRadius(sizeScale(sizeAccessor(d)))(d);
+              case 'Hawaii':
+                return this.mapPathHI.pointRadius(sizeScale(sizeAccessor(d)))(d);
+              case 'Puerto Rico':
+                return this.mapPathPRVI.pointRadius(sizeScale(sizeAccessor(d)))(d);
+              case 'Virgin Islands':
+                return this.mapPathPRVI.pointRadius(sizeScale(sizeAccessor(d)))(d);
+              default:
+                return this.mapPath.pointRadius(sizeScale(sizeAccessor(d)))(d);
+            }
+          })
           .style("stroke", "#ffffff")
           .style("stroke-width", 0.5)
           .style("fill", d => colorScale(colorAccessor(d)))
@@ -1028,71 +1184,138 @@ export default {
         'center': center
       };
     },
-    zoomToState(event, d, path) {
+    zoomToState(d, path, callMethod) {
       const self = this;
-      console.log("you clicked a state!")
-
-      let zoomedState = d.properties.NAME
-      if (this.active === zoomedState) return self.reset();
-      this.active = zoomedState
-
-      // const [[x0, y0], [x1, y1]] = this.mapPath.bounds(d);
-      // event.stopPropagation();
-
-      // function zoomed(event) {
-      //   console.log("called zoomed")
-      //   const {transform} = event;
-      //   console.log(transform)
-      //   self.mapBounds.attr("transform", transform);
-      //   self.mapBounds.attr("stroke-width", 1 / transform.k);
-      //   console.log("transformed mapBounds")
-      // }
       
-      // const zoom = this.d3.zoom()
-      //   // .on('zoom', (event) => {
-      //   //   this.mapBounds.attr("transform", event.transform);
-      //   // })
-      //   .scaleExtent([1, 40])
-      //   .on("zoom", zoomed);
+      let zoomedState = d.properties.NAME
+      let zoomAction = this.active === zoomedState ? 'Zoom out' : 'Zoom in'
 
-      // this.wrapper.transition(self.getUpdateTransition()).call(
-      //   zoom.transform,
-      //   self.d3.zoomIdentity
-      //     .translate(this.mapDimensions.width / 2, this.mapDimensions.height / 2)
-      //     .scale(Math.min(8, 0.9 / Math.max((x1 - x0) / this.mapDimensions.width, (y1 - y0) / this.mapDimensions.height)))
-      //     .translate(-(x0 + x1) / 2, -(y0 + y1) / 2),
-      //   this.d3.pointer(event, this.wrapper.node())
-      // );
+      console.log(`You selected ${d.properties.NAME} by ${callMethod}. Currently active is ${this.active}. Current this.zoomed is ${this.zoomed}. Planned zoom action is ${zoomAction}`)
 
-      const bounds = path.bounds(d),
+      if (zoomAction === 'Zoom out') return self.reset();
+      if (callMethod === 'click') this.d3.select('select').property('value', zoomedState)
+
+      if (!this.zoomed) {
+        console.log(`this.zoomed is ${this.zoomed} and planned zoom action is ${zoomAction}, so going to zoom in from full view`)
+
+        let selectId = document.getElementById("state-dropdown");
+        // console.log(this.stateList.indexOf(zoomedState))
+        // console.log(selectId.value)
+        // selectId.value = this.stateList.indexOf(zoomedState)
+        // this.selectedText = zoomedState
+
+        // const [[x0, y0], [x1, y1]] = this.mapPath.bounds(d);
+        // event.stopPropagation();
+
+        // function zoomed(event) {
+        //   console.log("called zoomed")
+        //   const {transform} = event;
+        //   console.log(transform)
+        //   self.mapBounds.attr("transform", transform);
+        //   self.mapBounds.attr("stroke-width", 1 / transform.k);
+        //   console.log("transformed mapBounds")
+        // }
+        
+        // const zoom = this.d3.zoom()
+        //   // .on('zoom', (event) => {
+        //   //   this.mapBounds.attr("transform", event.transform);
+        //   // })
+        //   .scaleExtent([1, 40])
+        //   .on("zoom", zoomed);
+
+        // this.wrapper.transition(self.getUpdateTransition()).call(
+        //   zoom.transform,
+        //   self.d3.zoomIdentity
+        //     .translate(this.mapDimensions.width / 2, this.mapDimensions.height / 2)
+        //     .scale(Math.min(8, 0.9 / Math.max((x1 - x0) / this.mapDimensions.width, (y1 - y0) / this.mapDimensions.height)))
+        //     .translate(-(x0 + x1) / 2, -(y0 + y1) / 2),
+        //   this.d3.pointer(event, this.wrapper.node())
+        // );
+
+        const bounds = path.bounds(d),
+            dx = bounds[1][0] - bounds[0][0],
+            dy = bounds[1][1] - bounds[0][1],
+            x = (bounds[0][0] + bounds[1][0]) / 2,
+            y = (bounds[0][1] + bounds[1][1]) / 2,
+            scale = .9 / Math.max(dx / this.mapDimensions.width, dy / this.mapDimensions.height),
+            translate = [this.mapDimensions.width / 2 - scale * x, this.mapDimensions.height / 2 - scale * y];
+
+        console.log(`SCALE: ${scale}`)
+        this.stateGroups.transition(self.getUpdateTransition)
+          .attr("transform", "translate(" + translate + ") scale(" + scale + ")");
+
+        this.countyGroups.transition(self.getUpdateTransition)
+          .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+
+        this.countyCentroidGroups.transition(self.getUpdateTransition)
+          .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+
+        // set active state to zoomed state
+        this.zoomed = true;
+        this.active = zoomedState;
+        console.log(`Zoomed in on ${zoomedState}, so this.zoomed is ${this.zoomed}`)
+
+        self.drawHistogram(zoomedState)
+        self.drawCounties(zoomedState)
+        self.drawMap(zoomedState)
+        self.drawCountyPoints(zoomedState, this.currentType)
+
+      } else {
+        console.log(`this.zoomed is ${this.zoomed} and planned zoom action is ${zoomAction}, so going to zoom out and then in to state`)
+
+        // NEED TO REVAMP - THIS IS MESSY
+
+        // First draw whole map AND zoom out to whole map
+        self.drawHistogram('All')
+        self.drawCounties('All')
+        self.drawMap('All')
+        self.drawCountyPoints('All', this.currentType)
+
+        this.stateGroups
+          .attr("transform", "");
+
+        this.countyGroups
+          .attr("transform", "");
+
+        this.countyCentroidGroups
+          .attr("transform", "");
+
+        // Then zoom in to state and draw state
+        const bounds = path.bounds(d),
           dx = bounds[1][0] - bounds[0][0],
           dy = bounds[1][1] - bounds[0][1],
           x = (bounds[0][0] + bounds[1][0]) / 2,
           y = (bounds[0][1] + bounds[1][1]) / 2,
           scale = .9 / Math.max(dx / this.mapDimensions.width, dy / this.mapDimensions.height),
           translate = [this.mapDimensions.width / 2 - scale * x, this.mapDimensions.height / 2 - scale * y];
+        console.log(`SCALE: ${scale}`)
+        this.stateGroups.transition(self.getUpdateTransition)
+          .attr("transform", "translate(" + translate + ") scale(" + scale + ")");
 
-      this.stateGroups.transition(self.getUpdateTransition)
-        .style("stroke-width", 1.5 / scale + "px")
-        .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+        this.countyGroups.transition(self.getUpdateTransition)
+          .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
 
-      this.countyGroups.transition(self.getUpdateTransition)
-        .style("stroke-width", 1.5 / scale + "px")
-        .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+        this.countyCentroidGroups.transition(self.getUpdateTransition)
+          .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
 
-      this.countyCentroidGroups.transition(self.getUpdateTransition)
-        .style("stroke-width", 1.5 / scale + "px")
-        .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+        // set active state to zoomed state
+        this.zoomed = true;
+        this.active = zoomedState;
+        console.log(`Zoomed in on ${zoomedState}, so this.zoomed is ${this.zoomed}`)
 
-      self.drawHistogram(zoomedState)
-      self.drawCounties(zoomedState)
-      self.drawMap(zoomedState)
-      self.drawCountyPoints(zoomedState, this.currentType)
+        // redraw map and histogram for state
+        self.drawHistogram(zoomedState)
+        self.drawCounties(zoomedState)
+        self.drawMap(zoomedState)
+        self.drawCountyPoints(zoomedState, this.currentType)
+        
+      }
     },
     reset() {
       const self = this;
 
-      this.active = this.d3.select(null);
+      this.active = '' //this.d3.select(null);
+      this.d3.select('select').property('value', 'All')
 
       self.drawHistogram('All')
       self.drawCounties('All')
@@ -1100,16 +1323,19 @@ export default {
       self.drawCountyPoints('All', this.currentType)
 
       this.stateGroups.transition(self.getExitTransition)
-          .style("stroke-width", "1.5px")
+          // .style("stroke-width", 1)
           .attr("transform", "");
 
       this.countyGroups.transition(self.getExitTransition)
-        .style("stroke-width", "1.5px")
+        // .style("stroke-width", 1)
         .attr("transform", "");
 
       this.countyCentroidGroups.transition(self.getExitTransition)
-        .style("stroke-width", "1.5px")
+        // .style("stroke-width", 1)
         .attr("transform", "");
+
+      this.zoomed = false;
+      console.log(`Zoomed out, so this.zoomed is ${this.zoomed}`)
     }
   }
 }
