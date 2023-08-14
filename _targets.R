@@ -1,5 +1,8 @@
 library(targets)
 
+# Note, sometimes theres issues downloading the waffle package. If this is the case, download from remotes:
+# remotes::install_github("hrbrmstr/waffle")
+
 tar_option_set(packages = c("tidyverse",
                             'utils',
                             'tools',
@@ -22,6 +25,9 @@ tar_option_set(packages = c("tidyverse",
                             'prism',
                             'raster',
                             'exactextractr',
+                            'treemap',
+                            'treemapify',
+                            'waffle',
                             'FedData')) # need development version
 
 # Phase target makefiles
