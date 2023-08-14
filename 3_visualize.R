@@ -310,7 +310,7 @@ p3_targets <- list(
                                                 dpi = 300),
              format = 'file'),
 
-  ### state source faceted geofaceted treemaps ###
+  #####  state source faceted geofaceted treemaps   #####
   tar_target(p3_source_facet_treemap_all_types_png,
              generate_facility_source_facet_treemap(supply_summary = p2_supply_summary,
                                                 supply_summary_state = p2_supply_summary_state,
@@ -338,7 +338,7 @@ p3_targets <- list(
              pattern = map(p2_facility_types),
              format = 'file'),
 
-  # individual state level treemaps of water source for all facilities output in subfolder: `3_visualizse/out/state_source_treemap`
+  #####  individual state level treemaps of water source for all facilities output in subfolder: `3_visualize/out/state_source_treemap`  #####
   tar_target(p3_source_treemap_all_types_png,
              generate_facility_source_treemap(supply_summary = p2_supply_summary,
                                               supply_summary_state = p2_supply_summary_state,
@@ -352,7 +352,7 @@ p3_targets <- list(
                                               dpi = 300),
              format = 'file'),
 
-  # individual state level waffle charts of water source for all facilities output in subfolder: `3_visualizse/out/state_source_waffle`
+  #####  individual state level waffle charts of water source for all facilities output in subfolder: `3_visualize/out/state_source_waffle`   #####
   tar_target(p3_source_waffle_all_types_png,
              generate_facility_source_waffle(supply_summary = p2_supply_summary,
                                               supply_summary_state = p2_supply_summary_state,
@@ -364,6 +364,29 @@ p3_targets <- list(
                                               font_legend = p3_font_legend,
                                               outfile_subfolder = '3_visualize/out/state_source_waffle',
                                               dpi = 300),
+             format = 'file'),
+
+  ##### U.S. map with state abbreviation shift   #####
+  tar_target(p3_map_shift_state_abbr,
+             map_w_state_abbr(states = p3_spatial_shifted,
+                              state_color = p3_sites_map_params$state_color,
+                              state_size = 0.5,
+                              state_fill = p3_sites_map_params$state_fill,
+                              simplify = FALSE,
+                              simplification_keep = 0.7,
+                              legend = TRUE,
+                              font_legend = p3_font_legend,
+                              font_size = 18)
+             ),
+  tar_target(p3_map_shift_state_abbr_annotate,
+             annotate_shifted_map(shifted_map = p3_map_shift_state_abbr,
+                                  text_color = 'black', plot_title_font_size = 16,
+                                  width = 16, height = 9, font_legend = p3_font_legend)
+             ),
+  tar_target(p3_map_shift_state_abbr_annotate_png,
+             save_figure(figure = p3_map_shift_state_abbr_annotate,
+                         outfile = '3_visualize/out/map_national_state_abbr_shifted.png',
+                         bkgd_color = "#ffffff", width=16, height=9, dpi=300),
              format = 'file'),
 
   ##### Regional data maps and plots  #####

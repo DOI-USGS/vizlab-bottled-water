@@ -82,6 +82,68 @@ map_data_on_us <- function(states, plot_in, state_fill, state_color, state_size,
   return(p)
 }
 
+
+map_w_state_abbr <- function(states, plot_in, state_color, state_size,
+                             simplify = TRUE, state_fill,simplification_keep = NA,
+                             legend = TRUE, font_legend, font_size){
+
+  if (simplify) {
+    if (is.na(simplification_keep)) message('Using default of 0.05 for proportion
+                                            of points to retain')
+    states <- ms_simplify(states, keep = simplification_keep)
+  }
+
+  state_name_to_abb <- data.frame(state_name = state.name, state_abb = state.abb)
+  states$ID = str_to_title( states$ID )
+  states_with_abbr <- states %>%
+    left_join(state_name_to_abb, by = c("ID" = "state_name")) |>
+    mutate(
+      # fix types in WB_TYPE
+      state_abb = case_when(
+        ID == 'District Of Columbia' ~ 'DC',
+        TRUE ~ state_abb))
+
+  # Map of states
+  p <- ggplot() +
+    geom_sf(data = filter(states_with_abbr, location == 'mainland'),
+            color = state_color,
+            fill = state_fill,
+            size = state_size) +
+    geom_sf_text(data = filter(states_with_abbr, location == 'mainland',
+                               !state_abb %in% c("DC", "MD", "NJ", "DE", "VT", "NH", "RI", "CT"),
+                               !(row_number() %in% 50:63)),
+                 aes(label = state_abb),
+                 size = 4) +
+    geom_sf(data = filter(states_with_abbr, location == 'not mainland'),
+            color = state_color,
+            fill = state_fill,
+            size = 0.05) +
+    # add state abbreviations
+    ggrepel::geom_text_repel(
+      data = filter(states_with_abbr, state_abb %in% c("DC", "MD", "NJ", "DE", "VT", "NH", "RI", "CT"),
+                    !(row_number() %in% 50:63)),
+      aes(label = state_abb, geometry = geom),
+      stat = "sf_coordinates",
+      min.segment.length = unit(0, 'lines'),
+      nudge_y = 0.2,
+      box.padding = 0.4,
+      direction = "x",
+      size = 4
+    ) +
+    theme_void() +
+    theme(text = element_text(family = font_legend,
+                              size = font_size))
+
+  if (legend==FALSE) {
+    p <- p +
+      theme(
+        legend.position = 'none')
+  }
+
+  return(p)
+}
+
+
 #' @title map regions
 #' @description map location of regions on CONUS basemap
 #' @param regions sf object of study regions
