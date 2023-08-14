@@ -1291,7 +1291,7 @@ generate_facility_source_facet_treemap <- function(supply_summary, supply_summar
           panel.background = element_rect(color = text_color, fill = NA),
           strip.background = element_rect(color = text_color, fill = NA),
           axis.text = element_blank(),
-          strip.text = element_text(hjust = 0.5, margin = margin(b=-1), family = font_legend)
+          strip.text = element_text(hjust = 0.3, margin = margin(b=-1), family = font_legend)
     ) +
     scale_fill_manual(name = 'source_category', values = supply_colors) +
     theme_facet(base = 12, bkgd_color = bkgd_color, text_color = text_color)

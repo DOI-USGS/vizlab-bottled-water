@@ -348,7 +348,7 @@ p3_targets <- list(
                                               bkgd_color = 'white',
                                               text_color = 'black',
                                               font_legend = p3_font_legend,
-                                              outfile_subfolder = '3_visualize/out/state_source_treemap',
+                                              outfile_subfolder = '3_visualize/out/state_source_treemap_all',
                                               dpi = 300),
              format = 'file'),
 
@@ -362,7 +362,7 @@ p3_targets <- list(
                                               bkgd_color = 'white',
                                               text_color = 'black',
                                               font_legend = p3_font_legend,
-                                              outfile_subfolder = '3_visualize/out/state_source_waffle',
+                                              outfile_subfolder = '3_visualize/out/state_source_waffle_all',
                                               dpi = 300),
              format = 'file'),
 
