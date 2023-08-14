@@ -255,7 +255,7 @@ create_and_save_waffle <- function(state_name) {
           plot.margin = margin(15,15, 10,15))
 
   # Create the output directory if it doesn't exist
-  output_dir <- "3_visualize/out/state_source_waffle_expand_supply"
+  output_dir <- "3_visualize/out/state_source_waffle_expand_supply_all"
   if (!dir.exists(output_dir)) {
     dir.create(output_dir, recursive = TRUE)
   }
@@ -296,7 +296,7 @@ create_and_save_treemap <- function(state_name) {
           plot.margin = margin(15,15, 10,15))
 
   # Create the output directory if it doesn't exist
-  output_dir <- "3_visualize/out/state_source_treemap_expand_supply"
+  output_dir <- "3_visualize/out/state_source_treemap_expand_supply_all"
   if (!dir.exists(output_dir)) {
     dir.create(output_dir, recursive = TRUE)
   }
