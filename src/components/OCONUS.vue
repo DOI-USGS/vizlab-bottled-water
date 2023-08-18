@@ -662,23 +662,24 @@ export default {
         data = this.statePolys.filter(d => 
           d.properties.NAME === state)
         
-        let stateMapPath;
-        switch(state) {
-            case 'Alaska':
-              stateMapPath =  this.mapPathAK;
-              break;
-            case 'Hawaii':
-              stateMapPath = this.mapPathHI;
-              break;
-            case 'Puerto Rico':
-              stateMapPath = this.mapPathPRVI;
-              break;
-            case 'Virgin Islands':
-              stateMapPath = this.mapPathPRVI;
-              break;
-            default:
-              stateMapPath = this.mapPath;
-          }
+        // Could set path for area here
+        // let stateMapPath;
+        // switch(state) {
+        //     case 'Alaska':
+        //       stateMapPath =  this.mapPathAK;
+        //       break;
+        //     case 'Hawaii':
+        //       stateMapPath = this.mapPathHI;
+        //       break;
+        //     case 'Puerto Rico':
+        //       stateMapPath = this.mapPathPRVI;
+        //       break;
+        //     case 'Virgin Islands':
+        //       stateMapPath = this.mapPathPRVI;
+        //       break;
+        //     default:
+        //       stateMapPath = this.mapPath;
+        //   }
 
         // selectedMapPath = this.mapPath
         // featureBounds = self.calculateScaleTranslation(data, selectedMapPath)
