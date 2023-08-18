@@ -975,7 +975,8 @@ export default {
           }
         })
 
-      oldCountyCentroidGroups.transition(self.getExitTransition()).remove()
+      // CAN'T REMOVE W/ ZOOM, B/C IF REMOVED, RE-ADDED W/O TRANSLATION
+      // oldCountyCentroidGroups.transition(self.getExitTransition()).remove()
 
       const newCountyCentroidGroups = this.countyCentroidGroups.enter().append("g")
         .attr("class", "county_centroid")
