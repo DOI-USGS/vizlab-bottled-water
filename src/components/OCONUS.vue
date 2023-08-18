@@ -591,7 +591,7 @@ export default {
               let targetId = event.target.id
               let targetIdSplit = targetId.split('-')
               let targetType = targetIdSplit.length === 4 ? (targetIdSplit[2] + ' ' + targetIdSplit[3]) : targetIdSplit[2]
-              drawCountyPoints(state, targetType)
+              self.drawCountyPoints(state, targetType)
             }
         })
       })
