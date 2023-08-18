@@ -111,6 +111,8 @@ export default {
     loadData(data) {
       const self = this;
 
+      // TO-DO use topojson in place of geojsons
+      // Keep only essential attribute fields to reduce size
       let promises = [
         self.d3.json(self.publicPath + "states_poly_CONUS.geojson"),
         self.d3.json(self.publicPath + "counties_crop_poly_oconus.geojson"),
@@ -150,6 +152,8 @@ export default {
       this.statePolysPRVIJSON = data[7];
       this.statePolysPRVI = this.statePolysPRVIJSON.features;
 
+      // TO DO - If area-specific polys (e.g. this.statePolyAK) aren't used for scaling in svg, 
+      // could simply load in a single geojson of OCONUS + CONUS states
       this.statePolys = this.statePolysCONUS.concat(this.statePolyAK, this.statePolysHI, this.statePolysGUMP, this.statePolysPRVI)
       
       // get list of unique state groups
@@ -159,7 +163,7 @@ export default {
       // console.log(akGroup)
 
       // set active
-      this.active = '';//this.d3.select(null);
+      this.active = ''; //this.d3.select(null);
 
       // get list of unique states
       this.stateList = [... new Set(this.dataAll.map(d => d.state_name))]
@@ -167,7 +171,7 @@ export default {
       let currentState = 'All'//this.stateList[0]
       this.currentType = 'All'
       this.dropdownOptions = this.stateList
-      console.log(this.stateList)
+      
       // add dropdown
       self.addDropdown(this.stateList)
 
@@ -304,7 +308,7 @@ export default {
         }px)`)
         .attr("id", "map-bounds")
 
-      // init static elements for map
+      // If pre-project, would use generic projection
       // this.genericProjection = this.d3.geoAlbers()
       //   .scale(1)
       //   .translate([0, 0]);
@@ -312,19 +316,15 @@ export default {
       // this.genericPath = this.d3.geoPath()
       //   .projection(this.genericProjection);
 
+      // Could use bounds to determine placement?
       // [[left, bottom], [right, top]]
-      const boundsStatePolysCONUS = this.d3.geoBounds(this.statePolysCONUSJSON)
-      // console.log(boundsStatePolysCONUS)
-      const conusWidth = boundsStatePolysCONUS[1][0] - boundsStatePolysCONUS[0][0]
-      const conusHeight = boundsStatePolysCONUS[1][1] - boundsStatePolysCONUS[0][1]
-      // console.log(conusWidth)
-
-      const boundsStatePolyAK = this.d3.geoBounds(this.statePolyAKJSON)
-      const akWidth = boundsStatePolyAK[1][0] - boundsStatePolyAK[0][0]
-      const akHeight = boundsStatePolyAK[1][1] - boundsStatePolyAK[0][1]
-      // console.log(akWidth)
-
-      const akConusHeightRatio = akHeight/conusHeight
+      // const boundsStatePolysCONUS = this.d3.geoBounds(this.statePolysCONUSJSON)
+      // const conusWidth = boundsStatePolysCONUS[1][0] - boundsStatePolysCONUS[0][0]
+      // const conusHeight = boundsStatePolysCONUS[1][1] - boundsStatePolysCONUS[0][1]
+      // const boundsStatePolyAK = this.d3.geoBounds(this.statePolyAKJSON)
+      // const akWidth = boundsStatePolyAK[1][0] - boundsStatePolyAK[0][0]
+      // const akHeight = boundsStatePolyAK[1][1] - boundsStatePolyAK[0][1]
+      // const akConusHeightRatio = akHeight/conusHeight
 
       const conusHeightFraction = 0.4
 
@@ -387,31 +387,6 @@ export default {
         .attr("role", "list")
         .attr("tabindex", 0)
         .attr("aria-label", "state polygons")
-
-      // this.mapBounds.append("g")
-      //   .attr("class", "testPaths")
-
-      // const testData = this.statePolysCONUS.filter(d => 
-      //     d.properties.NAME === 'Colorado')
-
-      // const squareGroup = this.mapBounds.selectAll(".testPaths")
-      //   .selectAll(".testPath")
-      //   .data(testData, d => d.properties.FIPS)
-      //   .enter()
-      //   .append("path") 
-      //   .attr("id", d => "state-" + d.properties.FIPS)
-      //   .attr("d", this.mapPath)
-      //   .style("stroke", "#000000")
-      //   .style("stroke-width", 1)
-      //   .style("fill", "#ffffff")
-      //   .on("click", self.zoomToState)
-
-        // .attr("x", 5)
-        // .attr("y", 15)
-        // .attr("width", 60)
-        // .attr("height", 60)
-        // .style("fill", "#000000")
-
       
     },
     initChart() {
@@ -491,10 +466,6 @@ export default {
         data = rawData.filter(d => 
           d.state_name === state)
       }
-      // console.log(data)
-
-      // const data = rawData.filter(d => 
-      //   d.state_name === state)
       
       // accessor functions
       const xAccessor = d => d.WB_TYPE
@@ -522,15 +493,6 @@ export default {
         .range(["darkmagenta","teal","gold","indianred","steelblue","pink"])
       
       // draw data
-
-      //  const getUpdateTransition = this.d3.transition()
-      //    .duration(1000)
-      //    .delay(1000)
-      //    .ease(this.d3.easeCubicInOut)
-      //  const getExitTransition = this.d3.transition()
-      //    .duration(1000)
-      //    .ease(this.d3.easeCubicInOut)
-
       let rectGroups = self.chartBounds.selectAll(".rects")
         .selectAll(".rect")
         .data(data, d => d.WB_TYPE)        
@@ -569,7 +531,7 @@ export default {
         .attr("height", 0)
         .style("fill", d => colorScale(colorAccessor(d)))
       
-        // append text and set default position
+      // append text and set default position
       newRectGroups.append("text")
         .attr("x", d => xScale(xAccessor(d)) + xScale.bandwidth()/2)
         .attr("y", this.dimensions.boundedHeight)
@@ -593,7 +555,7 @@ export default {
           this.currentType = colorAccessor(d)
           let currentIdentifier = this.currentType.replace(' ', '-')
           self.drawCountyPoints(state, this.currentType)
-        //  console.log(currentIdentifier)
+
           this.d3.selectAll('.bar')
             .style("opacity", 0.5)
 
@@ -623,8 +585,6 @@ export default {
         })
 
       // Trigger with enter key - BUT - how get back to total?
-      // console.log(rectGroups)
-      // console.log(newRectGroups)
       rectGroups.each(function() {
         this.addEventListener("keypress", function(event) {
             if (event.key === 'Enter' | event.keyCode === 13) {
@@ -723,17 +683,6 @@ export default {
         // selectedMapPath = this.mapPath
         // featureBounds = self.calculateScaleTranslation(data, selectedMapPath)
       }
-      // console.log(state)
-      // console.log(featureBounds)
-      // // set transitions
-      // const updateTransition = d3.transition()
-      //   .duration(1000)
-      //   .delay(1000)
-      //   .ease(d3.easeCubicInOut)
-
-      // const exitTransition = d3.transition()
-      //   .duration(1000)
-      //   .ease(d3.easeCubicInOut)
 
       this.stateGroups = this.mapBounds.selectAll(".states")
         .selectAll(".state")
@@ -906,16 +855,6 @@ export default {
           d.properties.STATE_NAME === state)
       }
       
-      // // set transitions
-      // const updateTransition = d3.transition()
-      //   .duration(1000)
-      //   .delay(1000)
-      //   .ease(d3.easeCubicInOut)
-
-      // const exitTransition = d3.transition()
-      //   .duration(1000)
-      //   .ease(d3.easeCubicInOut)
-      
       this.countyGroups = this.mapBounds.selectAll(".counties")
         .selectAll(".county")
         .data(data, d => d.properties.GEOID)
@@ -964,19 +903,11 @@ export default {
       
       if (!(state === "All")) {
         countyShapes.transition(self.getUpdateTransition())
-            // .attr("d", d => {
-            //   return d.properties.STATE_NAME === 'Alaska' ? this.mapPathAK(d) : this.mapPath(d)
-            // })
-            // .attr("d", this.mapPath)
             .style("stroke", "#939393") //D1D1D1
             .style("stroke-width", 0.1)
             .style("fill", "#ffffff")
       } else {
         countyShapes.transition(self.getUpdateTransition())
-            // .attr("d", d => {
-            //   return d.properties.STATE_NAME === 'Alaska' ? this.mapPathAK(d) : this.mapPath(d)
-            // })
-            // .attr("d", this.mapPath)
             .style("stroke", "#D1D1D1") //D1D1D1
             .style("stroke-width", 0.1)
             .style("fill", "#ffffff")
@@ -1018,16 +949,6 @@ export default {
       const colorScale = this.d3.scaleOrdinal()
         .domain([... new Set(this.countyPoints.map(d => colorAccessor(d)))].sort())
         .range(["grey", "darkmagenta","teal","gold","indianred","steelblue","pink"])
-      
-      // // set transitions
-      // const updateTransition = d3.transition()
-      //   .duration(1000)
-      //   .delay(1000)
-      //   .ease(d3.easeCubicInOut)
-    
-      // const exitTransition = d3.transition()
-      //   .duration(1000)
-      //   .ease(d3.easeCubicInOut)
 
       // county centroids
       this.countyCentroidGroups = this.mapBounds.selectAll(".county_centroids")
@@ -1243,6 +1164,9 @@ export default {
         console.log(`SCALE: ${scale}`)
         this.stateGroups.transition(self.getUpdateTransition)
           .attr("transform", "translate(" + translate + ") scale(" + scale + ")");
+          
+        // this.stateGroups.select("path").transition(self.getUpdateTransition)
+        //   .style("stroke-width",  1/scale)
 
         this.countyGroups.transition(self.getUpdateTransition)
           .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
