@@ -1,6 +1,8 @@
 <template>
   <div id="visualization">
     <OCONUS />
+    <References />
+    <Authorship />
   </div>
 </template>
 
@@ -10,6 +12,8 @@ export default {
     name: 'Visualization',
     components: {
       OCONUS: () => import("./../components/OCONUS.vue"),
+      Authorship: () => import("./../components/Authorship.vue"),
+      References: () => import("./../components/References.vue"),
     },
     data() {
       return {
