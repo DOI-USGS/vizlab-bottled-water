@@ -2,8 +2,11 @@
   <div id="visualization">
     <header>
       <h1>{{ title }}</h1>
+      <div class="text-container"></div>
     </header>
     <OCONUS />
+    <WaterSource />
+    <WaterUse />
     <References />
     <Authorship />
   </div>
@@ -15,6 +18,8 @@ export default {
     name: 'Visualization',
     components: {
       OCONUS: () => import("./../components/OCONUS.vue"),
+      WaterSource: () => import("./../components/WaterSource.vue"),
+      WaterUse: () => import("./../components/WaterUse.vue"),
       Authorship: () => import("./../components/Authorship.vue"),
       References: () => import("./../components/References.vue"),
     },
