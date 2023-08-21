@@ -165,11 +165,12 @@ input[type=button] {
     }
 
 // General Layout  
-  .text-content {
+  .text-container {
     min-width: 300px;
-    max-width: 700px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 10px;   
+    left:0;
     @media screen and (max-width: 600px) {
         padding: 10px;
     }  

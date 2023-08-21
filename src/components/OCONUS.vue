@@ -1,13 +1,20 @@
 <template>
   <div id="grid-container">
     <div id="map-container">
-        <div id="title">
+        <div id="title-container">
+          <div class='text-container'>
+                <p>
+                  The bottled water industry estimates that the United States consumed 15 billion gallons (57 billion liters) of bottled water in 2020. That’s 45 gallons of bottled water per person. If you consider how much water it takes to produce each bottle of water (not including the packaging), the number is closer to 63 gallons—enough to fill a standard bathtub one-and-a-half times. 
+                </p>
+             </div>
             <h3> Bottling facilities in 
               <!-- Dropdown v-model="selectedOption" :options="dropdownOptions"/ -->
             </h3>
             <div id="state-dropdown-container" />
+            <div id="chart-container">
+            </div> <div />
         </div>
-            <div id="chart-container" />
+            
             <div id="oconus-container" />
     </div>
   </div>
@@ -1279,11 +1286,12 @@ $pal_blue_dark: '#042054';
 
 #map-container {
     display: grid;
-    grid-template-columns: 1fr 3fr;
-    grid-template-rows: 0.5fr 3fr;
+    grid-template-columns: 1.5fr 3fr;
+    grid-template-rows: 1fr;
     grid-template-areas:
-      "title title"
-      "chart map";
+      "title map";
+      //"title map"
+      //"title map";
     justify-content: center;
     margin: auto;
     max-width: 1600px;
@@ -1296,11 +1304,11 @@ $pal_blue_dark: '#042054';
 }
 
 #chart-container {
-    grid-area: chart;
+    //grid-area: chart;
     align-self: center;
 }
 
-#title {
+#title-container {
     grid-area: title;
     align-self: center;
     font-size: 20px;
