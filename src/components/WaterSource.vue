@@ -1,4 +1,5 @@
 <template>
+  <section id="water_source">
   <div id="grid-container">
         <div id="title">
             <h3> Where does bottled water come from?
@@ -12,6 +13,7 @@
           Water source data are not readily available for most bottling facilities. [DATA RELEASE] et al. 2023 performed new mapping analyses to infer where facilities source their water from. These analyses make some assumptions, like assuming that a facility near a well uses that well to source their water, and a facility within a public-supply zone uses public-supply water. Though imperfect, these estimates improve our understanding of where bottling facilities are sourcing their water. The charts below show the primary sources of bottled water in each state. We have noted where these numbers are known from available data versus estimated using our analyses. 
         </p></div>
   </div>
+</section>
 </template>
 <script>
 import { isMobile } from 'mobile-device-detect';

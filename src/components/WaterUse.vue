@@ -1,4 +1,5 @@
 <template>
+  <section id="water_use">
   <div id="grid-container">
         <div id="title">
             <h3> How much water are bottling facilities using?
@@ -8,6 +9,7 @@
           Water use data can be difficult to find for beverage-bottling facilities. Most states don’t make these data publicly available, and some states even have laws prohibiting the sharing of these data. Because the data are limited, we can’t make broad generalizations about the water usage of bottling facilities. However, we do have fairly comprehensive data from a few counties across the U.S. The charts below show how the amount of water used for bottling varies by the type of facility in each of these counties.  
         </p></div></div>
   </div>
+</section>
 </template>
 <script>
 import { isMobile } from 'mobile-device-detect';

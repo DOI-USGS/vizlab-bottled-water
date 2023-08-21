@@ -1,4 +1,5 @@
 <template>
+  <section id="authorship">
   <div
     v-if="showAuthors"
     id="author-container"
@@ -75,6 +76,7 @@
       </span>
     </p>
   </div>
+</section>
 </template>
 
 <script>

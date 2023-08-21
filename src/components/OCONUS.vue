@@ -1,4 +1,5 @@
 <template>
+  <section id="oconus_map">
   <div id="grid-container">
     <div id="map-container">
         <div id="title-container">
@@ -18,6 +19,7 @@
             <div id="oconus-container" />
     </div>
   </div>
+</section>
 </template>
 <script>
 import * as d3Base from 'd3';
@@ -1069,13 +1071,13 @@ export default {
     // define transitions
     getUpdateTransition() {
       return this.d3.transition()
-        .duration(1000)
-        .delay(1000)
+        .duration(500)
+        //.delay(500)
         .ease(this.d3.easeCubicInOut)
     },
     getExitTransition() {
       return this.d3.transition()
-        .duration(1000)
+        .duration(500)
         .ease(this.d3.easeCubicInOut)
     },
     drawBars() {
