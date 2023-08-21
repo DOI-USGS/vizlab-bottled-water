@@ -73,8 +73,17 @@
 <style lang="scss">
 // Fonts
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@200;300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,600;1,700&display=swap');
 $SourceSans: 'Source Sans Pro', sans-serif;
+$Roboto: 'Roboto Mono';
 $textcolor: rgb(21, 21, 21);
+
+$pal_red: '#FD5901';
+$pal_or: '#F78104';
+$pal_yell: '#FAAB36';
+$pal_teal: '#008083';
+$pal_blue_dark: '#042054';
+
 @import url('https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap');
 $writeFont: 'Nanum Pen Script', cursive;
 // whole page except header fit within viewport - no scrolling
@@ -101,38 +110,38 @@ body {
       }
   }
 h1{
-  font-size: 4.5em;
+  font-size: 4rem;
   font-weight: 500;
-  font-family: $SourceSans;
+  font-family: $Roboto;
   line-height: 1;
   text-align: left;
   text-shadow: 1px 1px 100px rgba(0,0,0,.8);
-    color: $textcolor;
+    color: $pal_blue_dark;
   @media screen and (max-width: 600px) {
-    font-size: 4.75em;
+    font-size: 4rem;
   }
 }
 h2{
   font-weight: 700;
   text-align: left;
   font-family: $SourceSans;
-  font-size: 3em;
+  font-size: 3rem;
   margin-top: 5px;
   line-height: 1.2;
-  color: $textcolor;
+  color: $pal_blue_dark;
   @media screen and (max-width: 600px) {
-    font-size: 2em;
+    font-size: 2rem;
   }
 }
 h3{
-  font-size: 2em;
-  padding-top: 1em;
-  padding-bottom: .25em;
+  font-size: 2rem;
+  padding-top: 1rem;
+  padding-bottom: .25rem;
   font-family: $SourceSans;
   font-weight: 700;
   color: $textcolor;
   @media screen and (max-width: 600px) {
-      font-size: 1.5em;
+      font-size: 1.5rem;
   }  
 }
 h4{

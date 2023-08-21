@@ -7,6 +7,8 @@
             </h3>
             <div id="state-dropdown-container" />
         </div>
+            <div id="chart-container" />
+            <div id="oconus-container" />
     </div>
   </div>
 </template>
@@ -286,7 +288,7 @@ export default {
     },
     initMap() {
       // draw canvas for map
-      this.wrapper = this.d3.select("#map-container")
+      this.wrapper = this.d3.select("#oconus-container")
         .append("svg")
           .attr("viewBox", [0, 0, (this.mapDimensions.width), (this.mapDimensions.height)].join(' '))
           .attr("width", "100%")
@@ -391,7 +393,7 @@ export default {
     },
     initChart() {
       // draw canvas for histogram
-      const chartSVG = this.d3.select("#map-container")
+      const chartSVG = this.d3.select("#chart-container")
         .append("svg")
           .attr("viewBox", [0, 0, (this.dimensions.width), (this.dimensions.height)].join(' '))
           .attr("width", "100%")
@@ -1267,33 +1269,34 @@ export default {
 }
 </script>
 <style scoped lang="scss">
-// handwriting font
-@import url('https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap');
-$writeFont: 'Nanum Pen Script', cursive;
+
+$pal_red: '#FD5901';
+$pal_or: '#F78104';
+$pal_yell: '#FAAB36';
+$pal_teal: '#008083';
+$pal_blue_dark: '#042054';
+
 
 #map-container {
     display: grid;
-    grid-template-columns: 2.5fr 1fr;
+    grid-template-columns: 1fr 3fr;
     grid-template-rows: 0.5fr 3fr;
     grid-template-areas:
       "title title"
-      "map chart";
+      "chart map";
     justify-content: center;
     margin: auto;
     max-width: 1600px;
     //height: 88vh;
-    //background-color: blue;
 }
 
-#map-svg {
+#oconus-container {
     grid-area: map;
     align-self: center;
-    background-color: yellow;
 }
 
-#chart-svg {
+#chart-container {
     grid-area: chart;
-    background-color: green;
     align-self: center;
 }
 

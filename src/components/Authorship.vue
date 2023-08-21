@@ -4,7 +4,7 @@
     id="author-container"
     class="text-content"
   >
-    <h2>Authors</h2>
+    <h3>Authors</h3>
     <p>
       <span id="primary-author-statment">
         The {{ appTitle }} data visualization was made by the USGS VizLab in collaboration with the USGS Water Use program. Development was led by 
