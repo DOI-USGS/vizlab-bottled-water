@@ -96,7 +96,7 @@ $writeFont: 'Nanum Pen Script', cursive;
 html,
 body {
       height: 100%;
-      background-color: white;
+      background-color: $pal_or;
       margin: 0;
       padding: 0;
       line-height: 1.2;

@@ -58,7 +58,7 @@ $pal_blue_dark: '#042054';
 #visualization {
   width: calc(100vw - 10rem);
   position: relative;
-  top: 5rem;
+  top: 3rem;
   left: 5rem;
 }
 
