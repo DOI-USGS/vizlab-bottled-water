@@ -1,14 +1,25 @@
 <template>
+  <section id="oconus_map">
   <div id="grid-container">
     <div id="map-container">
-        <div id="title">
+        <div id="title-container">
+          <div class='text-container'>
+                <p>
+                  The bottled water industry estimates that the United States consumed 15 billion gallons (57 billion liters) of bottled water in 2020. That’s 45 gallons of bottled water per person. If you consider how much water it takes to produce each bottle of water (not including the packaging), the number is closer to 63 gallons—enough to fill a standard bathtub one-and-a-half times. 
+                </p>
+             </div>
             <h3> Bottling facilities in 
               <!-- Dropdown v-model="selectedOption" :options="dropdownOptions"/ -->
             </h3>
             <div id="state-dropdown-container" />
+            <div id="chart-container">
+            </div> <div />
         </div>
+            
+            <div id="oconus-container" />
     </div>
   </div>
+</section>
 </template>
 <script>
 import * as d3Base from 'd3';
@@ -286,7 +297,7 @@ export default {
     },
     initMap() {
       // draw canvas for map
-      this.wrapper = this.d3.select("#map-container")
+      this.wrapper = this.d3.select("#oconus-container")
         .append("svg")
           .attr("viewBox", [0, 0, (this.mapDimensions.width), (this.mapDimensions.height)].join(' '))
           .attr("width", "100%")
@@ -391,7 +402,7 @@ export default {
     },
     initChart() {
       // draw canvas for histogram
-      const chartSVG = this.d3.select("#map-container")
+      const chartSVG = this.d3.select("#chart-container")
         .append("svg")
           .attr("viewBox", [0, 0, (this.dimensions.width), (this.dimensions.height)].join(' '))
           .attr("width", "100%")
@@ -1060,13 +1071,13 @@ export default {
     // define transitions
     getUpdateTransition() {
       return this.d3.transition()
-        .duration(1000)
-        .delay(1000)
+        .duration(500)
+        //.delay(500)
         .ease(this.d3.easeCubicInOut)
     },
     getExitTransition() {
       return this.d3.transition()
-        .duration(1000)
+        .duration(500)
         .ease(this.d3.easeCubicInOut)
     },
     drawBars() {
@@ -1267,37 +1278,39 @@ export default {
 }
 </script>
 <style scoped lang="scss">
-// handwriting font
-@import url('https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap');
-$writeFont: 'Nanum Pen Script', cursive;
+
+$pal_red: '#FD5901';
+$pal_or: '#F78104';
+$pal_yell: '#FAAB36';
+$pal_teal: '#008083';
+$pal_blue_dark: '#042054';
+
 
 #map-container {
     display: grid;
-    grid-template-columns: 2.5fr 1fr;
-    grid-template-rows: 0.5fr 3fr;
+    grid-template-columns: 1.5fr 3fr;
+    grid-template-rows: 1fr;
     grid-template-areas:
-      "title title"
-      "map chart";
+      "title map";
+      //"title map"
+      //"title map";
     justify-content: center;
     margin: auto;
     max-width: 1600px;
     //height: 88vh;
-    //background-color: blue;
 }
 
-#map-svg {
+#oconus-container {
     grid-area: map;
     align-self: center;
-    background-color: yellow;
 }
 
-#chart-svg {
-    grid-area: chart;
-    background-color: green;
+#chart-container {
+    //grid-area: chart;
     align-self: center;
 }
 
-#title {
+#title-container {
     grid-area: title;
     align-self: center;
     font-size: 20px;
