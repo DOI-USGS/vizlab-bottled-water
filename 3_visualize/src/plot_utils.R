@@ -1066,6 +1066,56 @@ generate_facility_type_facet_map <- function(type_summary, type_summary_state,
   return(outfile)
 }
 
+
+#' @title generate dataframe with count of facilities, or all, by water source
+#' @param supply_summary dataframe with count of facilities by water source
+#' @param selected_facility_type type of facility to plot. If 'All', summary
+#' across facility types is plotted
+#' @return df with count of facilities by type, or for all, by source source
+process_supply_sum <- function(supply_summary, selected_facility_type) {
+
+  if (!(selected_facility_type == 'All')) {
+    supply_summary <- supply_summary %>%
+      filter(WB_TYPE == selected_facility_type) %>%
+      mutate(percent = site_count/sum(site_count)*100) |>
+      mutate(ratio = site_count/sum(site_count))
+  } else {
+    supply_summary <- supply_summary %>%
+      group_by(source_category) %>%
+      summarize(site_count = sum(site_count)) %>%
+      mutate(percent = site_count/sum(site_count)*100) |>
+      mutate(ratio = site_count/sum(site_count))
+  }
+
+}
+
+#' @title generate dataframe with count of facilities, or all, by water source for each state
+#' @param supply_summary_state dataframe with count of facilities by water
+#' source, by state
+#' @param selected_facility_type type of facility to plot. If 'All', summary
+#' across facility types is plotted
+#' @return df with count of facilities by type, or for all, by source source for each state
+process_supply_state_sum <- function(supply_summary_state, selected_facility_type) {
+
+  if (!(selected_facility_type == 'All')) {
+    supply_summary_state <- supply_summary_state %>%
+      filter(WB_TYPE == selected_facility_type) %>%
+      arrange(state_name) %>%
+      group_by(state_name, state_abbr) %>%
+      mutate(percent = site_count/sum(site_count)*100) |>
+      mutate(ratio = site_count/sum(site_count))
+  } else {
+    supply_summary_state <- supply_summary_state %>%
+      arrange(state_name) %>%
+      group_by(state_name, state_abbr, source_category) %>%
+      summarize(site_count = sum(site_count)) %>%
+      group_by(state_name, state_abbr) %>%
+      mutate(percent = site_count/sum(site_count)*100) |>
+      mutate(ratio = site_count/sum(site_count))
+  }
+
+}
+
 #' @title generate facility source facet map
 #' @description generate a facet map showing the distribution of facility water
 #' sources nationally and by state
@@ -1087,34 +1137,16 @@ generate_facility_source_facet_map <- function(supply_summary, supply_summary_st
                                                width, height, bkgd_color, text_color,
                                                outfile_template, dpi) {
 
-  if (!(selected_facility_type == 'All')) {
-    supply_summary_state <- supply_summary_state %>%
-      filter(WB_TYPE == selected_facility_type) %>%
-      arrange(state_name) %>%
-      group_by(state_name, state_abbr) %>%
-      mutate(percent = site_count/sum(site_count)*100)
-    supply_summary <- supply_summary %>%
-      filter(WB_TYPE == selected_facility_type) %>%
-      mutate(percent = site_count/sum(site_count)*100)
-  } else {
-    supply_summary_state <- supply_summary_state %>%
-      arrange(state_name) %>%
-      group_by(state_name, state_abbr, source_category) %>%
-      summarize(site_count = sum(site_count)) %>%
-      group_by(state_name, state_abbr) %>%
-      mutate(percent = site_count/sum(site_count)*100)
-    supply_summary <- supply_summary %>%
-      group_by(source_category) %>%
-      summarize(site_count = sum(site_count)) %>%
-      mutate(percent = site_count/sum(site_count)*100)
-  }
+  supply_summary_state <- process_supply_state_sum(supply_summary_state = supply_summary_state,
+                                                   selected_facility_type = selected_facility_type)
 
+  supply_summary <- process_supply_sum(supply_summary = supply_summary,
+                                       selected_facility_type = selected_facility_type)
 
   grid <- geofacet::us_state_grid1 %>%
     add_row(row = 7, col = 10, code = "PR", name = "Puerto Rico") %>% # add PR
     add_row(row = 7, col = 11, code = "VI", name = "U.S. Virgin Islands") %>% # add VI
     add_row(row = 6, col = 1, code = "GU", name = "Guam") # add GU
-
 
   state_cartogram <- supply_summary_state %>%
     ggplot(aes(1, y = percent)) +
@@ -1229,27 +1261,11 @@ generate_facility_source_facet_treemap <- function(supply_summary, supply_summar
                                                    width, height, bkgd_color, text_color,
                                                    outfile_template, dpi, font_legend){
 
-  if (!(selected_facility_type == 'All')) {
-    supply_summary_state <- supply_summary_state %>%
-      filter(WB_TYPE == selected_facility_type) %>%
-      arrange(state_name) %>%
-      group_by(state_name, state_abbr) %>%
-      mutate(percent = site_count/sum(site_count)*100)
-    supply_summary <- supply_summary %>%
-      filter(WB_TYPE == selected_facility_type) %>%
-      mutate(percent = site_count/sum(site_count)*100)
-  } else {
-    supply_summary_state <- supply_summary_state %>%
-      arrange(state_name) %>%
-      group_by(state_name, state_abbr, source_category) %>%
-      summarize(site_count = sum(site_count)) %>%
-      group_by(state_name, state_abbr) %>%
-      mutate(percent = site_count/sum(site_count)*100)
-    supply_summary <- supply_summary %>%
-      group_by(source_category) %>%
-      summarize(site_count = sum(site_count)) %>%
-      mutate(percent = site_count/sum(site_count)*100)
-  }
+  supply_summary_state <- process_supply_state_sum(supply_summary_state = supply_summary_state,
+                                                   selected_facility_type = selected_facility_type)
+
+  supply_summary <- process_supply_sum(supply_summary = supply_summary,
+                                       selected_facility_type = selected_facility_type)
 
   grid <- geofacet::us_state_grid1 %>%
     add_row(row = 7, col = 10, code = "PR", name = "Puerto Rico") %>% # add PR
@@ -1456,32 +1472,11 @@ generate_facility_source_treemap <- function(supply_summary, supply_summary_stat
                                              width, height, bkgd_color, text_color,
                                              outfile_subfolder, dpi, font_legend){
 
-  if (!(selected_facility_type == 'All')) {
-    supply_summary_state <- supply_summary_state %>%
-      filter(WB_TYPE == selected_facility_type) %>%
-      arrange(state_name) %>%
-      group_by(state_name, state_abbr) %>%
-      mutate(percent = site_count/sum(site_count)*100) |>
-      mutate(ratio = site_count/sum(site_count))
-    supply_summary <- supply_summary %>%
-      filter(WB_TYPE == selected_facility_type) %>%
-      mutate(percent = site_count/sum(site_count)*100) |>
-      mutate(ratio = site_count/sum(site_count))
-  } else {
-    supply_summary_state <- supply_summary_state %>%
-      arrange(state_name) %>%
-      group_by(state_name, state_abbr, source_category) %>%
-      summarize(site_count = sum(site_count)) %>%
-      group_by(state_name, state_abbr) %>%
-      mutate(percent = site_count/sum(site_count)*100) |>
-      mutate(ratio = site_count/sum(site_count))
+  supply_summary_state <- process_supply_state_sum(supply_summary_state = supply_summary_state,
+                                                   selected_facility_type = selected_facility_type)
 
-    supply_summary <- supply_summary %>%
-      group_by(source_category) %>%
-      summarize(site_count = sum(site_count)) %>%
-      mutate(percent = site_count/sum(site_count)*100) |>
-      mutate(ratio = site_count/sum(site_count))
-  }
+  supply_summary <- process_supply_sum(supply_summary = supply_summary,
+                                       selected_facility_type = selected_facility_type)
 
   state_names_list <- unique(supply_summary_state$state_name)
 
@@ -1541,32 +1536,11 @@ generate_facility_source_waffle <- function(supply_summary, supply_summary_state
                                              width, height, bkgd_color, text_color,
                                              outfile_subfolder, dpi, font_legend){
 
-  if (!(selected_facility_type == 'All')) {
-    supply_summary_state <- supply_summary_state %>%
-      filter(WB_TYPE == selected_facility_type) %>%
-      arrange(state_name) %>%
-      group_by(state_name, state_abbr) %>%
-      mutate(percent = site_count/sum(site_count)*100) |>
-      mutate(ratio = site_count/sum(site_count))
-    supply_summary <- supply_summary %>%
-      filter(WB_TYPE == selected_facility_type) %>%
-      mutate(percent = site_count/sum(site_count)*100) |>
-      mutate(ratio = site_count/sum(site_count))
-  } else {
-    supply_summary_state <- supply_summary_state %>%
-      arrange(state_name) %>%
-      group_by(state_name, state_abbr, source_category) %>%
-      summarize(site_count = sum(site_count)) %>%
-      group_by(state_name, state_abbr) %>%
-      mutate(percent = site_count/sum(site_count)*100) |>
-      mutate(ratio = site_count/sum(site_count))
+  supply_summary_state <- process_supply_state_sum(supply_summary_state = supply_summary_state,
+                                                   selected_facility_type = selected_facility_type)
 
-    supply_summary <- supply_summary %>%
-      group_by(source_category) %>%
-      summarize(site_count = sum(site_count)) %>%
-      mutate(percent = site_count/sum(site_count)*100) |>
-      mutate(ratio = site_count/sum(site_count))
-  }
+  supply_summary <- process_supply_sum(supply_summary = supply_summary,
+                                       selected_facility_type = selected_facility_type)
 
   state_names_list <- unique(supply_summary_state$state_name)
 
