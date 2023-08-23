@@ -85,7 +85,7 @@ export default {
       selectedText: null,
       stateList: null,
       currentState: null,
-      zoomed: false,
+      currentlyZoomed: false,
       currentScale: null,
     }
   },
@@ -1274,7 +1274,7 @@ export default {
       let zoomedState = d.properties.NAME
       let zoomAction = this.currentState === zoomedState ? 'Zoom out' : 'Zoom in'
 
-      console.log(`You selected ${d.properties.NAME} by ${callMethod}. Currently shown area is ${this.currentState}. Current this.zoomed is ${this.zoomed}. Planned zoom action is ${zoomAction}`)
+      console.log(`You selected ${d.properties.NAME} by ${callMethod}. Currently shown area is ${this.currentState}. This.currentlyZoomed is ${this.currentlyZoomed}. Planned zoom action is ${zoomAction}`)
 
       if (zoomAction === 'Zoom out') return self.reset();
       if (callMethod === 'click') this.d3.select('select').property('value', zoomedState)
@@ -1282,8 +1282,8 @@ export default {
       this.d3.select("#map-inset-svg")
         .classed("hide", true)
 
-      if (!this.zoomed) {
-        console.log(`this.zoomed is ${this.zoomed} and planned zoom action is ${zoomAction}, so going to zoom in from full view`)
+      if (!this.currentlyZoomed) {
+        console.log(`this.currentlyZoomed is ${this.currentlyZoomed} and planned zoom action is ${zoomAction}, so going to zoom in from full view`)
 
         let selectId = document.getElementById("state-dropdown");
         // console.log(this.stateList.indexOf(zoomedState))
@@ -1344,9 +1344,9 @@ export default {
           .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
 
         // set current state to zoomed state
-        this.zoomed = true;
+        this.currentlyZoomed = true;
         this.currentState = zoomedState;
-        console.log(`Zoomed in on ${zoomedState}, so this.zoomed is ${this.zoomed}`)
+        console.log(`Zoomed in on ${zoomedState}, so this.currentlyZoomed is ${this.currentlyZoomed}`)
 
         self.drawHistogram(zoomedState)
         self.drawCounties(zoomedState)
@@ -1354,7 +1354,7 @@ export default {
         self.drawCountyPoints(zoomedState, this.currentType)
 
       } else {
-        console.log(`this.zoomed is ${this.zoomed} and planned zoom action is ${zoomAction}, so going to zoom out and then in to state`)
+        console.log(`this.currentlyZoomed is ${this.currentlyZoomed} and planned zoom action is ${zoomAction}, so going to zoom out and then in to state`)
 
         // NEED TO REVAMP - THIS IS MESSY
 
@@ -1396,9 +1396,9 @@ export default {
           .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
 
         // set current state to zoomed state
-        this.zoomed = true;
+        this.currentlyZoomed = true;
         this.currentState = zoomedState;
-        console.log(`Zoomed in on ${zoomedState}, so this.zoomed is ${this.zoomed}`)
+        console.log(`Zoomed in on ${zoomedState}, so this.currentlyZoomed is ${this.currentlyZoomed}`)
 
         // redraw map and histogram for state
         self.drawHistogram(zoomedState)
@@ -1435,8 +1435,8 @@ export default {
         // .style("stroke-width", 1)
         .attr("transform", "");
 
-      this.zoomed = false;
-      console.log(`Zoomed out, so this.zoomed is ${this.zoomed}`)
+      this.currentlyZoomed = false;
+      console.log(`Zoomed out, so this.currentlyZoomed is ${this.currentlyZoomed}`)
     }
   }
 }
