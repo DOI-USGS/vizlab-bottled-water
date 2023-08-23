@@ -1,7 +1,10 @@
 # This is an exploratory script that breaks down water_sources self_supply category by well, sw intake, and spring and plots
 library(targets)
 library(tidyverse)
-library(waffle)
+#library(waffle) - this one doesn't let me geofacet
+
+library(ggwaffle) # install.packages("devtools") devtools::install_github("liamgilbey/ggwaffle")
+
 library(cowplot)
 library(showtext)
 
@@ -113,6 +116,20 @@ grid <- geofacet::us_state_grid1 %>%
   add_row(row = 7, col = 11, code = "VI", name = "U.S. Virgin Islands") %>% # add VI
   add_row(row = 6, col = 1, code = "GU", name = "Guam") # add GU
 
+# Alternative `geom_waffle` approach to `geofacet` by
+ws_state_waffle <- waffle_iron(supply_summary_state, mapping = aes_d(group = "source_category"), rows = 10) |>
+  rename(source_category = group) |>
+  left_join(supply_summary_state, by = c("source_category"))
+
+plt <- ggplot(ws_state_waffle, aes(x, y, fill = source_category, values = ratio)) +
+  geom_waffle() +
+  coord_equal() +
+  geofacet::facet_geo(~ state_abbr, grid = grid, move_axes = TRUE) +
+  scale_fill_manual(name = 'source_category', values = supply_colors)
+
+  ggsave("geowaffle_test.png", plt, width = width, height = height, dpi = dpi, bg = "white")
+
+# facet wrapped waffle charts
 state_facet <- supply_summary_state %>%
   ggplot(aes(values = ratio, fill = source_category)) +
   waffle::geom_waffle(color = "white", size = 1.3, n_rows = 10,
@@ -122,6 +139,9 @@ state_facet <- supply_summary_state %>%
   theme_bw() +
   theme_facet(base = 12, bkgd_color = bkgd_color, text_color = text_color) +
   facet_wrap(~state_abbr)
+  # +
+  # geofacet::facet_geo(~ state_abbr, grid = grid, move_axes = TRUE) #Doesnt work
+
 
 national_plot <- supply_summary %>%
   mutate(ratio = site_count/sum(site_count)) |>
