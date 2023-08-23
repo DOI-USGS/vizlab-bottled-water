@@ -952,6 +952,24 @@ theme_facet <- function(base = 12, bkgd_color, text_color){
 
 }
 
+
+#' @title generate U.S. grid with Puerto Rico, Virgin Islands and Guam
+#' @param row[abbr] numeric, add row number associated with territory
+#' @param col[abbr] numeric, add col number associated with territory
+#' @param code[abbr] character, add two letter abbreviation associated with territory
+#' @param name[abbr] character, add long name associated with territory
+#' @return dataframe with row, col, and (state) code, and (state) name
+grid_pr_vi_gu <- function(rowPR = 7, colPR = 10, codePR = "PR", namePR = "Puerto Rico",
+                          rowVI = 7, colVI = 11, codeVI = "VI", nameVI = "U.S. Virgin Islands",
+                          rowGU = 6, colGU = 1, codeGU = "GU", nameGU = "Guam") {
+
+  grid <- geofacet::us_state_grid1 %>%
+    add_row(row = rowPR, col = colPR, code = codePR, name = namePR) %>% # add PR
+    add_row(row = rowVI, col = colVI, code = codeVI, name = nameVI) %>% # add VI
+    add_row(row = rowGU, col = colGU, code = codeGU, name = nameGU) # add GU
+
+}
+
 #' @title generate facility type facet map
 #' @description generate a facet map showing the distribution of facilities
 #' nationally and by state
@@ -969,11 +987,6 @@ generate_facility_type_facet_map <- function(type_summary, type_summary_state,
                                              colors, width, height, bkgd_color,
                                              text_color, outfile, dpi) {
 
-  grid <- geofacet::us_state_grid1 %>%
-    add_row(row = 7, col = 10, code = "PR", name = "Puerto Rico") %>% # add PR
-    add_row(row = 7, col = 11, code = "VI", name = "U.S. Virgin Islands") %>% # add VI
-    add_row(row = 6, col = 1, code = "GU", name = "Guam") # add GU
-
   state_cartogram <- type_summary_state %>%
     arrange(state_name) %>%
     group_by(state_name) %>%
@@ -983,7 +996,7 @@ generate_facility_type_facet_map <- function(type_summary, type_summary_state,
     scale_fill_manual(name = 'WB_TYPE', values = colors) +
     theme_bw() +
     theme_facet(base = 12, bkgd_color = bkgd_color, text_color = text_color) +
-    geofacet::facet_geo(~ state_abbr, grid = grid, move_axes = TRUE)
+    geofacet::facet_geo(~ state_abbr, grid = grid_pr_vi_gu(), move_axes = TRUE)
 
   national_plot <- type_summary %>%
     mutate(percent = site_count/sum(site_count)*100) %>%
@@ -1143,18 +1156,13 @@ generate_facility_source_facet_map <- function(supply_summary, supply_summary_st
   supply_summary <- process_supply_sum(supply_summary = supply_summary,
                                        selected_facility_type = selected_facility_type)
 
-  grid <- geofacet::us_state_grid1 %>%
-    add_row(row = 7, col = 10, code = "PR", name = "Puerto Rico") %>% # add PR
-    add_row(row = 7, col = 11, code = "VI", name = "U.S. Virgin Islands") %>% # add VI
-    add_row(row = 6, col = 1, code = "GU", name = "Guam") # add GU
-
   state_cartogram <- supply_summary_state %>%
     ggplot(aes(1, y = percent)) +
     geom_bar(aes(fill = source_category), stat = 'identity') +
     scale_fill_manual(name = 'source_category', values = supply_colors) +
     theme_bw() +
     theme_facet(base = 12, bkgd_color = bkgd_color, text_color = text_color) +
-    geofacet::facet_geo(~ state_abbr, grid = grid, move_axes = TRUE)
+    geofacet::facet_geo(~ state_abbr, grid = grid_pr_vi_gu(), move_axes = TRUE)
 
   national_plot <- supply_summary %>%
     ggplot(aes(1, y = percent)) +
@@ -1267,11 +1275,6 @@ generate_facility_source_facet_treemap <- function(supply_summary, supply_summar
   supply_summary <- process_supply_sum(supply_summary = supply_summary,
                                        selected_facility_type = selected_facility_type)
 
-  grid <- geofacet::us_state_grid1 %>%
-    add_row(row = 7, col = 10, code = "PR", name = "Puerto Rico") %>% # add PR
-    add_row(row = 7, col = 11, code = "VI", name = "U.S. Virgin Islands") %>% # add VI
-    add_row(row = 6, col = 1, code = "GU", name = "Guam") # add GU
-
   # state level treemaps
   tm <- treemap(dtf = supply_summary_state, vSize = 'percent', index = c('state_abbr', 'source_category', 'site_count'), type = 'index')
   tm_df <- tm$tm
@@ -1302,7 +1305,7 @@ generate_facility_source_facet_treemap <- function(supply_summary, supply_summar
     # add fill and borders for groups and subgroups
     geom_rect(aes(fill = source_category),
               show.legend = TRUE, color = text_color) +
-    geofacet::facet_geo(~state_abbr, grid = grid, move_axes = TRUE) +
+    geofacet::facet_geo(~state_abbr, grid = grid_pr_vi_gu(), move_axes = TRUE) +
     theme(panel.grid = element_blank(),
           panel.background = element_rect(color = text_color, fill = NA),
           strip.background = element_rect(color = text_color, fill = NA),
