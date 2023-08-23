@@ -51,21 +51,16 @@ export default {
       d3: null,
       publicPath: import.meta.env.BASE_URL, // find the files when on different deployment roots
       mobileView: isMobile, // test for mobile
-      statePolys: null,
       statePolysCONUSJSON: null,
-      statePolysCONUS: null,
-      statePolyAKJSON: null,
-      statePolyAK: null,
+      statePolysAKJSON: null,
       statePolysGUMPJSON: null,
-      statePolysGUMP: null,
       statePolysHIJSON: null,
-      statePolysHI: null,
       statePolysPRVIJSON: null,
-      statePolysPRVI: null,
+      statePolyASJSON: null,
+      statePolys: null,
       countyPolys: null,
       countyPoints: null,
       dataAll: null,
-      statePolyAKJSON: null,
       mapDimensions: null,
       dimensions: null,
       wrapper: null,
@@ -87,10 +82,11 @@ export default {
       stateGroups: null,
       countyGroups: null,
       countyCentroidGroups: null,
-      active: null,
       selectedText: null,
       stateList: null,
-      zoomed: false
+      currentState: null,
+      zoomed: false,
+      currentScale: null,
     }
   },
   mounted(){      
@@ -155,7 +151,7 @@ export default {
 
       // assign data
       this.statePolysCONUSJSON = data[0];
-      this.statePolysCONUS = this.statePolysCONUSJSON.features;
+      const statePolysCONUS = this.statePolysCONUSJSON.features;
 
       const countyPolyJSON = data[1];
       this.countyPolys = countyPolyJSON.features;
@@ -166,37 +162,34 @@ export default {
       this.dataAll = data[3];
 
       this.statePolysAKJSON = data[4];
-      this.statePolysAK = this.statePolysAKJSON.features;
+      const statePolysAK = this.statePolysAKJSON.features;
 
       this.statePolysGUMPJSON = data[5];
-      this.statePolysGUMP = this.statePolysGUMPJSON.features;
+      const statePolysGUMP = this.statePolysGUMPJSON.features;
 
       this.statePolysHIJSON = data[6];
-      this.statePolysHI = this.statePolysHIJSON.features;
+      const statePolysHI = this.statePolysHIJSON.features;
 
       this.statePolysPRVIJSON = data[7];
-      this.statePolysPRVI = this.statePolysPRVIJSON.features;
+      const statePolysPRVI = this.statePolysPRVIJSON.features;
 
-      this.statePolysAS = data[8];
-      this.statePolysAS = this.statePolysAS.features;
+      this.statePolysASJSON = data[8];
+      const statePolysAS = this.statePolysASJSON.features;
 
-      // TO DO - If area-specific polys (e.g. this.statePolysAK) aren't used for scaling in svg, 
+      // TO DO - If area-specific polys (e.g. this.statePolysAK) aren't used for scaling in initMap(), 
       // could simply load in a single geojson of OCONUS + CONUS states
-      this.statePolys = this.statePolysCONUS.concat(this.statePolysAK, this.statePolysHI, this.statePolysGUMP, this.statePolysPRVI, this.statePolysAS)
-      
-      // get list of unique state groups
-      // const stateGroups = [... new Set(this.statePolys.map(d => d.properties.group))]
-      // console.log(stateGroups)
-      // const akGroup = statePolys.filter(d => d.properties.group === 'AK')
-      // console.log(akGroup)
+      this.statePolys = statePolysCONUS.concat(statePolysAK, statePolysHI, statePolysGUMP, statePolysPRVI, statePolysAS)
 
       // set active
-      this.active = ''; //this.d3.select(null);
+      this.currentState = 'All';
+
+      // set current scale
+      this.currentScale = 1;
 
       // get list of unique states
       this.stateList = [... new Set(this.dataAll.map(d => d.state_name))]
       this.stateList.unshift('All')
-      let currentState = 'All'//this.stateList[0]
+      
       this.currentType = 'All'
       this.dropdownOptions = this.stateList
       
@@ -224,7 +217,7 @@ export default {
       const width = 400;
       this.dimensions = {
         width,
-        height: width*0.9,
+        height: width*0.7,
         margin: {
           top: 30,
           right: 10,
@@ -237,11 +230,11 @@ export default {
 
       self.initChart()
 
-      // let selectedStateIndex = 0
-      self.drawHistogram(currentState)
-      self.drawCounties(currentState)
-      self.drawMap(currentState)
-      self.drawCountyPoints(currentState, this.currentType)
+      // Draw initial view ('All')
+      self.drawHistogram(this.currentState)
+      self.drawCounties(this.currentState)
+      self.drawMap(this.currentState)
+      self.drawCountyPoints(this.currentState, this.currentType)
 
     },
     addDropdown(data) {
@@ -444,7 +437,7 @@ export default {
         .rotate([65.9, 0, 0])
         .parallels([17.9, 18.2])
         .scale(mapScale)
-        .translate([this.mapDimensions.width - hiPropWidth, this.mapDimensions.height * 0.9]); // alabama : [-this.mapDimensions.width / 4, 20]
+        .translate([this.mapDimensions.width - hiPropWidth, this.mapDimensions.height * 0.92]); // alabama : [-this.mapDimensions.width / 4, 20]
 
       this.mapPathPRVI = this.d3.geoPath()
         .projection(this.mapProjectionPRVI);
@@ -466,7 +459,7 @@ export default {
         .rotate([170.1, 0, 0])
         .parallels([-14.3, -14.1])
         .scale(mapScale)
-        .translate([hiPropWidth, this.mapDimensions.height * 0.9]);
+        .translate([hiPropWidth, this.mapDimensions.height * 0.92]);
 
       this.mapPathAS = this.d3.geoPath()
         .projection(this.mapProjectionAS);
@@ -1279,9 +1272,9 @@ export default {
       const self = this;
       
       let zoomedState = d.properties.NAME
-      let zoomAction = this.active === zoomedState ? 'Zoom out' : 'Zoom in'
+      let zoomAction = this.currentState === zoomedState ? 'Zoom out' : 'Zoom in'
 
-      console.log(`You selected ${d.properties.NAME} by ${callMethod}. Currently active is ${this.active}. Current this.zoomed is ${this.zoomed}. Planned zoom action is ${zoomAction}`)
+      console.log(`You selected ${d.properties.NAME} by ${callMethod}. Currently shown area is ${this.currentState}. Current this.zoomed is ${this.zoomed}. Planned zoom action is ${zoomAction}`)
 
       if (zoomAction === 'Zoom out') return self.reset();
       if (callMethod === 'click') this.d3.select('select').property('value', zoomedState)
@@ -1334,7 +1327,10 @@ export default {
             scale = .9 / Math.max(dx / this.mapDimensions.width, dy / this.mapDimensions.height),
             translate = [this.mapDimensions.width / 2 - scale * x, this.mapDimensions.height / 2 - scale * y];
 
-        console.log(`SCALE: ${scale}`)
+        // set global scale variable
+        this.currentScale = scale;
+
+        // Transition map groups
         this.stateGroups.transition(self.getUpdateTransition)
           .attr("transform", "translate(" + translate + ") scale(" + scale + ")");
           
@@ -1347,9 +1343,9 @@ export default {
         this.countyCentroidGroups.transition(self.getUpdateTransition)
           .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
 
-        // set active state to zoomed state
+        // set current state to zoomed state
         this.zoomed = true;
-        this.active = zoomedState;
+        this.currentState = zoomedState;
         console.log(`Zoomed in on ${zoomedState}, so this.zoomed is ${this.zoomed}`)
 
         self.drawHistogram(zoomedState)
@@ -1385,7 +1381,11 @@ export default {
           y = (bounds[0][1] + bounds[1][1]) / 2,
           scale = .9 / Math.max(dx / this.mapDimensions.width, dy / this.mapDimensions.height),
           translate = [this.mapDimensions.width / 2 - scale * x, this.mapDimensions.height / 2 - scale * y];
-        console.log(`SCALE: ${scale}`)
+        
+        // set global scale variable
+        this.currentScale = scale;
+        
+        // Transition map groups
         this.stateGroups.transition(self.getUpdateTransition)
           .attr("transform", "translate(" + translate + ") scale(" + scale + ")");
 
@@ -1395,9 +1395,9 @@ export default {
         this.countyCentroidGroups.transition(self.getUpdateTransition)
           .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
 
-        // set active state to zoomed state
+        // set current state to zoomed state
         this.zoomed = true;
-        this.active = zoomedState;
+        this.currentState = zoomedState;
         console.log(`Zoomed in on ${zoomedState}, so this.zoomed is ${this.zoomed}`)
 
         // redraw map and histogram for state
@@ -1411,7 +1411,8 @@ export default {
     reset() {
       const self = this;
 
-      this.active = '' //this.d3.select(null);
+      this.currentState = 'All' //this.d3.select(null);
+      this.currentScale = 1;
       this.d3.select('select').property('value', 'All')
 
       this.d3.select("#map-inset-svg")
