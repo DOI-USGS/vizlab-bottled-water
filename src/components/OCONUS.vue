@@ -977,7 +977,7 @@ export default {
 
       oldCountyCentroidGroups.selectAll('path')
         .transition(self.getExitTransition())
-        .attr("d", this.mapPath.pointRadius(0))
+        // .attr("d", this.mapPath.pointRadius(0))
         .attr("d", d => {
           switch(d.properties.STATE_NAME) {
             case 'Alaska':
@@ -1011,23 +1011,23 @@ export default {
       newCountyCentroidGroups.append("path")
         .attr("id", d => "county-point-" + d.properties.GEOID)
         // .attr("d", this.mapPath.pointRadius(0))
-        .attr("d", d => {
-          // return d.properties.STATE_NAME === 'Alaska' ? this.mapPathAK.pointRadius(0)(d) : this.mapPath.pointRadius(0)(d)
-          switch(d.properties.STATE_NAME) {
-            case 'Alaska':
-              return this.mapPathAK.pointRadius(0)(d);
-            case 'Hawaii':
-              return this.mapPathHI.pointRadius(0)(d);
-            case 'Puerto Rico':
-              return this.mapPathPRVI.pointRadius(0)(d);
-            case 'Virgin Islands':
-              return this.mapPathPRVI.pointRadius(0)(d);
-            default:
-              return this.mapPath.pointRadius(0)(d);
-          }
-        })
+        // .attr("d", d => {
+        //   // return d.properties.STATE_NAME === 'Alaska' ? this.mapPathAK.pointRadius(0)(d) : this.mapPath.pointRadius(0)(d)
+        //   switch(d.properties.STATE_NAME) {
+        //     case 'Alaska':
+        //       return this.mapPathAK.pointRadius(0)(d);
+        //     case 'Hawaii':
+        //       return this.mapPathHI.pointRadius(0)(d);
+        //     case 'Puerto Rico':
+        //       return this.mapPathPRVI.pointRadius(0)(d);
+        //     case 'Virgin Islands':
+        //       return this.mapPathPRVI.pointRadius(0)(d);
+        //     default:
+        //       return this.mapPath.pointRadius(0)(d);
+        //   }
+        // })
         .style("fill", d => colorScale(colorAccessor(d)))
-        .style("stroke", "#ffffff")
+        // .style("stroke", "#ffffff")
 
       // update rectGroups to include new points
       this.countyCentroidGroups = newCountyCentroidGroups.merge(this.countyCentroidGroups)
