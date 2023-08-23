@@ -14,9 +14,14 @@
             <div id="state-dropdown-container" />
             <div id="chart-container">
             </div> <div />
+        </div>            
+        <div id="oconus-container">
+
         </div>
-            
-            <div id="oconus-container" />
+        <mapLabels 
+          id = "map-inset-svg"
+          class="map labels"
+        />
     </div>
   </div>
 </section>
@@ -27,10 +32,12 @@ import { csv } from 'd3';
 import { isMobile } from 'mobile-device-detect';
 // import Dropdown from '@/components/Dropdown.vue'
 import { ref, onMounted } from 'vue'
+import mapLabels from '@/components/MapLabels.vue'
 
 export default {
   name: "OCONUS",
   components: {
+    mapLabels
     // Dropdown
   },
   props: {
@@ -1135,6 +1142,9 @@ export default {
       if (zoomAction === 'Zoom out') return self.reset();
       if (callMethod === 'click') this.d3.select('select').property('value', zoomedState)
 
+      this.d3.select("#map-inset-svg")
+        .classed("hide", true)
+
       if (!this.zoomed) {
         console.log(`this.zoomed is ${this.zoomed} and planned zoom action is ${zoomAction}, so going to zoom in from full view`)
 
@@ -1260,6 +1270,9 @@ export default {
       this.active = '' //this.d3.select(null);
       this.d3.select('select').property('value', 'All')
 
+      this.d3.select("#map-inset-svg")
+        .classed("hide", false)
+
       self.drawHistogram('All')
       self.drawCounties('All')
       self.drawMap('All')
@@ -1311,6 +1324,15 @@ $pal_blue_dark: '#042054';
     align-self: center;
 }
 
+svg.map {
+  grid-area: map;
+  pointer-events: none;
+    width: 100%;
+    height: 100%;
+}
+.hide {
+  display: none;
+}
 #chart-container {
     //grid-area: chart;
     align-self: center;
