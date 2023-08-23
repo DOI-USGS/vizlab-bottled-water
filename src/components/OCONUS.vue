@@ -941,22 +941,28 @@ export default {
     drawCountyPoints(state, type) {
       const self = this;
 
+      const sizeAccessor = d => parseInt(d.properties.site_count)
+      const colorAccessor = d => d.properties.WB_TYPE
+
       let dataPoints;
+      let dataMax;
       if (state === 'All') {
+        dataMax = this.d3.max(this.countyPoints, sizeAccessor)
         dataPoints = this.countyPoints.filter(d => 
           d.properties.WB_TYPE === type)
       } else {
+        // Get max value for state, in any category
+        let stateData = this.countyPoints.filter(d => 
+          d.properties.STATE_NAME === state)
+        dataMax =  this.d3.max(stateData, sizeAccessor)
         dataPoints = this.countyPoints.filter(d => 
           d.properties.STATE_NAME === state && d.properties.WB_TYPE === type)
       }
 
-      const sizeAccessor = d => parseInt(d.properties.site_count)
-      const colorAccessor = d => d.properties.WB_TYPE
-
       // create scales   
       const sizeScale = this.d3.scaleLinear()
-        .range([0.7, 10]) // .rangeRound
-        .domain([1, this.d3.max(dataPoints, sizeAccessor)])
+        .range([0.8, 10]) // .rangeRound
+        .domain([1, dataMax]) //this.d3.max(dataPoints, sizeAccessor)
 
       const colorScale = this.d3.scaleOrdinal()
         .domain([... new Set(this.countyPoints.map(d => colorAccessor(d)))].sort())
