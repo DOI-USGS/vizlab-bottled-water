@@ -9,7 +9,7 @@ export default {
         initials: 'HCD',
         profile_link: 'https://www.usgs.gov/staff-profiles/hayley-corson-dosch',
         role: 'developer',
-        contribution: 'lead the design and site development'
+        contribution: 'led the design and development of the site, and developed the interactive map'
       }
     ],
     // do not delete section. delete any or all individuals as needed. modify content as needed
@@ -19,19 +19,19 @@ export default {
         firstName: 'Elmera',
         lastName: 'Azadpour',
         fullName: 'Elmera Azadpour',
-        initials: 'HCD',
+        initials: 'EA',
         profile_link: 'https://www.usgs.gov/staff-profiles/elmera-azadpour',
         role: 'contributor',
-        contribution: 'created data visualizations'
+        contribution: 'created data visualizations of water source data'
       },
       {
         firstName: 'Alisha',
         lastName: 'Chan',
         fullName: 'Alisha Chan',
-        initials: 'HCD',
+        initials: 'AC',
         profile_link: '',
         role: 'contributor',
-        contribution: 'mapped the distribution of sites with source data'
+        contribution: 'created data visualizations of water use data'
       },
       {
         firstName: 'Cee',
@@ -40,21 +40,21 @@ export default {
         initials: 'CN',
         profile_link: 'https://www.usgs.gov/staff-profiles/cee-nell',
         role: 'team lead',
-        contribution: 'developed the website'
+        contribution: 'contributed to site development'
       },
       {
-        firstName: 'Cheryl',
-        lastName: 'D',
-        fullName: 'Cheryl',
+        firstName: 'Cheryl Dieter',
+        lastName: 'Dieter',
+        fullName: 'Cheryl Dieter',
         initials: 'CD',
         profile_link: '',
         role: '',
         contribution: 'was an SME'
       },
       {
-        firstName: 'Cheryl',
-        lastName: 'B',
-        fullName: 'Cheryl',
+        firstName: 'Cheryl Buchwald',
+        lastName: 'Buchwald',
+        fullName: 'Cheryl Buchwald',
         initials: 'CB',
         profile_link: '',
         role: '',
