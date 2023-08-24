@@ -2,11 +2,14 @@
     <svg id="inset-map-svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" viewBox="0 0 900 675" preserveAspectRatio="xMidYMid meet">
     <g id="map-borders">
         <g>
-        <line class="borders" y1="270" x2=".5" y2="270"/>
-        <line class="borders" x1="3.5" y1="270" x2="513" y2="270"/>
+        <!--line class="borders" y1="270" x2=".5" y2="270"/ -->
+        <!-- line class="borders" x1="3.5" y1="270" x2="513" y2="270"/ -->
         <polyline class="borders" points="514.5 270 515 270 515 269.5"/>
         <line class="borders" x1="515" y1="266.5" x2="515" y2="2"/>
         <line class="borders" x1="515" y1=".5" x2="515"/>
+        </g>
+        <g>
+        <line class="borders" x1="0" y1="270" x2="900" y2="270"/>
         </g>
         <g>
         <line class="borders" x1="740" y1="675" x2="740" y2="674.5"/>
@@ -40,6 +43,7 @@
         <text class="labels" transform="translate(56.9 587.9)">Guam</text>
         <text class="labels" transform="translate(21.3 615.7)">American Samoa</text>
     </g>
+    <image width="1500" height="1500" transform="translate(581.5 0) scale(.18)" xlink:href="../assets/images/locator_map.png"/>
     </svg>
 </template>
 
