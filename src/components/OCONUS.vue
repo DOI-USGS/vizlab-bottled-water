@@ -865,7 +865,6 @@ export default {
           }
         })
         .style("stroke", "None")
-        .style("stroke-width", 0)
         .style("fill", "#ffffff") // "None"
         .style("fill-opacity", 0)
         .on("click", (e, d) => {
@@ -1106,7 +1105,7 @@ export default {
 
       // create scales   
       let scaleFactor = scale === 1 ? 1 : 2/scale
-      console.log(`In draw county points, scale factor is: ${scaleFactor}`)
+      
       const sizeScale = this.d3.scaleLinear()
         .range([0.8 * scaleFactor, 10 * scaleFactor]) // .rangeRound
         .domain([1, dataMax]) //this.d3.max(dataPoints, sizeAccessor)
@@ -1164,6 +1163,7 @@ export default {
       newCountyCentroidGroups.append("path")
         .attr("id", d => "county-point-" + d.properties.GEOID)
         // // .attr("d", this.mapPath.pointRadius(0))
+        // NEED IF REMOVING EXIT POINTS
         // .attr("d", d => {
         //   // return d.properties.STATE_NAME === 'Alaska' ? this.mapPathAK.pointRadius(0)(d) : this.mapPath.pointRadius(0)(d)
         //   switch(d.properties.STATE_NAME) {
@@ -1522,6 +1522,5 @@ svg.map {
     transition: width 2s, height 2s, transform 2s;
     will-change: width; */
 }
-
 
 </style>
