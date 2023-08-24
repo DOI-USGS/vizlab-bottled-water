@@ -4,7 +4,7 @@
       <h1>{{ title }}</h1>
       <div class="text-container"></div>
     </header>
-    <OCONUS />
+    <Inventory />
     <WaterSource />
     <WaterUse />
     <References />
@@ -17,14 +17,14 @@ import { ref } from 'vue'
 export default {
     name: 'Visualization',
     components: {
-      OCONUS: () => import("./../components/OCONUS.vue"),
+      Inventory: () => import("./../components/Inventory.vue"),
       WaterSource: () => import("./../components/WaterSource.vue"),
       WaterUse: () => import("./../components/WaterUse.vue"),
       Authorship: () => import("./../components/Authorship.vue"),
       References: () => import("./../components/References.vue"),
     },
     setup() {
-      const title = ref('What are the impacts of bottled water?')
+      const title = ref('What do we know about bottled water?')
 
       return {
         title
@@ -58,8 +58,7 @@ $pal_blue_dark: '#042054';
 #visualization {
   width: calc(100vw - 10rem);
   position: relative;
-  top: 3rem;
-  left: 5rem;
+  padding: 3rem 0 5rem 5rem;
 }
 
 h1 {
