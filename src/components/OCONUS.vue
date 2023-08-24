@@ -1019,6 +1019,8 @@ export default {
           .attr("role", "listitem")
           .attr("aria-label", d => d.properties.NAME + ', ' + d.properties.STATE_NAME)
 
+      let countyStrokeWidth = state === "All" ? 0.2 : 0.5 * 1/scale
+      let countyStrokeColor = state === "All" ? "#D1D1D1" : "#939393"
       newCountyGroups.append("path")
           .attr("id", d => "county-" + d.properties.GEOID)
           .attr("d", d => {
@@ -1043,39 +1045,43 @@ export default {
           }
           })
           // .attr("d", this.mapPath)
-          .style("stroke", "None")
-          .style("stroke-width", 0)
+          .style("stroke", countyStrokeColor)
+          .style("stroke-width", countyStrokeWidth)
           .style("fill", "None")
 
       this.countyGroups = newCountyGroups.merge(this.countyGroups)
 
       const countyShapes = this.countyGroups.select("path")
       
-      if (!(state === "All")) {
-        let scaleFactor = 2/scale
-        countyShapes.transition(self.getUpdateTransition())
-            .style("stroke", "#939393") //D1D1D1
-            .style("stroke-width", 0.5 * scaleFactor)
-            .style("fill", "#ffffff")
-      } else {
-        countyShapes.transition(self.getUpdateTransition())
-            .style("stroke", "#D1D1D1") //D1D1D1
-            .style("stroke-width", 0.1)
-            .style("fill", "#ffffff")
-      }
+      countyShapes.transition(self.getUpdateTransition())
+        .style("stroke", countyStrokeColor)
+        .style("stroke-width", countyStrokeWidth)
 
-      // Add county mouseover if at state level
-      if (!(state === 'All')) {
-        countyShapes
-          .on("mouseover", (event, d) => {
-            this.d3.selectAll("#county-" + d.properties.GEOID)
-              .style("fill", "#D1D1D1")
-          })
-          .on("mouseout", (event, d) => {
-            this.d3.selectAll("#county-" + d.properties.GEOID)
-              .style("fill", "#ffffff")
-          })
-      }
+      // if (!(state === "All")) {
+      //   let scaleFactor = 2/scale
+      //   countyShapes.transition(self.getUpdateTransition())
+      //       .style("stroke", "#939393") //D1D1D1
+      //       .style("stroke-width", 0.5 * scaleFactor)
+      //       .style("fill", "#ffffff")
+      // } else {
+      //   countyShapes.transition(self.getUpdateTransition())
+      //       .style("stroke", "#D1D1D1") //D1D1D1
+      //       .style("stroke-width", 0.1)
+      //       .style("fill", "#ffffff")
+      // }
+
+      // // Add county mouseover if at state level
+      // if (!(state === 'All')) {
+      //   countyShapes
+      //     .on("mouseover", (event, d) => {
+      //       this.d3.selectAll("#county-" + d.properties.GEOID)
+      //         .style("fill", "#D1D1D1")
+      //     })
+      //     .on("mouseout", (event, d) => {
+      //       this.d3.selectAll("#county-" + d.properties.GEOID)
+      //         .style("fill", "#ffffff")
+      //     })
+      // }
     },
     drawCountyPoints(state, scale, type) {
       const self = this;
