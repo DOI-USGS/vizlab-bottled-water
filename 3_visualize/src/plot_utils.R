@@ -1247,6 +1247,198 @@ generate_facility_source_facet_map <- function(supply_summary, supply_summary_st
   return(outfile)
 }
 
+#' @title generate facility source facet map for bottled water only
+#' @description generate a facet map showing the distribution of bottled water facility water
+#' sources nationally and by state
+#' @param supply_summary dataframe with count of facilities by water source
+#' @param supply_summary_state dataframe with count of facilities by water
+#' source, by state
+#' @param supply_colors vector of colors to use for water source categories
+#' @param selected_facility_type type of facility to plot. If 'All', summary
+#' across facility types is plotted
+#' @param width width for the final plot
+#' @param height height for the final plot
+#' @param bkgd_color background color for the plot
+#' @param text_color color for text
+#' @param outfile_template filepath template for saving the final plot
+#' @param dpi dpi at which to save the final plot
+#' @return the filepath of the saved plot
+generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary_state,
+                                               supply_colors, selected_facility_type,
+                                               width, height, bkgd_color, text_color,
+                                               outfile_template, dpi) {
+
+  filt_facility_type = "Bottled Water"
+
+  supply_summary_state <- process_supply_state_sum(supply_summary_state = supply_summary_state,
+                                                   selected_facility_type = filt_facility_type)
+
+  supply_summary <- process_supply_sum(supply_summary = supply_summary,
+                                       selected_facility_type = filt_facility_type)
+
+  supply_summary_tx <- supply_summary_state |>
+    filter(state_abbr == "TX")
+
+  supply_summary_ca <-  supply_summary_state |>
+    filter(state_abbr == "CA")
+
+  supply_colors <- c('#426f86', '#6b7444', '#13305b', '#8e949f')
+  color_names <- c('public supply', 'self supply', 'both', 'undetermined')
+  names(supply_colors) <- color_names
+
+  font_legend <- "Source Sans Pro"
+  sysfonts::font_add_google(font_legend)
+  showtext::showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 900)
+  showtext::showtext_auto(enable = TRUE)
+
+  annotate_legend <- "Neucha"
+  sysfonts::font_add_google(annotate_legend)
+  showtext::showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 900)
+  showtext::showtext_auto(enable = TRUE)
+
+  state_cartogram <- supply_summary_state %>%
+    ggplot(aes(1, y = percent)) +
+    ggfx::with_shadow(
+      geom_bar(aes(fill = source_category), stat = 'identity'),
+      colour = "black",
+      x_offset = 2,
+      y_offset = 2,
+      sigma = 5,
+      stack = TRUE,
+      with_background = FALSE
+      ) +
+   #geom_bar(aes(fill = source_category), stat = 'identity') +
+    scale_fill_manual(name = 'source_category', values = supply_colors) +
+    theme_bw() +
+    theme_facet(base = 12, bkgd_color = bkgd_color, text_color = text_color) +
+    theme(strip.text = element_text(family = font_legend, vjust = -1),
+          plot.margin = margin(50, 50, 50, 50, "pt"),
+          panel.spacing.y = unit(-5, "pt"),
+          panel.spacing.x = unit(4, "pt")) +
+    geofacet::facet_geo(~ state_abbr, grid = grid_pr_vi_gu(), move_axes = TRUE)
+
+  national_plot <- supply_summary %>%
+    ggplot(aes(1, y = percent)) +
+    geom_bar(aes(fill = source_category), stat = 'identity') +
+    scale_fill_manual(name = 'source_category', values = supply_colors) +
+    scale_x_discrete(expand = c(0,0)) +
+    scale_y_continuous(breaks = rev(c(0, 25, 50, 75, 100)),
+                       labels = rev(c(0, 25, 50, 75, "100%")),
+                       expand = c(0,0)) +
+    ggtitle('National') +
+    theme_minimal() +
+    theme(
+      axis.title = element_blank(),
+      panel.grid = element_blank(),
+      axis.ticks.y = element_line(color = "lightgrey", size = 0.5),
+      axis.text.x = element_blank(),
+      legend.position = 'bottom',
+      plot.title = element_text(hjust = 0.5, size = 22, margin = margin(b = 10)),
+      axis.text.y = element_text(size = 14),
+      legend.title.align = 0.5,
+      panel.margin = margin(0, 0, 0, 0, "pt"),
+      text = element_text(size = 20, family = font_legend)
+    )
+
+  plot_margin <- 0.005
+
+  # background
+  canvas <- grid::rectGrob(
+    x = 0, y = 0,
+    width = width, height = height,
+    gp = grid::gpar(fill = bkgd_color, alpha = 1, col = bkgd_color)
+  )
+
+  # Extract from plot
+  facet_legend <- get_legend(national_plot +
+                               theme(legend.position = 'left',
+                                     text = element_text(size = 14, family = font_legend)) +
+                               guides(
+                                 fill = guide_legend(title = "Water source",
+                                                     nrow = 1)
+                               ))
+  plot_arrow_tx <- ggplot() +
+    theme_void() +
+    geom_curve(aes(x = -2.5, y = 5.5, xend = -1.25, yend = 6),
+               arrow = arrow(length = unit(0.08, "npc"), type="closed"),
+               colour = text_color, linewidth = 0.45, curvature = -0.3, angle = 100)
+
+  plot_arrow_both <- ggplot() +
+    theme_void() +
+    geom_curve(aes(x = -1.25, y = 5, xend = -2.5, yend = 5.5),
+               arrow = arrow(length = unit(0.08, "npc"), type = "closed"),
+               colour = text_color, linewidth = 0.45, curvature = 0.3, angle = 100)
+
+  # compose final plot
+  facet_plot <- ggdraw(ylim = c(0,1),
+                       xlim = c(0,1)) +
+    # a background
+    draw_grob(canvas,
+              x = 0, y = 1,
+              height = height, width = width,
+              hjust = 0, vjust = 1) +
+    # national-level plot
+    draw_plot(national_plot + theme(legend.position = 'none'),
+              x = 0.025,
+              y = 0.3,
+              height = 0.45 ,
+              width = 0.32 - plot_margin * 2) +
+    # state cartogram
+    draw_plot(state_cartogram + theme(legend.position = 'none'),
+              x = 0.974,
+              y = 0.128,
+              height = 0.8,
+              width = 1 - (0.4 + plot_margin * 5),
+              hjust = 1,
+              vjust = 0) +
+    # add legend
+    draw_plot(facet_legend,
+              x = 0.05,
+              y = 0.19,
+              height = 0.13 ,
+              width = 0.3 - plot_margin) +
+    draw_label(sprintf('Distribution of water sources\n for %s facilities',
+                       tolower(filt_facility_type)),
+               x = 0.025, y = 0.93,
+               size = 38,
+               hjust = 0,
+               vjust = 1,
+               color = 'black',
+               lineheight = 1,
+               fontfamily = font_legend,
+               fontface = "bold") +
+    # plot arrow - TX
+    draw_plot(plot_arrow_tx,
+              x = 0.543,
+              y = 0.168,
+              height = 0.07 ,
+              width = 0.035 - plot_margin) +
+      draw_label(paste("Texas sources\n", paste0(round(max(supply_summary_tx$percent)), "%"),"from", "\npublic supply"),
+              x = 0.546,
+              y = 0.130,
+              size = 16,
+              color = text_color,
+              fontfamily = annotate_legend) +
+    # plot arrow - both = public + supply callout
+    draw_plot(plot_arrow_both,
+              x = 0.348,
+              y = 0.60,
+              height = 0.08,
+              width = 0.035 - plot_margin) +
+    draw_label("Both =\n self supply &\n public supply",
+               x = 0.381,
+               y = 0.554,
+               size = 16,
+               color = text_color,
+               fontfamily = annotate_legend)
+
+
+  outfile <- ifelse(selected_facility_type == 'All', outfile_template,
+                    sprintf(outfile_template))
+  ggsave(outfile, facet_plot, width = width, height = height, dpi = dpi)
+  return(outfile)
+}
+
 #' @title generate facility source facet tree map
 #' @description generate a faceted treemap showing the distribution of facility water
 #' sources nationally and by state

@@ -28,6 +28,7 @@ tar_option_set(packages = c("tidyverse",
                             'treemap',
                             'treemapify',
                             'waffle',
+                            'ggfx',
                             'FedData')) # need development version
 
 # Phase target makefiles
