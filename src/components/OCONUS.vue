@@ -232,9 +232,9 @@ export default {
 
       // Draw initial view ('All')
       self.drawHistogram(this.currentState)
-      self.drawCounties(this.currentState)
-      self.drawMap(this.currentState)
-      self.drawCountyPoints(this.currentState, this.currentType)
+      self.drawCounties(this.currentState, this.currentScale)
+      self.drawMap(this.currentState, this.currentScale)
+      self.drawCountyPoints(this.currentState, this.currentScale, this.currentType)
 
     },
     addDropdown(data) {
@@ -289,9 +289,9 @@ export default {
           }
 
           // self.drawHistogram(selectedArea) 
-          // self.drawCounties(selectedArea)
-          // self.drawMap(selectedArea)
-          // self.drawCountyPoints(selectedArea, self.currentType)
+          // self.drawCounties(selectedArea, this.currentScale)
+          // self.drawMap(selectedArea, this.currentScale)
+          // self.drawCountyPoints(selectedArea, this.currentScale, self.currentType)
         })
 
 
@@ -661,7 +661,7 @@ export default {
         .on("click", (event, d) => {
           this.currentType = colorAccessor(d)
           let currentIdentifier = this.currentType.replace(' ', '-')
-          self.drawCountyPoints(state, this.currentType)
+          self.drawCountyPoints(state, this.currentScale, this.currentType)
 
           this.d3.selectAll('.bar')
             .style("opacity", 0.5)
@@ -672,7 +672,7 @@ export default {
         .on("mouseover", (event, d) => {
           this.currentType = colorAccessor(d)
           let currentIdentifier = this.currentType.replace(' ', '-')
-          self.drawCountyPoints(state, this.currentType)
+          self.drawCountyPoints(state, this.currentScale, this.currentType)
 
           this.d3.selectAll('.bar')
             .transition(self.getUpdateTransition())
@@ -684,7 +684,7 @@ export default {
         })
         .on("mouseout", (event, d) => {
           this.currentType = 'All'
-          self.drawCountyPoints(state, this.currentType)
+          self.drawCountyPoints(state, this.currentScale, this.currentType)
 
           this.d3.selectAll('.bar')
             .transition(self.getUpdateTransition())
@@ -697,8 +697,8 @@ export default {
             if (event.key === 'Enter' | event.keyCode === 13) {
               let targetId = event.target.id
               let targetIdSplit = targetId.split('-')
-              let targetType = targetIdSplit.length === 4 ? (targetIdSplit[2] + ' ' + targetIdSplit[3]) : targetIdSplit[2]
-              self.drawCountyPoints(state, targetType)
+              this.currentType = targetIdSplit.length === 4 ? (targetIdSplit[2] + ' ' + targetIdSplit[3]) : targetIdSplit[2]
+              self.drawCountyPoints(state, this.currentScale, this.currentType)
             }
         })
       })
@@ -746,7 +746,7 @@ export default {
       //   .attr("role", "presentation")
       //   .attr("aria-hidden", true)
     },
-    drawMap(state) {
+    drawMap(state, scale) {
       const self = this;
 
       let data;
@@ -897,12 +897,14 @@ export default {
         let selectedStateId = data[0].properties.FIPS
         this.d3.selectAll('#state-group-'+ selectedStateId)
           .raise()
+
+        let scaleFactor = 2/scale
         stateShapes
           .transition(self.getUpdateTransition())
           .style("fill", "#ffffff") // "None"
           .style("fill-opacity", 0)
           .style("stroke", "#636363")
-          .style("stroke-width", 1)
+          .style("stroke-width", 1 * scaleFactor)
       } else {
         stateShapes
           .transition(self.getUpdateTransition())
@@ -975,7 +977,7 @@ export default {
       //     })
       // }
     },
-    drawCounties(state) {
+    drawCounties(state, scale) {
       const self = this;
 
       let data; 
@@ -1040,9 +1042,10 @@ export default {
       const countyShapes = this.countyGroups.select("path")
       
       if (!(state === "All")) {
+        let scaleFactor = 2/scale
         countyShapes.transition(self.getUpdateTransition())
             .style("stroke", "#939393") //D1D1D1
-            .style("stroke-width", 0.1)
+            .style("stroke-width", 0.5 * scaleFactor)
             .style("fill", "#ffffff")
       } else {
         countyShapes.transition(self.getUpdateTransition())
@@ -1064,7 +1067,7 @@ export default {
           })
       }
     },
-    drawCountyPoints(state, type) {
+    drawCountyPoints(state, scale, type) {
       const self = this;
 
       const sizeAccessor = d => parseInt(d.properties.site_count)
@@ -1086,8 +1089,10 @@ export default {
       }
 
       // create scales   
+      let scaleFactor = scale === 1 ? 1 : 2/scale
+      console.log(`In draw county points, scale factor is: ${scaleFactor}`)
       const sizeScale = this.d3.scaleLinear()
-        .range([0.8, 10]) // .rangeRound
+        .range([0.8 * scaleFactor, 10 * scaleFactor]) // .rangeRound
         .domain([1, dataMax]) //this.d3.max(dataPoints, sizeAccessor)
 
       const colorScale = this.d3.scaleOrdinal()
@@ -1125,7 +1130,7 @@ export default {
           }
         })
 
-      // CAN'T REMOVE W/ ZOOM, B/C IF REMOVED, RE-ADDED W/O TRANSLATION
+      // CAN'T REMOVE W/ ZOOM, B/C IF REMOVED, RE-ADDED W/O TRANSLATION ON CHART MOUSEOVER
       // oldCountyCentroidGroups.transition(self.getExitTransition()).remove()
 
       const newCountyCentroidGroups = this.countyCentroidGroups.enter().append("g")
@@ -1196,8 +1201,8 @@ export default {
                 return this.mapPath.pointRadius(sizeScale(sizeAccessor(d)))(d);
             }
           })
-          .style("stroke", "#ffffff")
-          .style("stroke-width", 0.5)
+          // .style("stroke", "#000000")
+          // .style("stroke-width", 1)
           .style("fill", d => colorScale(colorAccessor(d)))
 
 
@@ -1330,13 +1335,15 @@ export default {
         // set global scale variable
         this.currentScale = scale;
 
+        self.drawCountyPoints(zoomedState, this.currentScale, this.currentType)
+        self.drawCounties(zoomedState, this.currentScale)
+        self.drawMap(zoomedState, this.currentScale)
+        self.drawHistogram(zoomedState)
+        
         // Transition map groups
         this.stateGroups.transition(self.getUpdateTransition)
           .attr("transform", "translate(" + translate + ") scale(" + scale + ")");
           
-        // this.stateGroups.select("path").transition(self.getUpdateTransition)
-        //   .style("stroke-width",  1/scale)
-
         this.countyGroups.transition(self.getUpdateTransition)
           .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
 
@@ -1348,21 +1355,16 @@ export default {
         this.currentState = zoomedState;
         console.log(`Zoomed in on ${zoomedState}, so this.currentlyZoomed is ${this.currentlyZoomed}`)
 
-        self.drawHistogram(zoomedState)
-        self.drawCounties(zoomedState)
-        self.drawMap(zoomedState)
-        self.drawCountyPoints(zoomedState, this.currentType)
-
       } else {
         console.log(`this.currentlyZoomed is ${this.currentlyZoomed} and planned zoom action is ${zoomAction}, so going to zoom out and then in to state`)
 
         // NEED TO REVAMP - THIS IS MESSY
 
         // First draw whole map AND zoom out to whole map
-        self.drawHistogram('All')
-        self.drawCounties('All')
-        self.drawMap('All')
-        self.drawCountyPoints('All', this.currentType)
+        // self.drawHistogram('All')
+        self.drawCountyPoints('All', 1, this.currentType)
+        self.drawCounties('All', 1)
+        self.drawMap('All', 1)
 
         this.stateGroups
           .attr("transform", "");
@@ -1384,6 +1386,12 @@ export default {
         
         // set global scale variable
         this.currentScale = scale;
+
+        // redraw map and histogram for state
+        self.drawCountyPoints(zoomedState, this.currentScale, this.currentType)
+        self.drawCounties(zoomedState, this.currentScale)
+        self.drawMap(zoomedState, this.currentScale)
+        self.drawHistogram(zoomedState)
         
         // Transition map groups
         this.stateGroups.transition(self.getUpdateTransition)
@@ -1399,13 +1407,6 @@ export default {
         this.currentlyZoomed = true;
         this.currentState = zoomedState;
         console.log(`Zoomed in on ${zoomedState}, so this.currentlyZoomed is ${this.currentlyZoomed}`)
-
-        // redraw map and histogram for state
-        self.drawHistogram(zoomedState)
-        self.drawCounties(zoomedState)
-        self.drawMap(zoomedState)
-        self.drawCountyPoints(zoomedState, this.currentType)
-        
       }
     },
     reset() {
@@ -1419,20 +1420,17 @@ export default {
         .classed("hide", false)
 
       self.drawHistogram('All')
-      self.drawCounties('All')
-      self.drawMap('All')
-      self.drawCountyPoints('All', this.currentType)
+      self.drawCounties('All', this.currentScale)
+      self.drawMap('All', this.currentScale)
+      self.drawCountyPoints('All', this.currentScale, this.currentType)
 
       this.stateGroups.transition(self.getExitTransition)
-          // .style("stroke-width", 1)
           .attr("transform", "");
 
       this.countyGroups.transition(self.getExitTransition)
-        // .style("stroke-width", 1)
         .attr("transform", "");
 
       this.countyCentroidGroups.transition(self.getExitTransition)
-        // .style("stroke-width", 1)
         .attr("transform", "");
 
       this.currentlyZoomed = false;
