@@ -831,6 +831,8 @@ export default {
         .attr("role", "listitem")
         .attr("aria-label", d => d.properties.NAME)
       
+      let stateStrokeWidth = state === "All" ? 0.5 : 1 * 2/scale
+      let stateStrokeColor = state === "All" ? "#949494" : "#636363"
       newStateGroups.append("path")
         .attr("class", "state-paths")
         .attr("id", d => "state-" + d.properties.FIPS)
@@ -864,7 +866,8 @@ export default {
               return this.mapPath(d);
           }
         })
-        .style("stroke", "None")
+        .style("stroke", stateStrokeColor)
+        .style("stroke-width", stateStrokeWidth)
         .style("fill", "#ffffff") // "None"
         .style("fill-opacity", 0)
         .on("click", (e, d) => {
@@ -906,22 +909,14 @@ export default {
         let selectedStateId = data[0].properties.FIPS
         this.d3.selectAll('#state-group-'+ selectedStateId)
           .raise()
-
-        let scaleFactor = 2/scale
-        stateShapes
-          .transition(self.getUpdateTransition())
-          .style("fill", "#ffffff") // "None"
-          .style("fill-opacity", 0)
-          .style("stroke", "#636363")
-          .style("stroke-width", 1 * scaleFactor)
-      } else {
-        stateShapes
-          .transition(self.getUpdateTransition())
-          .style("stroke", "#949494") //#636363
-          .style("stroke-width", 0.5)
-          .style("fill", "#ffffff") // "None"
-          .style("fill-opacity", 0)
       }
+
+      stateShapes
+          .transition(self.getUpdateTransition())
+          .style("stroke", stateStrokeColor) //#636363
+          .style("stroke-width", stateStrokeWidth)
+          .style("fill", "#ffffff") // "None"
+          .style("fill-opacity", 0)
       
 
       // const allStates = d3.selectAll(".state-paths")
