@@ -44,7 +44,7 @@ export default {
   },
   data() {
     return {
-      selectedOption: 'all states and territories',
+      // selectedOption: 'all states and territories',
       dropdownOptions: [],
 
       d3: null,
@@ -84,31 +84,31 @@ export default {
       selectedText: null,
       stateList: null,
       currentState: null,
+      defaultViewName: null,
       currentlyZoomed: false,
       currentScale: null,
     }
   },
   mounted(){      
     this.d3 = Object.assign(d3Base);
-    
+
     const self = this;
     this.loadData() // read in data 
  
   },
   setup() {
     const self = this;
-    const selectedOption = ref('')
-    const dropdownOptions = ref([])
-    publicPath = import.meta.env.BASE_URL;
+    // const selectedOption = ref('')
+    // const dropdownOptions = ref([])
 
     onMounted(async () => {
-      const data = await csv(self.publicPath + 'state_facility_type_summary.csv')
+      // const data = await csv(self.publicPath + 'state_facility_type_summary.csv')
 
       // Assuming the column name in the CSV is 'name'
-      dropdownOptions.value = data.map(d => d.state_name)
+      // dropdownOptions.value = data.map(d => d.state_name)
     })
 
-    return { selectedOption, dropdownOptions }
+    return { }
   },
   /* computed: {
     computedDropdownOptions() {
@@ -180,14 +180,16 @@ export default {
       this.statePolys = statePolysCONUS.concat(statePolysAK, statePolysHI, statePolysGUMP, statePolysPRVI, statePolysAS)
 
       // set active
-      this.currentState = 'All';
+      this.defaultViewName = 'all states and territories'
+      this.currentState = this.defaultViewName;
+      
 
       // set current scale
       this.currentScale = 1;
 
       // get list of unique states
       this.stateList = [... new Set(this.dataAll.map(d => d.state_name))]
-      this.stateList.unshift('All')
+      this.stateList.unshift(this.defaultViewName)
       
       this.currentType = 'All'
       this.dropdownOptions = this.stateList
@@ -229,7 +231,7 @@ export default {
 
       self.initChart()
 
-      // Draw initial view ('All')
+      // Draw initial view ('all states and territories')
       self.drawHistogram(this.currentState)
       self.drawCounties(this.currentState, this.currentScale)
       self.drawMap(this.currentState, this.currentScale)
@@ -239,18 +241,20 @@ export default {
     addDropdown(data) {
       const self = this;
 
-      const dropdown = this.d3.select("#state-dropdown-container")
+      const dropdownContainer = this.d3.select("#state-dropdown-container")
+
+      const dropdown = dropdownContainer
         .append("select")
-        .attr("class", "dropdown")
         .attr("id", "state-dropdown")
+        .attr("class", "dropdown")
         .on("change", function() { 
           this.selectedText = this.options[this.selectedIndex].text;
           this.style.width = 20 + (this.selectedText.length * 12) + "px";
 
           let selectedArea = this.value
 
-          if (selectedArea === 'All') {
-            // If dropdown has _changed_ to 'All' that means we need to reset the map and zoom out
+          if (selectedArea === self.defaultViewName) {
+            // If dropdown has _changed_ to 'all states and territories' that means we need to reset the map and zoom out
             self.reset()
           } else {
             // If dropdown has _changed_ to a specific state that means we need to zoom into that state
@@ -286,7 +290,6 @@ export default {
             
             self.zoomToState(stateData[0], zoomPath, 'dropdown')
           }
-
           // self.drawHistogram(selectedArea) 
           // self.drawCounties(selectedArea, this.currentScale)
           // self.drawMap(selectedArea, this.currentScale)
@@ -294,12 +297,13 @@ export default {
         })
 
 
-
-      const dropdownDefaultText = 'all states and territories'
-      let titleOption = dropdown.append("option")
-        .attr("class", "option title")
-        .attr("disabled", "true")
-        .text(dropdownDefaultText)
+      // const dropdownDefaultText = this.defaultViewName
+      // let titleOption = dropdown.append("option")
+      //   .attr("class", "option title")
+      //   .attr("disabled", "true")
+      //   .text(dropdownDefaultText)
+      //   .append("text")
+      //   .text(" ▼")
 
       let stateOptions = dropdown.selectAll("stateOptions")
         .data(data)
@@ -308,6 +312,9 @@ export default {
         .attr("class", "option stateName")
         .attr("value", d => d)
         .text(d => d)
+
+      // set default value
+      dropdown.property('value', this.currentState)
 
       let selectId = document.getElementById("state-dropdown");
       this.selectedText = selectId.options[selectId.selectedIndex].text;
@@ -359,7 +366,6 @@ export default {
 
       const boundsStatePolysHI = this.d3.geoBounds(this.statePolysHIJSON)
       const hiWidth = boundsStatePolysHI[1][0] - boundsStatePolysHI[0][0]
-      const hiHeight = boundsStatePolysHI[1][1] - boundsStatePolysHI[0][1]
       const hiConusWidthRatio = hiWidth/conusWidth
 
       // Get height vars
@@ -372,20 +378,7 @@ export default {
       const hiPropWidth = conusPropWidth * hiConusWidthRatio
       const akPropWidth = conusPropWidth * akConusWidthRatio
 
-      console.log(`this.mapDimensions.width = ${this.mapDimensions.width}`)
-      console.log(`hiConusWidthRatio = ${hiConusWidthRatio}`)
-      console.log(`widthX = ${widthX}`)
-      console.log(`conusPropWidth = ${conusPropWidth}`)
-      console.log(`hiPropWidth = ${hiPropWidth}`)
-      console.log(`boundsStatePolysAK[1][0] = ${boundsStatePolysAK[1][0]}`)
-      console.log(`boundsStatePolysAK[0][0] = ${boundsStatePolysAK[0][0]}`)
-      console.log(`akWidth = ${akWidth}`)
-      console.log(`(180 - Math.abs(boundsStatePolysAK[1][0])) : ${(180 - Math.abs(boundsStatePolysAK[1][0]))}`)
-
-      const conusWidthFraction = 0.4
-      
-      // const akHeightFraction = akConusHeightRatio * conusHeightFraction
-
+      // Set universal map scale
       const mapScale = 800
 
       // // Locator map projection
@@ -550,7 +543,7 @@ export default {
 
       let data;
       let dataTypes = [... new Set(this.dataAll.map(d => d.WB_TYPE))]
-      if (state === 'All') {
+      if (state === this.defaultViewName) {
         let dataArray = []
         dataTypes.forEach(function(type) {
           let totalCount = rawData
@@ -560,7 +553,7 @@ export default {
               return acc + value
             })
           let dataObj = {
-            state_name: 'All',
+            state_name: self.defaultViewName,
             state_abbr: null,
             WB_TYPE: type,
             site_count: totalCount
@@ -580,7 +573,7 @@ export default {
       const identifierAccessor = d => d.WB_TYPE.replace(' ', '-')
 
       //add title
-      this.d3.select("#map-container").select("Title")
+      this.d3.select("#chart-container").select("Title")
         .text(`Bar chart of distribution of facility types for ${state}`)
 
       // create scales   
@@ -736,7 +729,7 @@ export default {
 
       const xAxisLabel = xAxis.select(".x-axis-label")
 
-      if (state === 'All') {
+      if (state === this.defaultViewName) {
         xAxisLabel
         .text('Distribution of facility types nationally')
       } else {
@@ -762,7 +755,7 @@ export default {
       // let selectedMapPath;
       // let featureBounds;
 
-      if (state === 'All') {
+      if (state === this.defaultViewName) {
         data = this.statePolys
         // selectedMapPath = this.mapPath
         // featureBounds = null;
@@ -830,8 +823,8 @@ export default {
         .attr("role", "listitem")
         .attr("aria-label", d => d.properties.NAME)
       
-      let stateStrokeWidth = state === "All" ? 0.5 : 1 * 2/scale
-      let stateStrokeColor = state === "All" ? "#949494" : "#636363"
+      let stateStrokeWidth = state === this.defaultViewName ? 0.5 : 1 * 2/scale
+      let stateStrokeColor = state === this.defaultViewName ? "#949494" : "#636363"
       newStateGroups.append("path")
         .attr("class", "state-paths")
         .attr("id", d => "state-" + d.properties.FIPS)
@@ -904,7 +897,7 @@ export default {
 
       const stateShapes = this.stateGroups.select("path")
 
-      if (!(state === "All")) {
+      if (!(state === this.defaultViewName)) {
         let selectedStateId = data[0].properties.FIPS
         this.d3.selectAll('#state-group-'+ selectedStateId)
           .raise()
@@ -919,7 +912,7 @@ export default {
       
 
       // const allStates = d3.selectAll(".state-paths")
-      // if (currentState === 'All') {
+      // if (currentState === this.defaultViewName) {
       //   allStates
       //     .style("stroke", "#949494") //#636363
       //     .style("stroke-width", 0.5)
@@ -940,7 +933,7 @@ export default {
       //   .style("stroke-opacity", 1)
 
       // // If a single state is selected, highlight that state
-      // if (!(state === 'All')) {
+      // if (!(state === this.defaultViewName)) {
       //   const selectedStateData = data.filter(d => d.properties.NAME === state)
       //   console.log(selectedStateData)
       //   const selectedStateId = selectedStateData[0].properties.FIPS
@@ -965,7 +958,7 @@ export default {
       // // would need to add separate group w/ states on TOP of counties and county
       // // points just to trigger interaction on THIS group of states
       // // ideally would use <use>
-      // if (state === 'All') {
+      // if (state === this.defaultViewName) {
       //   stateShapes
       //     .on("mouseover", (event, d) => {
       //       console.log(d)
@@ -985,7 +978,7 @@ export default {
 
       let data; 
 
-      if (state === 'All') {
+      if (state === this.defaultViewName) {
         data = this.countyPolys
       } else {
         data = this.countyPolys.filter(d => 
@@ -1012,8 +1005,8 @@ export default {
           .attr("role", "listitem")
           .attr("aria-label", d => d.properties.NAME + ', ' + d.properties.STATE_NAME)
 
-      let countyStrokeWidth = state === "All" ? 0.2 : 0.5 * 1/scale
-      let countyStrokeColor = state === "All" ? "#D1D1D1" : "#939393"
+      let countyStrokeWidth = state === this.defaultViewName ? 0.2 : 0.5 * 1/scale
+      let countyStrokeColor = state === this.defaultViewName ? "#D1D1D1" : "#939393"
       newCountyGroups.append("path")
           .attr("id", d => "county-" + d.properties.GEOID)
           .attr("d", d => {
@@ -1050,7 +1043,7 @@ export default {
         .style("stroke", countyStrokeColor)
         .style("stroke-width", countyStrokeWidth)
 
-      // if (!(state === "All")) {
+      // if (!(state === this.defaultViewName)) {
       //   let scaleFactor = 2/scale
       //   countyShapes.transition(self.getUpdateTransition())
       //       .style("stroke", "#939393") //D1D1D1
@@ -1064,7 +1057,7 @@ export default {
       // }
 
       // // Add county mouseover if at state level
-      // if (!(state === 'All')) {
+      // if (!(state === this.defaultViewName)) {
       //   countyShapes
       //     .on("mouseover", (event, d) => {
       //       this.d3.selectAll("#county-" + d.properties.GEOID)
@@ -1084,7 +1077,7 @@ export default {
 
       let dataPoints;
       let dataMax;
-      if (state === 'All') {
+      if (state === this.defaultViewName) {
         dataPoints = this.countyPoints.filter(d => 
           d.properties.WB_TYPE === type)
         if (type === 'All') {
@@ -1224,7 +1217,7 @@ export default {
 
 
       // // Add county mouseover if at state level
-      // if (!(state === 'All')) {
+      // if (!(state === this.defaultViewName)) {
       //   countyCentroidPoints
       //     .on("mouseover", (event, d) => {
       //       d3.selectAll("#county-" + d.properties.GEOID)
@@ -1293,25 +1286,34 @@ export default {
     zoomToState(d, path, callMethod) {
       const self = this;
       
+      // Store name of selected state
       let zoomedState = d.properties.NAME
+
+      // Determine if need to zoom in or out
       let zoomAction = this.currentState === zoomedState ? 'Zoom out' : 'Zoom in'
 
       console.log(`You selected ${d.properties.NAME} by ${callMethod}. Currently shown area is ${this.currentState}. This.currentlyZoomed is ${this.currentlyZoomed}. Planned zoom action is ${zoomAction}`)
 
+      // If need to zoom out, zoom out to all states + territories
       if (zoomAction === 'Zoom out') return self.reset();
-      if (callMethod === 'click') this.d3.select('select').property('value', zoomedState)
 
+      // If user clicked on map to zoom
+      if (callMethod === 'click') {
+        let dropdown = this.d3.select('select')
+        // Update dropdown text
+        dropdown.property('value', zoomedState)
+        // Update dropdown width
+        let selectId = document.getElementById("state-dropdown");
+        selectId.style.width = 20 + (zoomedState.length * 12) + "px";
+      }
+
+      // Hide the inset map borders and labels
       this.d3.select("#map-inset-svg")
         .classed("hide", true)
 
+      // If not already zoomed in
       if (!this.currentlyZoomed) {
         console.log(`this.currentlyZoomed is ${this.currentlyZoomed} and planned zoom action is ${zoomAction}, so going to zoom in from full view`)
-
-        let selectId = document.getElementById("state-dropdown");
-        // console.log(this.stateList.indexOf(zoomedState))
-        // console.log(selectId.value)
-        // selectId.value = this.stateList.indexOf(zoomedState)
-        // this.selectedText = zoomedState
 
         // const [[x0, y0], [x1, y1]] = this.mapPath.bounds(d);
         // event.stopPropagation();
@@ -1373,15 +1375,16 @@ export default {
         console.log(`Zoomed in on ${zoomedState}, so this.currentlyZoomed is ${this.currentlyZoomed}`)
 
       } else {
+        // If already zoomed in,
         console.log(`this.currentlyZoomed is ${this.currentlyZoomed} and planned zoom action is ${zoomAction}, so going to zoom out and then in to state`)
 
         // NEED TO REVAMP - THIS IS MESSY
 
         // First draw whole map AND zoom out to whole map
         // self.drawHistogram('All')
-        self.drawCountyPoints('All', 1, this.currentType)
-        self.drawCounties('All', 1)
-        self.drawMap('All', 1)
+        self.drawCountyPoints(this.defaultViewName, 1, this.currentType)
+        self.drawCounties(this.defaultViewName, 1)
+        self.drawMap(this.defaultViewName, 1)
 
         this.stateGroups
           .attr("transform", "");
@@ -1429,17 +1432,20 @@ export default {
     reset() {
       const self = this;
 
-      this.currentState = 'All' //this.d3.select(null);
+      this.currentState = this.defaultViewName //this.d3.select(null);
       this.currentScale = 1;
-      this.d3.select('select').property('value', 'All')
+
+      this.d3.select('select').property('value', this.defaultViewName)
+      let selectId = document.getElementById("state-dropdown");
+      selectId.style.width = 20 + (this.currentState.length * 8) + "px";
 
       this.d3.select("#map-inset-svg")
         .classed("hide", false)
 
-      self.drawHistogram('All')
-      self.drawCounties('All', this.currentScale)
-      self.drawMap('All', this.currentScale)
-      self.drawCountyPoints('All', this.currentScale, this.currentType)
+      self.drawHistogram(this.defaultViewName)
+      self.drawCounties(this.defaultViewName, this.currentScale)
+      self.drawMap(this.defaultViewName, this.currentScale)
+      self.drawCountyPoints(this.defaultViewName, this.currentScale, this.currentType)
 
       this.stateGroups.transition(self.getExitTransition)
           .attr("transform", "");
