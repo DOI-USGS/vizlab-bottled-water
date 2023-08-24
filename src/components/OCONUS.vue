@@ -1,30 +1,29 @@
 <template>
   <section id="oconus_map">
-  <div id="grid-container">
-    <div id="map-container">
-        <div id="title-container">
-          <div class='text-container'>
-                <p>
-                  The bottled water industry estimates that the United States consumed 15 billion gallons (57 billion liters) of bottled water in 2020. That’s 45 gallons of bottled water per person. If you consider how much water it takes to produce each bottle of water (not including the packaging), the number is closer to 63 gallons—enough to fill a standard bathtub one-and-a-half times. 
-                </p>
-             </div>
-            <h3> Bottling facilities in 
-              <!-- Dropdown v-model="selectedOption" :options="dropdownOptions"/ -->
-            </h3>
-            <div id="state-dropdown-container" />
-            <div id="chart-container">
-            </div> <div />
-        </div>            
-        <div id="oconus-container">
-
+    <div id="grid-container-interactive">
+      <div id="title">
+        <h4> Counts of bottling facilities in <span id="state-dropdown-container"></span> by county
+          <!-- Dropdown v-model="selectedOption" :options="dropdownOptions"/ -->
+        </h4>
+      </div>
+      <div id="text">
+        <div class='text-container'>
+            <!--p>
+              The bottled water industry estimates that the United States consumed 15 billion gallons (57 billion liters) of bottled water in 2020. That’s 45 gallons of bottled water per person. If you consider how much water it takes to produce each bottle of water (not including the packaging), the number is closer to 63 gallons—enough to fill a standard bathtub one-and-a-half times. 
+            </p -->
+            <p>  This map shows the approximate number of bottling facilities in every county where data are available. Use the dropdown menu above to filter the data by state, or click on the facility type in the bar chart below to filter the data by facility type. </p>
         </div>
-        <mapLabels 
-          id = "map-inset-svg"
-          class="map labels"
-        />
+      </div>
+      <div id="chart-container">
+      </div>           
+      <div id="oconus-container">
+      </div>
+      <mapLabels 
+        id = "map-inset-svg"
+        class="map labels"
+      />
     </div>
-  </div>
-</section>
+  </section>
 </template>
 <script>
 import * as d3Base from 'd3';
@@ -1466,63 +1465,68 @@ export default {
     stroke: white;
     stroke-width: 0.3;
   }
+  .dropdown {
+    // font-size: 20px;
+    // display: flex;
+    flex-direction: row;
+    transition: width 2s, height 2s, transform 2s;
+    will-change: width;
+    background-color: white;
+    padding: 0.5rem;
+    box-shadow:  rgba(0, 0, 0, 0.05) 0px 6px 10px 0px,
+    rgba(0, 0, 0, 0.1) 0px 0px 0px 1px;
+    border-radius: 5px;
+  }
 </style>
 <style scoped lang="scss">
+  $pal_red: '#FD5901';
+  $pal_or: '#F78104';
+  $pal_yell: '#FAAB36';
+  $pal_teal: '#008083';
+  $pal_blue_dark: '#042054';
 
-$pal_red: '#FD5901';
-$pal_or: '#F78104';
-$pal_yell: '#FAAB36';
-$pal_teal: '#008083';
-$pal_blue_dark: '#042054';
 
-
-#map-container {
+  #grid-container-interactive {
     display: grid;
     grid-template-columns: 1.5fr 3fr;
-    grid-template-rows: 1fr;
+    column-gap: 1rem;
+    grid-template-rows: 1fr max-content max-content;
     grid-template-areas:
-      "title map";
-      //"title map"
-      //"title map";
+      "title title"
+      "text map"
+      "chart map";
     justify-content: center;
     margin: auto;
     max-width: 1600px;
-    //height: 88vh;
-}
-
-#oconus-container {
-    grid-area: map;
-    align-self: center;
-}
-
-svg.map {
-  grid-area: map;
-  pointer-events: none;
-    width: 100%;
-    height: 100%;
-}
-.hide {
-  display: none;
-}
-#chart-container {
-    //grid-area: chart;
-    align-self: center;
-}
-
-#title-container {
+  }
+  #title {
     grid-area: title;
     align-self: center;
     font-size: 20px;
     font-family: sans-serif;
-    //background-color: red;
-}
-
-.dropdown {
-    font-size: 20px;
-    /* display: flex;
-    flex-direction: row;
-    transition: width 2s, height 2s, transform 2s;
-    will-change: width; */
-}
-
+  }
+  #state-dropdown-container {
+    grid-area: title;
+  }
+  #chart-container {
+    grid-area: chart;
+    align-self: center;
+  }
+  #oconus-container {
+    grid-area: map;
+    align-self: center;
+  }
+  #map-inset-svg {
+    grid-area: map;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+  }
+  #text {
+    grid-area: text;
+    justify-self: start;
+  }
+  .hide {
+    display: none;
+  }
 </style>
