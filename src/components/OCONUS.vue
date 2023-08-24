@@ -1088,7 +1088,14 @@ export default {
       if (state === 'All') {
         dataPoints = this.countyPoints.filter(d => 
           d.properties.WB_TYPE === type)
-        dataMax = this.d3.max(dataPoints, sizeAccessor) //this.countyPoints
+        if (type === 'All') {
+          dataMax = this.d3.max(this.countyPoints, sizeAccessor) //this.countyPoints OR dataPoints
+        } else {
+          // let typeSubset = this.countyPoints.filter(d => 
+          //   d.properties.WB_TYPE !== 'All')
+          dataMax = this.d3.max(this.countyPoints, sizeAccessor) //this.countyPoints OR dataPoints OR typeSubset
+        }
+        
       } else {
         // Get max value for state, in any category
         let stateData = this.countyPoints.filter(d => 
