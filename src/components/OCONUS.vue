@@ -682,7 +682,9 @@ export default {
             .transition(self.getUpdateTransition())
             .style("opacity", 1)
         })
-        .on("mouseout", (event, d) => {
+
+      self.chartBounds.selectAll(".rects")
+        .on("mouseleave", (event, d) => {
           this.currentType = 'All'
           self.drawCountyPoints(state, this.currentScale, this.currentType)
 
@@ -698,7 +700,15 @@ export default {
               let targetId = event.target.id
               let targetIdSplit = targetId.split('-')
               this.currentType = targetIdSplit.length === 4 ? (targetIdSplit[2] + ' ' + targetIdSplit[3]) : targetIdSplit[2]
-              self.drawCountyPoints(state, this.currentScale, this.currentType)
+              self.drawCountyPoints(state, self.currentScale, this.currentType)
+              // let currentIdentifier = this.currentType.replace(' ', '-')
+              // self.d3.selectAll('.bar')
+              //   .transition(self.getUpdateTransition())
+              //   .style("opacity", 0.5)
+
+              // self.d3.selectAll('#rect-' + currentIdentifier)
+              //   .transition(self.getUpdateTransition())
+              //   .style("opacity", 1)
             }
         })
       })
