@@ -35,11 +35,6 @@
                         How much water are bottling facilities using to make their products? 
                     </li>
                 </div>
-                <div class="text-container">
-                    <p>
-                        The visualizations on this webpage use data from the inventory to illustrate what we now know about the impacts of bottled water on the water cycle. Explore the interactive map above to check out how many beverage bottling facilities there are, and where they are located. Scroll through the charts below to learn about water sources and use. 
-                    </p>
-                </div>
             </div>
         </div>
     </section>
