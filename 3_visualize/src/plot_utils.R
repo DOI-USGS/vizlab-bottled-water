@@ -1282,10 +1282,6 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
   supply_summary_ca <-  supply_summary_state |>
     filter(state_abbr == "CA")
 
-  supply_colors <- c('#426f86', '#6b7444', '#13305b', '#8e949f')
-  color_names <- c('public supply', 'self supply', 'both', 'undetermined')
-  names(supply_colors) <- color_names
-
   font_legend <- "Source Sans Pro"
   sysfonts::font_add_google(font_legend)
   showtext::showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 900)
@@ -1437,6 +1433,48 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
                     sprintf(outfile_template))
   ggsave(outfile, facet_plot, width = width, height = height, dpi = dpi)
   return(outfile)
+}
+
+#' @title generate sanky diagram of water sources and facilitity types
+#' @param supply_summary dataframe with count of facilities by water source
+#' @param supply_colors vector of colors to use for water source categories
+#' @param width width for the final plot
+#' @param height height for the final plot
+#' @param bkgd_color background color for the plot
+#' @param text_color color for text
+#' @param outfile_template filepath template for saving the final plot
+#' @param dpi dpi at which to save the final plot
+#' @return the filepath of the saved plot
+generate_national_sanky <- function(supply_summary, supply_colors, width, height, bkgd_color, text_color, outfile_template, dpi) {
+
+  supply_colors <- c('#426f86', '#6b7444', '#13305b', '#8e949f')
+  color_names <- c('public supply', 'self supply', 'both', 'undetermined')
+  names(supply_colors) <- color_names
+
+  font_legend <- "Source Sans Pro"
+  sysfonts::font_add_google(font_legend)
+  showtext::showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 900)
+  showtext::showtext_auto(enable = TRUE)
+
+  # Create the ggplot
+  sanky <- ggplot(data = supply_summary,
+                  aes(axis1 = source_category, axis2 = WB_TYPE, y = site_count)) +
+    geom_alluvium(aes(fill = source_category, alpha = source_category),
+                  curve_type = "sigmoid") +
+    geom_stratum(alpha = 0, size = 0.5 ) +
+    geom_text(stat = "stratum",
+              aes(label = after_stat(stratum)),
+              family = font_legend, fontface = "bold") +
+    scale_x_discrete(limits = c("source_category", "WB_TYPE"),
+                     expand = c(0.15, 0.05)) +
+    theme_void() +
+    scale_fill_manual(name = 'source_category', values = supply_colors) +
+    scale_alpha_manual(values = c(0.9, 0.7, 0.5, 0.3)) +
+    theme(legend.position = "none")
+
+  ggsave(outfile_template, sanky, width = width, height = height, dpi = dpi, bg = bkgd_color)
+  return(outfile_template)
+
 }
 
 #' @title generate facility source facet tree map
