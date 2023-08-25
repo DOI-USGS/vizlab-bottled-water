@@ -1501,9 +1501,9 @@ generate_national_sanky <- function(supply_summary, supply_colors, width, height
     # plot sanky
     draw_plot(sanky,
               x = 0.992,
-              y = 0.001,
-              height = 0.9,
-              width = 1 - (0.001 + plot_margin * 2),
+              y = 0.06,
+              height = 0.8,
+              width = 1 - (0.01 + plot_margin * 2),
               hjust = 1,
               vjust = 0) +
     # add title
