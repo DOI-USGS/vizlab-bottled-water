@@ -1452,7 +1452,7 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
 generate_national_sanky <- function(supply_summary, supply_colors, width, height, bkgd_color, text_color, outfile_template, dpi) {
 
   supply_colors <- c('#ffe066', '#213958', '#908D5F', '#D4D4D4')
-  color_names <- c('public supply', 'self supply', 'both', 'undetermined')
+  color_names <- str_to_title(c('public supply', 'self supply', 'both', 'undetermined'))
   names(supply_colors) <- color_names
 
   font_legend <- "Source Sans Pro"
@@ -1460,12 +1460,17 @@ generate_national_sanky <- function(supply_summary, supply_colors, width, height
   showtext::showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 900)
   showtext::showtext_auto(enable = TRUE)
 
+  supply_summary <- supply_summary |>
+    mutate(source_category = str_to_title(source_category),
+           source_category = factor(source_category, levels = c("Public Supply", "Self Supply", "Both", "Undetermined")))
+
+
   # Create the ggplot
   sanky <- ggplot(data = supply_summary,
                   aes(axis1 = source_category, axis2 = WB_TYPE, y = site_count)) +
-    geom_alluvium(aes(fill = source_category, alpha = source_category),
-                  curve_type = "sigmoid") +
-    geom_stratum(alpha = 0, size = 0.5 ) +
+    geom_alluvium(aes(fill = source_category),
+                  curve_type = "sigmoid", width = 0.15, alpha = 0.8) +
+    geom_stratum(alpha = 0, width = 0.15, size = 0.5, color = text_color) +
     geom_text(stat = "stratum",
               aes(label = after_stat(stratum)),
               family = font_legend, fontface = "bold") +
@@ -1473,10 +1478,46 @@ generate_national_sanky <- function(supply_summary, supply_colors, width, height
                      expand = c(0.15, 0.05)) +
     theme_void() +
     scale_fill_manual(name = 'source_category', values = supply_colors) +
-    scale_alpha_manual(values = c(0.9, 0.7, 0.5, 0.3)) +
+    #scale_alpha_manual(values = c(0.9, 0.7, 0.5, 0.3)) +
     theme(legend.position = "none")
 
-  ggsave(outfile_template, sanky, width = width, height = height, dpi = dpi, bg = bkgd_color)
+  plot_margin <- 0.005
+
+  # background
+  canvas <- grid::rectGrob(
+    x = 0, y = 0,
+    width = width, height = height,
+    gp = grid::gpar(fill = bkgd_color, alpha = 1, col = bkgd_color)
+  )
+
+  # compose final plot
+  sanky_plot <- ggdraw(ylim = c(0,1),
+                       xlim = c(0,1)) +
+    # a background
+    draw_grob(canvas,
+              x = 0, y = 1,
+              height = height, width = width,
+              hjust = 0, vjust = 1) +
+    # plot sanky
+    draw_plot(sanky,
+              x = 0.992,
+              y = 0.001,
+              height = 0.9,
+              width = 1 - (0.001 + plot_margin * 2),
+              hjust = 1,
+              vjust = 0) +
+    # add title
+    draw_label("Distribution of water sources by facility types",
+               x = 0.025, y = 0.94,
+               size = 38,
+               hjust = 0,
+               vjust = 1,
+               color = text_color,
+               lineheight = 1,
+               fontfamily = font_legend,
+               fontface = "bold")
+
+  ggsave(outfile_template, sanky_plot, width = width, height = height, dpi = dpi, bg = bkgd_color)
   return(outfile_template)
 
 }
