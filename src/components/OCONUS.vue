@@ -1,25 +1,29 @@
 <template>
   <section id="oconus_map">
-  <div id="grid-container">
-    <div id="map-container">
-        <div id="title-container">
-          <div class='text-container'>
-                <p>
-                  The bottled water industry estimates that the United States consumed 15 billion gallons (57 billion liters) of bottled water in 2020. That’s 45 gallons of bottled water per person. If you consider how much water it takes to produce each bottle of water (not including the packaging), the number is closer to 63 gallons—enough to fill a standard bathtub one-and-a-half times. 
-                </p>
-             </div>
-            <h3> Bottling facilities in 
-              <!-- Dropdown v-model="selectedOption" :options="dropdownOptions"/ -->
-            </h3>
-            <div id="state-dropdown-container" />
-            <div id="chart-container">
-            </div> <div />
+    <div id="grid-container-interactive">
+      <div id="title">
+        <h4> Counts of bottling facilities in <span id="state-dropdown-container"></span> by county
+          <!-- Dropdown v-model="selectedOption" :options="dropdownOptions"/ -->
+        </h4>
+      </div>
+      <div id="text">
+        <div class='text-container'>
+            <!--p>
+              The bottled water industry estimates that the United States consumed 15 billion gallons (57 billion liters) of bottled water in 2020. That’s 45 gallons of bottled water per person. If you consider how much water it takes to produce each bottle of water (not including the packaging), the number is closer to 63 gallons—enough to fill a standard bathtub one-and-a-half times. 
+            </p -->
+            <p>This map shows the approximate number of bottling facilities in every county where data are available. Use the dropdown menu above to filter the data by state, or click on the facility type in the bar chart below to filter the data by facility type. </p>
         </div>
-            
-            <div id="oconus-container" />
+      </div>
+      <div id="chart-container">
+      </div>           
+      <div id="oconus-container">
+      </div>
+      <mapLabels 
+        id = "map-inset-svg"
+        class="map labels"
+      />
     </div>
-  </div>
-</section>
+  </section>
 </template>
 <script>
 import * as d3Base from 'd3';
@@ -27,10 +31,12 @@ import { csv } from 'd3';
 import { isMobile } from 'mobile-device-detect';
 // import Dropdown from '@/components/Dropdown.vue'
 import { ref, onMounted } from 'vue'
+import mapLabels from '@/components/MapLabels.vue'
 
 export default {
   name: "OCONUS",
   components: {
+    mapLabels
     // Dropdown
   },
   props: {
@@ -38,27 +44,22 @@ export default {
   },
   data() {
     return {
-      selectedOption: 'all states and territories',
+      // selectedOption: 'all states and territories',
       dropdownOptions: [],
 
       d3: null,
       publicPath: import.meta.env.BASE_URL, // find the files when on different deployment roots
       mobileView: isMobile, // test for mobile
-      statePolys: null,
       statePolysCONUSJSON: null,
-      statePolysCONUS: null,
-      statePolyAKJSON: null,
-      statePolyAK: null,
+      statePolysAKJSON: null,
       statePolysGUMPJSON: null,
-      statePolysGUMP: null,
       statePolysHIJSON: null,
-      statePolysHI: null,
       statePolysPRVIJSON: null,
-      statePolysPRVI: null,
+      statePolyASJSON: null,
+      statePolys: null,
       countyPolys: null,
       countyPoints: null,
       dataAll: null,
-      statePolyAKJSON: null,
       mapDimensions: null,
       dimensions: null,
       wrapper: null,
@@ -67,6 +68,12 @@ export default {
       mapPath: null,
       mapProjectionAK: null,
       mapPathAK: null,
+      mapProjectionHI: null,
+      mapPathHI: null,
+      mapProjectionPRVI: null,
+      mapPathPRVI: null,
+      mapProjectionGUMP: null,
+      mapPathGUMP: null,
       genericPath: null,
       genericProjection: null,
       chartBounds: null,
@@ -74,10 +81,12 @@ export default {
       stateGroups: null,
       countyGroups: null,
       countyCentroidGroups: null,
-      active: null,
       selectedText: null,
       stateList: null,
-      zoomed: false
+      currentState: null,
+      defaultViewName: null,
+      currentlyZoomed: false,
+      currentScale: null,
     }
   },
   mounted(){      
@@ -89,18 +98,17 @@ export default {
   },
   setup() {
     const self = this;
-    const selectedOption = ref('')
-    const dropdownOptions = ref([])
-    publicPath = import.meta.env.BASE_URL;
+    // const selectedOption = ref('')
+    // const dropdownOptions = ref([])
 
     onMounted(async () => {
-      const data = await csv(self.publicPath + 'state_facility_type_summary.csv')
+      // const data = await csv(self.publicPath + 'state_facility_type_summary.csv')
 
       // Assuming the column name in the CSV is 'name'
-      dropdownOptions.value = data.map(d => d.state_name)
+      // dropdownOptions.value = data.map(d => d.state_name)
     })
 
-    return { selectedOption, dropdownOptions }
+    return { }
   },
   /* computed: {
     computedDropdownOptions() {
@@ -132,7 +140,8 @@ export default {
         self.d3.json(self.publicPath + "states_poly_AK.geojson"),
         self.d3.json(self.publicPath + "states_poly_GU_MP.geojson"),
         self.d3.json(self.publicPath + "states_poly_HI.geojson"),
-        self.d3.json(self.publicPath + "states_poly_PR_VI.geojson")
+        self.d3.json(self.publicPath + "states_poly_PR_VI.geojson"),
+        self.d3.json(self.publicPath + "states_poly_AS.geojson")
       ];
       Promise.all(promises).then(self.callback)
     },
@@ -141,7 +150,7 @@ export default {
 
       // assign data
       this.statePolysCONUSJSON = data[0];
-      this.statePolysCONUS = this.statePolysCONUSJSON.features;
+      const statePolysCONUS = this.statePolysCONUSJSON.features;
 
       const countyPolyJSON = data[1];
       this.countyPolys = countyPolyJSON.features;
@@ -151,35 +160,37 @@ export default {
 
       this.dataAll = data[3];
 
-      this.statePolyAKJSON = data[4];
-      this.statePolyAK = this.statePolyAKJSON.features;
+      this.statePolysAKJSON = data[4];
+      const statePolysAK = this.statePolysAKJSON.features;
 
       this.statePolysGUMPJSON = data[5];
-      this.statePolysGUMP = this.statePolysGUMPJSON.features;
+      const statePolysGUMP = this.statePolysGUMPJSON.features;
 
       this.statePolysHIJSON = data[6];
-      this.statePolysHI = this.statePolysHIJSON.features;
+      const statePolysHI = this.statePolysHIJSON.features;
 
       this.statePolysPRVIJSON = data[7];
-      this.statePolysPRVI = this.statePolysPRVIJSON.features;
+      const statePolysPRVI = this.statePolysPRVIJSON.features;
 
-      // TO DO - If area-specific polys (e.g. this.statePolyAK) aren't used for scaling in svg, 
+      this.statePolysASJSON = data[8];
+      const statePolysAS = this.statePolysASJSON.features;
+
+      // TO DO - If area-specific polys (e.g. this.statePolysAK) aren't used for scaling in initMap(), 
       // could simply load in a single geojson of OCONUS + CONUS states
-      this.statePolys = this.statePolysCONUS.concat(this.statePolyAK, this.statePolysHI, this.statePolysGUMP, this.statePolysPRVI)
-      
-      // get list of unique state groups
-      // const stateGroups = [... new Set(this.statePolys.map(d => d.properties.group))]
-      // console.log(stateGroups)
-      // const akGroup = statePolys.filter(d => d.properties.group === 'AK')
-      // console.log(akGroup)
+      this.statePolys = statePolysCONUS.concat(statePolysAK, statePolysHI, statePolysGUMP, statePolysPRVI, statePolysAS)
 
       // set active
-      this.active = ''; //this.d3.select(null);
+      this.defaultViewName = 'all states and territories'
+      this.currentState = this.defaultViewName;
+      
+
+      // set current scale
+      this.currentScale = 1;
 
       // get list of unique states
       this.stateList = [... new Set(this.dataAll.map(d => d.state_name))]
-      this.stateList.unshift('All')
-      let currentState = 'All'//this.stateList[0]
+      this.stateList.unshift(this.defaultViewName)
+      
       this.currentType = 'All'
       this.dropdownOptions = this.stateList
       
@@ -190,7 +201,7 @@ export default {
       const map_width = 900
       this.mapDimensions = {
         width: map_width,
-        height: map_width * 0.65,
+        height: map_width * 0.75,
         margin: {
           top: 20,
           right: 5,
@@ -207,7 +218,7 @@ export default {
       const width = 400;
       this.dimensions = {
         width,
-        height: width*0.9,
+        height: width*0.7,
         margin: {
           top: 30,
           right: 10,
@@ -220,28 +231,30 @@ export default {
 
       self.initChart()
 
-      // let selectedStateIndex = 0
-      self.drawHistogram(currentState)
-      self.drawCounties(currentState)
-      self.drawMap(currentState)
-      self.drawCountyPoints(currentState, this.currentType)
+      // Draw initial view ('all states and territories')
+      self.drawHistogram(this.currentState)
+      self.drawCounties(this.currentState, this.currentScale)
+      self.drawMap(this.currentState, this.currentScale)
+      self.drawCountyPoints(this.currentState, this.currentScale, this.currentType)
 
     },
     addDropdown(data) {
       const self = this;
 
-      const dropdown = this.d3.select("#state-dropdown-container")
+      const dropdownContainer = this.d3.select("#state-dropdown-container")
+
+      const dropdown = dropdownContainer
         .append("select")
-        .attr("class", "dropdown")
         .attr("id", "state-dropdown")
+        .attr("class", "dropdown")
         .on("change", function() { 
           this.selectedText = this.options[this.selectedIndex].text;
           this.style.width = 20 + (this.selectedText.length * 12) + "px";
 
           let selectedArea = this.value
 
-          if (selectedArea === 'All') {
-            // If dropdown has _changed_ to 'All' that means we need to reset the map and zoom out
+          if (selectedArea === self.defaultViewName) {
+            // If dropdown has _changed_ to 'all states and territories' that means we need to reset the map and zoom out
             self.reset()
           } else {
             // If dropdown has _changed_ to a specific state that means we need to zoom into that state
@@ -262,26 +275,35 @@ export default {
               case 'Virgin Islands':
                 zoomPath = self.mapPathPRVI;
                 break;
+              case 'Guam':
+                zoomPath = self.mapPathGUMP;
+                break;
+              case 'Northern Mariana Islands':
+                zoomPath = self.mapPathGUMP;
+                break;
+              case 'American Samoa':
+                zoomPath = self.mapPathAS;
+                break;
               default:
                 zoomPath = self.mapPath;
             }
             
             self.zoomToState(stateData[0], zoomPath, 'dropdown')
           }
-
           // self.drawHistogram(selectedArea) 
-          // self.drawCounties(selectedArea)
-          // self.drawMap(selectedArea)
-          // self.drawCountyPoints(selectedArea, self.currentType)
+          // self.drawCounties(selectedArea, this.currentScale)
+          // self.drawMap(selectedArea, this.currentScale)
+          // self.drawCountyPoints(selectedArea, this.currentScale, self.currentType)
         })
 
 
-
-      const dropdownDefaultText = 'all states and territories'
-      let titleOption = dropdown.append("option")
-        .attr("class", "option title")
-        .attr("disabled", "true")
-        .text(dropdownDefaultText)
+      // const dropdownDefaultText = this.defaultViewName
+      // let titleOption = dropdown.append("option")
+      //   .attr("class", "option title")
+      //   .attr("disabled", "true")
+      //   .text(dropdownDefaultText)
+      //   .append("text")
+      //   .text(" ▼")
 
       let stateOptions = dropdown.selectAll("stateOptions")
         .data(data)
@@ -290,6 +312,9 @@ export default {
         .attr("class", "option stateName")
         .attr("value", d => d)
         .text(d => d)
+
+      // set default value
+      dropdown.property('value', this.currentState)
 
       let selectId = document.getElementById("state-dropdown");
       this.selectedText = selectId.options[selectId.selectedIndex].text;
@@ -327,59 +352,122 @@ export default {
       // this.genericPath = this.d3.geoPath()
       //   .projection(this.genericProjection);
 
-      // Could use bounds to determine placement?
+      // Use relative widths and heights to determine placement
       // [[left, bottom], [right, top]]
-      // const boundsStatePolysCONUS = this.d3.geoBounds(this.statePolysCONUSJSON)
-      // const conusWidth = boundsStatePolysCONUS[1][0] - boundsStatePolysCONUS[0][0]
-      // const conusHeight = boundsStatePolysCONUS[1][1] - boundsStatePolysCONUS[0][1]
-      // const boundsStatePolyAK = this.d3.geoBounds(this.statePolyAKJSON)
-      // const akWidth = boundsStatePolyAK[1][0] - boundsStatePolyAK[0][0]
-      // const akHeight = boundsStatePolyAK[1][1] - boundsStatePolyAK[0][1]
-      // const akConusHeightRatio = akHeight/conusHeight
+      const boundsStatePolysCONUS = this.d3.geoBounds(this.statePolysCONUSJSON)
+      const conusWidth = boundsStatePolysCONUS[1][0] - boundsStatePolysCONUS[0][0]
+      const conusHeight = boundsStatePolysCONUS[1][1] - boundsStatePolysCONUS[0][1]
+      
+      const boundsStatePolysAK = this.d3.geoBounds(this.statePolysAKJSON)
+      const akWidth = (180 - Math.abs(boundsStatePolysAK[1][0])) + (180 - boundsStatePolysAK[0][0])
+      const akHeight = boundsStatePolysAK[1][1] - boundsStatePolysAK[0][1]
+      const akConusHeightRatio = akHeight/conusHeight
+      const akConusWidthRatio = akWidth/conusWidth
 
-      const conusHeightFraction = 0.4
+      const boundsStatePolysHI = this.d3.geoBounds(this.statePolysHIJSON)
+      const hiWidth = boundsStatePolysHI[1][0] - boundsStatePolysHI[0][0]
+      const hiConusWidthRatio = hiWidth/conusWidth
 
-      const mapScale = 700
+      // Get height vars
 
-      this.mapProjection = this.d3.geoAlbers()
+      const heightX = this.mapDimensions.height / (1 + akConusHeightRatio)
+      const conusPropHeight = heightX
+      const akPropHeight = conusPropHeight * akConusHeightRatio
+      const widthX = this.mapDimensions.width / (1 + hiConusWidthRatio)
+      const conusPropWidth = widthX
+      const hiPropWidth = conusPropWidth * hiConusWidthRatio
+      const akPropWidth = conusPropWidth * akConusWidthRatio
+
+      // Set universal map scale
+      const mapScale = 800
+
+      // // Locator map projection
+      // const mapProjectionLocator = this.d3.geoOrthographic()
+      //   .rotate([139.984, -17.437, 0])
+      //   .scale(100)
+      //   .translate([this.mapDimensions.width * 0.8, akPropHeight / 3]);
+
+      // const mapPathLocator = this.d3.geoPath()
+      //   .projection(mapProjectionLocator);
+
+      // CONUS map projection
+      this.mapProjection = this.d3.geoConicEqualArea() 
         .center([0, 38])
         .rotate([96, 0, 0])
         .parallels([29.5, 45.5])
         .scale(mapScale) // alabama : 3500 1200
-        .translate([this.mapDimensions.width / 2, this.mapDimensions.height / 2 + conusHeightFraction*this.mapDimensions.height/2]); // alabama : [-this.mapDimensions.width / 4, 20]
+        .translate([hiPropWidth + conusPropWidth / 2, akPropHeight + conusPropHeight / 2.2]); // alabama : [-this.mapDimensions.width / 4, 20]
 
       this.mapPath = this.d3.geoPath()
         .projection(this.mapProjection);
 
-      this.mapProjectionAK = this.d3.geoAlbers()
+      // Alaska map projection
+      this.mapProjectionAK = this.d3.geoConicEqualArea()
         .center([0, 64])
         .rotate([151, 0, 0])
         .parallels([58.5, 65])
-        .scale(mapScale) // alabama : 3500 1200
-        .translate([this.mapDimensions.width*0.9 / 2, this.mapDimensions.height*0.3 / 2]); // alabama : [-this.mapDimensions.width / 4, 20]
+        .scale(mapScale)
+        .translate([akPropWidth / 2.5, akPropHeight / 3]); // alabama : [-this.mapDimensions.width / 4, 20]
 
       this.mapPathAK = this.d3.geoPath()
         .projection(this.mapProjectionAK);
 
-      this.mapProjectionHI = this.d3.geoAlbers()
+      // Hawaii map projection
+      this.mapProjectionHI = this.d3.geoConicEqualArea()
         .center([0, 20.25])
         .rotate([157, 0, 0])
         .parallels([19.5, 21])
-        .scale(mapScale) // alabama : 3500 1200
-        .translate([this.mapDimensions.width*0.4 / 2, this.mapDimensions.height*1.8 / 2]); // alabama : [-this.mapDimensions.width / 4, 20]
+        .scale(mapScale)
+        .translate([hiPropWidth, this.mapDimensions.height / 2]); // alabama : [-this.mapDimensions.width / 4, 20]
 
       this.mapPathHI = this.d3.geoPath()
         .projection(this.mapProjectionHI);
 
-      this.mapProjectionPRVI = this.d3.geoAlbers()
+      // Puerto Rico and U.S. Virgin Islands map projection
+      this.mapProjectionPRVI = this.d3.geoConicEqualArea()
         .center([0, 18.1])
         .rotate([65.9, 0, 0])
         .parallels([17.9, 18.2])
-        .scale(mapScale) // alabama : 3500 1200
-        .translate([this.mapDimensions.width*1.5 / 2, this.mapDimensions.height*1.8 / 2]); // alabama : [-this.mapDimensions.width / 4, 20]
+        .scale(mapScale)
+        .translate([this.mapDimensions.width - hiPropWidth, this.mapDimensions.height * 0.92]); // alabama : [-this.mapDimensions.width / 4, 20]
 
       this.mapPathPRVI = this.d3.geoPath()
         .projection(this.mapProjectionPRVI);
+
+      // Guam and Northern Mariana Islands map projection
+      this.mapProjectionGUMP = this.d3.geoConicEqualArea()
+        .center([0, 13.4])
+        .rotate([-144.75, 0, 0])
+        .parallels([13.2, 13.6])
+        .scale(mapScale)
+        .translate([hiPropWidth, this.mapDimensions.height * 0.8]);
+
+      this.mapPathGUMP = this.d3.geoPath()
+        .projection(this.mapProjectionGUMP);
+
+      // American Samoa map projection
+      this.mapProjectionAS= this.d3.geoConicEqualArea()
+        .center([0, -14.2])
+        .rotate([170.1, 0, 0])
+        .parallels([-14.3, -14.1])
+        .scale(mapScale)
+        .translate([hiPropWidth, this.mapDimensions.height * 0.92]);
+
+      this.mapPathAS = this.d3.geoPath()
+        .projection(this.mapProjectionAS);
+
+      // Add map groups to svg
+      // const locatorMapGroup = this.mapBounds.append("g")
+      //   .attr("class", "locator-map")
+      //   .attr("role", "figure")
+
+      // locatorMapGroup.selectAll("path")
+      //   .data(this.statePolys)
+      //   .enter()
+      //   .append("path")
+      //   .attr("class", "locator-paths")
+      //   .attr("id", d => "state-" + d.properties.FIPS)
+      //   .attr("d", mapPathLocator)
 
       this.mapBounds.append("g")
         .attr("class", "counties")
@@ -455,7 +543,7 @@ export default {
 
       let data;
       let dataTypes = [... new Set(this.dataAll.map(d => d.WB_TYPE))]
-      if (state === 'All') {
+      if (state === this.defaultViewName) {
         let dataArray = []
         dataTypes.forEach(function(type) {
           let totalCount = rawData
@@ -465,7 +553,7 @@ export default {
               return acc + value
             })
           let dataObj = {
-            state_name: 'All',
+            state_name: self.defaultViewName,
             state_abbr: null,
             WB_TYPE: type,
             site_count: totalCount
@@ -485,14 +573,14 @@ export default {
       const identifierAccessor = d => d.WB_TYPE.replace(' ', '-')
 
       //add title
-      this.d3.select("#map-container").select("Title")
+      this.d3.select("#chart-container").select("Title")
         .text(`Bar chart of distribution of facility types for ${state}`)
 
       // create scales   
       const xScale = this.d3.scaleBand()
         .rangeRound([0, this.dimensions.boundedWidth])
         .domain(dataTypes) // if want to only include types in each state: data.map(d => d.WB_TYPE)
-        .padding(0.05)
+        .padding(0) //0.05
       
       const yScale = this.d3.scaleLinear()
         .domain([0, this.d3.max(data, yAccessor)]) // use y accessor w/ raw data
@@ -565,7 +653,7 @@ export default {
         .on("click", (event, d) => {
           this.currentType = colorAccessor(d)
           let currentIdentifier = this.currentType.replace(' ', '-')
-          self.drawCountyPoints(state, this.currentType)
+          self.drawCountyPoints(state, this.currentScale, this.currentType)
 
           this.d3.selectAll('.bar')
             .style("opacity", 0.5)
@@ -576,7 +664,7 @@ export default {
         .on("mouseover", (event, d) => {
           this.currentType = colorAccessor(d)
           let currentIdentifier = this.currentType.replace(' ', '-')
-          self.drawCountyPoints(state, this.currentType)
+          self.drawCountyPoints(state, this.currentScale, this.currentType)
 
           this.d3.selectAll('.bar')
             .transition(self.getUpdateTransition())
@@ -586,9 +674,11 @@ export default {
             .transition(self.getUpdateTransition())
             .style("opacity", 1)
         })
-        .on("mouseout", (event, d) => {
+
+      self.chartBounds.selectAll(".rects")
+        .on("mouseleave", (event, d) => {
           this.currentType = 'All'
-          self.drawCountyPoints(state, this.currentType)
+          self.drawCountyPoints(state, this.currentScale, this.currentType)
 
           this.d3.selectAll('.bar')
             .transition(self.getUpdateTransition())
@@ -601,8 +691,16 @@ export default {
             if (event.key === 'Enter' | event.keyCode === 13) {
               let targetId = event.target.id
               let targetIdSplit = targetId.split('-')
-              let targetType = targetIdSplit.length === 4 ? (targetIdSplit[2] + ' ' + targetIdSplit[3]) : targetIdSplit[2]
-              self.drawCountyPoints(state, targetType)
+              this.currentType = targetIdSplit.length === 4 ? (targetIdSplit[2] + ' ' + targetIdSplit[3]) : targetIdSplit[2]
+              self.drawCountyPoints(state, self.currentScale, this.currentType)
+              // let currentIdentifier = this.currentType.replace(' ', '-')
+              // self.d3.selectAll('.bar')
+              //   .transition(self.getUpdateTransition())
+              //   .style("opacity", 0.5)
+
+              // self.d3.selectAll('#rect-' + currentIdentifier)
+              //   .transition(self.getUpdateTransition())
+              //   .style("opacity", 1)
             }
         })
       })
@@ -631,7 +729,7 @@ export default {
 
       const xAxisLabel = xAxis.select(".x-axis-label")
 
-      if (state === 'All') {
+      if (state === this.defaultViewName) {
         xAxisLabel
         .text('Distribution of facility types nationally')
       } else {
@@ -650,19 +748,19 @@ export default {
       //   .attr("role", "presentation")
       //   .attr("aria-hidden", true)
     },
-    drawMap(state) {
+    drawMap(state, scale) {
       const self = this;
 
       let data;
       // let selectedMapPath;
       // let featureBounds;
 
-      if (state === 'All') {
+      if (state === this.defaultViewName) {
         data = this.statePolys
         // selectedMapPath = this.mapPath
         // featureBounds = null;
       // } else if (state === 'Alaska') {
-      //   data = this.statePolyAK
+      //   data = this.statePolysAK
       //   selectedMapPath = this.mapPathAK
       //   featureBounds = self.calculateScaleTranslation(data[0], selectedMapPath)
       // } else if (state === 'Puerto Rico' | state === 'Virgin Islands') {
@@ -687,6 +785,15 @@ export default {
         //       break;
         //     case 'Virgin Islands':
         //       stateMapPath = this.mapPathPRVI;
+        //       break;
+        //     case 'Guam':
+        //       stateMapPath = self.mapPathGUMP;
+        //       break;
+        //     case 'Northern Mariana Islands':
+        //       stateMapPath = self.mapPathGUMP;
+        //       break;
+        //     case 'American Samoa':
+        //       stateMapPath = self.mapPathAS;
         //       break;
         //     default:
         //       stateMapPath = this.mapPath;
@@ -716,6 +823,8 @@ export default {
         .attr("role", "listitem")
         .attr("aria-label", d => d.properties.NAME)
       
+      let stateStrokeWidth = state === this.defaultViewName ? 0.5 : 1 * 2/scale
+      let stateStrokeColor = state === this.defaultViewName ? "#949494" : "#636363"
       newStateGroups.append("path")
         .attr("class", "state-paths")
         .attr("id", d => "state-" + d.properties.FIPS)
@@ -739,12 +848,18 @@ export default {
               return this.mapPathPRVI(d);
             case 'Virgin Islands':
               return this.mapPathPRVI(d);
+            case 'Guam':
+              return this.mapPathGUMP(d);
+            case 'Northern Mariana Islands':
+              return this.mapPathGUMP(d);
+            case 'American Samoa':
+              return this.mapPathAS(d);
             default:
               return this.mapPath(d);
           }
         })
-        .style("stroke", "None")
-        .style("stroke-width", 0)
+        .style("stroke", stateStrokeColor)
+        .style("stroke-width", stateStrokeWidth)
         .style("fill", "#ffffff") // "None"
         .style("fill-opacity", 0)
         .on("click", (e, d) => {
@@ -763,6 +878,15 @@ export default {
             case 'Virgin Islands':
               zoomPath = this.mapPathPRVI;
               break;
+            case 'Guam':
+              zoomPath = this.mapPathGUMP;
+              break;
+            case 'Northern Mariana Islands':
+              zoomPath = this.mapPathGUMP;
+              break;
+            case 'American Samoa':
+              zoomPath = self.mapPathAS;
+              break;
             default:
               zoomPath = this.mapPath;
           }
@@ -773,28 +897,22 @@ export default {
 
       const stateShapes = this.stateGroups.select("path")
 
-      if (!(state === "All")) {
+      if (!(state === this.defaultViewName)) {
         let selectedStateId = data[0].properties.FIPS
         this.d3.selectAll('#state-group-'+ selectedStateId)
           .raise()
-        stateShapes
-          .transition(self.getUpdateTransition())
-          .style("fill", "#ffffff") // "None"
-          .style("fill-opacity", 0)
-          .style("stroke", "#636363")
-          .style("stroke-width", 1)
-      } else {
-        stateShapes
-          .transition(self.getUpdateTransition())
-          .style("stroke", "#949494") //#636363
-          .style("stroke-width", 0.5)
-          .style("fill", "#ffffff") // "None"
-          .style("fill-opacity", 0)
       }
+
+      stateShapes
+          .transition(self.getUpdateTransition())
+          .style("stroke", stateStrokeColor) //#636363
+          .style("stroke-width", stateStrokeWidth)
+          .style("fill", "#ffffff") // "None"
+          .style("fill-opacity", 0)
       
 
       // const allStates = d3.selectAll(".state-paths")
-      // if (currentState === 'All') {
+      // if (currentState === this.defaultViewName) {
       //   allStates
       //     .style("stroke", "#949494") //#636363
       //     .style("stroke-width", 0.5)
@@ -815,7 +933,7 @@ export default {
       //   .style("stroke-opacity", 1)
 
       // // If a single state is selected, highlight that state
-      // if (!(state === 'All')) {
+      // if (!(state === this.defaultViewName)) {
       //   const selectedStateData = data.filter(d => d.properties.NAME === state)
       //   console.log(selectedStateData)
       //   const selectedStateId = selectedStateData[0].properties.FIPS
@@ -840,7 +958,7 @@ export default {
       // // would need to add separate group w/ states on TOP of counties and county
       // // points just to trigger interaction on THIS group of states
       // // ideally would use <use>
-      // if (state === 'All') {
+      // if (state === this.defaultViewName) {
       //   stateShapes
       //     .on("mouseover", (event, d) => {
       //       console.log(d)
@@ -855,12 +973,12 @@ export default {
       //     })
       // }
     },
-    drawCounties(state) {
+    drawCounties(state, scale) {
       const self = this;
 
       let data; 
 
-      if (state === 'All') {
+      if (state === this.defaultViewName) {
         data = this.countyPolys
       } else {
         data = this.countyPolys.filter(d => 
@@ -887,6 +1005,8 @@ export default {
           .attr("role", "listitem")
           .attr("aria-label", d => d.properties.NAME + ', ' + d.properties.STATE_NAME)
 
+      let countyStrokeWidth = state === this.defaultViewName ? 0.2 : 0.5 * 1/scale
+      let countyStrokeColor = state === this.defaultViewName ? "#D1D1D1" : "#939393"
       newCountyGroups.append("path")
           .attr("id", d => "county-" + d.properties.GEOID)
           .attr("d", d => {
@@ -900,63 +1020,89 @@ export default {
                 return this.mapPathPRVI(d);
               case 'Virgin Islands':
                 return this.mapPathPRVI(d);
+              case 'Guam':
+                return this.mapPathGUMP(d);
+              case 'Northern Mariana Islands':
+                return this.mapPathGUMP(d);
+              case 'American Samoa':
+                return this.mapPathAS(d);
               default:
                 return this.mapPath(d);
           }
           })
           // .attr("d", this.mapPath)
-          .style("stroke", "None")
-          .style("stroke-width", 0)
+          .style("stroke", countyStrokeColor)
+          .style("stroke-width", countyStrokeWidth)
           .style("fill", "None")
 
       this.countyGroups = newCountyGroups.merge(this.countyGroups)
 
       const countyShapes = this.countyGroups.select("path")
       
-      if (!(state === "All")) {
-        countyShapes.transition(self.getUpdateTransition())
-            .style("stroke", "#939393") //D1D1D1
-            .style("stroke-width", 0.1)
-            .style("fill", "#ffffff")
-      } else {
-        countyShapes.transition(self.getUpdateTransition())
-            .style("stroke", "#D1D1D1") //D1D1D1
-            .style("stroke-width", 0.1)
-            .style("fill", "#ffffff")
-      }
+      countyShapes.transition(self.getUpdateTransition())
+        .style("stroke", countyStrokeColor)
+        .style("stroke-width", countyStrokeWidth)
 
-      // Add county mouseover if at state level
-      if (!(state === 'All')) {
-        countyShapes
-          .on("mouseover", (event, d) => {
-            this.d3.selectAll("#county-" + d.properties.GEOID)
-              .style("fill", "#D1D1D1")
-          })
-          .on("mouseout", (event, d) => {
-            this.d3.selectAll("#county-" + d.properties.GEOID)
-              .style("fill", "#ffffff")
-          })
-      }
+      // if (!(state === this.defaultViewName)) {
+      //   let scaleFactor = 2/scale
+      //   countyShapes.transition(self.getUpdateTransition())
+      //       .style("stroke", "#939393") //D1D1D1
+      //       .style("stroke-width", 0.5 * scaleFactor)
+      //       .style("fill", "#ffffff")
+      // } else {
+      //   countyShapes.transition(self.getUpdateTransition())
+      //       .style("stroke", "#D1D1D1") //D1D1D1
+      //       .style("stroke-width", 0.1)
+      //       .style("fill", "#ffffff")
+      // }
+
+      // // Add county mouseover if at state level
+      // if (!(state === this.defaultViewName)) {
+      //   countyShapes
+      //     .on("mouseover", (event, d) => {
+      //       this.d3.selectAll("#county-" + d.properties.GEOID)
+      //         .style("fill", "#D1D1D1")
+      //     })
+      //     .on("mouseout", (event, d) => {
+      //       this.d3.selectAll("#county-" + d.properties.GEOID)
+      //         .style("fill", "#ffffff")
+      //     })
+      // }
     },
-    drawCountyPoints(state, type) {
+    drawCountyPoints(state, scale, type) {
       const self = this;
-
-      let dataPoints;
-      if (state === 'All') {
-        dataPoints = this.countyPoints.filter(d => 
-          d.properties.WB_TYPE === type)
-      } else {
-        dataPoints = this.countyPoints.filter(d => 
-          d.properties.STATE_NAME === state && d.properties.WB_TYPE === type)
-      }
 
       const sizeAccessor = d => parseInt(d.properties.site_count)
       const colorAccessor = d => d.properties.WB_TYPE
 
+      let dataPoints;
+      let dataMax;
+      if (state === this.defaultViewName) {
+        dataPoints = this.countyPoints.filter(d => 
+          d.properties.WB_TYPE === type)
+        if (type === 'All') {
+          dataMax = this.d3.max(this.countyPoints, sizeAccessor) //this.countyPoints OR dataPoints
+        } else {
+          // let typeSubset = this.countyPoints.filter(d => 
+          //   d.properties.WB_TYPE !== 'All')
+          dataMax = this.d3.max(this.countyPoints, sizeAccessor) //this.countyPoints OR dataPoints OR typeSubset
+        }
+        
+      } else {
+        // Get max value for state, in any category
+        let stateData = this.countyPoints.filter(d => 
+          d.properties.STATE_NAME === state)
+        dataMax =  this.d3.max(stateData, sizeAccessor)
+        dataPoints = this.countyPoints.filter(d => 
+          d.properties.STATE_NAME === state && d.properties.WB_TYPE === type)
+      }
+
       // create scales   
+      let scaleFactor = scale === 1 ? 1 : 2/scale
+      
       const sizeScale = this.d3.scaleLinear()
-        .range([0.7, 10]) // .rangeRound
-        .domain([1, this.d3.max(dataPoints, sizeAccessor)])
+        .range([0.8 * scaleFactor, 10 * scaleFactor]) // .rangeRound
+        .domain([1, dataMax]) //this.d3.max(dataPoints, sizeAccessor)
 
       const colorScale = this.d3.scaleOrdinal()
         .domain([... new Set(this.countyPoints.map(d => colorAccessor(d)))].sort())
@@ -971,7 +1117,7 @@ export default {
 
       oldCountyCentroidGroups.selectAll('path')
         .transition(self.getExitTransition())
-        .attr("d", this.mapPath.pointRadius(0))
+        // .attr("d", this.mapPath.pointRadius(0))
         .attr("d", d => {
           switch(d.properties.STATE_NAME) {
             case 'Alaska':
@@ -982,12 +1128,18 @@ export default {
               return this.mapPathPRVI.pointRadius(0)(d);
             case 'Virgin Islands':
               return this.mapPathPRVI.pointRadius(0)(d);
+            case 'Guam':
+              return this.mapPathGUMP.pointRadius(0)(d);
+            case 'Northern Mariana Islands':
+              return this.mapPathGUMP.pointRadius(0)(d);
+            case 'American Samoa':
+              return this.mapPathAS.pointRadius(0)(d);
             default:
               return this.mapPath.pointRadius(0)(d);
           }
         })
 
-      // CAN'T REMOVE W/ ZOOM, B/C IF REMOVED, RE-ADDED W/O TRANSLATION
+      // CAN'T REMOVE W/ ZOOM, B/C IF REMOVED, RE-ADDED W/O TRANSLATION ON CHART MOUSEOVER
       // oldCountyCentroidGroups.transition(self.getExitTransition()).remove()
 
       const newCountyCentroidGroups = this.countyCentroidGroups.enter().append("g")
@@ -1004,24 +1156,31 @@ export default {
       // append points
       newCountyCentroidGroups.append("path")
         .attr("id", d => "county-point-" + d.properties.GEOID)
-        // .attr("d", this.mapPath.pointRadius(0))
-        .attr("d", d => {
-          // return d.properties.STATE_NAME === 'Alaska' ? this.mapPathAK.pointRadius(0)(d) : this.mapPath.pointRadius(0)(d)
-          switch(d.properties.STATE_NAME) {
-            case 'Alaska':
-              return this.mapPathAK.pointRadius(0)(d);
-            case 'Hawaii':
-              return this.mapPathHI.pointRadius(0)(d);
-            case 'Puerto Rico':
-              return this.mapPathPRVI.pointRadius(0)(d);
-            case 'Virgin Islands':
-              return this.mapPathPRVI.pointRadius(0)(d);
-            default:
-              return this.mapPath.pointRadius(0)(d);
-          }
-        })
+        // // .attr("d", this.mapPath.pointRadius(0))
+        // NEED IF REMOVING EXIT POINTS
+        // .attr("d", d => {
+        //   // return d.properties.STATE_NAME === 'Alaska' ? this.mapPathAK.pointRadius(0)(d) : this.mapPath.pointRadius(0)(d)
+        //   switch(d.properties.STATE_NAME) {
+        //     case 'Alaska':
+        //       return this.mapPathAK.pointRadius(0)(d);
+        //     case 'Hawaii':
+        //       return this.mapPathHI.pointRadius(0)(d);
+        //     case 'Puerto Rico':
+        //       return this.mapPathPRVI.pointRadius(0)(d);
+        //     case 'Virgin Islands':
+        //       return this.mapPathPRVI.pointRadius(0)(d);
+        //     case 'Guam':
+        //       return this.mapPathGUMP.pointRadius(0)(d);
+        //     case 'Northern Mariana Islands':
+        //       return this.mapPathGUMP.pointRadius(0)(d);
+        //     case 'American Samoa':
+        //       return this.mapPathAS.pointRadius(0)(d);
+        //     default:
+        //       return this.mapPath.pointRadius(0)(d);
+        //   }
+        // })
         .style("fill", d => colorScale(colorAccessor(d)))
-        .style("stroke", "#ffffff")
+        // .style("stroke", "#ffffff")
 
       // update rectGroups to include new points
       this.countyCentroidGroups = newCountyCentroidGroups.merge(this.countyCentroidGroups)
@@ -1042,17 +1201,23 @@ export default {
                 return this.mapPathPRVI.pointRadius(sizeScale(sizeAccessor(d)))(d);
               case 'Virgin Islands':
                 return this.mapPathPRVI.pointRadius(sizeScale(sizeAccessor(d)))(d);
+              case 'Guam':
+                return this.mapPathGUMP.pointRadius(sizeScale(sizeAccessor(d)))(d);
+              case 'Northern Mariana Islands':
+                return this.mapPathGUMP.pointRadius(sizeScale(sizeAccessor(d)))(d);
+              case 'American Samoa':
+                return this.mapPathAS.pointRadius(sizeScale(sizeAccessor(d)))(d);
               default:
                 return this.mapPath.pointRadius(sizeScale(sizeAccessor(d)))(d);
             }
           })
-          .style("stroke", "#ffffff")
-          .style("stroke-width", 0.5)
+          // .style("stroke", "#000000")
+          // .style("stroke-width", 1)
           .style("fill", d => colorScale(colorAccessor(d)))
 
 
       // // Add county mouseover if at state level
-      // if (!(state === 'All')) {
+      // if (!(state === this.defaultViewName)) {
       //   countyCentroidPoints
       //     .on("mouseover", (event, d) => {
       //       d3.selectAll("#county-" + d.properties.GEOID)
@@ -1121,22 +1286,34 @@ export default {
     zoomToState(d, path, callMethod) {
       const self = this;
       
+      // Store name of selected state
       let zoomedState = d.properties.NAME
-      let zoomAction = this.active === zoomedState ? 'Zoom out' : 'Zoom in'
 
-      console.log(`You selected ${d.properties.NAME} by ${callMethod}. Currently active is ${this.active}. Current this.zoomed is ${this.zoomed}. Planned zoom action is ${zoomAction}`)
+      // Determine if need to zoom in or out
+      let zoomAction = this.currentState === zoomedState ? 'Zoom out' : 'Zoom in'
 
+      console.log(`You selected ${d.properties.NAME} by ${callMethod}. Currently shown area is ${this.currentState}. This.currentlyZoomed is ${this.currentlyZoomed}. Planned zoom action is ${zoomAction}`)
+
+      // If need to zoom out, zoom out to all states + territories
       if (zoomAction === 'Zoom out') return self.reset();
-      if (callMethod === 'click') this.d3.select('select').property('value', zoomedState)
 
-      if (!this.zoomed) {
-        console.log(`this.zoomed is ${this.zoomed} and planned zoom action is ${zoomAction}, so going to zoom in from full view`)
-
+      // If user clicked on map to zoom
+      if (callMethod === 'click') {
+        let dropdown = this.d3.select('select')
+        // Update dropdown text
+        dropdown.property('value', zoomedState)
+        // Update dropdown width
         let selectId = document.getElementById("state-dropdown");
-        // console.log(this.stateList.indexOf(zoomedState))
-        // console.log(selectId.value)
-        // selectId.value = this.stateList.indexOf(zoomedState)
-        // this.selectedText = zoomedState
+        selectId.style.width = 20 + (zoomedState.length * 12) + "px";
+      }
+
+      // Hide the inset map borders and labels
+      this.d3.select("#map-inset-svg")
+        .classed("hide", true)
+
+      // If not already zoomed in
+      if (!this.currentlyZoomed) {
+        console.log(`this.currentlyZoomed is ${this.currentlyZoomed} and planned zoom action is ${zoomAction}, so going to zoom in from full view`)
 
         // const [[x0, y0], [x1, y1]] = this.mapPath.bounds(d);
         // event.stopPropagation();
@@ -1174,39 +1351,40 @@ export default {
             scale = .9 / Math.max(dx / this.mapDimensions.width, dy / this.mapDimensions.height),
             translate = [this.mapDimensions.width / 2 - scale * x, this.mapDimensions.height / 2 - scale * y];
 
-        console.log(`SCALE: ${scale}`)
+        // set global scale variable
+        this.currentScale = scale;
+
+        self.drawCountyPoints(zoomedState, this.currentScale, this.currentType)
+        self.drawCounties(zoomedState, this.currentScale)
+        self.drawMap(zoomedState, this.currentScale)
+        self.drawHistogram(zoomedState)
+        
+        // Transition map groups
         this.stateGroups.transition(self.getUpdateTransition)
           .attr("transform", "translate(" + translate + ") scale(" + scale + ")");
           
-        // this.stateGroups.select("path").transition(self.getUpdateTransition)
-        //   .style("stroke-width",  1/scale)
-
         this.countyGroups.transition(self.getUpdateTransition)
           .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
 
         this.countyCentroidGroups.transition(self.getUpdateTransition)
           .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
 
-        // set active state to zoomed state
-        this.zoomed = true;
-        this.active = zoomedState;
-        console.log(`Zoomed in on ${zoomedState}, so this.zoomed is ${this.zoomed}`)
-
-        self.drawHistogram(zoomedState)
-        self.drawCounties(zoomedState)
-        self.drawMap(zoomedState)
-        self.drawCountyPoints(zoomedState, this.currentType)
+        // set current state to zoomed state
+        this.currentlyZoomed = true;
+        this.currentState = zoomedState;
+        console.log(`Zoomed in on ${zoomedState}, so this.currentlyZoomed is ${this.currentlyZoomed}`)
 
       } else {
-        console.log(`this.zoomed is ${this.zoomed} and planned zoom action is ${zoomAction}, so going to zoom out and then in to state`)
+        // If already zoomed in,
+        console.log(`this.currentlyZoomed is ${this.currentlyZoomed} and planned zoom action is ${zoomAction}, so going to zoom out and then in to state`)
 
         // NEED TO REVAMP - THIS IS MESSY
 
         // First draw whole map AND zoom out to whole map
-        self.drawHistogram('All')
-        self.drawCounties('All')
-        self.drawMap('All')
-        self.drawCountyPoints('All', this.currentType)
+        // self.drawHistogram('All')
+        self.drawCountyPoints(this.defaultViewName, 1, this.currentType)
+        self.drawCounties(this.defaultViewName, 1)
+        self.drawMap(this.defaultViewName, 1)
 
         this.stateGroups
           .attr("transform", "");
@@ -1225,7 +1403,17 @@ export default {
           y = (bounds[0][1] + bounds[1][1]) / 2,
           scale = .9 / Math.max(dx / this.mapDimensions.width, dy / this.mapDimensions.height),
           translate = [this.mapDimensions.width / 2 - scale * x, this.mapDimensions.height / 2 - scale * y];
-        console.log(`SCALE: ${scale}`)
+        
+        // set global scale variable
+        this.currentScale = scale;
+
+        // redraw map and histogram for state
+        self.drawCountyPoints(zoomedState, this.currentScale, this.currentType)
+        self.drawCounties(zoomedState, this.currentScale)
+        self.drawMap(zoomedState, this.currentScale)
+        self.drawHistogram(zoomedState)
+        
+        // Transition map groups
         this.stateGroups.transition(self.getUpdateTransition)
           .attr("transform", "translate(" + translate + ") scale(" + scale + ")");
 
@@ -1235,96 +1423,116 @@ export default {
         this.countyCentroidGroups.transition(self.getUpdateTransition)
           .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
 
-        // set active state to zoomed state
-        this.zoomed = true;
-        this.active = zoomedState;
-        console.log(`Zoomed in on ${zoomedState}, so this.zoomed is ${this.zoomed}`)
-
-        // redraw map and histogram for state
-        self.drawHistogram(zoomedState)
-        self.drawCounties(zoomedState)
-        self.drawMap(zoomedState)
-        self.drawCountyPoints(zoomedState, this.currentType)
-        
+        // set current state to zoomed state
+        this.currentlyZoomed = true;
+        this.currentState = zoomedState;
+        console.log(`Zoomed in on ${zoomedState}, so this.currentlyZoomed is ${this.currentlyZoomed}`)
       }
     },
     reset() {
       const self = this;
 
-      this.active = '' //this.d3.select(null);
-      this.d3.select('select').property('value', 'All')
+      this.currentState = this.defaultViewName //this.d3.select(null);
+      this.currentScale = 1;
 
-      self.drawHistogram('All')
-      self.drawCounties('All')
-      self.drawMap('All')
-      self.drawCountyPoints('All', this.currentType)
+      this.d3.select('select').property('value', this.defaultViewName)
+      let selectId = document.getElementById("state-dropdown");
+      selectId.style.width = 20 + (this.currentState.length * 8) + "px";
+
+      this.d3.select("#map-inset-svg")
+        .classed("hide", false)
+
+      self.drawHistogram(this.defaultViewName)
+      self.drawCounties(this.defaultViewName, this.currentScale)
+      self.drawMap(this.defaultViewName, this.currentScale)
+      self.drawCountyPoints(this.defaultViewName, this.currentScale, this.currentType)
 
       this.stateGroups.transition(self.getExitTransition)
-          // .style("stroke-width", 1)
           .attr("transform", "");
 
       this.countyGroups.transition(self.getExitTransition)
-        // .style("stroke-width", 1)
         .attr("transform", "");
 
       this.countyCentroidGroups.transition(self.getExitTransition)
-        // .style("stroke-width", 1)
         .attr("transform", "");
 
-      this.zoomed = false;
-      console.log(`Zoomed out, so this.zoomed is ${this.zoomed}`)
+      this.currentlyZoomed = false;
+      console.log(`Zoomed out, so this.currentlyZoomed is ${this.currentlyZoomed}`)
     }
   }
 }
 </script>
+<style lang="scss">
+  .bar {
+    stroke: white;
+    stroke-width: 0.5;
+  }
+  .county_centroid {
+    stroke: white;
+    stroke-width: 0.3;
+  }
+  .dropdown {
+    // font-size: 20px;
+    // display: flex;
+    flex-direction: row;
+    transition: width 2s, height 2s, transform 2s;
+    will-change: width;
+    background-color: white;
+    padding: 0.5rem;
+    box-shadow:  rgba(0, 0, 0, 0.05) 0px 6px 10px 0px,
+    rgba(0, 0, 0, 0.1) 0px 0px 0px 1px;
+    border-radius: 5px;
+  }
+</style>
 <style scoped lang="scss">
+  $pal_red: '#FD5901';
+  $pal_or: '#F78104';
+  $pal_yell: '#FAAB36';
+  $pal_teal: '#008083';
+  $pal_blue_dark: '#042054';
 
-$pal_red: '#FD5901';
-$pal_or: '#F78104';
-$pal_yell: '#FAAB36';
-$pal_teal: '#008083';
-$pal_blue_dark: '#042054';
 
-
-#map-container {
+  #grid-container-interactive {
     display: grid;
     grid-template-columns: 1.5fr 3fr;
-    grid-template-rows: 1fr;
+    column-gap: 1rem;
+    grid-template-rows: 1fr max-content max-content;
     grid-template-areas:
-      "title map";
-      //"title map"
-      //"title map";
+      "title title"
+      "text map"
+      "chart map";
     justify-content: center;
     margin: auto;
     max-width: 1600px;
-    //height: 88vh;
-}
-
-#oconus-container {
-    grid-area: map;
-    align-self: center;
-}
-
-#chart-container {
-    //grid-area: chart;
-    align-self: center;
-}
-
-#title-container {
+  }
+  #title {
     grid-area: title;
     align-self: center;
     font-size: 20px;
     font-family: sans-serif;
-    //background-color: red;
-}
-
-.dropdown {
-    font-size: 20px;
-    /* display: flex;
-    flex-direction: row;
-    transition: width 2s, height 2s, transform 2s;
-    will-change: width; */
-}
-
-
+  }
+  #state-dropdown-container {
+    grid-area: title;
+  }
+  #chart-container {
+    grid-area: chart;
+    align-self: center;
+  }
+  #oconus-container {
+    grid-area: map;
+    align-self: center;
+  }
+  #map-inset-svg {
+    grid-area: map;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+  }
+  #text {
+    grid-area: text;
+    justify-self: start;
+  }
+  .hide {
+    display: none;
+  }
 </style>

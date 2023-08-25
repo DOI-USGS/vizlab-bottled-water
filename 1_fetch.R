@@ -270,11 +270,11 @@ p1_targets <- list(
   tar_target(p1_hydro_gdb_dir,
              {
                tar_path <- '1_fetch/tmp/hydro.tar'
-               GET('https://prd-tnm.s3.amazonaws.com/StagedProducts/Small-scale/data/Hydrography/hydrusm010g.gdb_nt00897.tar.gz',
+               if (!file.exists(tar_path)) GET('https://prd-tnm.s3.amazonaws.com/StagedProducts/Small-scale/data/Hydrography/hydrusm010g.gdb_nt00897.tar.gz',
                    write_disk(tar_path))
                gdb_dir <- '1_fetch/out/hydro_gdb'
                if (!dir.exists(gdb_dir)) dir.create(gdb_dir)
-               untar(tar_path, exdir=gdb_dir)
+               if (length(list.files(gdb_dir)) == 0) untar(tar_path, exdir=gdb_dir)
                return(gdb_dir)
              },
              format='file'),

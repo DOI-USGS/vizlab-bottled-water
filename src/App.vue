@@ -136,7 +136,7 @@ h2{
 h3{
   font-size: 2rem;
   padding-top: 1rem;
-  padding-bottom: .25rem;
+  padding-bottom: 1rem;
   font-family: $SourceSans;
   font-weight: 700;
   color: $textcolor;
@@ -155,10 +155,14 @@ h4{
     font-size: 18px;
   }  
 }
-p, text {
+p, text, li {
   // padding: 1em 0 0 0; 
   font-family: $SourceSans;
   color: $textcolor;
+}
+li {
+  margin-left: 1rem;
+  padding-bottom: 0.5rem;
 }
 input[type=button] {
         font-family: $SourceSans;
@@ -168,7 +172,7 @@ input[type=button] {
   .text-container {
     min-width: 300px;
     max-width: 900px;
-    margin: 0 auto;
+    // margin: 0 auto;
     padding: 10px;   
     left:0;
     @media screen and (max-width: 600px) {
