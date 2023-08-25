@@ -1268,6 +1268,10 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
                                                width, height, bkgd_color, text_color,
                                                outfile_template, dpi) {
 
+  supply_colors <- c('#ffe066', '#213958', '#908D5F', '#D4D4D4')
+  color_names <- c('public supply', 'self supply', 'both', 'undetermined')
+  names(supply_colors) <- color_names
+
   filt_facility_type = "Bottled Water"
 
   supply_summary_state <- process_supply_state_sum(supply_summary_state = supply_summary_state,
@@ -1447,7 +1451,7 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
 #' @return the filepath of the saved plot
 generate_national_sanky <- function(supply_summary, supply_colors, width, height, bkgd_color, text_color, outfile_template, dpi) {
 
-  supply_colors <- c('#426f86', '#6b7444', '#13305b', '#8e949f')
+  supply_colors <- c('#ffe066', '#213958', '#908D5F', '#D4D4D4')
   color_names <- c('public supply', 'self supply', 'both', 'undetermined')
   names(supply_colors) <- color_names
 
