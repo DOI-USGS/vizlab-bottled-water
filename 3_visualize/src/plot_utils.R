@@ -1442,6 +1442,7 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
 #' @title generate sanky diagram of water sources and facilitity types
 #' @param supply_summary dataframe with count of facilities by water source
 #' @param supply_colors vector of colors to use for water source categories
+#' @param font_legend font used for the plot
 #' @param width width for the final plot
 #' @param height height for the final plot
 #' @param bkgd_color background color for the plot
@@ -1449,21 +1450,11 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
 #' @param outfile_template filepath template for saving the final plot
 #' @param dpi dpi at which to save the final plot
 #' @return the filepath of the saved plot
-generate_national_sanky <- function(supply_summary, supply_colors, width, height, bkgd_color, text_color, outfile_template, dpi) {
-
-  supply_colors <- c('#ffe066', '#213958', '#908D5F', '#D4D4D4')
-  color_names <- str_to_title(c('public supply', 'self supply', 'both', 'undetermined'))
-  names(supply_colors) <- color_names
-
-  font_legend <- "Source Sans Pro"
-  sysfonts::font_add_google(font_legend)
-  showtext::showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 900)
-  showtext::showtext_auto(enable = TRUE)
+generate_national_sanky <- function(supply_summary, supply_colors, font_legend, width, height, bkgd_color, text_color, outfile_template, dpi) {
 
   supply_summary <- supply_summary |>
     mutate(source_category = str_to_title(source_category),
            source_category = factor(source_category, levels = c("Public Supply", "Self Supply", "Both", "Undetermined")))
-
 
   # Create the ggplot
   sanky <- ggplot(data = supply_summary,
@@ -1473,7 +1464,7 @@ generate_national_sanky <- function(supply_summary, supply_colors, width, height
     geom_stratum(alpha = 0, width = 0.15, size = 0.5, color = text_color) +
     geom_text(stat = "stratum",
               aes(label = after_stat(stratum)),
-              family = font_legend, fontface = "bold") +
+              family = font_legend, fontface = "bold", size = 4) +
     scale_x_discrete(limits = c("source_category", "WB_TYPE"),
                      expand = c(0.15, 0.05)) +
     theme_void() +
@@ -1524,6 +1515,8 @@ generate_national_sanky <- function(supply_summary, supply_colors, width, height
 #' @title create expanded self supply stacked barplot for all facilities
 #' @param sites sites with water use data
 #' @param type_summary count of facilities by type
+#' @param supply_colors vector of colors to use for water source categories
+#' @param font_legend font used for the plot
 #' @param width width for the final plot
 #' @param height height for the final plot
 #' @param bkgd_color background color for the plot
@@ -1531,7 +1524,8 @@ generate_national_sanky <- function(supply_summary, supply_colors, width, height
 #' @param outfile_template filepath template for saving the final plot
 #' @param dpi dpi at which to save the final plot
 #' @return the filepath of the saved plot
-expanded_ss_barplot <- function(sites, type_summary, width, height, bkgd_color, text_color, outfile_template, dpi) {
+expanded_ss_barplot <- function(sites, type_summary, supply_colors, font_legend,
+                                width, height, bkgd_color, text_color, outfile_template, dpi) {
 
   # Get more info out of `self supply`
   p2_expand_self_supply <- sites |>
@@ -1551,17 +1545,7 @@ expanded_ss_barplot <- function(sites, type_summary, width, height, bkgd_color, 
     mutate(percent = site_count/sum(site_count)*100,
            source_category_title = as.factor(str_to_title(source_category)))
 
-  # stacked barplot
-  supply_colors <- c('#ffe066', '#90aed5', '#3f6ca6', '#213958', '#908D5F', '#D4D4D4')
-  color_names <- c('public supply', 'well', 'spring', 'surface water intake', 'both', 'undetermined')
-  names(supply_colors) <- color_names
-
-  font_legend <- 'Source Sans Pro'
-  font_add_google(font_legend)
-  showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 700)
-  showtext_auto(enable = TRUE)
-
-  expand_ss <- p2_supply_summary %>%
+  expand_ss <- p2_supply_summary |>
     filter(!source_category == "self supply") |>
     mutate(ratio = site_count/sum(site_count)) |>
     ggplot(aes(x = WB_TYPE, y = percent, fill = source_category)) +
@@ -1581,12 +1565,13 @@ expanded_ss_barplot <- function(sites, type_summary, width, height, bkgd_color, 
       plot.title = element_text(hjust = 0.5, size = 20),
       axis.text.y = element_text(size = 14),
       #legend.title.align = 0.5,
-      legend.title = element_text(vjust = 1),
+      legend.title = element_text(vjust = 1, size = 14),
       legend.title.align = 0.5,
       #panel.margin = margin(0, 0, 0, 0, "pt"),
       legend.spacing.x = unit(0.5, "cm"),
       text = element_text(family = font_legend, size = 14),
-      plot.margin = margin(30, 20, 20, 30)
+      plot.margin = margin(30, 20, 20, 30),
+      legend.text = element_text(family = font_legend, size = 14)
     ) +
     # ggtitle('National') +
     guides(fill = guide_legend(title = "Water source",
@@ -1622,7 +1607,7 @@ expanded_ss_barplot <- function(sites, type_summary, width, height, bkgd_color, 
     # add title
     draw_label("Distribution of water sources with expanded self supply by facility types",
                x = 0.025, y = 0.94,
-               size = 34,
+               size = 32,
                hjust = 0,
                vjust = 1,
                color = text_color,

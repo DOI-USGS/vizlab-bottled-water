@@ -297,10 +297,17 @@ p3_targets <- list(
                                                 dpi = 300),
              pattern = map(p2_facility_types),
              format = 'file'),
+  tar_target(p3_supply_colors_new,
+             {
+               supply_colors <- c('#ffe066', '#213958', '#908D5F', '#D4D4D4')
+               color_names <- str_to_title(c('public supply', 'self supply', 'both', 'undetermined'))
+               names(supply_colors) <- color_names
+               return(supply_colors)
+             }),
   tar_target(p3_source_bottled_water_facet_map_png,
              generate_facility_bw_source_facet_map(supply_summary = p2_supply_summary,
                                                 supply_summary_state = p2_supply_summary_state,
-                                                supply_colors = p3_supply_colors,
+                                                supply_colors = p3_supply_colors_new,
                                                 selected_facility_type = p2_facility_types,
                                                 width = 16, height = 9,
                                                 bkgd_color = 'white',
@@ -310,16 +317,26 @@ p3_targets <- list(
              format = 'file'),
   tar_target(p3_national_source_facilities_sanky_png,
              generate_national_sanky(supply_summary = p2_supply_summary,
-                                                  supply_colors = p3_supply_colors,
+                                                  supply_colors = p3_supply_colors_new,
+                                                  font_legend = p3_font_legend,
                                                   width = 16, height = 9,
                                                   bkgd_color = 'white',
                                                   text_color = 'black',
                                                   outfile_template = '3_visualize/out/national_sources_facilities_sanky.png',
                                                   dpi = 300),
              format = 'file'),
+  tar_target(p3_supply_ext_ss_colors,
+             {
+               supply_colors <- c('#ffe066', '#90aed5', '#3f6ca6', '#213958', '#908D5F', '#D4D4D4')
+               color_names <- c('public supply', 'well', 'spring', 'surface water intake', 'both', 'undetermined')
+               names(supply_colors) <- color_names
+               return(supply_colors)
+               }),
   tar_target(p3_expanded_self_supply_barplot_png,
              expanded_ss_barplot(sites = p2_inventory_sites,
                                  type_summary = p2_facility_type_summary,
+                                 supply_colors = p3_supply_ext_ss_colors,
+                                 font_legend = p3_font_legend,
                                  width = 16, height = 9,
                                  bkgd_color = 'white',
                                  text_color = 'black',
@@ -337,7 +354,6 @@ p3_targets <- list(
                                                 outfile_template = '3_visualize/out/state_sources_facet.png',
                                                 dpi = 300),
              format = 'file'),
-
   ######  state source faceted geofaceted treemaps   ######
   tar_target(p3_source_facet_treemap_all_types_png,
              generate_facility_source_facet_treemap(supply_summary = p2_supply_summary,
