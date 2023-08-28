@@ -90,6 +90,10 @@ $writeFont: 'Nanum Pen Script', cursive;
 #app {
   width: 100%;
   height: calc(100vh + 85.7px); //85.7 is the height of the USGS header
+  background: rgb(161,234,236);
+  background: radial-gradient(circle, rgba(161,234,236,0.48) 0%, rgba(209,218,245,0.58) 28%, rgba(151,234,230,0.33) 77%, rgba(164, 199, 240, 0.561) 100%);
+  height: auto;
+
 }
 
 // Type

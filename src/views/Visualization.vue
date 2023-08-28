@@ -24,7 +24,7 @@ export default {
       References: () => import("./../components/References.vue"),
     },
     setup() {
-      const title = ref('What do we know about bottled water?')
+      const title = ref('What are the impacts of bottled water?')
 
       return {
         title
@@ -59,7 +59,7 @@ $pal_blue_dark: '#042054';
   width: calc(100vw - 10rem);
   position: relative;
   padding: 3rem 0 5rem 5rem;
-}
+  }
 
 h1 {
   color: $pal_blue_dark;
