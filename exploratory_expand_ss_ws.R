@@ -1,10 +1,8 @@
 # This is an exploratory script that breaks down water_sources self_supply category by well, sw intake, and spring and plots
 library(targets)
 library(tidyverse)
-#library(waffle) - this one doesn't let me geofacet
-
-library(ggwaffle) # install.packages("devtools") devtools::install_github("liamgilbey/ggwaffle")
-
+library(waffle) # this one doesn't let me geofacet
+library(ggwaffle) # install.packages("devtools") devtools::install_github("liamgilbey/ggwaffle") - also unable to geofacet by
 library(cowplot)
 library(showtext)
 
@@ -39,9 +37,10 @@ p2_supply_summary <-
   mutate(WB_TYPE = factor(WB_TYPE, levels=p2_facility_type_summary$WB_TYPE)) |>
   group_by(WB_TYPE, source_category) |>
   summarize(site_count = n()) |>
-  mutate(source_category = factor(source_category, levels=c('undetermined', 'both', 'well', 'spring', 'sw intake','self supply', 'public supply'))) |>
+  mutate(source_category = factor(source_category, levels=c('undetermined', 'both', 'well', 'spring', 'surface water intake','self supply', 'public supply'))) |>
   group_by(WB_TYPE) |>
-  mutate(percent = site_count/sum(site_count)*100)
+  mutate(percent = site_count/sum(site_count)*100,
+         source_category_title = as.factor(str_to_title(source_category)))
 
 # Get summary of facility supply sources, by type and by state
 p2_supply_summary_state <-
@@ -49,7 +48,7 @@ p2_supply_summary_state <-
   mutate(WB_TYPE = factor(WB_TYPE, levels=p2_facility_type_summary$WB_TYPE)) |>
   group_by(state_name, state_abbr, WB_TYPE, source_category) |>
   summarize(site_count = n()) |>
-  mutate(source_category = factor(source_category, levels=c('undetermined', 'both', 'well', 'spring', 'sw intake','self supply', 'public supply')))
+  mutate(source_category = factor(source_category, levels=c('undetermined', 'both', 'well', 'spring', 'surface water intake','self supply', 'public supply')))
 
 supply_summary = p2_supply_summary
 supply_summary_state = p2_supply_summary_state
@@ -116,18 +115,27 @@ grid <- geofacet::us_state_grid1 %>%
   add_row(row = 7, col = 11, code = "VI", name = "U.S. Virgin Islands") %>% # add VI
   add_row(row = 6, col = 1, code = "GU", name = "Guam") # add GU
 
-# Alternative `geom_waffle` approach to `geofacet` by
-ws_state_waffle <- waffle_iron(supply_summary_state, mapping = aes_d(group = "source_category"), rows = 10) |>
-  rename(source_category = group) |>
-  left_join(supply_summary_state, by = c("source_category"))
-
-plt <- ggplot(ws_state_waffle, aes(x, y, fill = source_category, values = ratio)) +
-  geom_waffle() +
-  coord_equal() +
-  geofacet::facet_geo(~ state_abbr, grid = grid, move_axes = TRUE) +
-  scale_fill_manual(name = 'source_category', values = supply_colors)
-
-  ggsave("geowaffle_test.png", plt, width = width, height = height, dpi = dpi, bg = "white")
+# # Alternative `geom_waffle` approach to `geofacet` by - this doesnt work
+# ws_state_waffle <- waffle_iron(supply_summary_state, mapping = aes_d(group = "source_category"), rows = 10) |>
+#   rename(source_category = group) |>
+#   left_join(supply_summary_state, by = c("source_category"))
+#
+# unique(supply_summary_state$state_abbr) |>
+#   purrr::map(function(x){
+#     data_in <- supply_summary_state |> filter(state_abbr == x) |> uncount(site_count)
+#     waffle_iron(data_in, mapping = aes_d(group = "source_category"), rows = 10)
+# })
+#
+# data_in <- supply_summary_state |> filter(state_abbr == "TX") |> uncount(site_count)
+# tx_waffle <- ggwaffle::waffle_iron(data_in, mapping = aes_d(group = source_category), rows = 10)
+#
+# plt <- ggplot(tx_waffle, aes(x, y, fill = group)) +
+#   ggwaffle::geom_waffle() +
+#   coord_equal() +
+#   geofacet::facet_geo(~ state_abbr, grid = grid, move_axes = TRUE) +
+#   scale_fill_manual(name = 'source_category', values = supply_colors)
+#
+#   ggsave("geowaffle_test.png", plt, width = width, height = height, dpi = dpi, bg = "white")
 
 # facet wrapped waffle charts
 state_facet <- supply_summary_state %>%
@@ -139,8 +147,6 @@ state_facet <- supply_summary_state %>%
   theme_bw() +
   theme_facet(base = 12, bkgd_color = bkgd_color, text_color = text_color) +
   facet_wrap(~state_abbr)
-  # +
-  # geofacet::facet_geo(~ state_abbr, grid = grid, move_axes = TRUE) #Doesnt work
 
 
 national_plot <- supply_summary %>%
@@ -167,6 +173,46 @@ national_plot <- supply_summary %>%
     panel.margin = margin(0, 0, 0, 0, "pt")
   ) +
   ggtitle('National')
+
+
+# stacked barplot
+supply_colors <- c('#ffe066', '#90aed5', '#3f6ca6', '#213958', '#908D5F', '#D4D4D4')
+color_names <- c('public supply', 'well', 'spring', 'surface water intake', 'both', 'undetermined')
+names(supply_colors) <- color_names
+
+national_barplot <- p2_supply_summary %>%
+  filter(!source_category == "self supply") |>
+  mutate(ratio = site_count/sum(site_count)) |>
+  ggplot(aes(x = WB_TYPE, y = percent, fill = source_category)) +
+  geom_bar(stat="identity", position = "stack") +
+  scale_fill_manual(name = 'source_category', values = supply_colors, drop = FALSE) +
+  scale_x_discrete(expand = c(0,0)) +
+  scale_y_continuous(breaks = rev(c(0, 25, 50, 75, 100)),
+                     labels = rev(c(0, 25, 50, 75, "100%")),
+                     expand = c(0,0)) +
+  theme_minimal() +
+  theme(
+    axis.title = element_blank(),
+    panel.grid = element_blank(),
+    axis.ticks.y = element_line(color = "lightgrey", size = 0.5),
+    axis.text.x = element_text(size = 14),
+    legend.position = 'bottom',
+    plot.title = element_text(hjust = 0.5, size = 20),
+    axis.text.y = element_text(size = 14),
+    #legend.title.align = 0.5,
+    legend.title = element_text(vjust = 1),
+    legend.title.align = 0.5,
+    panel.margin = margin(0, 0, 0, 0, "pt"),
+    legend.spacing.x = unit(0.5, "cm"),
+    text = element_text(family = font_legend, size = 14),
+    plot.margin = margin(20, 20, 20, 10)
+  ) +
+  # ggtitle('National') +
+  guides(fill = guide_legend(title = "Water source",
+                             title.position = "top",
+                        nrow = 1))
+
+ggsave('national_sources_expand_supply.png', national_barplot, width = width, height = height, dpi = dpi, bg = "white")
 
 plot_margin <- 0.0009
 
@@ -282,7 +328,7 @@ create_and_save_waffle <- function(state_name) {
 
   # Save the plot as a PNG file
   output_path <- file.path(output_dir, paste0(state_name, ".png"))
-  ggsave(output_path, plot = p, width = 6, height = 4, bg = "white")  # Adjust width and height as needed
+  ggsave(output_path, plot = p, width = 6, height = 4, bg = "white")
 }
 
 # Iterate through each state name and create/save the plots
@@ -323,7 +369,7 @@ create_and_save_treemap <- function(state_name) {
 
   # Save the plot as a PNG file
   output_path <- file.path(output_dir, paste0(state_name, ".png"))
-  ggsave(output_path, plot = p, width = 6, height = 4, bg = "white")  # Adjust width and height as needed
+  ggsave(output_path, plot = p, width = 6, height = 4, bg = "white")
 }
 
 # Iterate through each state name and create/save the plots
