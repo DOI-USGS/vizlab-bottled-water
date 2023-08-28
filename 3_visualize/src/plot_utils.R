@@ -1521,8 +1521,16 @@ generate_national_sanky <- function(supply_summary, supply_colors, width, height
   return(outfile_template)
 
 }
-
-
+#' @title create expanded self supply stacked barplot for all facilities
+#' @param sites sites with water use data
+#' @param type_summary count of facilities by type
+#' @param width width for the final plot
+#' @param height height for the final plot
+#' @param bkgd_color background color for the plot
+#' @param text_color color for text
+#' @param outfile_template filepath template for saving the final plot
+#' @param dpi dpi at which to save the final plot
+#' @return the filepath of the saved plot
 expanded_ss_barplot <- function(sites, type_summary, width, height, bkgd_color, text_color, outfile_template, dpi) {
 
   # Get more info out of `self supply`
