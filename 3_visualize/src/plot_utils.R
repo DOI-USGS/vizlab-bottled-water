@@ -1460,11 +1460,14 @@ generate_national_sanky <- function(supply_summary, supply_colors, font_legend, 
   sanky <- ggplot(data = supply_summary,
                   aes(axis1 = source_category, axis2 = WB_TYPE, y = site_count)) +
     geom_alluvium(aes(fill = source_category),
-                  curve_type = "sigmoid", width = 0.15, alpha = 0.8) +
-    geom_stratum(alpha = 0, width = 0.15, size = 0.5, color = text_color) +
-    geom_text(stat = "stratum",
-              aes(label = after_stat(stratum)),
-              family = font_legend, fontface = "bold", size = 4) +
+                  curve_type = "arctan", width = 0.1, alpha = 0.8) +
+    geom_stratum(alpha = 0, width = 0.1, size = 0.5, color = text_color) +
+    ggfx::with_shadow(
+      colour = bkgd_color, x_offset = 3, y_offset = 2, sigma = 3,
+      geom_text(stat = "stratum",
+                aes(label = after_stat(stratum)),
+                family = font_legend, fontface = "bold", size = 3.5)
+    ) +
     scale_x_discrete(limits = c("source_category", "WB_TYPE"),
                      expand = c(0.15, 0.05)) +
     theme_void() +
@@ -1523,9 +1526,18 @@ generate_national_sanky <- function(supply_summary, supply_colors, font_legend, 
 #' @param text_color color for text
 #' @param outfile_template filepath template for saving the final plot
 #' @param dpi dpi at which to save the final plot
+#' @param get_percent if else statement where if TRUE, create a stacked barplot of percent distribution of water sources with expanded self supply facilities,
+#' if FALSE, return barplot of site count distributions of water sources with expanded self supply facilities.
 #' @return the filepath of the saved plot
 expanded_ss_barplot <- function(sites, type_summary, supply_colors, font_legend,
-                                width, height, bkgd_color, text_color, outfile_template, dpi) {
+                                width, height, bkgd_color, text_color, outfile_template, dpi,
+                                get_percent) {
+
+  # target `p3_font_legend` sometimes doesnt load on my end ?
+  font_legend <- 'Source Sans Pro'
+  font_add_google(font_legend)
+  showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 700)
+  showtext_auto(enable = TRUE)
 
   # Get more info out of `self supply`
   p2_expand_self_supply <- sites |>
@@ -1540,21 +1552,24 @@ expanded_ss_barplot <- function(sites, type_summary, supply_colors, font_legend,
     mutate(WB_TYPE = factor(WB_TYPE, levels=type_summary$WB_TYPE)) |>
     group_by(WB_TYPE, source_category) |>
     summarize(site_count = n()) |>
-    mutate(source_category = factor(source_category, levels=c('undetermined', 'both', 'well', 'spring', 'surface water intake','self supply', 'public supply'))) |>
+    mutate(source_category_name = case_when(source_category == "sw intake" ~ "surface water intake",
+                                       TRUE ~ source_category),
+           source_category_name = factor(source_category_name, levels=c('undetermined', 'both', 'well', 'spring', 'surface water intake', 'self supply', 'public supply'))) |>
     group_by(WB_TYPE) |>
-    mutate(percent = site_count/sum(site_count)*100,
-           source_category_title = as.factor(str_to_title(source_category)))
+    mutate(percent = site_count/sum(site_count)*100)
+
+  if (get_percent == TRUE) {
 
   expand_ss <- p2_supply_summary |>
     filter(!source_category == "self supply") |>
     mutate(ratio = site_count/sum(site_count)) |>
-    ggplot(aes(x = WB_TYPE, y = percent, fill = source_category)) +
+    ggplot(aes(x = WB_TYPE, y = percent, fill = source_category_name)) +
     geom_bar(stat="identity", position = "stack") +
     scale_fill_manual(name = 'source_category', values = supply_colors, drop = FALSE) +
     scale_x_discrete(expand = c(0,0)) +
     scale_y_continuous(breaks = seq(0, 100, by = 25),  # Specify breaks at 0, 25, 50, 75, and 100
                        labels = c("0", "25", "50", "75", "100%"),  # Specify labels for the breaks
-                       expand = c(0, 0)) +
+                       expand = c(0, 0.1)) +
     theme_minimal() +
     theme(
       axis.title = element_blank(),
@@ -1578,6 +1593,41 @@ expanded_ss_barplot <- function(sites, type_summary, supply_colors, font_legend,
                                title.position = "top",
                                nrow = 1))
 
+  } else {
+
+  expand_ss <- p2_supply_summary |>
+    filter(!source_category == "self supply") |>
+    mutate(ratio = site_count/sum(site_count)) |>
+    ggplot(aes(x = WB_TYPE, y = site_count, fill = source_category_name)) +
+    geom_bar(stat="identity", position = "stack") +
+    scale_fill_manual(name = 'source_category', values = supply_colors, drop = FALSE) +
+    scale_x_discrete(expand = c(0,0)) +
+    scale_y_continuous(breaks = seq(0, 20000, by = 5000),
+                       labels = c("0", "5000", "10000", "15000", "20000")) + # Specify labels for the breaks) +
+    theme_minimal() +
+    theme(
+      axis.title = element_blank(),
+      panel.grid = element_blank(),
+      axis.ticks.y = element_line(color = "lightgrey", size = 0.5),
+      axis.text.x = element_text(size = 14),
+      legend.position = 'bottom',
+      plot.title = element_text(hjust = 0.5, size = 20),
+      axis.text.y = element_text(size = 14),
+      #legend.title.align = 0.5,
+      legend.title = element_text(vjust = 1, size = 14),
+      legend.title.align = 0.5,
+      #panel.margin = margin(0, 0, 0, 0, "pt"),
+      legend.spacing.x = unit(0.5, "cm"),
+      text = element_text(family = font_legend, size = 14),
+      plot.margin = margin(30, 20, 20, 30),
+      legend.text = element_text(family = font_legend, size = 14)
+    ) +
+    # ggtitle('National') +
+    guides(fill = guide_legend(title = "Water source",
+                               title.position = "top",
+                               nrow = 1))
+
+  }
 
   plot_margin <- 0.005
 
@@ -1613,16 +1663,7 @@ expanded_ss_barplot <- function(sites, type_summary, supply_colors, font_legend,
                color = text_color,
                lineheight = 1,
                fontfamily = font_legend,
-               fontface = "bold") +
-    # add 100% label since its getting dropped?
-    draw_label("100%",
-               x = 0.025, y = 0.82,
-               size = 14,
-               hjust = 0,
-               vjust = 1,
-               color = "#4d4d4d",
-               lineheight = 1,
-               fontfamily = font_legend)
+               fontface = "bold")
 
   ggsave(outfile_template, expand_ss_barplot, width = width, height = height, dpi = dpi, bg = bkgd_color)
 

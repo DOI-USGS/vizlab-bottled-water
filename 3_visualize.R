@@ -299,7 +299,7 @@ p3_targets <- list(
              format = 'file'),
   tar_target(p3_supply_colors_new,
              {
-               supply_colors <- c('#ffe066', '#213958', '#908D5F', '#D4D4D4')
+               supply_colors <- c('#ffe066', '#213958', '#9b9560', '#D4D4D4')
                color_names <- str_to_title(c('public supply', 'self supply', 'both', 'undetermined'))
                names(supply_colors) <- color_names
                return(supply_colors)
@@ -327,20 +327,33 @@ p3_targets <- list(
              format = 'file'),
   tar_target(p3_supply_ext_ss_colors,
              {
-               supply_colors <- c('#ffe066', '#90aed5', '#3f6ca6', '#213958', '#908D5F', '#D4D4D4')
+               supply_colors <- c('#ffe066', '#90aed5', '#3f6ca6', '#213958', '#9b9560', '#D4D4D4')
                color_names <- c('public supply', 'well', 'spring', 'surface water intake', 'both', 'undetermined')
                names(supply_colors) <- color_names
                return(supply_colors)
                }),
-  tar_target(p3_expanded_self_supply_barplot_png,
+  tar_target(p3_perc_expanded_self_supply_barplot_png,
              expanded_ss_barplot(sites = p2_inventory_sites,
                                  type_summary = p2_facility_type_summary,
                                  supply_colors = p3_supply_ext_ss_colors,
                                  font_legend = p3_font_legend,
+                                 get_percent = TRUE,
                                  width = 16, height = 9,
                                  bkgd_color = 'white',
                                  text_color = 'black',
-                                 outfile_template = '3_visualize/out/expanded_self_supply_barplot.png',
+                                 outfile_template = '3_visualize/out/perc_expanded_self_supply_barplot.png',
+                                 dpi = 300),
+             format = "file"),
+  tar_target(p3_count_expanded_self_supply_barplot_png,
+             expanded_ss_barplot(sites = p2_inventory_sites,
+                                 type_summary = p2_facility_type_summary,
+                                 supply_colors = p3_supply_ext_ss_colors,
+                                 font_legend = p3_font_legend,
+                                 get_percent = FALSE,
+                                 width = 16, height = 9,
+                                 bkgd_color = 'white',
+                                 text_color = 'black',
+                                 outfile_template = '3_visualize/out/count_expanded_self_supply_barplot.png',
                                  dpi = 300),
              format = "file"),
   tar_target(p3_source_facet_map_all_types_png,
