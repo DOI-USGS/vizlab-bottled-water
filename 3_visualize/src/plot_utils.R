@@ -1283,8 +1283,11 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
   supply_summary_tx <- supply_summary_state |>
     filter(state_abbr == "TX")
 
-  supply_summary_ca <-  supply_summary_state |>
-    filter(state_abbr == "CA")
+  supply_summary_ri <- supply_summary_state |>
+    filter(state_abbr == "RI")
+
+  supply_summary_vt <- supply_summary_state |>
+    filter(state_abbr == "VT")
 
   font_legend <- "Source Sans Pro"
   sysfonts::font_add_google(font_legend)
@@ -1333,7 +1336,7 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
       axis.ticks.y = element_line(color = "lightgrey", size = 0.5),
       axis.text.x = element_blank(),
       legend.position = 'bottom',
-      plot.title = element_text(hjust = 0.5, size = 22, margin = margin(b = 10)),
+      plot.title = element_text(hjust = 0.5, size = 22, margin = margin(b = 10), family = font_legend),
       axis.text.y = element_text(size = 14),
       legend.title.align = 0.5,
       panel.margin = margin(0, 0, 0, 0, "pt"),
@@ -1369,6 +1372,12 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
                arrow = arrow(length = unit(0.08, "npc"), type = "closed"),
                colour = text_color, linewidth = 0.45, curvature = 0.3, angle = 100)
 
+  plot_arrow_vt <- ggplot() +
+    theme_void() +
+    geom_curve(aes(x = -1.25, y = 5, xend = -0.5, yend = 4.5),
+               arrow = arrow(length = unit(0.08, "npc"), type = "closed"),
+               colour = text_color, linewidth = 0.45, curvature = 0.3, angle = 100)
+
   # compose final plot
   facet_plot <- ggdraw(ylim = c(0,1),
                        xlim = c(0,1)) +
@@ -1385,7 +1394,7 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
               width = 0.32 - plot_margin * 2) +
     # state cartogram
     draw_plot(state_cartogram + theme(legend.position = 'none'),
-              x = 0.974,
+              x = 0.964,
               y = 0.128,
               height = 0.8,
               width = 1 - (0.4 + plot_margin * 5),
@@ -1409,12 +1418,12 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
                fontface = "bold") +
     # plot arrow - TX
     draw_plot(plot_arrow_tx,
-              x = 0.543,
+              x = 0.533,
               y = 0.168,
               height = 0.07 ,
               width = 0.035 - plot_margin) +
-      draw_label(paste("Texas sources\n", paste0(round(max(supply_summary_tx$percent)), "%"),"from", "\npublic supply"),
-              x = 0.546,
+    draw_label(paste("Texas\nsources", paste0(round(max(supply_summary_tx$percent)), "%"),"\nfrom public supply"),
+              x = 0.536,
               y = 0.130,
               size = 16,
               color = text_color,
@@ -1428,6 +1437,30 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
     draw_label("Both =\n self supply &\n public supply",
                x = 0.381,
                y = 0.554,
+               size = 16,
+               color = text_color,
+               fontfamily = annotate_legend) +
+    # plot arrow - RI
+    draw_plot(plot_arrow_both,
+              x = 0.928,
+              y = 0.539,
+              height = 0.08,
+              width = 0.035 - plot_margin) +
+    draw_label(paste("Rhode Island\nsources", paste0(round(max(supply_summary_ri$percent)), "%"),"\nfrom both"),
+               x = 0.955,
+               y = 0.5,
+               size = 16,
+               color = text_color,
+               fontfamily = annotate_legend) +
+  # plot arrow - VT
+    draw_plot(plot_arrow_vt,
+              x = 0.753,
+              y = 0.775,
+              height = 0.08,
+              width = 0.035 - plot_margin) +
+    draw_label(paste("Vermont\nsources", paste0(round(max(supply_summary_vt$percent)), "%"),"\nfrom self supply"),
+               x = 0.753,
+               y = 0.899,
                size = 16,
                color = text_color,
                fontfamily = annotate_legend)
