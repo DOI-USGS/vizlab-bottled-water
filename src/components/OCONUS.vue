@@ -1,6 +1,6 @@
 <template>
   <section id="oconus_map">
-    <div id="grid-container-interactive" class="glass">
+    <div id="grid-container-interactive">
       <div id="title">
         <h4> Counts of bottling facilities in <span id="state-dropdown-container"></span> by county
           <!-- Dropdown v-model="selectedOption" :options="dropdownOptions"/ -->
@@ -14,7 +14,7 @@
             <p>This map shows the approximate number of bottling facilities in every county where data are available. Use the dropdown menu above to filter the data by state, or click on the facility type in the bar chart below to filter the data by facility type. </p>
         </div>
       </div>
-      <div id="chart-container glass">
+      <div id="chart-container">
       </div>           
       <div id="oconus-container">
       </div>
@@ -1534,13 +1534,5 @@ export default {
   }
   .hide {
     display: none;
-  }
-  .glass {
-    background: rgba(255, 255, 255, 0.4);
-border-radius: 16px;
-box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-backdrop-filter: blur(5px);
--webkit-backdrop-filter: blur(5px);
-border: 1px solid rgba(255, 255, 255, 0.5);
   }
 </style>
