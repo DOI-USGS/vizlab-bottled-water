@@ -1,6 +1,6 @@
 echo "this is the var $E_VUE_BUILD_MODE"
 if [ "$E_VUE_BUILD_MODE" = "test" ]
-then npm run dev
+then npm run build
 elif [ "$E_VUE_BUILD_MODE" = "beta" ]
 then npm run build-beta
 else npm run build
