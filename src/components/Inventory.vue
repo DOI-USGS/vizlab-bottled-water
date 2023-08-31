@@ -16,12 +16,12 @@
                 </div>
                 <div class="text-container">
                     <p>
-                        Despite what we know about bottled water consumption, data about how much water is taken from the environment for bottled water and other beverages are harder to come by. There is no central dataset of all bottling facilities, and some states do not permit public sharing of beverage-bottling data. Without these data, we can't measure the impact that bottled water has on the water cycle locally, regionally, or nationally.  
+                        Despite what we know about bottled water consumption, data about how much water is taken from the environment for bottled water and other beverages are harder to come by. Reporting is highly, and some states do not permit public sharing of beverage-bottling data. Without these data, we can't measure the impact that bottled water has on the water cycle locally, regionally, or nationally.  
                     </p>
                 </div>
                 <div class="text-container">
                     <p>
-                        To help fill this gap, the USGS Water Mission Area's Bottled Water Impacts project conducted an inventory of bottling facilities across the United States (LINK TO DATA RELEASE). Though incomplete, the inventory helps answer the following questions:  
+                        To help fill this gap, the USGS Water Mission Area's Bottled Water Impacts project conducted an inventory of bottling facilities across the United States (LINK TO DATA RELEASE). The inventory helps answer the following questions:  
                     </p>
                 </div>
                 <div class="text-container">
