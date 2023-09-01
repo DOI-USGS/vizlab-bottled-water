@@ -1548,6 +1548,292 @@ generate_national_sanky <- function(supply_summary, supply_colors, font_legend, 
   return(outfile_template)
 
 }
+
+
+#' @title create expanded self supply stacked bottled water conus maps across facilities
+#' @param sites sites with water use data
+#' @param proj_str, set map projection
+#' @param font_legend font used for the plot
+#' @param width width for the final plot
+#' @param height height for the final plot
+#' @param bkgd_color background color for the plot
+#' @param text_color color for text
+#' @param outfile_template filepath template for saving the final plot
+#' @param dpi dpi at which to save the final plot
+#' @param get_percent if else statement where if TRUE, creates a map of percent distribution of water sources for bottled water facilities with expanded self supply facilities,
+#' if FALSE, return map of counts of bottled water with expanded self supply facilities.
+#' @return the filepath of the saved plot
+generate_bw_expand_ss_map <- function(site, proj_str, width, height, bkgd_color, text_color, outfile_template, dpi,
+                                      get_percent, font_legend) {
+
+  conus_sf <- tigris::states(cb = TRUE) %>%
+    st_transform(proj_str) %>%
+    filter(STUSPS %in% state.abb[!state.abb %in% c('AK', 'HI')]) %>%
+    rmapshaper::ms_simplify(keep = 0.4)
+
+  counties_sf <- tigris::counties() %>%
+    st_transform(crs = proj_str) %>%
+    filter(STATEFP %in% conus_sf$STATEFP) %>%
+    rmapshaper::ms_simplify(keep = 0.2) %>%
+    st_intersection(st_union(conus_sf)) |>
+    rename(county_fips = COUNTYFP)
+
+  # Get more info out of `self supply`
+  p2_expand_self_supply <- site |>
+    mutate(source_category = case_when(water_source == "well" ~ "well",
+                                       water_source == "sw intake" ~ "sw intake",
+                                       water_source == "spring" ~ "spring",
+                                       TRUE ~ source_category))
+
+  # Get summary of facility supply sources, by type
+  p2_supply_summary <-
+    p2_expand_self_supply |>
+    janitor::clean_names() |>
+    filter(wb_type == "Bottled Water") |>
+    group_by(county_fips, source_category) |>
+    summarize(site_count = n()) |>
+    filter(!source_category == "self supply") |>
+    mutate(source_category_name = case_when(source_category == "sw intake" ~ "surface water intake",
+                                            TRUE ~ source_category),
+           source_category_name = factor(source_category_name, levels=c('undetermined', 'both', 'well', 'spring', 'surface water intake', 'public supply'))) |>
+    group_by(county_fips) |>
+    mutate(percent = site_count/sum(site_count)*100) |>
+    st_drop_geometry() |>
+    as.data.frame()
+
+  county_bw_sf <- counties_sf %>%
+    left_join(p2_supply_summary, by = 'county_fips') |>
+    drop_na(source_category)
+
+  supply_colors <- c('#ffe066', '#90aed5', '#3f6ca6', '#213958', '#9b9560', '#D4D4D4')
+  color_names <- c('public supply', 'well', 'spring', 'surface water intake', 'both', 'undetermined')
+  names(supply_colors) <- color_names
+
+
+  if (get_percent == TRUE) {
+
+    map_perc <- ggplot() +
+      geom_sf(data = conus_sf,
+              fill = "white",
+              color = 'gray',
+              size = 0.6,
+              linetype = "solid" ) +
+      geom_sf(data = county_bw_sf,
+              aes(alpha = percent, fill = source_category_name),
+              color = NA,
+              size = 0.1) +
+      scale_x_continuous(expand = c(0,0)) +
+      scale_y_continuous(expand = c(0,0)) +
+      scale_alpha(range = c(0.1,1), limits = c(0, 100), name = '') +
+      theme_void() +
+      theme(
+        legend.position = "none",
+        plot.title = element_text(hjust = 0.5, size = 14, margin = margin(t = 1, b = 40)),
+        plot.margin = unit(c(1,1,1,1), "cm"),
+        strip.text = element_text(margin = margin(b = 10), family = font_legend, size = 14),  # Adjust strip margin
+        strip.background = element_blank(),
+        panel.spacing = unit(2, "lines")
+      ) +
+      facet_wrap(~source_category_name) +
+      scale_fill_manual(name = 'Water source',
+                        values = supply_colors)
+
+    bivariate_color_scale <- purrr::map2_df(names(supply_colors), supply_colors, function(source_category_name, supply_colors) {
+      tibble(
+        ws_category = rep(source_category_name, 5),
+        alpha = c(100, 75, 50, 25, 0),
+        fill = rep(supply_colors, 5)
+      )
+    }) %>%
+      mutate(ws_category = factor(ws_category, levels = rev(color_names)))
+
+    legend_list <- purrr::map2(names(supply_colors), supply_colors, function(source_category_name, supply_colors) {
+      ggplot() +
+        geom_tile(
+          data = filter(bivariate_color_scale, ws_category == source_category_name),
+          mapping = aes(
+            x = alpha,
+            y = ws_category,
+            fill = fill,
+            alpha = alpha)
+        ) +
+        scale_fill_identity() +
+        scale_alpha(range = c(0.1,1), limits = c(0, 100), name = '') +
+        scale_y_discrete(position = "right", expand = c(0,0)) +
+        theme_void() +
+        theme(
+          legend.position = 'none',
+          plot.margin = unit(c(0,6,6.5,0), "cm")
+        )
+    })
+  } else {
+
+    map_count <- ggplot() +
+      geom_sf(data = conus_sf,
+              fill = "white",
+              color = 'gray',
+              size = 0.6,
+              linetype = "solid" ) +
+      geom_sf(data = county_bw_sf,
+              aes(alpha = site_count, fill = source_category_name),
+              color = NA,
+              size = 0.1) +
+      scale_x_continuous(expand = c(0,0)) +
+      scale_y_continuous(expand = c(0,0)) +
+      scale_alpha(range = c(0.1,1),
+                  limits = c(0, 120),
+                  name = '') +
+      theme_void() +
+      theme(
+        legend.position = "none",
+        plot.title = element_text(hjust = 0.5, size = 14, margin = margin(t = 1, b = 40)),
+        plot.margin = unit(c(1,1,1,1), "cm"),
+        strip.text = element_text(margin = margin(b = 10), family = font_legend, size = 14),  # Adjust strip margin
+        strip.background = element_blank(),
+        panel.spacing = unit(2, "lines")
+      ) +
+      facet_wrap(~source_category_name) +
+      scale_fill_manual(name = 'Water source',
+                        values = supply_colors)
+
+    # legend
+    bivariate_color_scale <- purrr::map2_df(names(supply_colors), supply_colors, function(source_category_name, supply_colors) {
+      tibble(
+        ws_category = rep(source_category_name, 5),
+        alpha = c(0, 30, 60, 90, 120),
+        fill = rep(supply_colors, 5)
+      )
+    }) %>%
+      mutate(ws_category = factor(ws_category, levels = rev(color_names)))
+
+    legend_list <- purrr::map2(names(supply_colors), supply_colors, function(source_category_name, supply_colors) {
+      ggplot() +
+        geom_tile(
+          data = filter(bivariate_color_scale, ws_category == source_category_name),
+          mapping = aes(
+            x = alpha,
+            y = ws_category,
+            fill = fill,
+            alpha = alpha)
+        ) +
+        scale_fill_identity() +
+        scale_alpha(range = c(0.1,1), limits = c(0, 100), name = '') +
+        scale_y_discrete(position = "right", expand = c(0,0)) +
+        theme_void() +
+        theme(
+          legend.position = 'none',
+          plot.margin = unit(c(0,6,6.5,0), "cm")
+        )
+    })
+
+  }
+
+  arranged_legends <- cowplot::plot_grid(plotlist = legend_list, nrow = 3, ncol = 3, scale = 1)
+
+  # cowplot
+  plot_margin <- 0.005
+
+  canvas <- grid::rectGrob(
+    x = 0, y = 0,
+    width = 16, height = 9,
+    gp = grid::gpar(fill = bkgd_color, alpha = 1, col = bkgd_color)
+  )
+
+  plt <- ggdraw(ylim = c(0,1), # 0-1 scale makes it easy to place viz items on canvas
+                    xlim = c(0,1)) +
+    # a background
+    draw_grob(canvas,
+              x = 0, y = 1,
+              height = 16, width = 9,
+              hjust = 0, vjust = 1) +
+    draw_label('Distribution of Water Sources for Bottled Water Facilities with Expanded Self Supply',
+               x = 0.025, y = 0.97,
+               size = 28,
+               hjust = 0,
+               vjust = 1,
+               color = text_color,
+               lineheight = 1,
+               fontfamily = font_legend,
+               fontface = "bold") +
+    # public supply  legend
+    draw_plot(legend_list[[1]],
+              x = 0.71,
+              y = -0.22,
+              width = 0.35,
+              height = 0.3) +
+    # well legend
+    draw_plot(legend_list[[2]],
+              x = 0.71,
+              y = 0.197,
+              width = 0.35,
+              height = 0.3) +
+    # spring legend
+    draw_plot(legend_list[[3]],
+              x = 0.062,
+              y = -0.22,
+              width = 0.35,
+              height = 0.3) +
+    # sw intake legend
+    draw_plot(legend_list[[4]],
+              x = 0.385,
+              y = -0.22,
+              width = 0.35,
+              height = 0.3) +
+    # both legend
+    draw_plot(legend_list[[5]],
+              x = 0.385,
+              y = 0.197,
+              width = 0.35,
+              height = 0.3) +
+    # undetermined legend
+    draw_plot(legend_list[[6]],
+              x = 0.062,
+              y = 0.197,
+              width = 0.35,
+              height = 0.3)
+
+  if (get_percent == TRUE) {
+    fnl_plt <- plt +
+      draw_plot(map_perc,
+                x = 0.995,
+                y = 0.015,
+                height = 0.95,
+                width = 1 - plot_margin,
+                hjust = 1,
+                vjust = 0) +
+      # public supply legend with % labels
+      draw_label('0         10      25      75      100%',
+                 fontfamily = font_legend,
+                 x = 0.72,
+                 y = 0.03,
+                 size = 15,
+                 hjust = 0,
+                 vjust = 0,
+                 color = text_color)
+
+  } else {
+    fnl_plt <- plt +
+      draw_plot(map_count,
+                x = 0.995,
+                y = 0.015,
+                height = 0.95,
+                width = 1 - plot_margin,
+                hjust = 1,
+                vjust = 0) +
+      # public supply legend with count labels
+      draw_label('0         30      60      90      120',
+                 fontfamily = font_legend,
+                 x = 0.72,
+                 y = 0.03,
+                 size = 15,
+                 hjust = 0,
+                 vjust = 0,
+                 color = text_color)
+  }
+  ggsave(outfile_template, fnl_plt, width = width, height = height, dpi = dpi, bg =  bkgd_color)
+
+}
+
 #' @title create expanded self supply stacked barplot for all facilities
 #' @param sites sites with water use data
 #' @param type_summary count of facilities by type
