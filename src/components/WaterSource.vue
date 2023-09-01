@@ -24,7 +24,9 @@
             How do different facility types source water?
           </p>
         </div>
-        <img src="../assets/images/ea_national_sources_by_type.png">
+        <img src="../assets/images/national_sources_facilities_sanky.png">
+        <img src="../assets/images/perc_expanded_self_supply_barplot.png">
+        <img src="../assets/images/count_expanded_self_supply_barplot.png">
       </div>
       <div id="img-ws-bw-facet" class="img-container">
         <div class="text-container">
@@ -32,7 +34,8 @@
             How do bottled water facilities in each state source water?
           </p>
         </div>
-        <img src="../assets/images/state_sources_facet_Bottled Water.png">
+        <img src="../assets/images/state_sources_facet_bottled_water.png">
+        <img src="../assets/images/map_count_bottled_water_expand_self_supply_map.png">
       </div>
     </div>
   </section>
