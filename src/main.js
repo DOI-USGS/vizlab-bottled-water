@@ -27,12 +27,7 @@ const vueImgConfig = {
 Vue.component("FontAwesomeIcon", FontAwesomeIcon);
 
 // social icons
-library.add(faTwitterSquare);
-library.add(faFacebookSquare);
-library.add(faGithub);
-library.add(faFlickr);
-library.add(faYoutubeSquare);
-library.add(faInstagram);
+library.add(faTwitterSquare, faFacebookSquare, faGithub, faFlickr, faYoutubeSquare, faInstagram);
 
 Vue.config.productionTip = false;
 Vue.use(uswds);
