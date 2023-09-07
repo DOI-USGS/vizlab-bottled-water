@@ -289,10 +289,10 @@
     content: "\f002";
   }
   .fa-twitter-square:before {
-    Content: "\f081";
+    content: "\f081";
   }
   .fa-facebook-square:before {
-    Content: "\f082";
+    content: "\f082";
   }
   .fa-github:before {
     content: "\f09b";
