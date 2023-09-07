@@ -28,8 +28,7 @@ pipeline {
                           extensions: [],
                           gitTool: 'Default',
                           submoduleCfg: [],
-                          userRemoteConfigs: [[url: 'https://code.usgs.gov/wma/vizlab/water-bottling.git',
-                                                credentialsId: 'vizlab_jenkins_bottledwater']]
+                          userRemoteConfigs: [[url: 'https://code.usgs.gov/wma/vizlab/water-bottling.git', credentialsId: 'vizlab_jenkins_bottledwater']]
                         ])
                 }
         }
