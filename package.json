@@ -3,9 +3,14 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "vite",
-    "serve": "vite preview",
-    "build": "vite build",
+    "dev": "vite --mode test_tier",
+    "serve-test": "vite preview --mode test_tier",
+    "serve-beta": "vite preview --mode beta_tier",
+    "serve-prod": "vite preview --mode prod_tier",
+    "build": "vite build --mode prod_tier",
+    "build-test": "vite build --mode test_tier",
+    "build-beta": "vite build --mode beta_tier",
+    "build-prod": "vite build --mode prod_tier",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"
   },
   "dependencies": {
