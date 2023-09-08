@@ -3,6 +3,9 @@
 This draft project currently
 1) calculates statistics (e.g., area, total population, mean precipitation) for a series of focal regions
 2) Has an in-development javascript website using data visualizaiton to communicate the impacts of bottled water in the United States
+* Explore location and type of bottling facilities nationally
+* Exploration of water sources for those facilities
+* Exploration of water use data, where available
 
 ## To run the R pipeline
 This repo contains an R pipeline that uses the [`targets` package](https://books.ropensci.org/targets/) to process the National Bottled Water Inventory and generate static charts and maps. To run this pipeline, clone the repo, install `targets`, and run the following from the directory:
