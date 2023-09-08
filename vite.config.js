@@ -18,4 +18,5 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"), // allows for @ alias https://vueschool.io/articles/vuejs-tutorials/how-to-migrate-from-vue-cli-to-vite/
     },
   },
+  base: '/visualizations/bottled-water/',
 });
