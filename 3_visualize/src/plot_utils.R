@@ -1472,7 +1472,7 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
   return(outfile)
 }
 
-#' @title generate sanky diagram of water sources and facilitity types
+#' @title generate sankey diagram of water sources and facilitity types
 #' @param supply_summary dataframe with count of facilities by water source
 #' @param supply_colors vector of colors to use for water source categories
 #' @param font_legend font used for the plot
@@ -1483,14 +1483,14 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
 #' @param outfile_template filepath template for saving the final plot
 #' @param dpi dpi at which to save the final plot
 #' @return the filepath of the saved plot
-generate_national_sanky <- function(supply_summary, supply_colors, font_legend, width, height, bkgd_color, text_color, outfile_template, dpi) {
+generate_national_sankey <- function(supply_summary, supply_colors, font_legend, width, height, bkgd_color, text_color, outfile_template, dpi) {
 
   supply_summary <- supply_summary |>
     mutate(source_category = str_to_title(source_category),
            source_category = factor(source_category, levels = c("Public Supply", "Self Supply", "Both", "Undetermined")))
 
   # Create the ggplot
-  sanky <- ggplot(data = supply_summary,
+  sankey <- ggplot(data = supply_summary,
                   aes(axis1 = source_category, axis2 = WB_TYPE, y = site_count)) +
     geom_alluvium(aes(fill = source_category),
                   curve_type = "arctan", width = 0.1, alpha = 0.8) +
@@ -1518,15 +1518,15 @@ generate_national_sanky <- function(supply_summary, supply_colors, font_legend, 
   )
 
   # compose final plot
-  sanky_plot <- ggdraw(ylim = c(0,1),
+  sankey_plot <- ggdraw(ylim = c(0,1),
                        xlim = c(0,1)) +
     # a background
     draw_grob(canvas,
               x = 0, y = 1,
               height = height, width = width,
               hjust = 0, vjust = 1) +
-    # plot sanky
-    draw_plot(sanky,
+    # plot sankey
+    draw_plot(sankey,
               x = 0.992,
               y = 0.06,
               height = 0.8,
@@ -1544,7 +1544,7 @@ generate_national_sanky <- function(supply_summary, supply_colors, font_legend, 
                fontfamily = font_legend,
                fontface = "bold")
 
-  ggsave(outfile_template, sanky_plot, width = width, height = height, dpi = dpi, bg = bkgd_color)
+  ggsave(outfile_template, sankey_plot, width = width, height = height, dpi = dpi, bg = bkgd_color)
   return(outfile_template)
 
 }
@@ -1965,7 +1965,7 @@ expanded_ss_barplot <- function(sites, type_summary, supply_colors, font_legend,
               x = 0, y = 1,
               height = height, width = width,
               hjust = 0, vjust = 1) +
-    # plot sanky
+    # plot sankey
     draw_plot(expand_ss,
               x = 0.992,
               y = 0.06,
