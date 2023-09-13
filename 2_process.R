@@ -52,12 +52,15 @@ p2_targets <- list(
                mutate(WB_TYPE = factor(WB_TYPE, levels=p2_facility_type_summary$WB_TYPE))),
   
   # Get summary of facility supply sources, by type
+  tar_target(p2_source_category_order,
+             c('undetermined', 'combination', 'self supply', 'public supply')),
+  
   tar_target(p2_supply_summary, 
              p2_inventory_sites %>%
                mutate(WB_TYPE = factor(WB_TYPE, levels=p2_facility_type_summary$WB_TYPE)) %>%
                group_by(WB_TYPE, source_category) %>%
                summarize(site_count = n()) %>%
-               mutate(source_category = factor(source_category, levels=c('undetermined', 'both', 'self supply', 'public supply'))) %>%
+               mutate(source_category = factor(source_category, levels = p2_source_category_order)) %>%
                group_by(WB_TYPE) %>%
                mutate(percent = site_count/sum(site_count)*100)),
   
@@ -67,7 +70,7 @@ p2_targets <- list(
                mutate(WB_TYPE = factor(WB_TYPE, levels=p2_facility_type_summary$WB_TYPE)) %>%
                group_by(state_name, state_abbr, WB_TYPE, source_category) %>%
                summarize(site_count = n()) %>%
-               mutate(source_category = factor(source_category, levels=c('undetermined', 'both', 'self supply', 'public supply')))),
+               mutate(source_category = factor(source_category, levels = p2_source_category_order))),
   
   ###### CONUS ######
   # get CONUS subset
