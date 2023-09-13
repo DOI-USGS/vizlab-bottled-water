@@ -969,20 +969,19 @@ export default {
       // // would need to add separate group w/ states on TOP of counties and county
       // // points just to trigger interaction on THIS group of states
       // // ideally would use <use>
-      // if (state === this.defaultViewName) {
-      //   stateShapes
-      //     .on("mouseover", (event, d) => {
-      //       console.log(d)
-      //       d3.selectAll("#state-" + d.properties.FIPS)
-      //         .style("opacity", 1)
-      //         .style("stroke-opacity", 1)
-      //     })
-      //     .on("mouseout", (event, d) => {
-      //       d3.selectAll("#state-" + d.properties.FIPS)
-      //         .style("opacity", 0)
-      //         .style("stroke-opacity", 1)
-      //     })
-      // }
+      if (state === this.defaultViewName) {
+        stateShapes
+          .on("mouseover", (event, d) => {
+            this.d3.selectAll("#state-" + d.properties.FIPS)
+              .style("fill", "#000000")
+              .style("fill-opacity", 0.1)
+          })
+          .on("mouseout", (event, d) => {
+            this.d3.selectAll("#state-" + d.properties.FIPS)
+              .style("fill", "#fffff")
+              .style("fill-opacity", 0)
+          })
+      }
     },
     drawCounties(state, scale) {
       const self = this;
