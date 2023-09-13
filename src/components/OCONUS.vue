@@ -77,6 +77,8 @@ export default {
       genericPath: null,
       genericProjection: null,
       chartBounds: null,
+      focalColor: null,
+      defaultColor: null,
       currentType: null,
       stateGroups: null,
       countyGroups: null,
@@ -230,6 +232,10 @@ export default {
       this.dimensions.boundedHeight = this.dimensions.height - this.dimensions.margin.top - this.dimensions.margin.bottom
 
       self.initChart()
+
+      // set primary colors
+      this.focalColor = "#1599CF";
+      this.defaultColor = "#B5B5B5";
 
       // Draw initial view ('all states and territories')
       self.drawHistogram(this.currentState)
@@ -628,7 +634,7 @@ export default {
         .attr("y", this.dimensions.boundedHeight)
         .attr("width", xScale.bandwidth())
         .attr("height", 0)
-        .style("fill", d => d.WB_TYPE === this.currentType ? "#2165AF" : "#949494") //colorScale(colorAccessor(d)))
+        .style("fill", d => d.WB_TYPE === this.currentType ? this.focalColor : this.defaultColor) //colorScale(colorAccessor(d)))
       
       // append text and set default position
       newRectGroups.append("text")
@@ -646,7 +652,7 @@ export default {
           .attr("y", d => yScale(yAccessor(d)))
           .attr("width", xScale.bandwidth()) // if negative, bump up to 0
           .attr("height", d => this.dimensions.boundedHeight - yScale(yAccessor(d)))
-          .style("fill", d => d.WB_TYPE === this.currentType ? "#2165AF" : "#949494") // colorScale(colorAccessor(d)))
+          .style("fill", d => d.WB_TYPE === this.currentType ? this.focalColor : this.defaultColor) // colorScale(colorAccessor(d)))
           .attr("class", d => 'bar ' + identifierAccessor(d))
       
       barRects
@@ -657,11 +663,11 @@ export default {
 
           this.d3.selectAll('.bar')
             .style("opacity", 0.5)
-            .style("fill", "#949494")
+            .style("fill", this.defaultColor)
 
           this.d3.selectAll('#rect-' + currentIdentifier)
             .style("opacity", 1)
-            .style("fill", "#2165AF")
+            .style("fill", this.focalColor)
         })
         .on("mouseover", (event, d) => {
           this.currentType = colorAccessor(d)
@@ -671,12 +677,12 @@ export default {
           this.d3.selectAll('.bar')
             .transition(self.getUpdateTransition())
             .style("opacity", 0.5)
-            .style("fill", "#949494")
+            .style("fill", this.defaultColor)
 
           this.d3.selectAll('#rect-' + currentIdentifier)
             .transition(self.getUpdateTransition())
             .style("opacity", 1)
-            .style("fill", "#2165AF")
+            .style("fill", this.focalColor)
         })
 
       self.chartBounds.selectAll(".rects")
@@ -688,12 +694,12 @@ export default {
           this.d3.selectAll('.bar')
             .transition(self.getUpdateTransition())
             .style("opacity", 1)
-            .style("fill", "#949494")
+            .style("fill", this.defaultColor)
 
           this.d3.selectAll('#rect-' + currentIdentifier)
             .transition(self.getUpdateTransition())
             .style("opacity", 1)
-            .style("fill", "#2165AF")
+            .style("fill", this.focalColor)
         })
 
       // Trigger with enter key - BUT - how get back to total?
@@ -1189,7 +1195,7 @@ export default {
         //       return this.mapPath.pointRadius(0)(d);
         //   }
         // })
-        .style("fill", "#2165AF") // colorScale(colorAccessor(d))
+        .style("fill", this.focalColor) // colorScale(colorAccessor(d))
         // .style("stroke", "#ffffff")
 
       // update rectGroups to include new points
@@ -1223,7 +1229,7 @@ export default {
           })
           // .style("stroke", "#000000")
           // .style("stroke-width", 1)
-          .style("fill", "#2165AF") //d => colorScale(colorAccessor(d)))
+          .style("fill", this.focalColor) //d => colorScale(colorAccessor(d)))
 
 
       // // Add county mouseover if at state level
