@@ -191,7 +191,7 @@ export default {
       this.stateList = [... new Set(this.dataAll.map(d => d.state_name))]
       this.stateList.unshift(this.defaultViewName)
       
-      this.currentType = 'All'
+      this.currentType = 'Bottled Water'
       this.dropdownOptions = this.stateList
       
       // add dropdown
@@ -628,7 +628,7 @@ export default {
         .attr("y", this.dimensions.boundedHeight)
         .attr("width", xScale.bandwidth())
         .attr("height", 0)
-        .style("fill", d => colorScale(colorAccessor(d)))
+        .style("fill", d => d.WB_TYPE === this.currentType ? "#2165AF" : "#949494") //colorScale(colorAccessor(d)))
       
       // append text and set default position
       newRectGroups.append("text")
@@ -646,7 +646,7 @@ export default {
           .attr("y", d => yScale(yAccessor(d)))
           .attr("width", xScale.bandwidth()) // if negative, bump up to 0
           .attr("height", d => this.dimensions.boundedHeight - yScale(yAccessor(d)))
-          .attr("fill", d => colorScale(colorAccessor(d)))
+          .style("fill", d => d.WB_TYPE === this.currentType ? "#2165AF" : "#949494") // colorScale(colorAccessor(d)))
           .attr("class", d => 'bar ' + identifierAccessor(d))
       
       barRects
@@ -657,9 +657,11 @@ export default {
 
           this.d3.selectAll('.bar')
             .style("opacity", 0.5)
+            .style("fill", "#949494")
 
           this.d3.selectAll('#rect-' + currentIdentifier)
             .style("opacity", 1)
+            .style("fill", "#2165AF")
         })
         .on("mouseover", (event, d) => {
           this.currentType = colorAccessor(d)
@@ -669,20 +671,29 @@ export default {
           this.d3.selectAll('.bar')
             .transition(self.getUpdateTransition())
             .style("opacity", 0.5)
+            .style("fill", "#949494")
 
           this.d3.selectAll('#rect-' + currentIdentifier)
             .transition(self.getUpdateTransition())
             .style("opacity", 1)
+            .style("fill", "#2165AF")
         })
 
       self.chartBounds.selectAll(".rects")
         .on("mouseleave", (event, d) => {
-          this.currentType = 'All'
+          this.currentType = 'Bottled Water' //'All'
+          let currentIdentifier = this.currentType.replace(' ', '-')
           self.drawCountyPoints(state, this.currentScale, this.currentType)
 
           this.d3.selectAll('.bar')
             .transition(self.getUpdateTransition())
             .style("opacity", 1)
+            .style("fill", "#949494")
+
+          this.d3.selectAll('#rect-' + currentIdentifier)
+            .transition(self.getUpdateTransition())
+            .style("opacity", 1)
+            .style("fill", "#2165AF")
         })
 
       // Trigger with enter key - BUT - how get back to total?
@@ -1083,16 +1094,16 @@ export default {
         if (type === 'All') {
           dataMax = this.d3.max(this.countyPoints, sizeAccessor) //this.countyPoints OR dataPoints
         } else {
-          // let typeSubset = this.countyPoints.filter(d => 
-          //   d.properties.WB_TYPE !== 'All')
-          dataMax = this.d3.max(this.countyPoints, sizeAccessor) //this.countyPoints OR dataPoints OR typeSubset
+          let typeSubset = this.countyPoints.filter(d => d.properties.WB_TYPE !== 'All')
+          dataMax = this.d3.max(typeSubset, sizeAccessor) //this.countyPoints OR dataPoints OR typeSubset
         }
         
       } else {
-        // Get max value for state, in any category
+        // Get max value for state, in any category except 'All'
         let stateData = this.countyPoints.filter(d => 
           d.properties.STATE_NAME === state)
-        dataMax =  this.d3.max(stateData, sizeAccessor)
+        let typeSubset = stateData.filter(d => d.properties.WB_TYPE !== 'All')
+        dataMax =  this.d3.max(typeSubset, sizeAccessor) // stateData
         dataPoints = this.countyPoints.filter(d => 
           d.properties.STATE_NAME === state && d.properties.WB_TYPE === type)
       }
@@ -1101,7 +1112,7 @@ export default {
       let scaleFactor = scale === 1 ? 1 : 2/scale
       
       const sizeScale = this.d3.scaleLinear()
-        .range([0.8 * scaleFactor, 10 * scaleFactor]) // .rangeRound
+        .range([0.8 * scaleFactor, 12 * scaleFactor]) // .rangeRound
         .domain([1, dataMax]) //this.d3.max(dataPoints, sizeAccessor)
 
       const colorScale = this.d3.scaleOrdinal()
@@ -1179,7 +1190,7 @@ export default {
         //       return this.mapPath.pointRadius(0)(d);
         //   }
         // })
-        .style("fill", d => colorScale(colorAccessor(d)))
+        .style("fill", "#2165AF") // colorScale(colorAccessor(d))
         // .style("stroke", "#ffffff")
 
       // update rectGroups to include new points
@@ -1213,7 +1224,7 @@ export default {
           })
           // .style("stroke", "#000000")
           // .style("stroke-width", 1)
-          .style("fill", d => colorScale(colorAccessor(d)))
+          .style("fill", "#2165AF") //d => colorScale(colorAccessor(d)))
 
 
       // // Add county mouseover if at state level
