@@ -1281,7 +1281,7 @@ generate_supply_summary_percent <- function(supply_summary, supply_colors,
     ) +
     ggtitle('Source of water by facility type, nationally') + 
     guides(
-      fill = guide_legend(title = "Water source", nrow = 1, reverse = TRUE)
+      fill = guide_legend(title = "Water source", nrow = 2, reverse = TRUE)
     )
   
   ggsave(outfile, supply_plot_percent, width = width, height = height, dpi = dpi)
