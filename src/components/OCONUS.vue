@@ -580,7 +580,7 @@ export default {
       const xScale = this.d3.scaleBand()
         .rangeRound([0, this.dimensions.boundedWidth])
         .domain(dataTypes) // if want to only include types in each state: data.map(d => d.WB_TYPE)
-        .padding(0) //0.05
+        .padding(0.1) //0.05
       
       const yScale = this.d3.scaleLinear()
         .domain([0, this.d3.max(data, yAccessor)]) // use y accessor w/ raw data
@@ -1475,7 +1475,7 @@ export default {
 <style lang="scss">
   .bar {
     stroke: white;
-    stroke-width: 0.5;
+    stroke-width: 0;
   }
   .county_centroid {
     stroke: white;
