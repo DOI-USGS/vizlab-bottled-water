@@ -721,7 +721,7 @@ export default {
           .attr("x", d => xScale(xAccessor(d)) + xScale.bandwidth()/2)
           .attr("y", d => yScale(yAccessor(d)) - 5)
           .style("text-anchor", "middle")
-          .text(yAccessor)
+          .text(d => this.d3.format(',')(yAccessor(d)))
           .attr("fill", "#666")
           .style("font-size", "12px")
           .style("font-family", "sans-serif")
