@@ -1577,15 +1577,15 @@ generate_bw_expand_ss_map <- function(site, proj_str, width, height, bkgd_color,
     rename(county_fips = COUNTYFP)
 
   # Get more info out of `self supply`
-  p2_expand_self_supply <- site |>
+  expand_self_supply <- site |>
     mutate(source_category = case_when(water_source == "well" ~ "well",
                                        water_source == "sw intake" ~ "sw intake",
                                        water_source == "spring" ~ "spring",
                                        TRUE ~ source_category))
 
   # Get summary of facility supply sources, by type
-  p2_supply_summary <-
-    p2_expand_self_supply |>
+  supply_summary <-
+    expand_self_supply |>
     janitor::clean_names() |>
     filter(wb_type == "Bottled Water") |>
     group_by(county_fips, source_category) |>
@@ -1600,7 +1600,7 @@ generate_bw_expand_ss_map <- function(site, proj_str, width, height, bkgd_color,
     as.data.frame()
 
   county_bw_sf <- counties_sf %>%
-    left_join(p2_supply_summary, by = 'county_fips') |>
+    left_join(supply_summary, by = 'county_fips') |>
     drop_na(source_category)
 
   supply_colors <- c('#ffe066', '#90aed5', '#3f6ca6', '#213958', '#9b9560', '#D4D4D4')
