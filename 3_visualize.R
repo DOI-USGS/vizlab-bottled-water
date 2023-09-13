@@ -308,7 +308,7 @@ p3_targets <- list(
              generate_facility_bw_source_facet_map(supply_summary = p2_supply_summary,
                                                    supply_summary_state = p2_supply_summary_state,
                                                    supply_colors = p3_supply_colors_new,
-                                                   selected_facility_type = p2_facility_types,
+                                                   selected_facility_type = "Bottled Water",
                                                    width = 16, height = 9,
                                                    bkgd_color = 'white',
                                                    text_color = 'black',

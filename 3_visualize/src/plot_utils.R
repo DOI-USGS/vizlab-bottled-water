@@ -1272,13 +1272,11 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
   color_names <- c('public supply', 'self supply', 'both', 'undetermined')
   names(supply_colors) <- color_names
 
-  filt_facility_type = "Bottled Water"
-
   supply_summary_state <- process_supply_state_sum(supply_summary_state = supply_summary_state,
-                                                   selected_facility_type = filt_facility_type)
+                                                   selected_facility_type = selected_facility_type)
 
   supply_summary <- process_supply_sum(supply_summary = supply_summary,
-                                       selected_facility_type = filt_facility_type)
+                                       selected_facility_type = selected_facility_type)
 
   supply_summary_tx <- supply_summary_state |>
     filter(state_abbr == "TX")
@@ -1407,7 +1405,7 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
               height = 0.13 ,
               width = 0.3 - plot_margin) +
     draw_label(sprintf('Distribution of water sources\n for %s facilities',
-                       tolower(filt_facility_type)),
+                       tolower(selected_facility_type)),
                x = 0.025, y = 0.93,
                size = 38,
                hjust = 0,
@@ -1910,7 +1908,8 @@ expanded_ss_barplot <- function(sites, type_summary, supply_colors, font_legend,
     # ggtitle('National') +
     guides(fill = guide_legend(title = "Water source",
                                title.position = "top",
-                               nrow = 1))
+                               nrow = 1,
+                               reverse = TRUE))
 
   } else {
 
