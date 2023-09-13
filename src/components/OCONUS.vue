@@ -1005,8 +1005,8 @@ export default {
           .attr("role", "listitem")
           .attr("aria-label", d => d.properties.NAME + ', ' + d.properties.STATE_NAME)
 
-      let countyStrokeWidth = state === this.defaultViewName ? 0.2 : 0.5 * 1/scale
-      let countyStrokeColor = state === this.defaultViewName ? "#D1D1D1" : "#939393"
+      let countyStrokeWidth = state === this.defaultViewName ? 0.1 : 0.5 * 1/scale
+      let countyStrokeColor = state === this.defaultViewName ? "#E3E3E3" : "#939393"
       newCountyGroups.append("path")
           .attr("id", d => "county-" + d.properties.GEOID)
           .attr("d", d => {
