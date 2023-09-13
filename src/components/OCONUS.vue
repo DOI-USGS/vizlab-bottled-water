@@ -1117,7 +1117,7 @@ export default {
       let scaleFactor = scale === 1 ? 1 : 2/scale
       
       const sizeScale = this.d3.scaleLinear()
-        .range([0.8 * scaleFactor, 12 * scaleFactor]) // .rangeRound
+        .range([0.8 * scaleFactor, 11 * scaleFactor]) // .rangeRound
         .domain([1, dataMax]) //this.d3.max(dataPoints, sizeAccessor)
 
       const colorScale = this.d3.scaleOrdinal()
