@@ -53,9 +53,8 @@ p3_targets <- list(
   
   tar_target(p3_supply_colors,
              {
-               supply_colors <- c('#4DC49D', '#D8BF32', '#BD5EC6', '#D4D4D4')
-               color_names <- c('public supply', 'self supply', 'both', 'undetermined')
-               names(supply_colors) <- color_names
+               supply_colors <- c('#D4D4D4', '#BD5EC6', '#D8BF32', '#4DC49D')
+               names(supply_colors) <- p2_source_category_order
                return(supply_colors)
              }),
   
