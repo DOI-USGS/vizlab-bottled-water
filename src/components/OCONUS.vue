@@ -1478,10 +1478,15 @@ export default {
     transition: width 2s, height 2s, transform 2s;
     will-change: width;
     background-color: white;
+    margin: 0px 5px 0px 5px;
     padding: 0.5rem;
-    box-shadow:  rgba(0, 0, 0, 0.05) 0px 6px 10px 0px,
+    box-shadow:  rgba(0, 0, 0, 0.2) 0px 6px 10px 0px,
     rgba(0, 0, 0, 0.1) 0px 0px 0px 1px;
     border-radius: 5px;
+  }
+  .dropdown:hover {
+    box-shadow:  rgba(0, 0, 0, 0.3) 0px 6px 10px 0px,
+    rgba(0, 0, 0, 0.2) 0px 0px 0px 1px;
   }
 </style>
 <style scoped lang="scss">
