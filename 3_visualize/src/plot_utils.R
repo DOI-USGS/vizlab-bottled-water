@@ -1845,10 +1845,11 @@ generate_bw_expand_ss_map <- function(site, proj_str, width, height, bkgd_color,
 #' @param dpi dpi at which to save the final plot
 #' @param get_percent if else statement where if TRUE, create a stacked barplot of percent distribution of water sources with expanded self supply facilities,
 #' if FALSE, return barplot of site count distributions of water sources with expanded self supply facilities.
+#' @param bracket_png_path path for bracket png made to group self supply categories together in final figure
 #' @return the filepath of the saved plot
 expanded_ss_barplot <- function(sites, type_summary, supply_colors, font_legend,
                                 width, height, bkgd_color, text_color, outfile_template, dpi,
-                                get_percent) {
+                                get_percent, bracket_png_path) {
 
   # target `p3_font_legend` sometimes doesnt load on my end ?
   font_legend <- 'Source Sans Pro'
@@ -1943,7 +1944,8 @@ expanded_ss_barplot <- function(sites, type_summary, supply_colors, font_legend,
     # ggtitle('National') +
     guides(fill = guide_legend(title = "Water source",
                                title.position = "top",
-                               nrow = 1))
+                               nrow = 1,
+                               reverse = TRUE))
 
   }
 
@@ -1964,7 +1966,7 @@ expanded_ss_barplot <- function(sites, type_summary, supply_colors, font_legend,
               x = 0, y = 1,
               height = height, width = width,
               hjust = 0, vjust = 1) +
-    # plot sankey
+    # plot barplot
     draw_plot(expand_ss,
               x = 0.992,
               y = 0.06,
@@ -1981,7 +1983,22 @@ expanded_ss_barplot <- function(sites, type_summary, supply_colors, font_legend,
                color = text_color,
                lineheight = 1,
                fontfamily = font_legend,
-               fontface = "bold")
+               fontface = "bold") +
+    # add bracket for self supply categories
+    draw_image(magick::image_read(bracket_png_path),
+               x = 0.343,
+               y = -0.66,
+               width = 0.3,
+               height = 1.5) +
+    draw_label("self supply",
+               x = 0.475, y = 0.07,
+               size = 14,
+               hjust = 0,
+               vjust = 1,
+               color = text_color,
+               lineheight = 1,
+               fontfamily = font_legend)
+
 
   ggsave(outfile_template, expand_ss_barplot, width = width, height = height, dpi = dpi, bg = bkgd_color)
 
