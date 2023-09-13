@@ -25,6 +25,8 @@ p2_targets <- list(
   
   tar_target(p2_inventory_sites_sf,
              p2_inventory_sites %>%
+               # convert to sf. According to metadata, crs is Spherical Web 
+               # Mercator, which uses WGS84 as a datum
                st_as_sf(coords = c("LONGITUDE", "LATITUDE"), crs = 4326, remove = FALSE) %>%
                st_transform(p1_proj)),
   
