@@ -218,12 +218,12 @@ export default {
       const width = 400;
       this.dimensions = {
         width,
-        height: width*0.7,
+        height: width*0.9,
         margin: {
           top: 30,
-          right: 10,
+          right: 5,
           bottom: 50,
-          left: 50
+          left: 5
         }
       }
       this.dimensions.boundedWidth = this.dimensions.width - this.dimensions.margin.left - this.dimensions.margin.right
