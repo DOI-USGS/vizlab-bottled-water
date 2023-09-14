@@ -17,7 +17,7 @@
                 <img src="../assets/images/bottled-water_consumption-pictogram_small_2023-09-08.png">
                 <div class="text-container">
                     <p>
-                        Despite what we know about bottled water consumption, data about how much water is taken from the environment for bottled water and other beverages are harder to come by. Reporting is highly, and some states do not permit public sharing of beverage-bottling data. Without these data, we can't measure the impact that bottled water has on the water cycle locally, regionally, or nationally.  
+                        Despite what we know about bottled water consumption, data about how much water is taken from the environment for bottled water and other beverages are harder to come by. Reporting is  variable, and some states do not permit public sharing of beverage-bottling data. Without these data, we can't measure the impact that bottled water has on the water cycle locally, regionally, or nationally.  
                     </p>
                 </div>
                 <div class="text-container">
