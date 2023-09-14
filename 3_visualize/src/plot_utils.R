@@ -1268,10 +1268,6 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
                                                width, height, bkgd_color, text_color,
                                                outfile_template, dpi) {
 
-  supply_colors <- c('#ffe066', '#213958', '#908D5F', '#D4D4D4')
-  color_names <- c('public supply', 'self supply', 'both', 'undetermined')
-  names(supply_colors) <- color_names
-
   supply_summary_state <- process_supply_state_sum(supply_summary_state = supply_summary_state,
                                                    selected_facility_type = selected_facility_type)
 
@@ -1307,8 +1303,8 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
       sigma = 5,
       stack = TRUE,
       with_background = FALSE
-      ) +
-   #geom_bar(aes(fill = source_category), stat = 'identity') +
+    ) +
+    #geom_bar(aes(fill = source_category), stat = 'identity') +
     scale_fill_manual(name = 'source_category', values = supply_colors) +
     theme_bw() +
     theme_facet(base = 12, bkgd_color = bkgd_color, text_color = text_color) +
@@ -1331,7 +1327,7 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
     theme(
       axis.title = element_blank(),
       panel.grid = element_blank(),
-      axis.ticks.y = element_line(color = "lightgrey", size = 0.5),
+      axis.ticks.y = element_line(color = "lightgrey", linewidth = 0.5),
       axis.text.x = element_blank(),
       legend.position = 'bottom',
       plot.title = element_text(hjust = 0.5, size = 22, margin = margin(b = 10), family = font_legend),
@@ -1356,7 +1352,8 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
                                      text = element_text(size = 14, family = font_legend)) +
                                guides(
                                  fill = guide_legend(title = "Water source",
-                                                     nrow = 1)
+                                                     nrow = 1,
+                                                     reverse = TRUE)
                                ))
   plot_arrow_tx <- ggplot() +
     theme_void() +
@@ -1364,7 +1361,7 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
                arrow = arrow(length = unit(0.08, "npc"), type="closed"),
                colour = text_color, linewidth = 0.45, curvature = -0.3, angle = 100)
 
-  plot_arrow_both <- ggplot() +
+  plot_arrow_combo <- ggplot() +
     theme_void() +
     geom_curve(aes(x = -1.25, y = 5, xend = -2.5, yend = 5.5),
                arrow = arrow(length = unit(0.08, "npc"), type = "closed"),
@@ -1426,25 +1423,25 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
               size = 16,
               color = text_color,
               fontfamily = annotate_legend) +
-    # plot arrow - both = public + supply callout
-    draw_plot(plot_arrow_both,
+    # plot arrow - combination = mix of sources callout
+    draw_plot(plot_arrow_combo,
               x = 0.348,
               y = 0.60,
               height = 0.08,
               width = 0.035 - plot_margin) +
-    draw_label("Both =\n self supply &\n public supply",
+    draw_label("Combination =\n a mix of sources",
                x = 0.381,
                y = 0.554,
                size = 16,
                color = text_color,
                fontfamily = annotate_legend) +
     # plot arrow - RI
-    draw_plot(plot_arrow_both,
+    draw_plot(plot_arrow_combo,
               x = 0.928,
               y = 0.539,
               height = 0.08,
               width = 0.035 - plot_margin) +
-    draw_label(paste("Rhode Island\nsources", paste0(round(max(supply_summary_ri$percent)), "%"),"\nfrom both"),
+    draw_label(paste("Rhode Island\nsources", paste0(round(max(supply_summary_ri$percent)), "%"),"\nfrom a mix\n of sources"),
                x = 0.955,
                y = 0.5,
                size = 16,
@@ -1465,7 +1462,7 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
 
 
   outfile <- ifelse(selected_facility_type == 'All', outfile_template,
-                    sprintf(outfile_template))
+                    sprintf(outfile_template, selected_facility_type))
   ggsave(outfile, facet_plot, width = width, height = height, dpi = dpi)
   return(outfile)
 }
