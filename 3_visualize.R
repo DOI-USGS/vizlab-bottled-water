@@ -306,6 +306,7 @@ p3_targets <- list(
              generate_facility_bw_source_facet_map(supply_summary = p2_supply_summary,
                                                    supply_summary_state = p2_supply_summary_state,
                                                    supply_colors = p3_supply_colors_new,
+                                                   reorder_source_category = c("undetermined", "self supply", "combination", "public supply"),
                                                    selected_facility_type = "Bottled Water",
                                                    width = 16, height = 9,
                                                    bkgd_color = 'white',
@@ -316,6 +317,7 @@ p3_targets <- list(
   tar_target(p3_national_source_facilities_sankey_png,
              generate_national_sankey(supply_summary = p2_supply_summary,
                                      supply_colors = p3_supply_colors_new,
+                                     reorder_source_category = c("undetermined", "self supply", "combination", "public supply"),
                                      font_legend = p3_font_legend,
                                      width = 16, height = 9,
                                      bkgd_color = 'white',
@@ -323,7 +325,7 @@ p3_targets <- list(
                                      outfile_template = '3_visualize/out/national_sources_facilities_sankey.png',
                                      dpi = 300),
              format = 'file'),
-  
+
   tar_target(p3_supply_ext_ss_colors,
              {
                supply_colors <- c(p3_supply_colors_new[['undetermined']],
@@ -333,7 +335,7 @@ p3_targets <- list(
                names(supply_colors) <- p2_source_order
                return(supply_colors)
              }),
-  
+
   tar_target(p3_source_perc_bottled_water_facet_map_png,
              generate_bw_expand_ss_map(site = p2_inventory_sites,
                                        selected_facility_type = "Bottled Water",
@@ -364,6 +366,8 @@ p3_targets <- list(
   tar_target(p3_perc_expanded_self_supply_barplot_png,
              expanded_ss_barplot(source_summary = p2_source_summary,
                                  supply_colors = p3_supply_ext_ss_colors,
+                                 reorder_source_category = c("undetermined", "well", "spring",
+                                                             "surface water intake", "combination", "public supply"),
                                  font_legend = p3_font_legend,
                                  get_percent = TRUE,
                                  width = 16, height = 9,
@@ -376,6 +380,8 @@ p3_targets <- list(
   tar_target(p3_count_expanded_self_supply_barplot_png,
              expanded_ss_barplot(source_summary = p2_source_summary,
                                  supply_colors = p3_supply_ext_ss_colors,
+                                 reorder_source_category = c("undetermined", "well", "spring",
+                                                             "surface water intake", "combination", "public supply"),
                                  font_legend = p3_font_legend,
                                  get_percent = FALSE,
                                  width = 16, height = 9,

@@ -1254,6 +1254,7 @@ generate_facility_source_facet_map <- function(supply_summary, supply_summary_st
 #' @param supply_summary_state dataframe with count of facilities by water
 #' source, by state
 #' @param supply_colors vector of colors to use for water source categories
+#' @param reorder_source_category, character vector of reorganized source categories to reorder tile plots by
 #' @param selected_facility_type type of facility to plot. If 'All', summary
 #' across facility types is plotted
 #' @param width width for the final plot
@@ -1266,7 +1267,7 @@ generate_facility_source_facet_map <- function(supply_summary, supply_summary_st
 generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary_state,
                                                supply_colors, selected_facility_type,
                                                width, height, bkgd_color, text_color,
-                                               outfile_template, dpi) {
+                                               outfile_template, dpi, reorder_source_category) {
 
   supply_summary_state <- process_supply_state_sum(supply_summary_state = supply_summary_state,
                                                    selected_facility_type = selected_facility_type)
@@ -1294,6 +1295,7 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
   showtext::showtext_auto(enable = TRUE)
 
   state_cartogram <- supply_summary_state %>%
+    mutate(source_category = factor(source_category, levels = reorder_source_category)) |>
     ggplot(aes(1, y = percent)) +
     ggfx::with_shadow(
       geom_bar(aes(fill = source_category), stat = 'identity'),
@@ -1304,7 +1306,7 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
       stack = TRUE,
       with_background = FALSE
     ) +
-    #geom_bar(aes(fill = source_category), stat = 'identity') +
+    # geom_bar(aes(fill = source_category), stat = 'identity') +
     scale_fill_manual(name = 'source_category', values = supply_colors) +
     theme_bw() +
     theme_facet(base = 12, bkgd_color = bkgd_color, text_color = text_color) +
@@ -1315,6 +1317,7 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
     geofacet::facet_geo(~ state_abbr, grid = grid_pr_vi_gu(), move_axes = TRUE)
 
   national_plot <- supply_summary %>%
+    mutate(source_category = factor(source_category, levels = reorder_source_category)) |>
     ggplot(aes(1, y = percent)) +
     geom_bar(aes(fill = source_category), stat = 'identity') +
     scale_fill_manual(name = 'source_category', values = supply_colors) +
@@ -1426,36 +1429,36 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
     # plot arrow - combination = mix of sources callout
     draw_plot(plot_arrow_combo,
               x = 0.348,
-              y = 0.60,
+              y = 0.520,
               height = 0.08,
               width = 0.035 - plot_margin) +
     draw_label("Combination =\n a mix of sources",
                x = 0.381,
-               y = 0.554,
+               y = 0.487,
                size = 16,
                color = text_color,
                fontfamily = annotate_legend) +
     # plot arrow - RI
     draw_plot(plot_arrow_combo,
               x = 0.928,
-              y = 0.539,
+              y = 0.541,
               height = 0.08,
               width = 0.035 - plot_margin) +
     draw_label(paste("Rhode Island\nsources", paste0(round(max(supply_summary_ri$percent)), "%"),"\nfrom a mix\n of sources"),
                x = 0.955,
-               y = 0.5,
+               y = 0.486,
                size = 16,
                color = text_color,
                fontfamily = annotate_legend) +
   # plot arrow - VT
     draw_plot(plot_arrow_vt,
               x = 0.753,
-              y = 0.775,
+              y = 0.793,
               height = 0.08,
               width = 0.035 - plot_margin) +
     draw_label(paste("Vermont\nsources", paste0(round(max(supply_summary_vt$percent)), "%"),"\nfrom self supply"),
                x = 0.753,
-               y = 0.899,
+               y = 0.922,
                size = 16,
                color = text_color,
                fontfamily = annotate_legend)
@@ -1467,9 +1470,10 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
   return(outfile)
 }
 
-#' @title generate sankey diagram of water sources and facilitity types
+#' @title generate sankey diagram of water sources and facility types
 #' @param supply_summary dataframe with count of facilities by water source
 #' @param supply_colors vector of colors to use for water source categories
+#' @param reorder_source_category  character vector of reorganized source categories to reorder sankey by
 #' @param font_legend font used for the plot
 #' @param width width for the final plot
 #' @param height height for the final plot
@@ -1478,7 +1482,12 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
 #' @param outfile_template filepath template for saving the final plot
 #' @param dpi dpi at which to save the final plot
 #' @return the filepath of the saved plot
-generate_national_sankey <- function(supply_summary, supply_colors, font_legend, width, height, bkgd_color, text_color, outfile_template, dpi) {
+generate_national_sankey <- function(supply_summary, supply_colors, reorder_source_category,
+                                     font_legend, width, height,
+                                     bkgd_color, text_color, outfile_template, dpi) {
+
+  supply_summary <- supply_summary |>
+    mutate(source_category = factor(source_category, levels = reorder_source_category))
 
   # Create the ggplot
   sankey <- ggplot(data = supply_summary,
@@ -1558,7 +1567,7 @@ generate_national_sankey <- function(supply_summary, supply_colors, font_legend,
 #' @return the filepath of the saved plot
 generate_bw_expand_ss_map <- function(site, proj_str, width, height, bkgd_color, text_color, outfile_template, dpi,
                                       get_percent, supply_colors, font_legend, selected_facility_type) {
-  
+
   conus_sf <- tigris::states(cb = TRUE) %>%
     st_transform(proj_str) %>%
     filter(STUSPS %in% state.abb[!state.abb %in% c('AK', 'HI')]) %>%
@@ -1603,13 +1612,13 @@ generate_bw_expand_ss_map <- function(site, proj_str, width, height, bkgd_color,
       geom_point(data = county_bw_sf,
                  aes(size = site_count, geometry = geometry, fill = water_source),
                  color = 'white',
-                 pch = 21, 
+                 pch = 21,
                  stroke = 0.2,
                  alpha = 1,
                  stat = "sf_coordinates") +
       scale_x_continuous(expand = c(0,0)) +
       scale_y_continuous(expand = c(0,0)) +
-      scale_size(range = c(0.25, 8), limits = c(1, max(county_bw_sf$site_count)), 
+      scale_size(range = c(0.25, 8), limits = c(1, max(county_bw_sf$site_count)),
                  name = 'Site count',
                  guide = guide_legend(
                    direction = "horizontal",
@@ -1844,6 +1853,7 @@ generate_bw_expand_ss_map <- function(site, proj_str, width, height, bkgd_color,
 #' @title create expanded self supply stacked barplot for all facilities
 #' @param source_summary count, percent, and ratio of facilities by expanded water source
 #' @param supply_colors vector of colors to use for water source categories
+#' @param reorder_source_category, character vector of reorganized source categories to reorder bar plots by
 #' @param font_legend font used for the plot
 #' @param width width for the final plot
 #' @param height height for the final plot
@@ -1857,8 +1867,8 @@ generate_bw_expand_ss_map <- function(site, proj_str, width, height, bkgd_color,
 #' @return the filepath of the saved plot
 expanded_ss_barplot <- function(source_summary, supply_colors, font_legend,
                                 width, height, bkgd_color, text_color, outfile_template, dpi,
-                                get_percent, bracket_png_path) {
-  
+                                get_percent, bracket_png_path, reorder_source_category) {
+
   # target `p3_font_legend` sometimes doesnt load on my end ?
   font_legend <- 'Source Sans Pro'
   font_add_google(font_legend)
@@ -1868,6 +1878,7 @@ expanded_ss_barplot <- function(source_summary, supply_colors, font_legend,
   if (get_percent == TRUE) {
 
   expand_ss <- source_summary |>
+    mutate(water_source = factor(water_source, levels = reorder_source_category)) |>
     ggplot(aes(x = WB_TYPE, y = percent, fill = water_source)) +
     geom_bar(stat="identity", position = "stack") +
     scale_fill_manual(name = 'water_source', values = supply_colors, drop = FALSE) +
@@ -1902,6 +1913,7 @@ expanded_ss_barplot <- function(source_summary, supply_colors, font_legend,
   } else {
 
   expand_ss <- source_summary |>
+    mutate(water_source = factor(water_source, levels = reorder_source_category)) |>
     ggplot(aes(x = WB_TYPE, y = site_count, fill = water_source)) +
     geom_bar(stat="identity", position = "stack") +
     scale_fill_manual(name = 'water_source', values = supply_colors, drop = FALSE) +
@@ -1971,12 +1983,12 @@ expanded_ss_barplot <- function(source_summary, supply_colors, font_legend,
                fontface = "bold") +
     # add bracket for self supply categories
     draw_image(magick::image_read(bracket_png_path),
-               x = 0.321,
+               x = 0.427,
                y = -0.66,
                width = 0.3,
                height = 1.5) +
     draw_label("self supply",
-               x = 0.475, y = 0.07,
+               x = 0.557, y = 0.07,
                size = 14,
                hjust = 0,
                vjust = 1,
