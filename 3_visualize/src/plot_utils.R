@@ -1850,8 +1850,7 @@ generate_bw_expand_ss_map <- function(site, proj_str, width, height, bkgd_color,
 }
 
 #' @title create expanded self supply stacked barplot for all facilities
-#' @param sites sites with water use data
-#' @param type_summary count of facilities by type
+#' @param source_summary count, percent, and ratio of facilities by expanded water source
 #' @param supply_colors vector of colors to use for water source categories
 #' @param font_legend font used for the plot
 #' @param width width for the final plot
@@ -1864,43 +1863,22 @@ generate_bw_expand_ss_map <- function(site, proj_str, width, height, bkgd_color,
 #' if FALSE, return barplot of site count distributions of water sources with expanded self supply facilities.
 #' @param bracket_png_path path for bracket png made to group self supply categories together in final figure
 #' @return the filepath of the saved plot
-expanded_ss_barplot <- function(sites, type_summary, supply_colors, font_legend,
+expanded_ss_barplot <- function(source_summary, supply_colors, font_legend,
                                 width, height, bkgd_color, text_color, outfile_template, dpi,
                                 get_percent, bracket_png_path) {
-
+  
   # target `p3_font_legend` sometimes doesnt load on my end ?
   font_legend <- 'Source Sans Pro'
   font_add_google(font_legend)
   showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 700)
   showtext_auto(enable = TRUE)
 
-  # Get more info out of `self supply`
-  p2_expand_self_supply <- sites |>
-    mutate(source_category = case_when(water_source == "well" ~ "well",
-                                       water_source == "sw intake" ~ "sw intake",
-                                       water_source == "spring" ~ "spring",
-                                       TRUE ~ source_category))
-
-  # Get summary of facility supply sources, by type
-  p2_supply_summary <-
-    p2_expand_self_supply |>
-    mutate(WB_TYPE = factor(WB_TYPE, levels=type_summary$WB_TYPE)) |>
-    group_by(WB_TYPE, source_category) |>
-    summarize(site_count = n()) |>
-    mutate(source_category_name = case_when(source_category == "sw intake" ~ "surface water intake",
-                                       TRUE ~ source_category),
-           source_category_name = factor(source_category_name, levels=c('undetermined', 'both', 'well', 'spring', 'surface water intake', 'self supply', 'public supply'))) |>
-    group_by(WB_TYPE) |>
-    mutate(percent = site_count/sum(site_count)*100)
-
   if (get_percent == TRUE) {
 
-  expand_ss <- p2_supply_summary |>
-    filter(!source_category == "self supply") |>
-    mutate(ratio = site_count/sum(site_count)) |>
-    ggplot(aes(x = WB_TYPE, y = percent, fill = source_category_name)) +
+  expand_ss <- source_summary |>
+    ggplot(aes(x = WB_TYPE, y = percent, fill = water_source)) +
     geom_bar(stat="identity", position = "stack") +
-    scale_fill_manual(name = 'source_category', values = supply_colors, drop = FALSE) +
+    scale_fill_manual(name = 'water_source', values = supply_colors, drop = FALSE) +
     scale_x_discrete(expand = c(0,0)) +
     scale_y_continuous(breaks = seq(0, 100, by = 25),  # Specify breaks at 0, 25, 50, 75, and 100
                        labels = c("0", "25", "50", "75", "100%"),  # Specify labels for the breaks
@@ -1931,12 +1909,10 @@ expanded_ss_barplot <- function(sites, type_summary, supply_colors, font_legend,
 
   } else {
 
-  expand_ss <- p2_supply_summary |>
-    filter(!source_category == "self supply") |>
-    mutate(ratio = site_count/sum(site_count)) |>
-    ggplot(aes(x = WB_TYPE, y = site_count, fill = source_category_name)) +
+  expand_ss <- source_summary |>
+    ggplot(aes(x = WB_TYPE, y = site_count, fill = water_source)) +
     geom_bar(stat="identity", position = "stack") +
-    scale_fill_manual(name = 'source_category', values = supply_colors, drop = FALSE) +
+    scale_fill_manual(name = 'water_source', values = supply_colors, drop = FALSE) +
     scale_x_discrete(expand = c(0,0)) +
     scale_y_continuous(breaks = seq(0, 20000, by = 5000),
                        labels = c("0", "5000", "10000", "15000", "20000")) + # Specify labels for the breaks) +
@@ -2003,7 +1979,7 @@ expanded_ss_barplot <- function(sites, type_summary, supply_colors, font_legend,
                fontface = "bold") +
     # add bracket for self supply categories
     draw_image(magick::image_read(bracket_png_path),
-               x = 0.343,
+               x = 0.321,
                y = -0.66,
                width = 0.3,
                height = 1.5) +
