@@ -1701,7 +1701,7 @@ generate_bw_expand_ss_map <- function(site, proj_str, width, height, bkgd_color,
         strip.background = element_blank(),
         panel.spacing = unit(2, "lines")
       ) +
-      facet_wrap(~water-source)
+      facet_wrap(~water_source)
 #
 #     # legend
 #     bivariate_color_scale <- purrr::map2_df(names(supply_colors), supply_colors, function(source_category_name, supply_colors) {
