@@ -1689,7 +1689,8 @@ generate_bw_expand_ss_map <- function(site, proj_str, width, height, bkgd_color,
               color = NA) +
       scale_x_continuous(expand = c(0,0)) +
       scale_y_continuous(expand = c(0,0)) +
-      scale_alpha(range = c(0.1,1), limits = c(1, 100),
+      scale_alpha(range = c(0.1,1), limits = c(min(county_bw_sf$percent), 100),
+                  breaks = c(1, 25, 50, 75, 100),
                   name = 'Percent of facilities using water source',
                   guide = guide_legend(
                     direction = "horizontal",
