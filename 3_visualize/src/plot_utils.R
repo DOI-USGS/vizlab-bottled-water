@@ -1480,10 +1480,6 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
 #' @return the filepath of the saved plot
 generate_national_sankey <- function(supply_summary, supply_colors, font_legend, width, height, bkgd_color, text_color, outfile_template, dpi) {
 
-  supply_summary <- supply_summary |>
-    mutate(source_category = str_to_title(source_category),
-           source_category = factor(source_category, levels = c("Public Supply", "Self Supply", "Both", "Undetermined")))
-
   # Create the ggplot
   sankey <- ggplot(data = supply_summary,
                   aes(axis1 = source_category, axis2 = WB_TYPE, y = site_count)) +
