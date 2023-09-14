@@ -25,6 +25,8 @@ p2_targets <- list(
   
   tar_target(p2_inventory_sites_sf,
              p2_inventory_sites %>%
+               # convert to sf. According to metadata, crs is Spherical Web 
+               # Mercator, which uses WGS84 as a datum
                st_as_sf(coords = c("LONGITUDE", "LATITUDE"), crs = 4326, remove = FALSE) %>%
                st_transform(p1_proj)),
   
@@ -49,25 +51,43 @@ p2_targets <- list(
              p2_inventory_sites%>%
                group_by(state_name, state_abbr, WB_TYPE) %>%
                summarize(site_count = n()) %>%
-               mutate(WB_TYPE = factor(WB_TYPE, levels=p2_facility_type_summary$WB_TYPE))),
+               mutate(WB_TYPE = factor(WB_TYPE, levels = p2_facility_type_summary$WB_TYPE))),
   
-  # Get summary of facility supply sources, by type
+  # Get summary of facility supply source categories, by type
+  tar_target(p2_source_category_order,
+             c('undetermined', 'combination', 'self supply', 'public supply')),
+  
   tar_target(p2_supply_summary, 
              p2_inventory_sites %>%
-               mutate(WB_TYPE = factor(WB_TYPE, levels=p2_facility_type_summary$WB_TYPE)) %>%
+               mutate(WB_TYPE = factor(WB_TYPE, levels = p2_facility_type_summary$WB_TYPE)) %>%
                group_by(WB_TYPE, source_category) %>%
                summarize(site_count = n()) %>%
-               mutate(source_category = factor(source_category, levels=c('undetermined', 'both', 'self supply', 'public supply'))) %>%
+               mutate(source_category = factor(source_category, levels = p2_source_category_order)) %>%
                group_by(WB_TYPE) %>%
                mutate(percent = site_count/sum(site_count)*100)),
   
-  # Get summary of facility supply sources, by type and by state
+  # Get summary of facility supply source categories, by type and by state
   tar_target(p2_supply_summary_state, 
              p2_inventory_sites %>%
-               mutate(WB_TYPE = factor(WB_TYPE, levels=p2_facility_type_summary$WB_TYPE)) %>%
+               mutate(WB_TYPE = factor(WB_TYPE, levels = p2_facility_type_summary$WB_TYPE)) %>%
                group_by(state_name, state_abbr, WB_TYPE, source_category) %>%
                summarize(site_count = n()) %>%
-               mutate(source_category = factor(source_category, levels=c('undetermined', 'both', 'self supply', 'public supply')))),
+               mutate(source_category = factor(source_category, levels = p2_source_category_order))),
+  
+  # Get summary of facility supply sources, by type
+  tar_target(p2_source_order,
+             c('undetermined', 'combination', 'well', 'spring', 'surface water intake', 'public supply')),
+  
+  tar_target(p2_source_summary, 
+             p2_inventory_sites %>%
+               mutate(WB_TYPE = factor(WB_TYPE, levels = p2_facility_type_summary$WB_TYPE)) %>%
+               filter(!water_source == 'other') %>% # exclude other for now (only 6 facilities)
+               group_by(WB_TYPE, water_source) %>%
+               summarize(site_count = n()) %>%
+               mutate(water_source = factor(water_source, levels = p2_source_order)) %>%
+               group_by(WB_TYPE) %>%
+               mutate(percent = site_count/sum(site_count)*100,
+                      ratio = site_count/sum(site_count))),
   
   ###### CONUS ######
   # get CONUS subset

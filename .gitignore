@@ -12,6 +12,7 @@ _targets
 !*/out/.empty
 !1_fetch/in/WB_FACILITY_DATAVIZ_Records-01132023.xlsx
 !1_fetch/in/RegionalStudySites.zip
+!3_visualize/in/bracket.png
 
 # History files
 .Rhistory
