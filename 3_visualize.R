@@ -298,9 +298,8 @@ p3_targets <- list(
              format = 'file'),
   tar_target(p3_supply_colors_new,
              {
-               supply_colors <- c('#ffe066', '#213958', '#9b9560', '#D4D4D4')
-               color_names <- str_to_title(c('public supply', 'self supply', 'both', 'undetermined'))
-               names(supply_colors) <- color_names
+               supply_colors <- c('#D4D4D4', '#9b9560', '#213958', '#ffe066')
+               names(supply_colors) <- p2_source_category_order
                return(supply_colors)
              }),
   tar_target(p3_source_bottled_water_facet_map_png,
@@ -311,7 +310,7 @@ p3_targets <- list(
                                                    width = 16, height = 9,
                                                    bkgd_color = 'white',
                                                    text_color = 'black',
-                                                   outfile_template = '3_visualize/out/state_sources_facet_bottled_water.png',
+                                                   outfile_template = '3_visualize/out/state_sources_facet_%s_styled.png',
                                                    dpi = 300),
              format = 'file'),
   tar_target(p3_national_source_facilities_sankey_png,
