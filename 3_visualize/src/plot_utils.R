@@ -1685,9 +1685,8 @@ generate_bw_expand_ss_map <- function(site, proj_str, width, height, bkgd_color,
       # Something isn't working here - alpha isn't being correctly scaled to percent
       # See San Bernardino County, CA - incorrectly high alpha for spring and surface water intake
       geom_sf(data = county_bw_sf,
-              aes(fill = water_source, geometry = geometry, alpha = percent, group = water_source),
-              color = NA,
-              stat = "sf_coordinates") +
+              aes(fill = water_source, alpha = percent, group = water_source),
+              color = NA) +
       scale_x_continuous(expand = c(0,0)) +
       scale_y_continuous(expand = c(0,0)) +
       scale_alpha(range = c(0.1,1), limits = c(1, 100),
