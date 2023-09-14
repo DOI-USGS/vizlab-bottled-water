@@ -1601,17 +1601,22 @@ generate_bw_expand_ss_map <- function(site, proj_str, width, height, bkgd_color,
               size = 0.1) +
       # by site count
       geom_point(data = county_bw_sf,
-                 aes(size = site_count, geometry = geometry, color = source_category_name),
-                 alpha = 0.5,
+                 aes(size = site_count, geometry = geometry, fill = water_source),
+                 color = 'white',
+                 pch = 21, 
+                 stroke = 0.2,
+                 alpha = 1,
                  stat = "sf_coordinates") +
       scale_x_continuous(expand = c(0,0)) +
       scale_y_continuous(expand = c(0,0)) +
-      scale_size(range = c(0.25, 2), limits = c(0, 250), name = '',
+      scale_size(range = c(0.25, 8), limits = c(1, max(county_bw_sf$site_count)), 
+                 name = 'Site count',
                  guide = guide_legend(
                    direction = "horizontal",
                    nrow = 1,
-                   label.position = "bottom")) +
-      scale_color_manual(name = 'Water source',
+                   label.position = "bottom",
+                   override.aes = list(color = 'black'))) +
+      scale_fill_manual(name = 'Water source',
                          values = supply_colors) +
       guides(color = guide_legend(title = "",
                                   nrow = 1,
@@ -1625,7 +1630,7 @@ generate_bw_expand_ss_map <- function(site, proj_str, width, height, bkgd_color,
         strip.background = element_blank(),
         panel.spacing = unit(2, "lines")
       ) +
-      facet_wrap(~source_category_name)
+      facet_wrap(~water_source)
 
     # bivariate_color_scale <- purrr::map2_df(names(supply_colors), supply_colors, function(source_category_name, supply_colors) {
     #   tibble(
