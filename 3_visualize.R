@@ -323,11 +323,23 @@ p3_targets <- list(
                                      outfile_template = '3_visualize/out/national_sources_facilities_sankey.png',
                                      dpi = 300),
              format = 'file'),
+  
+  tar_target(p3_supply_ext_ss_colors,
+             {
+               supply_colors <- c(p3_supply_colors_new[['undetermined']],
+                                  p3_supply_colors_new[['combination']],
+                                  '#90aed5', '#3f6ca6', '#213958',
+                                  p3_supply_colors_new[['public supply']])
+               names(supply_colors) <- p2_source_order
+               return(supply_colors)
+             }),
+  
   tar_target(p3_source_perc_bottled_water_facet_map_png,
              generate_bw_expand_ss_map(site = p2_inventory_sites,
                                        selected_facility_type = "Bottled Water",
                                        proj_str = p1_proj,
-                                       get_perc = TRUE,
+                                       get_percent = TRUE,
+                                       supply_colors = p3_supply_ext_ss_colors,
                                        width = 16, height = 9,
                                        bkgd_color = 'white',
                                        text_color = 'black',
@@ -339,7 +351,8 @@ p3_targets <- list(
              generate_bw_expand_ss_map(site = p2_inventory_sites,
                                        selected_facility_type = "Bottled Water",
                                        proj_str = p1_proj,
-                                       get_perc = FALSE,
+                                       get_percent = FALSE,
+                                       supply_colors = p3_supply_ext_ss_colors,
                                        width = 16, height = 9,
                                        bkgd_color = 'white',
                                        text_color = 'black',
@@ -348,16 +361,8 @@ p3_targets <- list(
                                        dpi = 300),
              format = 'file'),
 
-  tar_target(p3_supply_ext_ss_colors,
-             {
-               supply_colors <- c('#ffe066', '#90aed5', '#3f6ca6', '#213958', '#9b9560', '#D4D4D4')
-               color_names <- c('public supply', 'well', 'spring', 'surface water intake', 'both', 'undetermined')
-               names(supply_colors) <- color_names
-               return(supply_colors)
-               }),
   tar_target(p3_perc_expanded_self_supply_barplot_png,
-             expanded_ss_barplot(sites = p2_inventory_sites,
-                                 type_summary = p2_facility_type_summary,
+             expanded_ss_barplot(source_summary = p2_source_summary,
                                  supply_colors = p3_supply_ext_ss_colors,
                                  font_legend = p3_font_legend,
                                  get_percent = TRUE,
