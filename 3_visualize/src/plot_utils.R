@@ -1673,19 +1673,22 @@ generate_bw_expand_ss_map <- function(site, proj_str, width, height, bkgd_color,
               fill = NA,
               size = 0.1) +
       # by percent
-      geom_point(data = county_bw_sf,
-                 aes(size = percent, geometry = geometry, color = source_category_name),
-                 alpha = 0.5,
-                 stat = "sf_coordinates") +
+      # Something isn't working here - alpha isn't being correctly scaled to percent
+      # See San Bernardino County, CA - incorrectly high alpha for spring and surface water intake
+      geom_sf(data = county_bw_sf,
+              aes(fill = water_source, geometry = geometry, alpha = percent, group = water_source),
+              color = NA,
+              stat = "sf_coordinates") +
       scale_x_continuous(expand = c(0,0)) +
       scale_y_continuous(expand = c(0,0)) +
-      scale_size(range = c(0.25, 2), limits = c(0, 100), name = '',
-                 guide = guide_legend(
-                   direction = "horizontal",
-                   nrow = 1,
-                   label.position = "bottom")) +
-      scale_color_manual(name = 'Water source',
-                         values = supply_colors) +
+      scale_alpha(range = c(0.1,1), limits = c(1, 100),
+                  name = 'Percent of facilities using water source',
+                  guide = guide_legend(
+                    direction = "horizontal",
+                    nrow = 1,
+                    label.position = "bottom")) +
+      scale_fill_manual(name = 'Water source',
+                        values = supply_colors) +
       guides(color = guide_legend(title = "",
                                   nrow = 1,
                                   label.position = "bottom")) +
@@ -1698,7 +1701,7 @@ generate_bw_expand_ss_map <- function(site, proj_str, width, height, bkgd_color,
         strip.background = element_blank(),
         panel.spacing = unit(2, "lines")
       ) +
-      facet_wrap(~source_category_name)
+      facet_wrap(~water-source)
 #
 #     # legend
 #     bivariate_color_scale <- purrr::map2_df(names(supply_colors), supply_colors, function(source_category_name, supply_colors) {
