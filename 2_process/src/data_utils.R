@@ -22,7 +22,7 @@ munge_inventory_data <- function(inventory_csv) {
       water_source = case_when(
         WTRSRC == 'Well(s)' ~ 'well',
         WTRSRC == 'Spring(s)' ~ 'spring',
-        WTRSRC == 'surface water intake(s)' ~ 'surface water intake',
+        WTRSRC == 'SW Intake(s)' ~ 'surface water intake',
         tolower(WTRSRC) == 'public supply' ~ 'public supply',
         WTRSRC == 'Combination of different sources' ~ 'combination',
         WTRSRC == 'Other (e.g., humidity, sea water)' ~ 'other',
