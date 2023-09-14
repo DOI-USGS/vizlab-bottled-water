@@ -22,17 +22,16 @@ munge_inventory_data <- function(inventory_csv) {
       water_source = case_when(
         WTRSRC == 'Well(s)' ~ 'well',
         WTRSRC == 'Spring(s)' ~ 'spring',
-        WTRSRC == 'SW Intake(s)' ~ 'sw intake',
+        WTRSRC == 'SW Intake(s)' ~ 'surface water intake',
         tolower(WTRSRC) == 'public supply' ~ 'public supply',
         WTRSRC == 'Combination of different sources' ~ 'combination',
         WTRSRC == 'Other (e.g., humidity, sea water)' ~ 'other',
-        TRUE ~ NA_character_
+        TRUE ~ WTRSRC
       ),
       # define source category based on water source
       source_category = case_when(
-        is.na(water_source) ~ 'undetermined',
-        water_source == 'public supply' ~ water_source,
-        water_source == 'combination' ~ 'both',
+        water_source %in% c('undetermined', 'public supply', 
+                            'combination') ~ water_source,
         TRUE ~ 'self supply'
       ),
       # set shared attribute for all entries
