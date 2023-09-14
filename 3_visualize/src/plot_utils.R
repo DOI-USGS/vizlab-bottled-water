@@ -1542,7 +1542,7 @@ generate_national_sankey <- function(supply_summary, supply_colors, font_legend,
 
 
 #' @title create expanded self supply stacked bottled water conus maps across facilities
-#' @param sites sites with water use data
+#' @param site sites with water use data
 #' @param proj_str, set map projection
 #' @param font_legend font used for the plot
 #' @param width width for the final plot
@@ -1551,13 +1551,14 @@ generate_national_sankey <- function(supply_summary, supply_colors, font_legend,
 #' @param text_color color for text
 #' @param outfile_template filepath template for saving the final plot
 #' @param dpi dpi at which to save the final plot
-#' @param get_percent if else statement where if TRUE, creates a map of percent distribution of water sources for bottled water facilities with expanded self supply facilities,
+#' @param get_percent logical where if TRUE, creates a map of percent distribution of water sources for bottled water facilities with expanded self supply facilities,
 #' if FALSE, return map of counts of bottled water with expanded self supply facilities.
+#' @param supply_colors vector of colors to use for water source categories
 #' @param selected_facility_type type of facility to plot. If 'Bottled Water', filter sites data for bottled water facilities only
 #' @return the filepath of the saved plot
 generate_bw_expand_ss_map <- function(site, proj_str, width, height, bkgd_color, text_color, outfile_template, dpi,
-                                      get_percent, font_legend, selected_facility_type) {
-
+                                      get_percent, supply_colors, font_legend, selected_facility_type) {
+  
   conus_sf <- tigris::states(cb = TRUE) %>%
     st_transform(proj_str) %>%
     filter(STUSPS %in% state.abb[!state.abb %in% c('AK', 'HI')]) %>%
@@ -1567,41 +1568,24 @@ generate_bw_expand_ss_map <- function(site, proj_str, width, height, bkgd_color,
     st_transform(crs = proj_str) %>%
     filter(STATEFP %in% conus_sf$STATEFP) %>%
     rmapshaper::ms_simplify(keep = 0.2) %>%
-    st_intersection(st_union(conus_sf)) |>
-    rename(county_fips = COUNTYFP)
+    st_intersection(st_union(conus_sf))
 
-  # Get more info out of `self supply`
-  expand_self_supply <- site |>
-    mutate(source_category = case_when(water_source == "well" ~ "well",
-                                       water_source == "sw intake" ~ "sw intake",
-                                       water_source == "spring" ~ "spring",
-                                       TRUE ~ source_category))
 
   # Get summary of facility supply sources, by type
-  supply_summary <-
-    expand_self_supply |>
+  supply_summary <- site |>
     janitor::clean_names() |>
     filter(wb_type == selected_facility_type) |>
-    group_by(county_fips, source_category) |>
+    group_by(full_fips, water_source) |>
     summarize(site_count = n()) |>
-    filter(!source_category == "self supply") |>
-    mutate(source_category_name = case_when(source_category == "sw intake" ~ "surface water intake",
-                                            TRUE ~ source_category),
-           source_category_name = factor(source_category_name, levels=c('undetermined', 'both', 'well', 'spring', 'surface water intake', 'public supply'))) |>
-    group_by(county_fips) |>
-    mutate(percent = site_count/sum(site_count)*100) |>
-    st_drop_geometry() |>
-    as.data.frame()
+    filter(!water_source == "other") |> # Filter out type 'other' for now
+    mutate(water_source = factor(water_source, levels = names(supply_colors))) |>
+    group_by(full_fips) |>
+    mutate(percent = site_count/sum(site_count)*100)
 
   county_bw_sf <- counties_sf %>%
-    left_join(supply_summary, by = 'county_fips') |>
-    drop_na(source_category) |>
+    left_join(supply_summary, by = c('GEOID' = 'full_fips')) |>
+    drop_na(water_source) |>
     janitor::clean_names()
-
-  supply_colors <- c('#ffe066', '#90aed5', '#3f6ca6', '#213958', '#9b9560', '#D4D4D4')
-  color_names <- c('public supply', 'well', 'spring', 'surface water intake', 'both', 'undetermined')
-  names(supply_colors) <- color_names
-
 
   if (get_percent == FALSE) {
 
