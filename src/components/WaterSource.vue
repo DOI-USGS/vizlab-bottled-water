@@ -36,7 +36,7 @@
           </p>
         </div>
         <img src="../assets/images/state_sources_facet_Bottled Water_styled.png">
-        <img src="../assets/images/map_count_bottled_water_expand_self_supply_map.png">
+        <img src="../assets/images/map_perc_bottled_water_expand_self_supply_map.png">
       </div>
     </div>
   </section>
