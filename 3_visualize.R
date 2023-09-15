@@ -345,7 +345,7 @@ p3_targets <- list(
                return(supply_colors)
              }),
   tar_target(p3_source_perc_bottled_water_facet_map_png,
-             generate_bw_expand_ss_map(site = p2_inventory_sites_sf_CONUS,
+             generate_bw_conus_map(site = p2_inventory_sites_sf_CONUS,
                                        selected_facility_type = "Bottled Water",
                                        reorder_source_category = c("self supply", "combination", "public supply"),
                                        proj_str = p1_proj,
@@ -359,7 +359,7 @@ p3_targets <- list(
                                        dpi = 300),
              format = 'file'),
   tar_target(p3_source_count_bottled_water_facet_map_png,
-             generate_bw_expand_ss_map(site = p2_inventory_sites_sf_CONUS,
+             generate_bw_conus_map(site = p2_inventory_sites_sf_CONUS,
                                        selected_facility_type = "Bottled Water",
                                        reorder_source_category = c("self supply", "combination", "public supply"),
                                        proj_str = p1_proj,

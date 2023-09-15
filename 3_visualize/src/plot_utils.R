@@ -1550,7 +1550,7 @@ generate_national_sankey <- function(supply_summary, supply_colors, reorder_sour
 }
 
 
-#' @title create expanded self supply stacked bottled water conus maps across facilities
+#' @title create faceted conus maps of bottled water facilities by raw count (proportional symbol) or percent (choropleth)
 #' @param site sites with water use data
 #' @param proj_str, set map projection
 #' @param font_legend font used for the plot
@@ -1566,7 +1566,7 @@ generate_national_sankey <- function(supply_summary, supply_colors, reorder_sour
 #' @param reorder_source_category character vector of reorganized source categories to reorder maps by
 #' @param selected_facility_type type of facility to plot. If 'Bottled Water', filter sites data for bottled water facilities only
 #' @return the filepath of the saved plot
-generate_bw_expand_ss_map <- function(site, proj_str, width, height, bkgd_color, text_color, outfile_template, dpi,
+generate_bw_conus_map <- function(site, proj_str, width, height, bkgd_color, text_color, outfile_template, dpi,
                                       get_percent, supply_colors, font_legend, selected_facility_type,
                                       reorder_source_category) {
 
