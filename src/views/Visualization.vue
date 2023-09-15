@@ -24,7 +24,7 @@ export default {
       References: () => import("./../components/References.vue"),
     },
     setup() {
-      const title = ref('What is the impact of bottled water?')
+      const title = ref('Water bottling across the United States')
 
       return {
         title
