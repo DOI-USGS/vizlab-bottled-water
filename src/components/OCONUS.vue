@@ -194,6 +194,7 @@ export default {
       this.stateList.unshift(this.defaultViewName)
       
       this.currentType = 'Bottled Water'
+      this.defaultType = 'Bottled Water'
       this.dropdownOptions = this.stateList
       
       // add dropdown
@@ -687,7 +688,7 @@ export default {
 
       self.chartBounds.selectAll(".rects")
         .on("mouseleave", (event, d) => {
-          this.currentType = 'Bottled Water' //'All'
+          this.currentType = this.defaultType 
           let currentIdentifier = this.currentType.replace(' ', '-')
           self.drawCountyPoints(state, this.currentScale, this.currentType)
 
@@ -1088,41 +1089,32 @@ export default {
     drawCountyPoints(state, scale, type) {
       const self = this;
 
-      const sizeAccessor = d => parseInt(d.properties.site_count)
-      const colorAccessor = d => d.properties.WB_TYPE
+      const sizeAccessor = d => parseInt(d.properties[type])
 
       let dataPoints;
       let dataMax;
       if (state === this.defaultViewName) {
-        dataPoints = this.countyPoints.filter(d => 
-          d.properties.WB_TYPE === type)
+        dataPoints = this.countyPoints
         if (type === 'All') {
-          dataMax = this.d3.max(this.countyPoints, sizeAccessor) //this.countyPoints OR dataPoints
+          dataMax = this.d3.max(this.countyPoints, sizeAccessor)
         } else {
-          let typeSubset = this.countyPoints.filter(d => d.properties.WB_TYPE !== 'All')
-          dataMax = this.d3.max(typeSubset, sizeAccessor) //this.countyPoints OR dataPoints OR typeSubset
+          // Get max value for nation, in any category except 'All'
+          dataMax = this.d3.max(this.countyPoints, d => parseInt(d.properties.max_count))
         }
         
       } else {
+        
+        dataPoints = this.countyPoints.filter(d => d.properties.STATE_NAME === state)
         // Get max value for state, in any category except 'All'
-        let stateData = this.countyPoints.filter(d => 
-          d.properties.STATE_NAME === state)
-        let typeSubset = stateData.filter(d => d.properties.WB_TYPE !== 'All')
-        dataMax =  this.d3.max(typeSubset, sizeAccessor) // stateData
-        dataPoints = this.countyPoints.filter(d => 
-          d.properties.STATE_NAME === state && d.properties.WB_TYPE === type)
+        dataMax = this.d3.max(dataPoints, d => parseInt(d.properties.max_count))
       }
-
+      
       // create scales   
       let scaleFactor = scale === 1 ? 1 : 2/scale
       
       const sizeScale = this.d3.scaleLinear()
-        .range([0.8 * scaleFactor, 11 * scaleFactor]) // .rangeRound
-        .domain([1, dataMax]) //this.d3.max(dataPoints, sizeAccessor)
-
-      const colorScale = this.d3.scaleOrdinal()
-        .domain([... new Set(this.countyPoints.map(d => colorAccessor(d)))].sort())
-        .range(["grey", "darkmagenta","teal","gold","indianred","steelblue","pink"])
+        .range([0.8 * scaleFactor, 11 * scaleFactor])
+        .domain([1, dataMax])
 
       // county centroids
       this.countyCentroidGroups = this.mapBounds.selectAll(".county_centroids")
@@ -1133,7 +1125,6 @@ export default {
 
       oldCountyCentroidGroups.selectAll('path')
         .transition(self.getExitTransition())
-        // .attr("d", this.mapPath.pointRadius(0))
         .attr("d", d => {
           switch(d.properties.STATE_NAME) {
             case 'Alaska':
@@ -1155,8 +1146,8 @@ export default {
           }
         })
 
-      // CAN'T REMOVE W/ ZOOM, B/C IF REMOVED, RE-ADDED W/O TRANSLATION ON CHART MOUSEOVER
-      // oldCountyCentroidGroups.transition(self.getExitTransition()).remove()
+      // Remove old county points
+      oldCountyCentroidGroups.transition(self.getExitTransition()).remove()
 
       const newCountyCentroidGroups = this.countyCentroidGroups.enter().append("g")
         .attr("class", "county_centroid")
@@ -1172,64 +1163,59 @@ export default {
       // append points
       newCountyCentroidGroups.append("path")
         .attr("id", d => "county-point-" + d.properties.GEOID)
-        // // .attr("d", this.mapPath.pointRadius(0))
-        // NEED IF REMOVING EXIT POINTS
-        // .attr("d", d => {
-        //   // return d.properties.STATE_NAME === 'Alaska' ? this.mapPathAK.pointRadius(0)(d) : this.mapPath.pointRadius(0)(d)
-        //   switch(d.properties.STATE_NAME) {
-        //     case 'Alaska':
-        //       return this.mapPathAK.pointRadius(0)(d);
-        //     case 'Hawaii':
-        //       return this.mapPathHI.pointRadius(0)(d);
-        //     case 'Puerto Rico':
-        //       return this.mapPathPRVI.pointRadius(0)(d);
-        //     case 'Virgin Islands':
-        //       return this.mapPathPRVI.pointRadius(0)(d);
-        //     case 'Guam':
-        //       return this.mapPathGUMP.pointRadius(0)(d);
-        //     case 'Northern Mariana Islands':
-        //       return this.mapPathGUMP.pointRadius(0)(d);
-        //     case 'American Samoa':
-        //       return this.mapPathAS.pointRadius(0)(d);
-        //     default:
-        //       return this.mapPath.pointRadius(0)(d);
-        //   }
-        // })
-        .style("fill", this.focalColor) // colorScale(colorAccessor(d))
-        // .style("stroke", "#ffffff")
+        // Instantiate w/ 0 radius
+        .attr("d", d => {
+          switch(d.properties.STATE_NAME) {
+            case 'Alaska':
+              return this.mapPathAK.pointRadius(0)(d);
+            case 'Hawaii':
+              return this.mapPathHI.pointRadius(0)(d);
+            case 'Puerto Rico':
+              return this.mapPathPRVI.pointRadius(0)(d);
+            case 'Virgin Islands':
+              return this.mapPathPRVI.pointRadius(0)(d);
+            case 'Guam':
+              return this.mapPathGUMP.pointRadius(0)(d);
+            case 'Northern Mariana Islands':
+              return this.mapPathGUMP.pointRadius(0)(d);
+            case 'American Samoa':
+              return this.mapPathAS.pointRadius(0)(d);
+            default:
+              return this.mapPath.pointRadius(0)(d);
+          }
+        })
+        .style("fill", this.focalColor)
 
       // update rectGroups to include new points
       this.countyCentroidGroups = newCountyCentroidGroups.merge(this.countyCentroidGroups)
 
       const countyCentroidPoints = this.countyCentroidGroups.select("path")
-
+      
       countyCentroidPoints
           .transition(self.getUpdateTransition())
-          // .attr("d", this.mapPath.pointRadius(d => sizeScale(sizeAccessor(d))))
           .attr("d", d => {
-            // return d.properties.STATE_NAME === 'Alaska' ? this.mapPathAK.pointRadius(sizeScale(sizeAccessor(d)))(d) : this.mapPath.pointRadius(sizeScale(sizeAccessor(d)))(d)
+            // if count is 0, set radius to 0, otherwise set based on count
+            let scaledRadius = sizeAccessor(d) === 0 ? 0 : sizeScale(sizeAccessor(d));
             switch(d.properties.STATE_NAME) {
               case 'Alaska':
-                return this.mapPathAK.pointRadius(sizeScale(sizeAccessor(d)))(d);
+                return this.mapPathAK.pointRadius(scaledRadius)(d);
               case 'Hawaii':
-                return this.mapPathHI.pointRadius(sizeScale(sizeAccessor(d)))(d);
+                return this.mapPathHI.pointRadius(scaledRadius)(d);
               case 'Puerto Rico':
-                return this.mapPathPRVI.pointRadius(sizeScale(sizeAccessor(d)))(d);
+                return this.mapPathPRVI.pointRadius(scaledRadius)(d);
               case 'Virgin Islands':
-                return this.mapPathPRVI.pointRadius(sizeScale(sizeAccessor(d)))(d);
+                return this.mapPathPRVI.pointRadius(scaledRadius)(d);
               case 'Guam':
-                return this.mapPathGUMP.pointRadius(sizeScale(sizeAccessor(d)))(d);
+                return this.mapPathGUMP.pointRadius(scaledRadius)(d);
               case 'Northern Mariana Islands':
-                return this.mapPathGUMP.pointRadius(sizeScale(sizeAccessor(d)))(d);
+                return this.mapPathGUMP.pointRadius(scaledRadius)(d);
               case 'American Samoa':
-                return this.mapPathAS.pointRadius(sizeScale(sizeAccessor(d)))(d);
+                return this.mapPathAS.pointRadius(scaledRadius)(d);
               default:
-                return this.mapPath.pointRadius(sizeScale(sizeAccessor(d)))(d);
+                return this.mapPath.pointRadius(scaledRadius)(d);
             }
           })
-          // .style("stroke", "#000000")
-          // .style("stroke-width", 1)
-          .style("fill", this.focalColor) //d => colorScale(colorAccessor(d)))
+          .style("fill", this.focalColor)
 
 
       // // Add county mouseover if at state level
@@ -1245,7 +1231,7 @@ export default {
       //       d3.selectAll("#county-" + d.properties.GEOID)
       //         .style("fill", "#ffffff")
       //       d3.selectAll("#county-point-" + d.properties.GEOID)
-      //         .style("fill", d => colorScale(colorAccessor(d)))
+      //         .style("fill", this.focalColor)
       //     })
       // }
     },
@@ -1397,7 +1383,6 @@ export default {
         // NEED TO REVAMP - THIS IS MESSY
 
         // First draw whole map AND zoom out to whole map
-        // self.drawHistogram('All')
         self.drawCountyPoints(this.defaultViewName, 1, this.currentType)
         self.drawCounties(this.defaultViewName, 1)
         self.drawMap(this.defaultViewName, 1)
