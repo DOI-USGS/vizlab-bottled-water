@@ -710,15 +710,18 @@ export default {
               let targetId = event.target.id
               let targetIdSplit = targetId.split('-')
               this.currentType = targetIdSplit.length === 4 ? (targetIdSplit[2] + ' ' + targetIdSplit[3]) : targetIdSplit[2]
-              self.drawCountyPoints(state, self.currentScale, this.currentType)
-              // let currentIdentifier = this.currentType.replace(' ', '-')
-              // self.d3.selectAll('.bar')
-              //   .transition(self.getUpdateTransition())
-              //   .style("opacity", 0.5)
+              let currentIdentifier = this.currentType.replace(' ', '-')
 
-              // self.d3.selectAll('#rect-' + currentIdentifier)
-              //   .transition(self.getUpdateTransition())
-              //   .style("opacity", 1)
+              // NOTE: need to use self.currentState, not `state` b/c `state` gets stale when attached to event listener
+              self.drawCountyPoints(self.currentState, self.currentScale, this.currentType)
+
+              self.d3.selectAll('.bar')
+                .transition(self.getUpdateTransition())
+                .style("fill", self.defaultColor)
+
+              self.d3.selectAll('#rect-' + currentIdentifier)
+                .transition(self.getUpdateTransition())
+                .style("fill", self.focalColor)
             }
         })
       })
