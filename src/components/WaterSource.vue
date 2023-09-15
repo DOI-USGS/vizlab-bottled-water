@@ -12,6 +12,7 @@
             Beverage-bottling facilities get water through public supply (water withdrawn by a water supplier and delivered to many users) or self-supply (water withdrawn from a private source for private use). In each case, the water can come from several different pools of the water cycle, like groundwater, surface water, or springs. 
           </p>
         </div>
+        <img src="../assets/images/public-supply_vs_self-supply.png">
         <div class="text-container">
           <p>
             Water source data are not readily available for most bottling facilities. [DATA RELEASE] et al. 2023 performed new mapping analyses to infer where facilities source their water from. These analyses make some assumptions, like assuming that a facility near a well uses that well to source their water, and a facility within a public-supply zone uses public-supply water. Though imperfect, these estimates improve our understanding of where bottling facilities are sourcing their water. The charts below show the primary sources of bottled water in each state. 
@@ -24,7 +25,7 @@
             How do different facility types source water?
           </p>
         </div>
-        <img src="../assets/images/national_sources_facilities_sanky.png">
+        <img src="../assets/images/national_sources_facilities_sankey.png">
         <img src="../assets/images/perc_expanded_self_supply_barplot.png">
         <img src="../assets/images/count_expanded_self_supply_barplot.png">
       </div>
@@ -34,8 +35,8 @@
             How do bottled water facilities in each state source water?
           </p>
         </div>
-        <img src="../assets/images/state_sources_facet_bottled_water.png">
-        <img src="../assets/images/map_count_bottled_water_expand_self_supply_map.png">
+        <img src="../assets/images/state_sources_facet_Bottled Water_styled.png">
+        <img src="../assets/images/map_perc_bottled_water_expand_self_supply_map.png">
       </div>
     </div>
   </section>

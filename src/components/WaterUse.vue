@@ -19,21 +19,21 @@
             How many facilities have water use data?
           </p>
         </div>
-        <img src="../assets/images/sites_figure_wateruse.png">
+        <img src="../assets/images/wu_sites.png">
       </div>
       <div id="img-wu-sites-bar" class="img-container">
         <div class="text-container">
           <p>For what types of facilities do we have water use data?
           </p>
         </div>
-        <img src="../assets/images/ac_state_wu_bar.png">
+        <img src="../assets/images/wu_types_sources.png">
       </div>
       <div class="img-bw-use-map">
         <div class="text-container">
           <p>Among bottled water facilities with data, how much water is used?
           </p>
         </div>
-        <img src="../assets/images/ac_facility_wu_ps_map.png">
+        <img src="../assets/images/wu_bw_use.png">
       </div>
       <div class="img-bw-use-source">
         <div class="text-container">

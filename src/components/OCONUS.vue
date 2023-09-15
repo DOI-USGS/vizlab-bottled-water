@@ -11,7 +11,7 @@
             <!--p>
               The bottled water industry estimates that the United States consumed 15 billion gallons (57 billion liters) of bottled water in 2020. That’s 45 gallons of bottled water per person. If you consider how much water it takes to produce each bottle of water (not including the packaging), the number is closer to 63 gallons—enough to fill a standard bathtub one-and-a-half times. 
             </p -->
-            <p>This map shows the approximate number of bottling facilities in every county where data are available. Use the dropdown menu above to filter the data by state, or click on the facility type in the bar chart below to filter the data by facility type. </p>
+            <p>Use the dropdown menu above or click on the map to filter the data by state, or click on the facility type in the bar chart below to filter the data by facility type. </p>
         </div>
       </div>
       <div id="chart-container">
@@ -77,6 +77,8 @@ export default {
       genericPath: null,
       genericProjection: null,
       chartBounds: null,
+      focalColor: null,
+      defaultColor: null,
       currentType: null,
       stateGroups: null,
       countyGroups: null,
@@ -191,7 +193,8 @@ export default {
       this.stateList = [... new Set(this.dataAll.map(d => d.state_name))]
       this.stateList.unshift(this.defaultViewName)
       
-      this.currentType = 'All'
+      this.currentType = 'Bottled Water'
+      this.defaultType = 'Bottled Water'
       this.dropdownOptions = this.stateList
       
       // add dropdown
@@ -218,18 +221,22 @@ export default {
       const width = 400;
       this.dimensions = {
         width,
-        height: width*0.7,
+        height: width*0.9,
         margin: {
           top: 30,
-          right: 10,
+          right: 5,
           bottom: 50,
-          left: 50
+          left: 5
         }
       }
       this.dimensions.boundedWidth = this.dimensions.width - this.dimensions.margin.left - this.dimensions.margin.right
       this.dimensions.boundedHeight = this.dimensions.height - this.dimensions.margin.top - this.dimensions.margin.bottom
 
       self.initChart()
+
+      // set primary colors
+      this.focalColor = "#1599CF";
+      this.defaultColor = "#B5B5B5";
 
       // Draw initial view ('all states and territories')
       self.drawHistogram(this.currentState)
@@ -580,7 +587,7 @@ export default {
       const xScale = this.d3.scaleBand()
         .rangeRound([0, this.dimensions.boundedWidth])
         .domain(dataTypes) // if want to only include types in each state: data.map(d => d.WB_TYPE)
-        .padding(0) //0.05
+        .padding(0.1) //0.05
       
       const yScale = this.d3.scaleLinear()
         .domain([0, this.d3.max(data, yAccessor)]) // use y accessor w/ raw data
@@ -628,7 +635,7 @@ export default {
         .attr("y", this.dimensions.boundedHeight)
         .attr("width", xScale.bandwidth())
         .attr("height", 0)
-        .style("fill", d => colorScale(colorAccessor(d)))
+        .style("fill", d => d.WB_TYPE === this.currentType ? this.focalColor : this.defaultColor) //colorScale(colorAccessor(d)))
       
       // append text and set default position
       newRectGroups.append("text")
@@ -646,7 +653,7 @@ export default {
           .attr("y", d => yScale(yAccessor(d)))
           .attr("width", xScale.bandwidth()) // if negative, bump up to 0
           .attr("height", d => this.dimensions.boundedHeight - yScale(yAccessor(d)))
-          .attr("fill", d => colorScale(colorAccessor(d)))
+          .style("fill", d => d.WB_TYPE === this.currentType ? this.focalColor : this.defaultColor) // colorScale(colorAccessor(d)))
           .attr("class", d => 'bar ' + identifierAccessor(d))
       
       barRects
@@ -657,9 +664,11 @@ export default {
 
           this.d3.selectAll('.bar')
             .style("opacity", 0.5)
+            .style("fill", this.defaultColor)
 
           this.d3.selectAll('#rect-' + currentIdentifier)
             .style("opacity", 1)
+            .style("fill", this.focalColor)
         })
         .on("mouseover", (event, d) => {
           this.currentType = colorAccessor(d)
@@ -669,20 +678,29 @@ export default {
           this.d3.selectAll('.bar')
             .transition(self.getUpdateTransition())
             .style("opacity", 0.5)
+            .style("fill", this.defaultColor)
 
           this.d3.selectAll('#rect-' + currentIdentifier)
             .transition(self.getUpdateTransition())
             .style("opacity", 1)
+            .style("fill", this.focalColor)
         })
 
       self.chartBounds.selectAll(".rects")
         .on("mouseleave", (event, d) => {
-          this.currentType = 'All'
+          this.currentType = this.defaultType 
+          let currentIdentifier = this.currentType.replace(' ', '-')
           self.drawCountyPoints(state, this.currentScale, this.currentType)
 
           this.d3.selectAll('.bar')
             .transition(self.getUpdateTransition())
             .style("opacity", 1)
+            .style("fill", this.defaultColor)
+
+          this.d3.selectAll('#rect-' + currentIdentifier)
+            .transition(self.getUpdateTransition())
+            .style("opacity", 1)
+            .style("fill", this.focalColor)
         })
 
       // Trigger with enter key - BUT - how get back to total?
@@ -692,15 +710,18 @@ export default {
               let targetId = event.target.id
               let targetIdSplit = targetId.split('-')
               this.currentType = targetIdSplit.length === 4 ? (targetIdSplit[2] + ' ' + targetIdSplit[3]) : targetIdSplit[2]
-              self.drawCountyPoints(state, self.currentScale, this.currentType)
-              // let currentIdentifier = this.currentType.replace(' ', '-')
-              // self.d3.selectAll('.bar')
-              //   .transition(self.getUpdateTransition())
-              //   .style("opacity", 0.5)
+              let currentIdentifier = this.currentType.replace(' ', '-')
 
-              // self.d3.selectAll('#rect-' + currentIdentifier)
-              //   .transition(self.getUpdateTransition())
-              //   .style("opacity", 1)
+              // NOTE: need to use self.currentState, not `state` b/c `state` gets stale when attached to event listener
+              self.drawCountyPoints(self.currentState, self.currentScale, this.currentType)
+
+              self.d3.selectAll('.bar')
+                .transition(self.getUpdateTransition())
+                .style("fill", self.defaultColor)
+
+              self.d3.selectAll('#rect-' + currentIdentifier)
+                .transition(self.getUpdateTransition())
+                .style("fill", self.focalColor)
             }
         })
       })
@@ -710,7 +731,7 @@ export default {
           .attr("x", d => xScale(xAccessor(d)) + xScale.bandwidth()/2)
           .attr("y", d => yScale(yAccessor(d)) - 5)
           .style("text-anchor", "middle")
-          .text(yAccessor)
+          .text(d => this.d3.format(',')(yAccessor(d)))
           .attr("fill", "#666")
           .style("font-size", "12px")
           .style("font-family", "sans-serif")
@@ -958,20 +979,19 @@ export default {
       // // would need to add separate group w/ states on TOP of counties and county
       // // points just to trigger interaction on THIS group of states
       // // ideally would use <use>
-      // if (state === this.defaultViewName) {
-      //   stateShapes
-      //     .on("mouseover", (event, d) => {
-      //       console.log(d)
-      //       d3.selectAll("#state-" + d.properties.FIPS)
-      //         .style("opacity", 1)
-      //         .style("stroke-opacity", 1)
-      //     })
-      //     .on("mouseout", (event, d) => {
-      //       d3.selectAll("#state-" + d.properties.FIPS)
-      //         .style("opacity", 0)
-      //         .style("stroke-opacity", 1)
-      //     })
-      // }
+      if (state === this.defaultViewName) {
+        stateShapes
+          .on("mouseover", (event, d) => {
+            this.d3.selectAll("#state-" + d.properties.FIPS)
+              .style("fill", "#000000")
+              .style("fill-opacity", 0.1)
+          })
+          .on("mouseout", (event, d) => {
+            this.d3.selectAll("#state-" + d.properties.FIPS)
+              .style("fill", "#fffff")
+              .style("fill-opacity", 0)
+          })
+      }
     },
     drawCounties(state, scale) {
       const self = this;
@@ -1005,8 +1025,8 @@ export default {
           .attr("role", "listitem")
           .attr("aria-label", d => d.properties.NAME + ', ' + d.properties.STATE_NAME)
 
-      let countyStrokeWidth = state === this.defaultViewName ? 0.2 : 0.5 * 1/scale
-      let countyStrokeColor = state === this.defaultViewName ? "#D1D1D1" : "#939393"
+      let countyStrokeWidth = state === this.defaultViewName ? 0.1 : 0.5 * 1/scale
+      let countyStrokeColor = state === this.defaultViewName ? "#E3E3E3" : "#939393"
       newCountyGroups.append("path")
           .attr("id", d => "county-" + d.properties.GEOID)
           .attr("d", d => {
@@ -1072,41 +1092,32 @@ export default {
     drawCountyPoints(state, scale, type) {
       const self = this;
 
-      const sizeAccessor = d => parseInt(d.properties.site_count)
-      const colorAccessor = d => d.properties.WB_TYPE
+      const sizeAccessor = d => parseInt(d.properties[type])
 
       let dataPoints;
       let dataMax;
       if (state === this.defaultViewName) {
-        dataPoints = this.countyPoints.filter(d => 
-          d.properties.WB_TYPE === type)
+        dataPoints = this.countyPoints
         if (type === 'All') {
-          dataMax = this.d3.max(this.countyPoints, sizeAccessor) //this.countyPoints OR dataPoints
+          dataMax = this.d3.max(this.countyPoints, sizeAccessor)
         } else {
-          // let typeSubset = this.countyPoints.filter(d => 
-          //   d.properties.WB_TYPE !== 'All')
-          dataMax = this.d3.max(this.countyPoints, sizeAccessor) //this.countyPoints OR dataPoints OR typeSubset
+          // Get max value for nation, in any category except 'All'
+          dataMax = this.d3.max(this.countyPoints, d => parseInt(d.properties.max_count))
         }
         
       } else {
-        // Get max value for state, in any category
-        let stateData = this.countyPoints.filter(d => 
-          d.properties.STATE_NAME === state)
-        dataMax =  this.d3.max(stateData, sizeAccessor)
-        dataPoints = this.countyPoints.filter(d => 
-          d.properties.STATE_NAME === state && d.properties.WB_TYPE === type)
+        
+        dataPoints = this.countyPoints.filter(d => d.properties.STATE_NAME === state)
+        // Get max value for state, in any category except 'All'
+        dataMax = this.d3.max(dataPoints, d => parseInt(d.properties.max_count))
       }
-
+      
       // create scales   
       let scaleFactor = scale === 1 ? 1 : 2/scale
       
       const sizeScale = this.d3.scaleLinear()
-        .range([0.8 * scaleFactor, 10 * scaleFactor]) // .rangeRound
-        .domain([1, dataMax]) //this.d3.max(dataPoints, sizeAccessor)
-
-      const colorScale = this.d3.scaleOrdinal()
-        .domain([... new Set(this.countyPoints.map(d => colorAccessor(d)))].sort())
-        .range(["grey", "darkmagenta","teal","gold","indianred","steelblue","pink"])
+        .range([0.8 * scaleFactor, 11 * scaleFactor])
+        .domain([1, dataMax])
 
       // county centroids
       this.countyCentroidGroups = this.mapBounds.selectAll(".county_centroids")
@@ -1117,7 +1128,6 @@ export default {
 
       oldCountyCentroidGroups.selectAll('path')
         .transition(self.getExitTransition())
-        // .attr("d", this.mapPath.pointRadius(0))
         .attr("d", d => {
           switch(d.properties.STATE_NAME) {
             case 'Alaska':
@@ -1139,8 +1149,8 @@ export default {
           }
         })
 
-      // CAN'T REMOVE W/ ZOOM, B/C IF REMOVED, RE-ADDED W/O TRANSLATION ON CHART MOUSEOVER
-      // oldCountyCentroidGroups.transition(self.getExitTransition()).remove()
+      // Remove old county points
+      oldCountyCentroidGroups.transition(self.getExitTransition()).remove()
 
       const newCountyCentroidGroups = this.countyCentroidGroups.enter().append("g")
         .attr("class", "county_centroid")
@@ -1156,64 +1166,59 @@ export default {
       // append points
       newCountyCentroidGroups.append("path")
         .attr("id", d => "county-point-" + d.properties.GEOID)
-        // // .attr("d", this.mapPath.pointRadius(0))
-        // NEED IF REMOVING EXIT POINTS
-        // .attr("d", d => {
-        //   // return d.properties.STATE_NAME === 'Alaska' ? this.mapPathAK.pointRadius(0)(d) : this.mapPath.pointRadius(0)(d)
-        //   switch(d.properties.STATE_NAME) {
-        //     case 'Alaska':
-        //       return this.mapPathAK.pointRadius(0)(d);
-        //     case 'Hawaii':
-        //       return this.mapPathHI.pointRadius(0)(d);
-        //     case 'Puerto Rico':
-        //       return this.mapPathPRVI.pointRadius(0)(d);
-        //     case 'Virgin Islands':
-        //       return this.mapPathPRVI.pointRadius(0)(d);
-        //     case 'Guam':
-        //       return this.mapPathGUMP.pointRadius(0)(d);
-        //     case 'Northern Mariana Islands':
-        //       return this.mapPathGUMP.pointRadius(0)(d);
-        //     case 'American Samoa':
-        //       return this.mapPathAS.pointRadius(0)(d);
-        //     default:
-        //       return this.mapPath.pointRadius(0)(d);
-        //   }
-        // })
-        .style("fill", d => colorScale(colorAccessor(d)))
-        // .style("stroke", "#ffffff")
+        // Instantiate w/ 0 radius
+        .attr("d", d => {
+          switch(d.properties.STATE_NAME) {
+            case 'Alaska':
+              return this.mapPathAK.pointRadius(0)(d);
+            case 'Hawaii':
+              return this.mapPathHI.pointRadius(0)(d);
+            case 'Puerto Rico':
+              return this.mapPathPRVI.pointRadius(0)(d);
+            case 'Virgin Islands':
+              return this.mapPathPRVI.pointRadius(0)(d);
+            case 'Guam':
+              return this.mapPathGUMP.pointRadius(0)(d);
+            case 'Northern Mariana Islands':
+              return this.mapPathGUMP.pointRadius(0)(d);
+            case 'American Samoa':
+              return this.mapPathAS.pointRadius(0)(d);
+            default:
+              return this.mapPath.pointRadius(0)(d);
+          }
+        })
+        .style("fill", this.focalColor)
 
       // update rectGroups to include new points
       this.countyCentroidGroups = newCountyCentroidGroups.merge(this.countyCentroidGroups)
 
       const countyCentroidPoints = this.countyCentroidGroups.select("path")
-
+      
       countyCentroidPoints
           .transition(self.getUpdateTransition())
-          // .attr("d", this.mapPath.pointRadius(d => sizeScale(sizeAccessor(d))))
           .attr("d", d => {
-            // return d.properties.STATE_NAME === 'Alaska' ? this.mapPathAK.pointRadius(sizeScale(sizeAccessor(d)))(d) : this.mapPath.pointRadius(sizeScale(sizeAccessor(d)))(d)
+            // if count is 0, set radius to 0, otherwise set based on count
+            let scaledRadius = sizeAccessor(d) === 0 ? 0 : sizeScale(sizeAccessor(d));
             switch(d.properties.STATE_NAME) {
               case 'Alaska':
-                return this.mapPathAK.pointRadius(sizeScale(sizeAccessor(d)))(d);
+                return this.mapPathAK.pointRadius(scaledRadius)(d);
               case 'Hawaii':
-                return this.mapPathHI.pointRadius(sizeScale(sizeAccessor(d)))(d);
+                return this.mapPathHI.pointRadius(scaledRadius)(d);
               case 'Puerto Rico':
-                return this.mapPathPRVI.pointRadius(sizeScale(sizeAccessor(d)))(d);
+                return this.mapPathPRVI.pointRadius(scaledRadius)(d);
               case 'Virgin Islands':
-                return this.mapPathPRVI.pointRadius(sizeScale(sizeAccessor(d)))(d);
+                return this.mapPathPRVI.pointRadius(scaledRadius)(d);
               case 'Guam':
-                return this.mapPathGUMP.pointRadius(sizeScale(sizeAccessor(d)))(d);
+                return this.mapPathGUMP.pointRadius(scaledRadius)(d);
               case 'Northern Mariana Islands':
-                return this.mapPathGUMP.pointRadius(sizeScale(sizeAccessor(d)))(d);
+                return this.mapPathGUMP.pointRadius(scaledRadius)(d);
               case 'American Samoa':
-                return this.mapPathAS.pointRadius(sizeScale(sizeAccessor(d)))(d);
+                return this.mapPathAS.pointRadius(scaledRadius)(d);
               default:
-                return this.mapPath.pointRadius(sizeScale(sizeAccessor(d)))(d);
+                return this.mapPath.pointRadius(scaledRadius)(d);
             }
           })
-          // .style("stroke", "#000000")
-          // .style("stroke-width", 1)
-          .style("fill", d => colorScale(colorAccessor(d)))
+          .style("fill", this.focalColor)
 
 
       // // Add county mouseover if at state level
@@ -1229,7 +1234,7 @@ export default {
       //       d3.selectAll("#county-" + d.properties.GEOID)
       //         .style("fill", "#ffffff")
       //       d3.selectAll("#county-point-" + d.properties.GEOID)
-      //         .style("fill", d => colorScale(colorAccessor(d)))
+      //         .style("fill", this.focalColor)
       //     })
       // }
     },
@@ -1381,7 +1386,6 @@ export default {
         // NEED TO REVAMP - THIS IS MESSY
 
         // First draw whole map AND zoom out to whole map
-        // self.drawHistogram('All')
         self.drawCountyPoints(this.defaultViewName, 1, this.currentType)
         self.drawCounties(this.defaultViewName, 1)
         self.drawMap(this.defaultViewName, 1)
@@ -1465,7 +1469,7 @@ export default {
 <style lang="scss">
   .bar {
     stroke: white;
-    stroke-width: 0.5;
+    stroke-width: 0;
   }
   .county_centroid {
     stroke: white;
@@ -1478,10 +1482,15 @@ export default {
     transition: width 2s, height 2s, transform 2s;
     will-change: width;
     background-color: white;
+    margin: 0px 5px 0px 5px;
     padding: 0.5rem;
-    box-shadow:  rgba(0, 0, 0, 0.05) 0px 6px 10px 0px,
+    box-shadow:  rgba(0, 0, 0, 0.2) 0px 6px 10px 0px,
     rgba(0, 0, 0, 0.1) 0px 0px 0px 1px;
     border-radius: 5px;
+  }
+  .dropdown:hover {
+    box-shadow:  rgba(0, 0, 0, 0.3) 0px 6px 10px 0px,
+    rgba(0, 0, 0, 0.2) 0px 0px 0px 1px;
   }
 </style>
 <style scoped lang="scss">
