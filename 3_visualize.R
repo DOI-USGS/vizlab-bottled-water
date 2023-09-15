@@ -298,7 +298,7 @@ p3_targets <- list(
              format = 'file'),
   tar_target(p3_supply_colors_new,
              {
-               supply_colors <- c('#D4D4D4', '#9b9560', '#213958', '#ffe066')
+               supply_colors <- c('#D4D4D4', '#787979', '#213958', '#E2A625')
                names(supply_colors) <- p2_source_category_order
                return(supply_colors)
              }),
