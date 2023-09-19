@@ -9,13 +9,13 @@
       <div id="text">
         <div class="text-container">
           <p>
-            Beverage-bottling facilities get water through public supply (water withdrawn by a water supplier and delivered to many users) or self-supply (water withdrawn from a private source for private use). In each case, the water can come from several different pools of the water cycle, like groundwater, surface water, or springs. 
+            Beverage-bottling facilities get water through public supply (water withdrawn by a water supplier and delivered to many users) or self-supply (water withdrawn from a private source for private use). In each case, the water can be sourced from several different pools of the water cycle, like groundwater, surface water, or springs. 
           </p>
         </div>
         <img src="../assets/images/public-supply_vs_self-supply.png">
         <div class="text-container">
           <p>
-            Water source data are not readily available for most bottling facilities. [DATA RELEASE] et al. 2023 performed new mapping analyses to infer where facilities source their water from. These analyses make some assumptions, like assuming that a facility near a well uses that well to source their water, and a facility within a public-supply zone uses public-supply water. Though imperfect, these estimates improve our understanding of where bottling facilities are sourcing their water. The charts below show the primary sources of bottled water in each state. 
+            Data on water sources by bottling facility are limited. [DATA RELEASE] et al. 2023 performed new mapping analyses to infer the source of water to bottling facilities. These analyses make some assumptions, like assuming that a facility near a well uses that well to source their water, and a facility within a public-supply zone uses public-supply water. Though imperfect, these estimates improve the nation's understanding of where bottling facilities are sourcing their water. The charts below show the primary sources of bottled water in each state. 
           </p>
         </div>
       </div>
