@@ -1555,6 +1555,10 @@ generate_national_sankey <- function(supply_summary, supply_colors, reorder_sour
 #' @param conus_sf, state level sf of CONUS
 #' @param counties_sf, county level sf of CONUS
 #' @param proj_str, set map projection
+#' @param count_size_range numeric values to supply for `scale_size` range used for the count bw map
+#' @param count_size_limit numeric values to supply for `scale_size` limit used for the count map
+#' @param perc_alpha_range numeric values to supply for `scale_size` range used for the perecnt bw map
+#' @param perc_alpha_limit numeric values to supply for `scale_size` limit used for the perecnt bw map
 #' @param font_legend font used for the plot
 #' @param width width for the final plot
 #' @param height height for the final plot
@@ -1571,7 +1575,9 @@ generate_national_sankey <- function(supply_summary, supply_colors, reorder_sour
 generate_bw_conus_map <- function(supply_summary_county_bw, proj_str, width, height,
                                   bkgd_color, text_color, outfile_template, dpi,
                                   get_percent, supply_colors, font_legend, selected_facility_type,
-                                  reorder_source_category, conus_sf, counties_sf) {
+                                  reorder_source_category, conus_sf, counties_sf,
+                                  count_size_range, count_size_limit,
+                                  perc_alpha_range, perc_alpha_limit) {
 
 # drop undetermiend source color and reorder for maps
   supply_colors <- supply_colors[-which(names(supply_colors) == "undetermined")]
@@ -1611,7 +1617,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, proj_str, width, hei
                  stat = "sf_coordinates") +
       scale_x_continuous(expand = c(0,0)) +
       scale_y_continuous(expand = c(0,0)) +
-      scale_size(range = c(0.25, 8), limits = c(1, max(county_bw_sf$site_count)),
+      scale_size(range = count_size_range, limits = eval(parse(text = count_size_limit)),
                  name = 'Site count',
                  guide = guide_legend(
                    direction = "horizontal",
@@ -1656,7 +1662,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, proj_str, width, hei
             size = size)
         ) +
         scale_color_identity() +
-        scale_size(range = c(0.25, 8), limits = c(1, max(county_bw_sf$site_count))) +
+        scale_size(range = count_size_range, limits = eval(parse(text = count_size_limit))) +
         theme_void() +
         theme(
           legend.position = 'none',
@@ -1681,7 +1687,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, proj_str, width, hei
               color = NA) +
       scale_x_continuous(expand = c(0,0)) +
       scale_y_continuous(expand = c(0,0)) +
-      scale_alpha(range = c(0.1,1), limits = c(0, 100), name = '') +
+      scale_alpha(range = perc_alpha_range, limits = perc_alpha_limit, name = '') +
       theme_void() +
       theme(
         legend.position = "none",
@@ -1717,7 +1723,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, proj_str, width, hei
             alpha = alpha)
         ) +
         scale_fill_identity() +
-        scale_alpha(range = c(0.1,1), limits = c(0, 100), name = '') +
+        scale_alpha(range = perc_alpha_range, limits = perc_alpha_limit, name = '') +
         scale_y_discrete(position = "right", expand = c(0,0)) +
         theme_void() +
         theme(
@@ -1784,9 +1790,9 @@ generate_bw_conus_map <- function(supply_summary_county_bw, proj_str, width, hei
                 width = 0.35,
                 height = 0.3) +
       # public supply legend with % labels
-      draw_label('0         10         25        75         100%',
+      draw_label('0           10         25        75         100%',
                  fontfamily = font_legend,
-                 x = 0.72,
+                 x = 0.062,
                  y = 0.245,
                  size = 15,
                  hjust = 0,
@@ -1823,7 +1829,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, proj_str, width, hei
       # public supply legend with count labels
       draw_label('200                           400                          600',
                  fontfamily = font_legend,
-                 x = 0.71,
+                 x = 0.054,
                  y = 0.205,
                  size = 15,
                  hjust = 0,
