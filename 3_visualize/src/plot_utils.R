@@ -1589,7 +1589,6 @@ generate_bw_conus_map <- function(site, proj_str, width, height, bkgd_color, tex
     group_by(full_fips, source_category) |>
     summarize(site_count = n()) |>
     filter(!source_category == "undetermined") |> # Filter out type 'undetermined' for now
-    #mutate(water_source = factor(water_source, levels = names(supply_colors))) |>
     mutate(source_category = factor(source_category, levels = reorder_source_category)) |>
     group_by(full_fips) |>
     mutate(percent = site_count/sum(site_count)*100) |>
