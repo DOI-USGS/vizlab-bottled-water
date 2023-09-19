@@ -1552,6 +1552,8 @@ generate_national_sankey <- function(supply_summary, supply_colors, reorder_sour
 
 #' @title create faceted conus maps of bottled water facilities by raw count (proportional symbol) or percent (choropleth)
 #' @param site sites with water use data
+#' @param conus_sf, state level sf of CONUS
+#' @param counties_sf, county level sf of CONUS
 #' @param proj_str, set map projection
 #' @param font_legend font used for the plot
 #' @param width width for the final plot
@@ -1568,18 +1570,11 @@ generate_national_sankey <- function(supply_summary, supply_colors, reorder_sour
 #' @return the filepath of the saved plot
 generate_bw_conus_map <- function(site, proj_str, width, height, bkgd_color, text_color, outfile_template, dpi,
                                       get_percent, supply_colors, font_legend, selected_facility_type,
-                                      reorder_source_category) {
+                                      reorder_source_category, conus_sf, counties_sf) {
 
-  conus_sf <- tigris::states(cb = TRUE) %>%
-    st_transform(proj_str) %>%
-    filter(STUSPS %in% state.abb[!state.abb %in% c('AK', 'HI')]) %>%
-    rmapshaper::ms_simplify(keep = 0.4)
-
-  counties_sf <- tigris::counties() %>%
-    st_transform(crs = proj_str) %>%
-    filter(STATEFP %in% conus_sf$STATEFP) %>%
-    rmapshaper::ms_simplify(keep = 0.2) %>%
-    st_intersection(st_union(conus_sf))
+# drop undetermiend source color and reorder for maps
+  supply_colors <- supply_colors[-which(names(supply_colors) == "undetermined")]
+  supply_colors <- supply_colors[reorder_source_category]
 
   # import font
   font_legend <- 'Source Sans Pro'
