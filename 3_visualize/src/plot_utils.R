@@ -1746,7 +1746,7 @@ generate_bw_conus_map <- function(site, proj_str, width, height, bkgd_color, tex
 
   canvas <- grid::rectGrob(
     x = 0, y = 0,
-    width = 16, height = 9,
+    width = width, height = height,
     gp = grid::gpar(fill = bkgd_color, alpha = 1, col = bkgd_color)
   )
 
