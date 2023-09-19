@@ -11,23 +11,23 @@
             <div id="text">
                 <div class="text-container">
                     <p>
-                        The bottled water industry estimates that the United States consumed 15 billion gallons (57 billion liters) of bottled water in 2020 (International Bottled Water Association). That's 45 gallons of bottled water per person. If you consider how much water it takes to produce each bottle of water (not including the packaging), the number is closer to 63 gallons—enough to fill a standard bathtub one-and-a-half times. 
+                        The bottled water industry estimates that the United States consumed 15 billion gallons (57 billion liters) of bottled water in 2020 (International Bottled Water Association). That's 45 gallons of bottled water per person. 
                     </p>
                 </div>
                 <img src="../assets/images/bottled-water_consumption-pictogram_small_2023-09-08.png">
                 <div class="text-container">
                     <p>
-                        Despite what we know about bottled water consumption, data about how much water is taken from the environment for bottled water and other beverages are harder to come by. Reporting is  variable, and some states do not permit public sharing of beverage-bottling data. Without these data, we can't measure the impact that bottled water has on the water cycle locally, regionally, or nationally.  
+                        Despite what we know about bottled water consumption, national datasets about how much water is withdrawn from groundwater, surface water, or springs for bottled water and other beverages are limited. Reporting is  variable, and some states do not permit public sharing of beverage-bottling data. Without these data, we cannot accurately assess bottled water influence on the water cycle locally, regionally, or nationally.  
                     </p>
                 </div>
                 <div class="text-container">
                     <p>
-                        To help fill this gap, the USGS Water Mission Area's Bottled Water Impacts project conducted an inventory of bottling facilities across the United States (LINK TO DATA RELEASE). The inventory helps answer the following questions:  
+                        To help fill this gap, the USGS Water Mission Area's Bottled Water Assessment project conducted an inventory of bottling facilities across the United States (LINK TO DATA RELEASE). The inventory helps answer the following questions:  
                     </p>
                 </div>
                 <div class="text-container">
                     <li>
-                        How many beverage bottling facilities are there, and where are they located?
+                        How many beverage bottling facilities exist in the U.S., and where are they located?
                     </li>
                     <li>
                         Where are these facilities sourcing their water (e.g., groundwater, spring water, public supply)?
