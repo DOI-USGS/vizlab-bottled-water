@@ -96,6 +96,19 @@ p2_targets <- list(
              filter(p2_inventory_sites_sf,
                     state_name %in% state.name,
                     !(state_abbr %in% c('AK','HI')))),
+  tar_target(p2_bw_inventory_sites_county_CONUS,
+             p2_inventory_sites_sf_CONUS |>
+               janitor::clean_names() |>
+               filter(wb_type == "Bottled Water") |>
+               group_by(full_fips, source_category) |>
+               summarize(site_count = n()) |>
+               group_by(full_fips) |>
+               mutate(percent = site_count/sum(site_count)*100) |>
+               filter(source_category %in%
+                        c("self supply", "combination", "public supply")) |> # Filter out type 'undetermined' for now
+               mutate(source_category = factor(source_category, levels =
+                                                 c("self supply", "combination", "public supply"))) |>
+               st_drop_geometry()),
 
   ##### Regional statistics #####
 

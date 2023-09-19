@@ -346,7 +346,7 @@ p3_targets <- list(
                st_intersection(st_union(p3_conus_sf))),
 
   tar_target(p3_source_perc_bottled_water_facet_map_png,
-             generate_bw_conus_map(site = p2_inventory_sites_sf_CONUS,
+             generate_bw_conus_map(supply_summary_county_bw = p2_bw_inventory_sites_county_CONUS,
                                    conus_sf = p3_conus_sf,
                                    counties_sf = p3_counties_sf,
                                    selected_facility_type = "Bottled Water",
@@ -362,7 +362,7 @@ p3_targets <- list(
                                    dpi = 300),
              format = 'file'),
   tar_target(p3_source_count_bottled_water_facet_map_png,
-             generate_bw_conus_map(site = p2_inventory_sites_sf_CONUS,
+             generate_bw_conus_map(supply_summary_county_bw = p2_bw_inventory_sites_county_CONUS,
                                    conus_sf = p3_conus_sf,
                                    counties_sf = p3_counties_sf,
                                    selected_facility_type = "Bottled Water",

@@ -1551,7 +1551,7 @@ generate_national_sankey <- function(supply_summary, supply_colors, reorder_sour
 
 
 #' @title create faceted conus maps of bottled water facilities by raw count (proportional symbol) or percent (choropleth)
-#' @param site sites with water use data
+#' @param supply_summary_county_bw bottled sites with water use data for public supply, self supply at CONUS county level
 #' @param conus_sf, state level sf of CONUS
 #' @param counties_sf, county level sf of CONUS
 #' @param proj_str, set map projection
@@ -1568,9 +1568,10 @@ generate_national_sankey <- function(supply_summary, supply_colors, reorder_sour
 #' @param reorder_source_category character vector of reorganized source categories to reorder maps by
 #' @param selected_facility_type type of facility to plot. If 'Bottled Water', filter sites data for bottled water facilities only
 #' @return the filepath of the saved plot
-generate_bw_conus_map <- function(site, proj_str, width, height, bkgd_color, text_color, outfile_template, dpi,
-                                      get_percent, supply_colors, font_legend, selected_facility_type,
-                                      reorder_source_category, conus_sf, counties_sf) {
+generate_bw_conus_map <- function(supply_summary_county_bw, proj_str, width, height,
+                                  bkgd_color, text_color, outfile_template, dpi,
+                                  get_percent, supply_colors, font_legend, selected_facility_type,
+                                  reorder_source_category, conus_sf, counties_sf) {
 
 # drop undetermiend source color and reorder for maps
   supply_colors <- supply_colors[-which(names(supply_colors) == "undetermined")]
@@ -1582,20 +1583,9 @@ generate_bw_conus_map <- function(site, proj_str, width, height, bkgd_color, tex
   showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 700)
   showtext_auto(enable = TRUE)
 
-  # Get summary of facility supply sources, by type
-  supply_summary <- site |>
-    janitor::clean_names() |>
-    filter(wb_type == selected_facility_type) |>
-    group_by(full_fips, source_category) |>
-    summarize(site_count = n()) |>
-    filter(!source_category == "undetermined") |> # Filter out type 'undetermined' for now
-    mutate(source_category = factor(source_category, levels = reorder_source_category)) |>
-    group_by(full_fips) |>
-    mutate(percent = site_count/sum(site_count)*100) |>
-    st_drop_geometry()
-
+  # combine counties sf to conus bw data by fips
   county_bw_sf <- counties_sf %>%
-    left_join(supply_summary, by = c('GEOID' = 'full_fips')) |>
+    left_join(supply_summary_county_bw, by = c('GEOID' = 'full_fips')) |>
     drop_na(source_category) |>
     janitor::clean_names()
 
