@@ -1576,7 +1576,7 @@ generate_bw_conus_map <- function(site, proj_str, width, height, bkgd_color, tex
   supply_colors <- supply_colors[-which(names(supply_colors) == "undetermined")]
   supply_colors <- supply_colors[reorder_source_category]
 
-  # import font
+  # import font (p3_font_legend doesn't seem to work on Mac)
   font_legend <- 'Source Sans Pro'
   font_add_google(font_legend)
   showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 700)
