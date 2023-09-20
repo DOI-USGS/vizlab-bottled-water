@@ -359,6 +359,8 @@ p3_targets <- list(
                                    width = 16, height = 9,
                                    bkgd_color = 'white',
                                    text_color = 'black',
+                                   conus_outline_col = 'gray',
+                                   counties_outline_col = "lightgray",
                                    font_legend = p3_font_legend,
                                    map_count_legend = 'Count of facilities',
                                    map_perc_legend = 'Percent of facilities',

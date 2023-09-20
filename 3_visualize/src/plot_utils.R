@@ -1565,13 +1565,17 @@ generate_national_sankey <- function(supply_summary, supply_colors, reorder_sour
 #' @param height height for the final plot
 #' @param bkgd_color background color for the plot
 #' @param text_color color for text
+#' @param conus_outline_col color for conus map outline
+#' @param counties_outline_col color for counties map outline
 #' @param outfile_template filepath template for saving the final plot
 #' @param dpi dpi at which to save the final plot
 #' @param supply_colors vector of colors to use for water source categories
 #' @param reorder_source_category character vector of reorganized source categories to reorder maps by
 #' @return the filepath of the saved plot
 generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
-                                  bkgd_color, text_color, outfile_template, dpi,
+                                  bkgd_color, text_color,
+                                  conus_outline_col, counties_outline_col,
+                                  outfile_template, dpi,
                                   supply_colors, font_legend,
                                   reorder_source_category, conus_sf, counties_sf,
                                   count_size_range, count_size_limit,
@@ -1596,18 +1600,18 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
 
     map_count <- ggplot() +
       geom_sf(data = conus_sf,
-              fill = "white",
-              color = 'gray',
+              fill = bkgd_color,
+              color = conus_outline_col,
               size = 0.6,
               linetype = "solid" ) +
       geom_sf(data = counties_sf,
-              color = "lightgray",
+              color = counties_outline_col,
               fill = NA,
               size = 0.1) +
       # by site count
       geom_point(data = county_bw_sf,
                  aes(size = site_count, geometry = geometry, fill = source_category),
-                 color = 'white',
+                 color = bkgd_color,
                  pch = 21,
                  stroke = 0.2,
                  alpha = 1,
@@ -1620,7 +1624,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
                    direction = "horizontal",
                    nrow = 1,
                    label.position = "bottom",
-                   override.aes = list(color = 'black'))) +
+                   override.aes = list(color = text_color))) +
       scale_fill_manual(name = 'Water source',
                          values = supply_colors) +
       guides(color = guide_legend(title = "",
@@ -1679,12 +1683,12 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
 
     map_perc <- ggplot() +
       geom_sf(data = conus_sf,
-              fill = "white",
-              color = 'gray',
+              fill = bkgd_color,
+              color = conus_outline_col,
               size = 0.6,
               linetype = "solid" ) +
       geom_sf(data = counties_sf,
-              color = "lightgray",
+              color = counties_outline_col,
               fill = NA,
               size = 0.1) +
       # by percent
