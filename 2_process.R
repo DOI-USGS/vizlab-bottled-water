@@ -5,12 +5,34 @@ source('2_process/src/data_utils.R')
 p2_targets <- list(
   ##### Set up state spatial data #####
   
+  # U.S. states
+  tar_target(p2_oconus_sf,
+             tigris::states(cb = TRUE) %>%
+               st_transform(p1_proj) %>%
+               mutate(group = case_when(
+                 STUSPS %in% c(state.abb[!state.abb %in% c('AK', 'HI')], 'DC') ~ 'CONUS',
+                 STUSPS %in% c('GU', 'MP') ~ 'GU_MP',
+                 STUSPS %in% c('PR', 'VI') ~ 'PR_VI',
+                 TRUE ~ STUSPS
+               )) %>%
+               filter(group %in% c('CONUS', 'AK', 'HI', 'GU_MP', 'PR_VI', 'AS'))),
+  
   # CONUS states
   tar_target(p2_conus_sf,
-             spData::us_states %>% 
-               st_transform(p1_proj) %>%
+             p2_oconus_sf %>%
+               filter(STUSPS %in% state.abb[!state.abb %in% c('AK', 'HI')]) %>%
                add_centroids() %>%
                mutate(location = 'mainland')),
+  
+  # All counties
+  tar_target(p2_counties_oconus_sf,
+             tigris::counties() %>%
+               st_transform(crs = p1_proj) %>%
+               left_join(p2_oconus_sf %>% 
+                           st_drop_geometry() %>% 
+                           dplyr::select(STUSPS, STATE_NAME = NAME, STATEFP, group), 
+                         by = 'STATEFP') %>%
+               filter(group %in% c('CONUS', 'AK', 'HI', 'GU_MP', 'PR_VI', 'AS'))),
   
   ##### Munge site inventory data ######
   tar_target(p2_inventory_sites,
