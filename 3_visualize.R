@@ -5,6 +5,55 @@ source('3_visualize/src/mapping_utils.R')
 p3_targets <- list(
 
   ##### Spatial context layers #####
+  tar_target(p3_conus_sf,
+             rmapshaper::ms_simplify(p2_conus_sf, keep=0.2)),
+  
+  tar_target(p3_counties_conus_sf,
+             p2_counties_oconus_sf %>%
+               filter(STATEFP %in% p3_conus_sf$STATEFP) %>%
+               rmapshaper::ms_simplify(keep = 0.2) %>%
+               st_intersection(st_union(p3_conus_sf))),
+  
+  tar_target(p3_oconus_group_simplification,
+             tibble(
+               group = unique(p2_oconus_sf$group)) %>%
+               mutate(simplification = case_when(
+                 group %in% c('GU_MP', 'PR_VI', 'HI', 'AS') ~ 0.5,
+                 group %in% c('AK') ~ 0.2,
+                 TRUE ~ 0.2
+               ))),
+  
+  tar_target(p3_oconus_sf,
+             purrr::pmap_dfr(p3_oconus_group_simplification, function(...) {
+               current_group = tibble(...)
+               p2_oconus_sf %>%
+                 filter(group == current_group$group) %>%
+                 rmapshaper::ms_simplify(keep = current_group$simplification)
+             }) %>%
+               st_make_valid()),
+  
+  tar_target(p3_oconus_county_group_simplification,
+             tibble(
+               group = unique(p2_oconus_sf$group)) %>%
+               mutate(simplification = case_when(
+                 group %in% c('GU_MP', 'PR_VI', 'HI', 'AS') ~ 0.02,
+                 group %in% c('AK') ~ 0.01,
+                 TRUE ~ 0.01
+               ))),
+  
+  tar_target(p3_counties_oconus_sf,
+             # Simplify county polygons
+             purrr::pmap_dfr(p3_oconus_county_group_simplification, function(...) {
+               current_group = tibble(...)
+               p2_counties_oconus_sf %>%
+                 filter(group == current_group$group) %>%
+                 rmapshaper::ms_simplify(keep = current_group$simplification)
+             }) %>%
+               # Then crop to simplified state polygons
+               st_intersection(st_union(p3_oconus_sf)) %>%
+               # Then add centroids
+               add_centroids()),
+  
   # Apply shifting to the sites
   tar_target(p3_inventory_sites_shifted,
              apply_shifts_to_sites(
