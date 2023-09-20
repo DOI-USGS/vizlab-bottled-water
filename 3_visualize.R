@@ -68,6 +68,28 @@ p3_targets <- list(
                                    outline_states = TRUE,
                                    states_shp = p1_nws_states_shp)),
 
+  ##### GEOJSONS #####
+  tar_target(p3_facility_summary_county_sf,
+             p3_counties_oconus_sf %>%
+               dplyr::select(STATEFP, GEOID, NAMELSAD, STUSPS, STATE_NAME, 
+                             geometry, geometry_point) %>%
+               full_join(p2_facility_summary_county, 
+                         by =c ('GEOID', 'NAMELSAD', 'STATEFP', 'STUSPS', 'STATE_NAME'))),
+  
+  # export geojson for each state group
+  
+  
+  # 'state_facility_type_summary.csv' ?
+  # readr::write_csv(p2_facility_type_summary_state, 'public/state_facility_type_summary.csv')
+  
+  
+  # export county polygons
+  
+  
+  # export summarized county data w/ county centroid geometry
+  
+  
+  
   ##### Figure parameters #####
   tar_target(p3_font_legend,
              {
