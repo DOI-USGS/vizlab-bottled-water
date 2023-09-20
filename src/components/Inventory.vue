@@ -14,7 +14,7 @@
                         The bottled water industry estimates that the United States consumed 15 billion gallons (57 billion liters) of bottled water in 2020 (International Bottled Water Association). That's 45 gallons of bottled water per person. If you consider how much water it takes to produce each bottle of water (not including the packaging), the number is closer to 63 gallons—enough to fill a standard bathtub one-and-a-half times. 
                     </p>
                 </div>
-                <img src="../assets/images/bottled-water_consumption-pictogram_small_2023-09-08.png">
+                <img src="../assets/images/bottled-water_consumption-pictogram_small_2023-09-19.png">
                 <div class="text-container">
                     <p>
                         Despite what we know about bottled water consumption, data about how much water is taken from the environment for bottled water and other beverages are harder to come by. Reporting is  variable, and some states do not permit public sharing of beverage-bottling data. Without these data, we can't measure the impact that bottled water has on the water cycle locally, regionally, or nationally.  
