@@ -104,8 +104,9 @@ p2_targets <- list(
                summarize(site_count = n()) |>
                group_by(full_fips) |>
                mutate(percent = site_count/sum(site_count)*100) |>
+               # Filter out type 'undetermined' for now
                filter(source_category %in%
-                        c("self supply", "combination", "public supply")) |> # Filter out type 'undetermined' for now
+                        c("self supply", "combination", "public supply")) |>
                mutate(source_category = factor(source_category, levels =
                                                  c("self supply", "combination", "public supply"))) |>
                st_drop_geometry()),
