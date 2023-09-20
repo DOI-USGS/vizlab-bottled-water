@@ -14,17 +14,40 @@ p3_targets <- list(
                rmapshaper::ms_simplify(keep = 0.2) %>%
                st_intersection(st_union(p3_conus_sf))),
   
-  tar_target(p3_oconus_group_simplification,
+  tar_target(p3_oconus_group_simplification_low,
              tibble(
                group = unique(p2_oconus_sf$group)) %>%
                mutate(simplification = case_when(
-                 group %in% c('GU_MP', 'PR_VI', 'HI', 'AS') ~ 0.5,
-                 group %in% c('AK') ~ 0.2,
-                 TRUE ~ 0.2
+                 group %in% c('AS') ~ 0.06,
+                 group %in% c('PR_VI', 'GU_MP') ~ 0.1,
+                 group %in% c('HI') ~ 0.15,
+                 group %in% c('AK') ~ 0.02,
+                 TRUE ~ 0.3
                ))),
   
-  tar_target(p3_oconus_sf,
-             purrr::pmap_dfr(p3_oconus_group_simplification, function(...) {
+  tar_target(p3_oconus_group_simplification_high,
+             tibble(
+               group = unique(p2_oconus_sf$group)) %>%
+               mutate(simplification = case_when(
+                 group %in% c('AS') ~ 0.03,
+                 group %in% c('GU_MP') ~ 0.05, # may need to be increased?
+                 group %in% c('PR_VI') ~ 0.03,
+                 group %in% c('HI') ~ 0.05,
+                 group %in% c('AK') ~ 0.01,
+                 TRUE ~ 0.02
+               ))),
+  
+  tar_target(p3_oconus_low_sf,
+             purrr::pmap_dfr(p3_oconus_group_simplification_low, function(...) {
+               current_group = tibble(...)
+               p2_oconus_sf %>%
+                 filter(group == current_group$group) %>%
+                 rmapshaper::ms_simplify(keep = current_group$simplification)
+             }) %>%
+               st_make_valid()),
+  
+  tar_target(p3_oconus_high_sf,
+             purrr::pmap_dfr(p3_oconus_group_simplification_high, function(...) {
                current_group = tibble(...)
                p2_oconus_sf %>%
                  filter(group == current_group$group) %>%
@@ -36,9 +59,10 @@ p3_targets <- list(
              tibble(
                group = unique(p2_oconus_sf$group)) %>%
                mutate(simplification = case_when(
-                 group %in% c('GU_MP', 'PR_VI', 'HI', 'AS') ~ 0.02,
-                 group %in% c('AK') ~ 0.01,
-                 TRUE ~ 0.01
+                 group %in% c('GU_MP', 'PR_VI', 'HI') ~ 0.02,
+                 group %in% c('AS') ~ 0.5,
+                 group %in% c('AK') ~ 0.06,
+                 TRUE ~ 0.04
                ))),
   
   tar_target(p3_counties_oconus_sf,
@@ -49,8 +73,8 @@ p3_targets <- list(
                  filter(group == current_group$group) %>%
                  rmapshaper::ms_simplify(keep = current_group$simplification)
              }) %>%
-               # Then crop to simplified state polygons
-               st_intersection(st_union(p3_oconus_sf)) %>%
+               # Then crop to simplified state polygons (low simplification)
+               st_intersection(st_union(p3_oconus_low_sf)) %>%
                # Then add centroids
                add_centroids()),
   
