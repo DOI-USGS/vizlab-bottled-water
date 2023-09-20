@@ -113,7 +113,7 @@ p3_targets <- list(
 
   tar_target(p3_sites_map_conus,
              map_sites(site = p2_inventory_sites_sf_CONUS,
-                       states = p2_conus_sf,
+                       states = p3_conus_sf,
                        site_size = p3_sites_map_params$site_size,
                        fill_by_type = FALSE,
                        site_fill_colors = p3_sites_map_params$site_fill_colors,
@@ -213,7 +213,7 @@ p3_targets <- list(
   ##### Facility types (maps and figures) #####
   tar_target(p3_sites_map_conus_type,
              map_sites(sites = filter(p2_inventory_sites_sf_CONUS, WB_TYPE == p2_facility_types),
-                       states = p2_conus_sf,
+                       states = p3_conus_sf,
                        site_size = 1.3,
                        fill_by_type = TRUE,
                        site_fill_colors = p3_site_type_colors,
@@ -536,7 +536,7 @@ p3_targets <- list(
   tar_target(p3_regions_map,
              map_regions(regions = p1_regions_sf,
                          region_info = p1_region_info,
-                         states = p2_conus_sf,
+                         states = p3_conus_sf,
                          state_fill = '#E2E2E2',
                          state_color = "#ffffff",
                          state_size = 0.5,
