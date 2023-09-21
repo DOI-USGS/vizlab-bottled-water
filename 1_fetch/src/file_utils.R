@@ -48,3 +48,23 @@ download_file_from_url <- function(url, outfile) {
     stop('file download failed')
   }
 }
+
+#' @title write to geojson
+#' @description write data to geojson
+#' @param data dataframe to be written to geojson
+#' @param cols_to_keep columns from dataframe to write
+#' @param outfile filepath to which geojson should be written
+#' @return the filepath of the saved geojson
+write_to_geojson <- function(data, cols_to_keep = NULL, outfile) {
+  if (file.exists(outfile)) unlink(outfile)
+  
+  if (!is.null(cols_to_keep)) {
+    data <- dplyr::select(data, !!cols_to_keep)
+  }
+  
+  data %>%
+    st_transform(crs = 4326) %>%
+    st_write(outfile, append = FALSE)
+  
+  return(outfile)
+}

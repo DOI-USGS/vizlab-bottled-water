@@ -1,6 +1,8 @@
+source('1_fetch/src/file_utils.R')
 source('3_visualize/src/plot_utils.R')
 source('3_visualize/src/sf_utils_shift.R')
 source('3_visualize/src/mapping_utils.R')
+source('3_visualize/src/spatial_data_utils.R')
 
 p3_targets <- list(
 
@@ -91,26 +93,39 @@ p3_targets <- list(
                                    states_shp = p1_nws_states_shp)),
 
   ##### GEOJSONS #####
-  tar_target(p3_facility_summary_county_sf,
-             p3_counties_oconus_sf %>%
-               dplyr::select(STATEFP, GEOID, NAMELSAD, STUSPS, STATE_NAME, 
-                             geometry, geometry_point) %>%
-               full_join(p2_facility_summary_county, 
-                         by =c ('GEOID', 'NAMELSAD', 'STATEFP', 'STUSPS', 'STATE_NAME'))),
   
-  # export geojson for each state group
+  # Export geojson for each state group in p3_oconus_high_sf (for national map view)
+  tar_target(p3_oconus_high_geojsons,
+             write_to_geojson(data = filter(p3_oconus_high_sf, 
+                                            group == p3_oconus_group_simplification$group),
+                              cols_to_keep = c('GEOID', 'NAME', 'geometry'),
+                              outfile = sprintf("public/states_poly_%s.geojson", 
+                                                p3_oconus_group_simplification$group)),
+             pattern = map(p3_oconus_group_simplification),
+             format = 'file'),
   
-  
-  # 'state_facility_type_summary.csv' ?
-  # readr::write_csv(p2_facility_type_summary_state, 'public/state_facility_type_summary.csv')
-  
-  
+  # Export single geojson for p3_oconus_low_sf (for zoomed-in state views)
+  tar_target(p3_oconus_low_geojson,
+             write_to_geojson(data = p3_oconus_low_sf,
+                              cols_to_keep = c('GEOID', 'NAME', 'geometry'),
+                              outfile = "public/states_poly_conus_oconus.geojson"),
+             format = 'file'),
+
   # export county polygons
+  tar_target(p3_counties_oconus_geojson,
+             write_to_geojson(data = p3_counties_oconus_sf,
+                              cols_to_keep = c('GEOID', 'NAMELSAD', 'STATE_NAME', 
+                                               'geometry'),
+                              outfile = "public/counties_crop_poly_oconus.geojson"),
+             format = 'file'),
   
   
   # export summarized county data w/ county centroid geometry
-  
-  
+  tar_target(p3_county_centroids_oconus_geojson,
+             export_county_data_to_geojson(data = p2_facility_summary_county,
+                                           centroids_sf = p3_counties_oconus_sf,
+                                           outfile = "public/counties_crop_centroids_oconus.geojson"),
+             format = 'file'),
   
   ##### Figure parameters #####
   tar_target(p3_font_legend,
