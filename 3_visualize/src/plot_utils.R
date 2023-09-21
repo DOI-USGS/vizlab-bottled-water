@@ -1583,7 +1583,6 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
                                   map_perc_legend, map_count_legend) {
 
   # drop undetermined source color and reorder for maps
-  supply_colors <- supply_colors[-which(names(supply_colors) == "undetermined")]
   supply_colors <- supply_colors[reorder_source_category]
 
   # import font (p3_font_legend doesn't seem to work on Mac)
@@ -1599,15 +1598,15 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
     janitor::clean_names()
 
     map_count <- ggplot() +
-      geom_sf(data = conus_sf,
-              fill = bkgd_color,
-              color = conus_outline_col,
-              size = 0.6,
-              linetype = "solid" ) +
       geom_sf(data = counties_sf,
               color = counties_outline_col,
+              fill = bkgd_color,
+              linewidth = 0.05) +
+      geom_sf(data = conus_sf,
               fill = NA,
-              size = 0.1) +
+              color = conus_outline_col,
+              linewidth = 0.1,
+              linetype = "solid" ) +
       # by site count
       geom_point(data = county_bw_sf,
                  aes(size = site_count, geometry = geometry, fill = source_category),
@@ -1618,7 +1617,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
                  stat = "sf_coordinates") +
       scale_x_continuous(expand = c(0,0)) +
       scale_y_continuous(expand = c(0,0)) +
-      scale_size(range = count_size_range, limits = eval(parse(text = count_size_limit)),
+      scale_size(range = count_size_range, limits = c(1, count_size_limit),
                  name = 'Site count',
                  guide = guide_legend(
                    direction = "horizontal",
@@ -1673,7 +1672,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
             size = size)
         ) +
         scale_color_identity() +
-        scale_size(range = count_size_range, limits = eval(parse(text = count_size_limit))) +
+        scale_size(range = count_size_range, limits = c(1, count_size_limit)) +
         theme_void() +
         theme(
           legend.position = 'none',
@@ -1682,15 +1681,15 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
     })
 
     map_perc <- ggplot() +
-      geom_sf(data = conus_sf,
-              fill = bkgd_color,
-              color = conus_outline_col,
-              size = 0.6,
-              linetype = "solid" ) +
       geom_sf(data = counties_sf,
               color = counties_outline_col,
+              fill = bkgd_color,
+              linewidth = 0.05) +
+      geom_sf(data = conus_sf,
               fill = NA,
-              size = 0.1) +
+              color = conus_outline_col,
+              linewidth = 0.1,
+              linetype = "solid" ) +
       # by percent
       geom_sf(data = county_bw_sf,
               aes(fill = source_category, alpha = percent, group = source_category),
