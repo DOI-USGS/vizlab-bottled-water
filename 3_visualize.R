@@ -44,7 +44,8 @@ p3_targets <- list(
                  filter(group == current_group$group) %>%
                  rmapshaper::ms_simplify(keep = current_group$simplification_low)
              }) %>%
-               st_make_valid()),
+               st_make_valid() %>%
+               mutate(data_id = paste(GEOID, 'low', sep = '_'))),
   
   tar_target(p3_oconus_high_sf,
              purrr::pmap_dfr(p3_oconus_group_simplification, function(...) {
@@ -53,7 +54,8 @@ p3_targets <- list(
                  filter(group == current_group$group) %>%
                  rmapshaper::ms_simplify(keep = current_group$simplification_high)
              }) %>%
-               st_make_valid()),
+               st_make_valid() %>%
+               mutate(data_id = paste(GEOID, 'high', sep = '_'))),
   
   tar_target(p3_oconus_county_group_simplification,
              tibble(
@@ -98,7 +100,7 @@ p3_targets <- list(
   tar_target(p3_oconus_high_geojsons,
              write_to_geojson(data = filter(p3_oconus_high_sf, 
                                             group == p3_oconus_group_simplification$group),
-                              cols_to_keep = c('GEOID', 'NAME', 'geometry'),
+                              cols_to_keep = c('GEOID', 'NAME', 'data_id', 'geometry'),
                               outfile = sprintf("public/states_poly_%s.geojson", 
                                                 p3_oconus_group_simplification$group)),
              pattern = map(p3_oconus_group_simplification),
@@ -107,7 +109,7 @@ p3_targets <- list(
   # Export single geojson for p3_oconus_low_sf (for zoomed-in state views)
   tar_target(p3_oconus_low_geojson,
              write_to_geojson(data = p3_oconus_low_sf,
-                              cols_to_keep = c('GEOID', 'NAME', 'geometry'),
+                              cols_to_keep = c('GEOID', 'NAME', 'data_id', 'geometry'),
                               outfile = "public/states_poly_conus_oconus.geojson"),
              format = 'file'),
 
