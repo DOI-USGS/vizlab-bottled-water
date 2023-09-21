@@ -473,7 +473,7 @@ export default {
       //   .enter()
       //   .append("path")
       //   .attr("class", "locator-paths")
-      //   .attr("id", d => "state-" + d.properties.FIPS)
+      //   .attr("id", d => "state-" + d.properties.GEOID)
       //   .attr("d", mapPathLocator)
 
       this.mapBounds.append("g")
@@ -826,7 +826,7 @@ export default {
 
       this.stateGroups = this.mapBounds.selectAll(".states")
         .selectAll(".state")
-        .data(data, d => d.properties.FIPS)
+        .data(data, d => d.properties.GEOID)
 
       const oldStateGroups = this.stateGroups.exit()
 
@@ -839,7 +839,7 @@ export default {
 
       const newStateGroups = this.stateGroups.enter().append("g")
         .attr("class", "state")
-        .attr("id", d => 'state-group-' + d.properties.FIPS)
+        .attr("id", d => 'state-group-' + d.properties.GEOID)
         .attr("tabindex", "0")
         .attr("role", "listitem")
         .attr("aria-label", d => d.properties.NAME)
@@ -848,7 +848,7 @@ export default {
       let stateStrokeColor = state === this.defaultViewName ? "#949494" : "#636363"
       newStateGroups.append("path")
         .attr("class", "state-paths")
-        .attr("id", d => "state-" + d.properties.FIPS)
+        .attr("id", d => "state-" + d.properties.GEOID)
         .attr("d", d => {
           // let computedBounds = self.calculateScaleTranslation(d, selectedMapPath)
           // // console.log(d.properties.NAME)
@@ -919,7 +919,7 @@ export default {
       const stateShapes = this.stateGroups.select("path")
 
       if (!(state === this.defaultViewName)) {
-        let selectedStateId = data[0].properties.FIPS
+        let selectedStateId = data[0].properties.GEOID
         this.d3.selectAll('#state-group-'+ selectedStateId)
           .raise()
       }
@@ -957,7 +957,7 @@ export default {
       // if (!(state === this.defaultViewName)) {
       //   const selectedStateData = data.filter(d => d.properties.NAME === state)
       //   console.log(selectedStateData)
-      //   const selectedStateId = selectedStateData[0].properties.FIPS
+      //   const selectedStateId = selectedStateData[0].properties.GEOID
 
       //   const selectedStateGroup = d3.selectAll('#state-group-'+ selectedStateId)
       //     .raise()
@@ -982,12 +982,12 @@ export default {
       if (state === this.defaultViewName) {
         stateShapes
           .on("mouseover", (event, d) => {
-            this.d3.selectAll("#state-" + d.properties.FIPS)
+            this.d3.selectAll("#state-" + d.properties.GEOID)
               .style("fill", "#000000")
               .style("fill-opacity", 0.1)
           })
           .on("mouseout", (event, d) => {
-            this.d3.selectAll("#state-" + d.properties.FIPS)
+            this.d3.selectAll("#state-" + d.properties.GEOID)
               .style("fill", "#fffff")
               .style("fill-opacity", 0)
           })
