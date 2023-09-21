@@ -78,7 +78,9 @@ p3_targets <- list(
                # Then crop to simplified state polygons (low simplification)
                st_intersection(st_union(p3_oconus_low_sf)) %>%
                # Then add centroids
-               add_centroids()),
+               add_centroids() %>%
+               # Cast polygons to multipolygons to ensure consistent geometry
+               sf::st_cast("MULTIPOLYGON")),
   
   # Apply shifting to the sites
   tar_target(p3_inventory_sites_shifted,
@@ -127,6 +129,23 @@ p3_targets <- list(
              export_county_data_to_geojson(data = p2_facility_summary_county,
                                            centroids_sf = p3_counties_oconus_sf,
                                            outfile = "public/counties_crop_centroids_oconus.geojson"),
+             format = 'file'),
+  
+  ###### Convert geojsons to topojsons with reduced precision ######
+  # Simplified HUC12 sf
+  # Requires system installation of mapshaper
+  # https://github.com/mbloch/mapshaper
+  tar_target(p3_counties_oconus_topojson,
+             {
+               out_file <- paste0(tools::file_path_sans_ext(p3_counties_oconus_geojson),
+                                  '.json')
+               
+               # Simplify w/ mapshaper cli
+               system(sprintf('mapshaper %s -o  %s precision=0.001 format=topojson', 
+                              p3_counties_oconus_geojson, out_file))
+               
+               return(out_file)
+             },
              format = 'file'),
   
   ##### Figure parameters #####
