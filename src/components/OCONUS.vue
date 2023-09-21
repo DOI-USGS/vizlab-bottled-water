@@ -55,7 +55,8 @@ export default {
       statePolysGUMPJSON: null,
       statePolysHIJSON: null,
       statePolysPRVIJSON: null,
-      statePolyASJSON: null,
+      statePolysASJSON: null,
+      statePolysDetailed: null,
       statePolys: null,
       countyPolys: null,
       countyPoints: null,
@@ -143,7 +144,8 @@ export default {
         self.d3.json(self.publicPath + "states_poly_GU_MP.geojson"),
         self.d3.json(self.publicPath + "states_poly_HI.geojson"),
         self.d3.json(self.publicPath + "states_poly_PR_VI.geojson"),
-        self.d3.json(self.publicPath + "states_poly_AS.geojson")
+        self.d3.json(self.publicPath + "states_poly_AS.geojson"),
+        self.d3.json(self.publicPath + "states_poly_conus_oconus.geojson")
       ];
       Promise.all(promises).then(self.callback)
     },
@@ -176,6 +178,9 @@ export default {
 
       this.statePolysASJSON = data[8];
       const statePolysAS = this.statePolysASJSON.features;
+
+      const statePolysDetailedJSON = data[9];
+      this.statePolysDetailed = statePolysDetailedJSON.features;
 
       // TO DO - If area-specific polys (e.g. this.statePolysAK) aren't used for scaling in initMap(), 
       // could simply load in a single geojson of OCONUS + CONUS states
@@ -789,7 +794,7 @@ export default {
       //   selectedMapPath = this.mapPath
       //   featureBounds = self.calculateScaleTranslation(data, selectedMapPath)
       } else {
-        data = this.statePolys.filter(d => 
+        data = this.statePolysDetailed.filter(d => 
           d.properties.NAME === state)
         
         // Could set path for area here
@@ -826,7 +831,7 @@ export default {
 
       this.stateGroups = this.mapBounds.selectAll(".states")
         .selectAll(".state")
-        .data(data, d => d.properties.GEOID)
+        .data(data, d => d.properties.data_id)
 
       const oldStateGroups = this.stateGroups.exit()
 
