@@ -75,6 +75,11 @@ p2_targets <- list(
                summarize(site_count = n()) %>%
                mutate(WB_TYPE = factor(WB_TYPE, levels = p2_facility_type_summary$WB_TYPE))),
   
+  tar_target(p2_facility_type_summary_state_csv,
+             write_to_csv(data = p2_facility_type_summary_state, 
+                          outfile = 'public/state_facility_type_summary.csv'),
+             format = 'file'),
+  
   # Get summary counts of facilities, by county
   tar_target(p2_facility_summary_county,
              get_county_facility_counts(sites_sf = p2_inventory_sites_sf,
