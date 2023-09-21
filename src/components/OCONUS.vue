@@ -27,6 +27,7 @@
 </template>
 <script>
 import * as d3Base from 'd3';
+import * as topojson from "topojson-client";
 import { csv } from 'd3';
 import { isMobile } from 'mobile-device-detect';
 // import Dropdown from '@/components/Dropdown.vue'
@@ -137,7 +138,7 @@ export default {
       // Keep only essential attribute fields to reduce size
       let promises = [
         self.d3.json(self.publicPath + "states_poly_CONUS.geojson"),
-        self.d3.json(self.publicPath + "counties_crop_poly_oconus.geojson"),
+        self.d3.json(self.publicPath + "counties_crop_poly_oconus.json"),
         self.d3.json(self.publicPath + "counties_crop_centroids_oconus.geojson"),
         self.d3.csv(self.publicPath + 'state_facility_type_summary.csv'),
         self.d3.json(self.publicPath + "states_poly_AK.geojson"),
@@ -157,7 +158,7 @@ export default {
       const statePolysCONUS = this.statePolysCONUSJSON.features;
 
       const countyPolyJSON = data[1];
-      this.countyPolys = countyPolyJSON.features;
+      this.countyPolys = topojson.feature(countyPolyJSON, countyPolyJSON.objects.counties_crop_poly_oconus).features;
 
       const countyPointJSON = data[2];
       this.countyPoints = countyPointJSON.features;
