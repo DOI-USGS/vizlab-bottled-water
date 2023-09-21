@@ -443,21 +443,12 @@ p3_targets <- list(
                names(supply_colors) <- p2_source_order
                return(supply_colors)
              }),
-  tar_target(p3_conus_sf,
-             rmapshaper::ms_simplify(p2_conus_sf, keep = 0.2)),
-
-  tar_target(p3_counties_sf,
-             tigris::counties() |>
-               st_transform(crs = p1_proj) |>
-               filter(STATEFP %in% p3_conus_sf$STATEFP) |>
-               rmapshaper::ms_simplify(keep = 0.2) |>
-               st_intersection(st_union(p3_conus_sf))),
 
   # CONUS bottled water percent and count facilities maps
   tar_target(p3_source_perc_count_bottled_water_facet_map_png,
              generate_bw_conus_map(supply_summary_county_bw = p2_bw_inventory_sites_county_CONUS,
                                    conus_sf = p3_conus_sf,
-                                   counties_sf = p3_counties_sf,
+                                   counties_sf = p3_counties_conus_sf,
                                    reorder_source_category = c("self supply", "combination", "public supply"),
                                    count_size_range = c(0.25, 8),
                                    count_size_limit = max(p2_bw_inventory_sites_county_CONUS$site_count),
