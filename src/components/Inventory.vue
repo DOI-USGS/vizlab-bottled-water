@@ -11,6 +11,11 @@
             <div id="text">
                 <div class="text-container">
                     <p>
+                        There are many type of facilities where water is the primary part of a beverage that is bottled.  The USGS has compiled a list of facilities for several beverage types with the main focus on bottled water (Buchwald and others, 2023). 
+                    </p>
+                </div>
+                <div class="text-container">
+                    <p>
                         The bottled water industry estimates that the United States consumed 15 billion gallons (57 billion liters) of bottled water in 2020 (International Bottled Water Association). That's 45 gallons of bottled water per person. 
                     </p>
                 </div>
