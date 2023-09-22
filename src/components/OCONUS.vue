@@ -226,7 +226,7 @@ export default {
           top: 30,
           right: 5,
           bottom: 50,
-          left: 5
+          left: 90
         }
       }
       this.dimensions.boundedWidth = this.dimensions.width - this.dimensions.margin.left - this.dimensions.margin.right
@@ -531,17 +531,29 @@ export default {
           }px)`)
           .attr("role", "presentation")
           .attr("aria-hidden", true)
+          .append("text")
+            .attr("class", "x-axis-label")
+            .attr("x", this.dimensions.boundedWidth / 2)
+            .attr("y", this.dimensions.margin.bottom - 10)
+            .style("fill", "black")
+            .style("text-anchor", "middle")
+            .style("font-size", "1.4em")
+            .attr("role", "presentation")
+            .attr("aria-hidden", true)
+      this.chartBounds.append("g")
+        .attr("class", "y-axis")
+        .attr("role", "presentation")
+        .attr("aria-hidden", true)
         .append("text")
-          .attr("class", "x-axis-label")
-          .attr("x", this.dimensions.boundedWidth / 2)
-          .attr("y", this.dimensions.margin.bottom - 10)
+          .attr("class", "y-axis-label")
+          // .attr("transform", "rotate(-90)")
+          .attr("x", -10)
+          .attr("y", this.dimensions.boundedHeight / 2)
           .style("fill", "black")
           .style("text-anchor", "middle")
           .style("font-size", "1.4em")
           .attr("role", "presentation")
           .attr("aria-hidden", true)
-      this.chartBounds.append("g")
-        .attr("class", "y-axis")
     },
     drawHistogram(state) {
       const self = this;
@@ -760,14 +772,27 @@ export default {
           }`)
       }
 
-      // const yAxisGenerator = d3.axisLeft()
-      //   .scale(yScale)
+      const yAxisGenerator = this.d3.axisLeft()
+        .scale(yScale)
+        .tickValues([]);
 
-      // const yAxis = this.chartBounds.select(".y-axis")
-      //   .transition(self.getUpdateTransition())
-      //   .call(yAxisGenerator)
-      //   .attr("role", "presentation")
-      //   .attr("aria-hidden", true)
+      const yAxis = this.chartBounds.select(".y-axis")
+
+      yAxis
+        .transition(self.getUpdateTransition())
+        .call(yAxisGenerator)
+        .select(".domain").remove()
+        // .attr("role", "presentation")
+        // .attr("aria-hidden", true)
+
+      yAxis.selectAll(".tick line").attr("stroke", "None")
+
+      const yAxisLabel = yAxis.select(".y-axis-label")
+
+      yAxisLabel
+        .text('Number of facilities')
+        // .attr("transform", "rotate(-90)")
+
     },
     drawMap(state, scale) {
       const self = this;
