@@ -415,11 +415,20 @@ p3_targets <- list(
   tar_target(p3_wu_facilities_colors,
              c("#E2A625", "#90aed5", "#3f6ca6", "#213958", "#787979", "black")),
   tar_target(p3_wu_availability_facilities_labels,
-             c("All Bottling Facilities", "Public Supply", "Well", "Spring", "Surface Water Intake", "Combination", "Other")),
+             c("Public Supply", "Well", "Spring", "Surface Water Intake", "Combination", "Other")),
   tar_target(p3_wu_availability_facilities_colors,
              {
-               supply_colors <- c(p2_wu_bw_colors[1], p3_wu_facilities_colors)
+               supply_colors <- c(p3_wu_facilities_colors)
                names(supply_colors) <- p3_wu_availability_facilities_labels
+               return(supply_colors)
+             }),
+
+  tar_target(p3_bw_availability_labels,
+             c("All Bottling Facilities", "Bottling Facilities with Water Use Data")),
+  tar_target(p3_wu_supply_colors,
+             {
+               supply_colors <- p2_wu_bw_colors
+               names(supply_colors) <- p3_bw_availability_labels
                return(supply_colors)
              }),
   tar_target(p3_bw_availability_map_png,
@@ -427,8 +436,9 @@ p3_targets <- list(
                                  conus_outline_col = 'grey50',
                                  bw_inventory_sf = p2_bw_inventory_conus_sf,
                                  bw_inventory_wu_sf = p2_bw_inventory_wu_sf,
-                                 supply_colors = p3_wu_availability_facilities_colors,
-                                 inventory_fill_name = p3_wu_availability_facilities_labels[1],
+                                 supply_colors = p3_wu_supply_colors,
+                                 inventory_fill_name = p3_bw_availability_labels[1],
+                                 bw_fill_name = p3_bw_availability_labels[2],
                                  alpha = 0.5,
                                  width = 16, height = 9,
                                  bkgd_color = 'white',
@@ -469,7 +479,7 @@ p3_targets <- list(
   tar_target(p3_wu_facilities_reduce_colors,
              {
                supply_colors <- p3_wu_facilities_colors
-               names(supply_colors) <- p3_wu_availability_facilities_labels[2:7]
+               names(supply_colors) <- p3_wu_availability_facilities_labels
                return(supply_colors)
              }),
   tar_target(p3_water_use_availablity_barplots,
@@ -484,7 +494,7 @@ p3_targets <- list(
                text_color = 'black',
                wu_avail_title = "Water Use Data Availability",
                wu_types_title = "Types of facilities with water use data",
-               wu_facil_title = "Sources of bottled water facilities\nwith water use data",
+               wu_facil_title = "Water bottling facilities with\nwater use data",
                bracket1_png_path = '3_visualize/in/bracket1_water_use.png',
                bracket2_png_path = '3_visualize/in/bracket2_water_use.png',
                outfile_template = '3_visualize/out/water_use_data_availability_barplots.png',

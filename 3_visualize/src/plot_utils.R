@@ -2629,7 +2629,8 @@ generate_source_summary_bar_chart <- function(supply_summary_state, supply_color
 #' @param bw_fill_name supply name for fill variable used for bottling facilities with water use data
 #' @param inventory_fill_name supply name for fill variable used for all bottling facilities
 #' @return the filepath of the saved plot
-bw_availability_map <- function(conus_sf, conus_outline_col, bw_inventory_sf, bw_inventory_wu_sf,
+bw_availability_map <- function(conus_sf, conus_outline_col, bw_fill_name,
+                                bw_inventory_sf, bw_inventory_wu_sf,
                                 width, height, bkgd_color, text_color,
                                 outfile_template, dpi, supply_colors,
                                 # bw_fill_name,
@@ -2658,7 +2659,7 @@ bw_availability_map <- function(conus_sf, conus_outline_col, bw_inventory_sf, bw
             alpha = alpha) +
     # bottling facilities with water use data
     geom_sf(data = bw_inventory_wu_sf,
-            aes(geometry = geometry, fill = source),
+            aes(geometry = geometry, fill = bw_fill_name),
             pch = 21,
             color = bkgd_color,
             size = 3) +
@@ -2829,7 +2830,7 @@ water_use_barplots <- function(width, height, bkgd_color, text_color,
           legend.box = "horizontal" ) +
     scale_fill_manual(values = supply_avail_cols)+
     scale_y_continuous(breaks = seq(0, 100, by = 25),
-                       labels = c("0", "25", "50", "75", "100%"),
+                       labels = c("0%", "25%", "50%", "75%", "100%"),
                        expand = c(0, 0.1)) +
     scale_x_discrete(expand = c(0,0)) +
     guides(fill = guide_legend(ncol = 1))
@@ -2854,7 +2855,7 @@ water_use_barplots <- function(width, height, bkgd_color, text_color,
           legend.box = "horizontal" ) +
     scale_fill_manual(values = supply_type_cols)+
     scale_y_continuous(breaks = seq(0, 100, by = 25),
-                       labels = c("0", "25", "50", "75", "100%"),
+                       labels = c("0%", "25%", "50%", "75%", "100%"),
                        expand = c(0, 0.1)) +
     scale_x_discrete(expand = c(0,0)) +
     guides(fill = guide_legend(ncol = 1))
@@ -2879,7 +2880,7 @@ water_use_barplots <- function(width, height, bkgd_color, text_color,
           legend.justification = "center",
           legend.box = "horizontal") +
     scale_y_continuous(breaks = seq(0, 100, by = 25),
-                       labels = c("0", "25", "50", "75", "100%"),
+                       labels = c("0%", "25%", "50%", "75%", "100%"),
                        expand = c(0, 0.1)) +
     scale_fill_manual(values = supply_facil_cols) +
     scale_x_discrete(expand = c(0,0))+
