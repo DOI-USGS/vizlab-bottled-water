@@ -1323,7 +1323,7 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
     scale_fill_manual(name = 'source_category', values = supply_colors) +
     scale_x_discrete(expand = c(0,0)) +
     scale_y_continuous(breaks = rev(c(0, 25, 50, 75, 100)),
-                       labels = rev(c(0, 25, 50, 75, "100%")),
+                       labels = rev(c("0%", "25%", "50%", "75%", "100%")),
                        expand = c(0,0)) +
     ggtitle('National') +
     theme_minimal() +
@@ -1870,10 +1870,11 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
 #' @param get_percent if else statement where if TRUE, create a stacked barplot of percent distribution of water sources with expanded self supply facilities,
 #' if FALSE, return barplot of site count distributions of water sources with expanded self supply facilities.
 #' @param bracket_png_path path for bracket png made to group self supply categories together in final figure
+#' @param y_title, y-axis title
 #' @return the filepath of the saved plot
 expanded_ss_barplot <- function(source_summary, supply_colors, font_legend,
                                 width, height, bkgd_color, text_color, outfile_template, dpi,
-                                get_percent, bracket_png_path, reorder_source_category) {
+                                get_percent, bracket_png_path, reorder_source_category, y_title) {
 
   # target `p3_font_legend` sometimes doesnt load on my end ?
   font_legend <- 'Source Sans Pro'
@@ -1890,7 +1891,7 @@ expanded_ss_barplot <- function(source_summary, supply_colors, font_legend,
     scale_fill_manual(name = 'water_source', values = supply_colors, drop = FALSE) +
     scale_x_discrete(expand = c(0,0)) +
     scale_y_continuous(breaks = seq(0, 100, by = 25),  # Specify breaks at 0, 25, 50, 75, and 100
-                       labels = c("0", "25", "50", "75", "100%"),  # Specify labels for the breaks
+                       labels = c("0%", "25%", "50%", "75%", "100%"),  # Specify labels for the breaks
                        expand = c(0, 0.1)) +
     theme_minimal() +
     theme(
@@ -1925,10 +1926,12 @@ expanded_ss_barplot <- function(source_summary, supply_colors, font_legend,
     scale_fill_manual(name = 'water_source', values = supply_colors, drop = FALSE) +
     scale_x_discrete(expand = c(0,0)) +
     scale_y_continuous(breaks = seq(0, 20000, by = 5000),
-                       labels = c("0", "5000", "10000", "15000", "20000")) + # Specify labels for the breaks) +
+                       labels = c("0", "5000", "10000", "15000", "20000")) + # Specify labels for the breaks)
+    labs(y = y_title) +
     theme_minimal() +
     theme(
-      axis.title = element_blank(),
+      axis.title.x = element_blank(),
+      axis.title.y = element_text(margin = margin(0, 30, 0, 5)),
       panel.grid = element_blank(),
       axis.ticks.y = element_line(color = "lightgrey", size = 0.5),
       axis.text.x = element_text(size = 14),
@@ -1963,7 +1966,7 @@ expanded_ss_barplot <- function(source_summary, supply_colors, font_legend,
 
   # compose final plot
   expand_ss_barplot <- ggdraw(ylim = c(0,1),
-                       xlim = c(0,1)) +
+                              xlim = c(0,1)) +
     # a background
     draw_grob(canvas,
               x = 0, y = 1,
@@ -1986,7 +1989,11 @@ expanded_ss_barplot <- function(source_summary, supply_colors, font_legend,
                color = text_color,
                lineheight = 1,
                fontfamily = font_legend,
-               fontface = "bold") +
+               fontface = "bold")
+
+  if (get_percent == TRUE) {
+
+    expand_ss_barplot <- expand_ss_barplot +
     # add bracket for self supply categories
     draw_image(magick::image_read(bracket_png_path),
                x = 0.427,
@@ -2002,6 +2009,26 @@ expanded_ss_barplot <- function(source_summary, supply_colors, font_legend,
                lineheight = 1,
                fontfamily = font_legend)
 
+  }  else {
+    # need to adjust counts barplot due to y-axis title
+    expand_ss_barplot <- expand_ss_barplot +
+      # add bracket for self supply categories
+      draw_image(magick::image_read(bracket_png_path),
+                 x = 0.447,
+                 y = -0.66,
+                 width = 0.3,
+                 height = 1.5) +
+      draw_label("self supply",
+                 x = 0.577, y = 0.07,
+                 size = 14,
+                 hjust = 0,
+                 vjust = 1,
+                 color = text_color,
+                 lineheight = 1,
+                 fontfamily = font_legend)
+
+
+  }
 
   ggsave(outfile_template, expand_ss_barplot, width = width, height = height, dpi = dpi, bg = bkgd_color)
 
