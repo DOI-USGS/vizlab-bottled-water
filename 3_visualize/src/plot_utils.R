@@ -2950,7 +2950,7 @@ water_use_barplots <- function(width, height, bkgd_color, text_color,
                height = 4) +
     draw_image(magick::image_read(bracket2_png_path),
                x = 0.532,
-               y = -1.538,
+               y = -1.536,
                width = 0.187,
                height = 4)
 
