@@ -5,26 +5,26 @@ source('3_visualize/src/mapping_utils.R')
 source('3_visualize/src/spatial_data_utils.R')
 
 p3_targets <- list(
-
+  
   ##### Spatial context layers #####
   tar_target(p3_conus_sf,
              rmapshaper::ms_simplify(p2_conus_sf, keep=0.2)),
   
   tar_target(p3_counties_conus_sf,
-             p2_counties_oconus_sf %>%
+             p2_counties_conus_oconus_sf %>%
                filter(STATEFP %in% p3_conus_sf$STATEFP) %>%
                rmapshaper::ms_simplify(keep = 0.2) %>%
                st_intersection(st_union(p3_conus_sf))),
   
-  tar_target(p3_oconus_group_simplification,
+  tar_target(p3_conus_oconus_group_simplification,
              tibble(
-               group = unique(p2_oconus_sf$group)) %>%
+               group = unique(p2_conus_oconus_sf$group)) %>%
                mutate(
                  simplification_low = case_when(
                    group %in% c('AS') ~ 0.06,
                    group %in% c('PR_VI', 'GU_MP') ~ 0.1,
                    group %in% c('HI') ~ 0.15,
-                   group %in% c('AK') ~ 0.02,
+                   group %in% c('AK') ~ 0.015,
                    TRUE ~ 0.3
                  ),
                  simplification_high = case_when(
@@ -37,29 +37,29 @@ p3_targets <- list(
                  )
                )),
   
-  tar_target(p3_oconus_low_sf,
-             purrr::pmap_dfr(p3_oconus_group_simplification, function(...) {
+  tar_target(p3_conus_oconus_low_sf,
+             purrr::pmap_dfr(p3_conus_oconus_group_simplification, function(...) {
                current_group = tibble(...)
-               p2_oconus_sf %>%
+               p2_conus_oconus_sf %>%
                  filter(group == current_group$group) %>%
                  rmapshaper::ms_simplify(keep = current_group$simplification_low)
              }) %>%
                st_make_valid() %>%
                mutate(data_id = paste(GEOID, 'low', sep = '_'))),
   
-  tar_target(p3_oconus_high_sf,
-             purrr::pmap_dfr(p3_oconus_group_simplification, function(...) {
+  tar_target(p3_conus_oconus_high_sf,
+             purrr::pmap_dfr(p3_conus_oconus_group_simplification, function(...) {
                current_group = tibble(...)
-               p2_oconus_sf %>%
+               p2_conus_oconus_sf %>%
                  filter(group == current_group$group) %>%
                  rmapshaper::ms_simplify(keep = current_group$simplification_high)
              }) %>%
                st_make_valid() %>%
                mutate(data_id = paste(GEOID, 'high', sep = '_'))),
   
-  tar_target(p3_oconus_county_group_simplification,
+  tar_target(p3_conus_oconus_county_group_simplification,
              tibble(
-               group = unique(p2_oconus_sf$group)) %>%
+               group = unique(p2_conus_oconus_sf$group)) %>%
                mutate(simplification = case_when(
                  group %in% c('GU_MP', 'PR_VI', 'HI') ~ 0.02,
                  group %in% c('AS') ~ 0.5,
@@ -67,16 +67,16 @@ p3_targets <- list(
                  TRUE ~ 0.04
                ))),
   
-  tar_target(p3_counties_oconus_sf,
+  tar_target(p3_counties_conus_oconus_sf,
              # Simplify county polygons
-             purrr::pmap_dfr(p3_oconus_county_group_simplification, function(...) {
+             purrr::pmap_dfr(p3_conus_oconus_county_group_simplification, function(...) {
                current_group = tibble(...)
-               p2_counties_oconus_sf %>%
+               p2_counties_conus_oconus_sf %>%
                  filter(group == current_group$group) %>%
                  rmapshaper::ms_simplify(keep = current_group$simplification)
              }) %>%
                # Then crop to simplified state polygons (low simplification)
-               st_intersection(st_union(p3_oconus_low_sf)) %>%
+               st_intersection(st_union(p3_conus_oconus_low_sf)) %>%
                # Then add centroids
                add_centroids() %>%
                # Cast polygons to multipolygons to ensure consistent geometry

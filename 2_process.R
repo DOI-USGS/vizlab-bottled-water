@@ -6,7 +6,7 @@ p2_targets <- list(
   ##### Set up state spatial data #####
   
   # U.S. states
-  tar_target(p2_oconus_sf,
+  tar_target(p2_conus_oconus_sf,
              tigris::states(cb = TRUE) %>%
                st_transform(p1_proj) %>%
                mutate(group = case_when(
@@ -19,16 +19,16 @@ p2_targets <- list(
   
   # CONUS states
   tar_target(p2_conus_sf,
-             p2_oconus_sf %>%
+             p2_conus_oconus_sf %>%
                filter(STUSPS %in% state.abb[!state.abb %in% c('AK', 'HI')]) %>%
                add_centroids() %>%
                mutate(location = 'mainland')),
   
   # All U.S. counties
-  tar_target(p2_counties_oconus_sf,
+  tar_target(p2_counties_conus_oconus_sf,
              tigris::counties() %>%
                st_transform(crs = p1_proj) %>%
-               left_join(p2_oconus_sf %>% 
+               left_join(p2_conus_oconus_sf %>% 
                            st_drop_geometry() %>% 
                            dplyr::select(STUSPS, STATE_NAME = NAME, STATEFP, group), 
                          by = 'STATEFP') %>%
@@ -83,8 +83,8 @@ p2_targets <- list(
   # Get summary counts of facilities, by county
   tar_target(p2_facility_summary_county,
              get_county_facility_counts(sites_sf = p2_inventory_sites_sf,
-                                        counties_sf = p2_counties_oconus_sf,
-                                        states_sf = p2_oconus_sf,
+                                        counties_sf = p2_counties_conus_oconus_sf,
+                                        states_sf = p2_conus_oconus_sf,
                                         types = p2_facility_types)),
   
   # Get summary of facility supply source categories, by type
