@@ -407,6 +407,86 @@ p3_targets <- list(
                                                 outfile_template = '3_visualize/out/state_sources_facet.png',
                                                 dpi = 300),
              format = 'file'),
+
+  ###### Water Use Figures - adapted from Alisha Chan's script ######
+  ## Water use data availability map
+  tar_target(p3_bw_availability_labels,
+             c("All Bottling Facilities", "Bottling Facilities with Water Use Data")),
+  tar_target(p3_wu_supply_colors,
+             {
+               supply_colors <- c("grey80", "#1599CF")
+               names(supply_colors) <- p3_bw_availability_labels
+               return(supply_colors)
+             }),
+  tar_target(p3_bw_availability_map_png,
+             bw_availability_map(conus_sf = p3_conus_sf,
+                                 conus_outline_col = 'grey50',
+                                 bw_inventory_sf = p2_bw_inventory_conus_sf,
+                                 bw_inventory_wu_sf = p2_bw_inventory_wu_sf,
+                                 supply_colors = p3_wu_supply_colors,
+                                 inventory_fill_name = p3_bw_availability_labels[1],
+                                 bw_fill_name = p3_bw_availability_labels[2],
+                                 width = 16, height = 9,
+                                 bkgd_color = 'white',
+                                 text_color = 'black',
+                                 outfile_template = '3_visualize/out/bottled_water_availability_map.png',
+                                 dpi = 300),
+             format = 'file'),
+  tar_target(p3_annual_bw_wu_map_png,
+             annual_bw_wu_map(conus_sf = p3_conus_sf,
+                              conus_outline_col = 'grey50',
+                              bw_only_inventory = p2_bw_only_inventory,
+                              scale_leg_title ="Annual Bottled Water Use (MGD)",
+                              size_limit =  max(p2_bw_only_inventory$annual_mgd),
+                              size_range = c(0.25, 8),
+                              width = 16, height = 9,
+                              bw_col = "#1599CF",
+                              bkgd_color = 'white',
+                              text_color = 'black',
+                              outfile_template = '3_visualize/out/annual_bottled_water_use_map.png',
+                              dpi = 300),
+             format = 'file'),
+  tar_target(p3_wu_availability_labels,
+             c("No water use data", "Water use data available")),
+  tar_target(p3_wu_availability_colors,
+             {
+               supply_colors <- c("grey80", "#1599CF")
+               names(supply_colors) <- p3_wu_availability_labels
+               return(supply_colors)
+             }),
+  tar_target(p3_wu_types_labels,
+             c("Other facilities", "Water use facilities")),
+  tar_target(p3_wu_type_colors,
+             {
+               supply_colors <- c("grey80", "#1599CF")
+               names(supply_colors) <- p3_wu_types_labels
+               return(supply_colors)
+             }),
+  tar_target(p3_wu_facilities_labels,
+             c("Public Supply", "Well", "Spring", "Surface Water Intake", "Combination", "Other")),
+  tar_target(p3_wu_facilities_colors,
+             {
+               supply_colors <- c("#E2A625", "#90aed5", "#3f6ca6", "#213958", "#787979", "#D4D4D4")
+               names(supply_colors) <- p3_wu_facilities_labels
+               return(supply_colors)
+             }),
+  tar_target(p3_water_use_availablity_barplots,
+             water_use_barplots(
+               bw_inventory_w_missing_data = p2_bw_inventory_with_missing_data,
+               bw_inventory_wu = p2_bw_inventory_wu_sf,
+               width = 16, height = 9,
+               supply_avail_cols = p3_wu_availability_colors,
+               supply_type_cols = p3_wu_type_colors,
+               supply_facil_cols = p3_wu_facilities_colors,
+               bkgd_color = 'white',
+               text_color = 'black',
+               wu_avail_title = "Water Use Data Availability",
+               wu_types_title = "Types of facilities with water use data",
+               wu_facil_title = "Sources of bottled water facilities\nwith water use data",
+               outfile_template = '3_visualize/out/water_use_data_availability_barplots.png',
+               dpi = 300),
+             format = 'file'),
+
   ######  state source faceted geofaceted treemaps   ######
   tar_target(p3_source_facet_treemap_all_types_png,
              generate_facility_source_facet_treemap(supply_summary = p2_supply_summary,

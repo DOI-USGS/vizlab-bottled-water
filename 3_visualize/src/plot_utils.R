@@ -2612,3 +2612,323 @@ generate_source_summary_bar_chart <- function(supply_summary_state, supply_color
 
   ggsave(outfile, width = width, height = height, dpi = dpi, bg = bkgd_color)
 }
+
+#' @title create map of all bottling facilities locations vs bottling facilities with water use data
+#' @param width width for the final plot
+#' @param height height for the final plot
+#' @param bkgd_color background color for the plot
+#' @param text_color color for text
+#' @param outfile_template filepath template for saving the final plot
+#' @param dpi dpi at which to save the final plot
+#' @param conus_sf, state level sf of CONUS
+#' @param conus_outline_col color for conus map outline
+#' @param bw_inventory_sf conus sf of all water use inventory data
+#' @param bw_inventory_wu_sf conus sf of bottled water use inventory data
+#' @param supply_colors vector of colors used for displaying all bottling facilities vs bottling facilities wit water use data
+#' @param bw_fill_name supply name for fill variable used for bottling facilities with water use data
+#' @param inventory_fill_name supply name for fill variable used for all bottling facilities
+#' @return the filepath of the saved plot
+bw_availability_map <- function(conus_sf, conus_outline_col, bw_inventory_sf, bw_inventory_wu_sf,
+                                width, height, bkgd_color, text_color,
+                                outfile_template, dpi, supply_colors,
+                                bw_fill_name, inventory_fill_name) {
+
+  # import font (p3_font_legend doesn't seem to work on Mac)
+  font_legend <- 'Source Sans Pro'
+  font_add_google(font_legend)
+  showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 700)
+  showtext_auto(enable = TRUE)
+
+  ## Only plotting CONUS
+  bottling_facilities <- ggplot() +
+    geom_sf(data = bw_inventory_sf,
+            aes(geometry = geometry, fill = inventory_fill_name),
+            pch = 21,
+            color = bkgd_color,
+            size = 3) +
+    geom_sf(data = bw_inventory_wu_sf,
+            aes(geometry = geometry, fill = bw_fill_name),
+            pch = 21,
+            color = bkgd_color,
+            size = 3) +
+    geom_sf(data = conus_sf,
+            fill = NA,
+            color = conus_outline_col,
+            size = 0.6,
+            linetype = "solid" ) +
+    scale_x_continuous(expand = c(0,0)) +
+    scale_y_continuous(expand = c(0,0)) +
+    scale_fill_manual(values = supply_colors) +
+    guides(fill = guide_legend(title = "", override.aes = list(size = 3)))+
+    theme_void() +
+    theme(
+      legend.position = "top",
+      legend.text = element_text(size = 18, family = font_legend),
+      plot.margin = unit(c(1,1,1,1), "cm")
+    )
+
+  ggsave(outfile_template, bottling_facilities, width = width, height = height, dpi = dpi, bg = bkgd_color)
+
+}
+
+#' @title create map of annual bottled water use across CONUS
+#' @param width width for the final plot
+#' @param height height for the final plot
+#' @param bkgd_color background color for the plot
+#' @param text_color color for text
+#' @param outfile_template filepath template for saving the final plot
+#' @param dpi dpi at which to save the final plot
+#' @param conus_sf, state level sf of CONUS
+#' @param conus_outline_col color for conus map outline
+#' @param bw_only_inventory filtered water use data for bottled water only
+#' @param bw_col, supply color for bottled water facilities points on map
+#' @param scale_leg_title, supply title for scale_size legend
+#' @param size_limit, numeric values to supply for `scale_size` limit used for map
+#' @param size_range, numeric values to supply for `scale_size` range used for map
+#' @return the filepath of the saved plot
+annual_bw_wu_map <- function(conus_sf, conus_outline_col,
+                             bw_only_inventory,
+                             width, height, bkgd_color, text_color,
+                             outfile_template, dpi, bw_col,
+                             scale_leg_title, size_limit, size_range) {
+
+  # import font (p3_font_legend doesn't seem to work on Mac)
+  font_legend <- 'Source Sans Pro'
+  font_add_google(font_legend)
+  showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 700)
+  showtext_auto(enable = TRUE)
+
+  # Only plotting annual bottled water use for CONUS
+  water_use_map <- ggplot() +
+    geom_sf(data = conus_sf,
+            fill = bkgd_color,
+            color = conus_outline_col,
+            size = 0.6,
+            linetype = "solid") +
+    geom_sf(data = bw_only_inventory,
+            aes(geometry = geometry, size = annual_mgd),
+            fill = bw_col,
+            color = bkgd_color,
+            pch = 21) +
+    scale_size(name = scale_leg_title,
+               range = size_range, limits = c(0.1, size_limit),
+               guide = guide_legend(
+                 direction = "horizontal",
+                 nrow = 1,
+                 label.position = "bottom"))+
+    scale_x_continuous(expand = c(0,0)) +
+    scale_y_continuous(expand = c(0,0)) +
+    scale_color_manual(values = cols) +
+    theme_void() +
+    theme(
+      legend.position = "top",
+      legend.text = element_text(size = 16, family = font_legend),
+      plot.margin = unit(c(1,1,1,1), "cm"),
+      text = element_text(family = font_legend, size = 18)
+    )
+
+  ggsave(outfile_template, water_use_map, width = width, height = height, dpi = dpi, bg =  bkgd_color)
+
+}
+
+#' @title create cowplotted water use barplots that break down 1) water availability, 2) types of facitlies with water use data and 3) sources of bottled water facilities with water use data
+#' @param width width for the final plot
+#' @param height height for the final plot
+#' @param bkgd_color background color for the plot
+#' @param text_color color for text
+#' @param outfile_template filepath template for saving the final plot
+#' @param dpi dpi at which to save the final plot
+#' @param bw_inventory_w_missing_data comprehensive water use data that is used to count how many rows of water use data (annual_mgd) is available to plot
+#' @param bw_inventory_wu water use data with water bottled source types that is used to determine types of facilities with water use data
+#' @param supply_avail_cols vector of colors to use for water source availability: Water use data available & no water use data
+#' @param supply_type_cols vector of colors to use for water source types: Water use facilities & other facilities
+#' @param supply_facil_cols vector of colors to use for water source facilities: public supply, well, spring, sw intake, combination, other
+#' @param wu_avail_title title for water use availability barplot
+#' @param wu_types_title title for types of facilities with water use data
+#' @param wu_facil_title title for sources of bottled water facilities with water use data
+#' @return the filepath of the saved plot
+water_use_barplots <- function(width, height, bkgd_color, text_color,
+                               outfile_template, dpi,
+                               bw_inventory_w_missing_data,
+                               bw_inventory_wu,
+                               supply_avail_cols,
+                               supply_type_cols,
+                               supply_facil_cols,
+                               wu_avail_title,
+                               wu_types_title,
+                               wu_facil_title) {
+
+  # import font (p3_font_legend doesn't seem to work on Mac)
+  font_legend <- 'Source Sans Pro'
+  font_add_google(font_legend)
+  showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 700)
+  showtext_auto(enable = TRUE)
+
+  # Light processing - this could also be done in 2_process.R
+  # % data we do have
+  wu_nas_percent_plot <- bw_inventory_w_missing_data |>
+    st_drop_geometry() |>
+    count(water_use = ifelse(is.na(annual_mgd), "No water use data", "Water use data available")) |>
+    mutate(
+      water_use = factor(water_use, levels = c("Water use data available", "No water use data")),
+      total = sum(n),
+      percent = n/total *100)
+
+  # Types among WU data
+  wu_types_percent_plot <- bw_inventory_wu |>
+    st_drop_geometry() |>
+    count(wb_type) |>
+    mutate(percent = n / sum(n) * 100,
+           facilities = ifelse(wb_type == "Bottled Water", "Water use facilities", "Other facilities"),
+           facilities = factor(facilities, levels = c("Water use facilities", "Other facilities")))
+
+  # Source for BW for facilities we have WU data for
+  only_bw_wu_source_percent_plot <- bw_inventory_wu |>
+    st_drop_geometry() |>
+    filter(wb_type == "Bottled Water") |>
+    count(water_source) |>
+    mutate(
+      percent = n / sum(n) * 100,
+      source = factor(str_to_title(water_source), levels = c("Public Supply", "Well", "Spring", "Surface Water Intake", "Combination", "Other"))
+    ) |>
+    dplyr::select(source, percent)
+
+  # % of data we do have
+  perc_water_use <- ggplot(wu_nas_percent_plot, aes(x = 1, y = percent, fill = water_use)) +
+    geom_bar(stat="identity") +
+    theme_minimal() +
+    labs(x= NULL, y = NULL, fill="",
+         title= wu_avail_title,
+    ) +
+    theme(axis.title.x=element_blank(),
+          axis.text.x = element_blank(),
+          axis.ticks.x = element_blank(),
+          panel.grid = element_blank(),
+          axis.ticks.y = element_line(color = "lightgrey", size = 0.5),
+          axis.text.y = element_text(size = 14),
+          text = element_text(family = font_legend, size = 14),
+          plot.margin = margin(30, 20, 20, 30),
+          plot.title = element_text(hjust = 0.5, size = 20, margin = margin(0, 0, 30, 0)),
+          legend.position = "top",
+          legend.justification = "center",
+          legend.box = "horizontal" ) +
+    scale_fill_manual(values = supply_avail_cols)+
+    scale_y_continuous(breaks = seq(0, 100, by = 25),
+                       labels = c("0", "25", "50", "75", "100%"),
+                       expand = c(0, 0.1)) +
+    scale_x_discrete(expand = c(0,0)) +
+    guides(fill = guide_legend(ncol = 1))
+
+  perc_fac_types <- ggplot(wu_types_percent_plot, aes(x = 1, y = percent, fill = facilities))+
+    geom_bar(stat="identity")+
+    theme_minimal()+
+    labs(x = NULL, y = NULL, fill = "",
+         title= wu_types_title
+    ) +
+    theme(axis.title.x = element_blank(),
+          axis.text.x = element_blank(),
+          axis.ticks.x = element_blank(),
+          panel.grid = element_blank(),
+          axis.ticks.y = element_line(color = "lightgrey", size = 0.5),
+          axis.text.y = element_text(size = 14),
+          text = element_text(family = font_legend, size = 14),
+          plot.margin = margin(30, 20, 20, 30),
+          plot.title = element_text(hjust = 0.5, size = 20,  margin = margin(0, 0, 30, 0)),
+          legend.position = "top",
+          legend.justification = "center",
+          legend.box = "horizontal" ) +
+    scale_fill_manual(values = supply_type_cols)+
+    scale_y_continuous(breaks = seq(0, 100, by = 25),
+                       labels = c("0", "25", "50", "75", "100%"),
+                       expand = c(0, 0.1)) +
+    scale_x_discrete(expand = c(0,0)) +
+    guides(fill = guide_legend(ncol = 1))
+
+
+  perc_bw_sources <- ggplot(only_bw_wu_source_percent_plot, aes(x = 1, y = percent, fill = source))+
+    geom_bar(stat="identity")+
+    theme_minimal()+
+    labs(x=NULL, y = NULL, fill="",
+         title = wu_facil_title
+    ) +
+    theme(axis.title.x=element_blank(),
+          axis.text.x = element_blank(),
+          axis.ticks.x = element_blank(),
+          panel.grid = element_blank(),
+          axis.ticks.y = element_line(color = "lightgrey", size = 0.5),
+          axis.text.y = element_text(size = 14),
+          text = element_text(family = font_legend, size = 14),
+          plot.margin = margin(30, 20, 20, 30),
+          plot.title = element_text(hjust = 0.5, size = 18,  margin = margin(0, 0, 15, 0)),
+          legend.position = "top",
+          legend.justification = "center",
+          legend.box = "horizontal") +
+    scale_y_continuous(breaks = seq(0, 100, by = 25),
+                       labels = c("0", "25", "50", "75", "100%"),
+                       expand = c(0, 0.1)) +
+    scale_fill_manual(values = supply_facil_cols) +
+    scale_x_discrete(expand = c(0,0))+
+    guides(fill = guide_legend(ncol = 1))
+
+  # cowplot
+  plot_margin <- 0.005
+
+  canvas <- grid::rectGrob(
+    x = 0, y = 0,
+    width = width, height = height,
+    gp = grid::gpar(fill = bkgd_color, alpha = 1, col = bkgd_color)
+  )
+
+  perc_water_use_leg <- cowplot::get_legend(perc_water_use)
+  perc_fac_types_leg <- cowplot::get_legend(perc_fac_types)
+  perc_bw_sources_leg <- cowplot::get_legend(perc_bw_sources)
+
+
+  plt <- ggdraw(ylim = c(0,1), # 0-1 scale makes it easy to place viz items on canvas
+                xlim = c(0,1)) +
+    # a background
+    draw_grob(canvas,
+              x = 0, y = 1,
+              height = height, width = width,
+              hjust = 0, vjust = 1) +
+    draw_plot(perc_water_use + theme(legend.position = "none"),
+              x = 0.24,
+              y = 0.06,
+              height = 0.89,
+              width = 0.2,
+              hjust = 1,
+              vjust = 0) +
+    draw_plot(perc_fac_types + theme(legend.position = "none"),
+              x = 0.55,
+              y = 0.06,
+              height = 0.89,
+              width = 0.2,
+              hjust = 1,
+              vjust = 0) +
+    draw_plot(perc_bw_sources + theme(legend.position = "none"),
+              x = 0.86,
+              y = 0.06,
+              height = 0.89,
+              width = 0.2,
+              hjust = 1,
+              vjust = 0) +
+    draw_plot(perc_bw_sources_leg,
+              x = 0.83,
+              y = -0.08,
+              height = 0.5,
+              width = 0.2) +
+    draw_plot(perc_fac_types_leg,
+              x = 0.52,
+              y = -0.13,
+              height = 0.5,
+              width = 0.2) +
+    draw_plot(perc_water_use_leg,
+              x = 0.21,
+              y = -0.13,
+              height = 0.5,
+              width = 0.2)
+
+  ggsave(outfile_template, plt, width = width, height = height, dpi = dpi, bg =  bkgd_color)
+
+}
+
