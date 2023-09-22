@@ -2757,6 +2757,8 @@ annual_bw_wu_map <- function(conus_sf, conus_outline_col,
 #' @param wu_avail_title title for water use availability barplot
 #' @param wu_types_title title for types of facilities with water use data
 #' @param wu_facil_title title for sources of bottled water facilities with water use data
+#' @param bracket1_png_path path for bracket breaking down first water use data availability barplot
+#' @param bracket1_png_path path for bracket breaking down second types of facilities with water use data barplot
 #' @return the filepath of the saved plot
 water_use_barplots <- function(width, height, bkgd_color, text_color,
                                outfile_template, dpi,
@@ -2767,7 +2769,9 @@ water_use_barplots <- function(width, height, bkgd_color, text_color,
                                supply_facil_cols,
                                wu_avail_title,
                                wu_types_title,
-                               wu_facil_title) {
+                               wu_facil_title,
+                               bracket1_png_path,
+                               bracket2_png_path) {
 
   # import font (p3_font_legend doesn't seem to work on Mac)
   font_legend <- 'Source Sans Pro'
@@ -2937,7 +2941,18 @@ water_use_barplots <- function(width, height, bkgd_color, text_color,
               x = 0.21,
               y = -0.13,
               height = 0.5,
-              width = 0.2)
+              width = 0.2) +
+    # add brackets for zoom in on barplots
+    draw_image(magick::image_read(bracket1_png_path),
+               x = 0.2045,
+               y = -1.524,
+               width = 0.25,
+               height = 4) +
+    draw_image(magick::image_read(bracket2_png_path),
+               x = 0.532,
+               y = -1.538,
+               width = 0.187,
+               height = 4)
 
   ggsave(outfile_template, plt, width = width, height = height, dpi = dpi, bg =  bkgd_color)
 

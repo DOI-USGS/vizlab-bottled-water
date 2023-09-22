@@ -485,6 +485,8 @@ p3_targets <- list(
                wu_avail_title = "Water Use Data Availability",
                wu_types_title = "Types of facilities with water use data",
                wu_facil_title = "Sources of bottled water facilities\nwith water use data",
+               bracket1_png_path = '3_visualize/in/bracket1_water_use.png',
+               bracket2_png_path = '3_visualize/in/bracket2_water_use.png',
                outfile_template = '3_visualize/out/water_use_data_availability_barplots.png',
                dpi = 300),
              format = 'file'),
