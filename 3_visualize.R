@@ -410,12 +410,16 @@ p3_targets <- list(
 
   ###### Water Use Figures - adapted from Alisha Chan's script ######
   ## Water use data availability map
-  tar_target(p3_bw_availability_labels,
-             c("All Bottling Facilities", "Bottling Facilities with Water Use Data")),
-  tar_target(p3_wu_supply_colors,
+  tar_target(p2_wu_bw_colors,
+             c("grey80", "#1599CF")),
+  tar_target(p3_wu_facilities_colors,
+             c("#E2A625", "#90aed5", "#3f6ca6", "#213958", "#787979", "black")),
+  tar_target(p3_wu_availability_facilities_labels,
+             c("All Bottling Facilities", "Public Supply", "Well", "Spring", "Surface Water Intake", "Combination", "Other")),
+  tar_target(p3_wu_availability_facilities_colors,
              {
-               supply_colors <- c("grey80", "#1599CF")
-               names(supply_colors) <- p3_bw_availability_labels
+               supply_colors <- c(p2_wu_bw_colors[1], p3_wu_facilities_colors)
+               names(supply_colors) <- p3_wu_availability_facilities_labels
                return(supply_colors)
              }),
   tar_target(p3_bw_availability_map_png,
@@ -423,9 +427,9 @@ p3_targets <- list(
                                  conus_outline_col = 'grey50',
                                  bw_inventory_sf = p2_bw_inventory_conus_sf,
                                  bw_inventory_wu_sf = p2_bw_inventory_wu_sf,
-                                 supply_colors = p3_wu_supply_colors,
-                                 inventory_fill_name = p3_bw_availability_labels[1],
-                                 bw_fill_name = p3_bw_availability_labels[2],
+                                 supply_colors = p3_wu_availability_facilities_colors,
+                                 inventory_fill_name = p3_wu_availability_facilities_labels[1],
+                                 alpha = 0.5,
                                  width = 16, height = 9,
                                  bkgd_color = 'white',
                                  text_color = 'black',
@@ -440,7 +444,7 @@ p3_targets <- list(
                               size_limit =  max(p2_bw_only_inventory$annual_mgd),
                               size_range = c(0.25, 8),
                               width = 16, height = 9,
-                              bw_col = "#1599CF",
+                              bw_col = p2_wu_bw_colors[2],
                               bkgd_color = 'white',
                               text_color = 'black',
                               outfile_template = '3_visualize/out/annual_bottled_water_use_map.png',
@@ -450,24 +454,22 @@ p3_targets <- list(
              c("No water use data", "Water use data available")),
   tar_target(p3_wu_availability_colors,
              {
-               supply_colors <- c("grey80", "#1599CF")
+               supply_colors <- p2_wu_bw_colors
                names(supply_colors) <- p3_wu_availability_labels
                return(supply_colors)
              }),
   tar_target(p3_wu_types_labels,
-             c("Other facilities", "Water use facilities")),
+             c("Other facilities", "Bottled water facilities")),
   tar_target(p3_wu_type_colors,
              {
-               supply_colors <- c("grey80", "#1599CF")
+               supply_colors <- p2_wu_bw_colors
                names(supply_colors) <- p3_wu_types_labels
                return(supply_colors)
              }),
-  tar_target(p3_wu_facilities_labels,
-             c("Public Supply", "Well", "Spring", "Surface Water Intake", "Combination", "Other")),
-  tar_target(p3_wu_facilities_colors,
+  tar_target(p3_wu_facilities_reduce_colors,
              {
-               supply_colors <- c("#E2A625", "#90aed5", "#3f6ca6", "#213958", "#787979", "#D4D4D4")
-               names(supply_colors) <- p3_wu_facilities_labels
+               supply_colors <- p3_wu_facilities_colors
+               names(supply_colors) <- p3_wu_availability_facilities_labels[2:7]
                return(supply_colors)
              }),
   tar_target(p3_water_use_availablity_barplots,
@@ -477,7 +479,7 @@ p3_targets <- list(
                width = 16, height = 9,
                supply_avail_cols = p3_wu_availability_colors,
                supply_type_cols = p3_wu_type_colors,
-               supply_facil_cols = p3_wu_facilities_colors,
+               supply_facil_cols = p3_wu_facilities_reduce_colors,
                bkgd_color = 'white',
                text_color = 'black',
                wu_avail_title = "Water Use Data Availability",
