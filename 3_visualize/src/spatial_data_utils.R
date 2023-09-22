@@ -1,4 +1,13 @@
-export_county_data_to_geojson <- function(data, centroids_sf, outfile) {
+#' @title export county data to topojson
+#' @description join county data to county centroids, reformat, and export
+#' @param data county level facility count data
+#' @param centroids_sf sf object with county centroids
+#' @param tmp_dir temporary directory to which to write intermediate geojson
+#' @param outfile filepath to which topojson should be written
+#' @param precision precision to which all coordinates should be rounded
+#' @return the filepath of the saved topojson
+export_county_data_to_topojson <- function(data, centroids_sf, tmp_dir, outfile,
+                                           precision) {
   
   data_sf <- centroids_sf %>%
     dplyr::select(GEOID, geometry, geometry_point) %>%
@@ -13,8 +22,10 @@ export_county_data_to_geojson <- function(data, centroids_sf, outfile) {
     rename(geometry = geometry_point) %>%
     st_as_sf(sf_column_name = 'geometry')
   
-  write_to_geojson(data = data_sf_wide,
-                   cols_to_keep = NULL, # keep all columns
-                   outfile = outfile)
+  export_to_topojson(data_sf = data_sf_wide, 
+                     cols_to_keep = NULL, # keep all columns
+                     tmp_dir = tmp_dir, 
+                     outfile = outfile, 
+                     precision = precision)
 }
 

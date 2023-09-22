@@ -51,20 +51,57 @@ download_file_from_url <- function(url, outfile) {
 
 #' @title write to geojson
 #' @description write data to geojson
-#' @param data dataframe to be written to geojson
+#' @param data_sf sf dataframe to be written to geojson
 #' @param cols_to_keep columns from dataframe to write
 #' @param outfile filepath to which geojson should be written
 #' @return the filepath of the saved geojson
-write_to_geojson <- function(data, cols_to_keep = NULL, outfile) {
+write_to_geojson <- function(data_sf, cols_to_keep = NULL, outfile) {
   if (file.exists(outfile)) unlink(outfile)
   
   if (!is.null(cols_to_keep)) {
-    data <- dplyr::select(data, !!cols_to_keep)
+    data_sf <- dplyr::select(data_sf, !!cols_to_keep)
   }
   
-  data %>%
+  data_sf %>%
     st_transform(crs = 4326) %>%
     st_write(outfile, append = FALSE)
   
   return(outfile)
+}
+
+#' @title convert to topojson
+#' @description convert geojson to topojson with specified precision
+#' @param geojson geojson to be converted to topojson
+#' @param outfile filepath to which topojson should be written
+#' @param precision precision to which all coordinates should be rounded
+#' @return the filepath of the saved topojson
+convert_to_topojson <- function(geojson, outfile, precision) {
+  
+  # Simplify w/ mapshaper cli
+  system(sprintf('mapshaper %s -o  %s precision=%s format=topojson', 
+                 geojson, outfile, precision))
+  
+  return(outfile)
+}
+
+#' @title export to topojson
+#' @description write geojson then convert to topojson with specified precision
+#' @param data_sf sf dataframe to be exported to topojson
+#' @param cols_to_keep columns from dataframe to write
+#' @param tmp_dir temporary directory to which to write intermediate geojson
+#' @param outfile filepath to which topojson should be written
+#' @param precision precision to which all coordinates should be rounded
+#' @return the filepath of the saved topojson
+export_to_topojson <- function(data_sf, cols_to_keep, tmp_dir, outfile, precision) {
+  # first write to geojson
+  tmp_geojson_filename <- file.path(tmp_dir,
+                            paste0(tools::file_path_sans_ext(basename(outfile)),
+                                   '.geojson'))
+  
+  tmp_geojson <- write_to_geojson(data_sf = data_sf, cols_to_keep = cols_to_keep, 
+                                  outfile = tmp_geojson_filename)
+  
+  # then convert to topojson, w/ reduced precision
+  convert_to_topojson(geojson = tmp_geojson, outfile = outfile, 
+                      precision = precision)
 }

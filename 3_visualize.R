@@ -89,63 +89,57 @@ p3_targets <- list(
                proj_str = p1_proj,
                states_shp = p1_nws_states_shp
              )),
-
+  
   # Apply shifting to the state/territory polygons
   tar_target(p3_spatial_shifted,
              generate_usa_map_data(proj_str = p1_proj,
                                    outline_states = TRUE,
                                    states_shp = p1_nws_states_shp)),
-
-  ##### GEOJSONS #####
   
-  # Export geojson for each state group in p3_oconus_high_sf (for national map view)
-  tar_target(p3_oconus_high_geojsons,
-             write_to_geojson(data = filter(p3_oconus_high_sf, 
-                                            group == p3_oconus_group_simplification$group),
-                              cols_to_keep = c('GEOID', 'NAME', 'data_id', 'geometry'),
-                              outfile = sprintf("public/states_poly_%s.geojson", 
-                                                p3_oconus_group_simplification$group)),
-             pattern = map(p3_oconus_group_simplification),
-             format = 'file'),
-  
-  # Export single geojson for p3_oconus_low_sf (for zoomed-in state views)
-  tar_target(p3_oconus_low_geojson,
-             write_to_geojson(data = p3_oconus_low_sf,
-                              cols_to_keep = c('GEOID', 'NAME', 'data_id', 'geometry'),
-                              outfile = "public/states_poly_conus_oconus.geojson"),
-             format = 'file'),
-
-  # export county polygons
-  tar_target(p3_counties_oconus_geojson,
-             write_to_geojson(data = p3_counties_oconus_sf,
-                              cols_to_keep = c('GEOID', 'NAMELSAD', 'STATE_NAME', 
-                                               'geometry'),
-                              outfile = "public/counties_crop_poly_oconus.geojson"),
-             format = 'file'),
-  
-  
-  # export summarized county data w/ county centroid geometry
-  tar_target(p3_county_centroids_oconus_geojson,
-             export_county_data_to_geojson(data = p2_facility_summary_county,
-                                           centroids_sf = p3_counties_oconus_sf,
-                                           outfile = "public/counties_crop_centroids_oconus.geojson"),
-             format = 'file'),
-  
-  ###### Convert geojsons to topojsons with reduced precision ######
-  # Simplified HUC12 sf
+  ##### TOPOJSONS #####
   # Requires system installation of mapshaper
   # https://github.com/mbloch/mapshaper
-  tar_target(p3_counties_oconus_topojson,
-             {
-               out_file <- paste0(tools::file_path_sans_ext(p3_counties_oconus_geojson),
-                                  '.json')
-               
-               # Simplify w/ mapshaper cli
-               system(sprintf('mapshaper %s -o  %s precision=0.001 format=topojson', 
-                              p3_counties_oconus_geojson, out_file))
-               
-               return(out_file)
-             },
+  
+  # Export topojson for each state group in p3_conus_oconus_high_sf 
+  # (high simplification for national map view)
+  tar_target(p3_conus_oconus_high_topojsons,
+             export_to_topojson(data_sf = filter(p3_conus_oconus_high_sf, 
+                                                 group == p3_conus_oconus_group_simplification$group),
+                                cols_to_keep = c('GEOID', 'NAME', 'data_id', 'geometry'),
+                                tmp_dir = '3_visualize/tmp',
+                                outfile = sprintf("public/states_polys_%s.json", 
+                                                  p3_conus_oconus_group_simplification$group),
+                                precision = 0.001),
+             pattern = map(p3_conus_oconus_group_simplification),
+             format = 'file'),
+  
+  # Export single topojson for p3_conus_oconus_low_sf 
+  # (low simplification for zoomed-in state views)
+  tar_target(p3_conus_oconus_low_topojson,
+             export_to_topojson(data_sf = p3_conus_oconus_low_sf,
+                                cols_to_keep = c('GEOID', 'NAME', 'data_id', 'geometry'),
+                                tmp_dir = '3_visualize/tmp',
+                                outfile = "public/states_polys_CONUS_OCONUS_zoom.json",
+                                precision = 0.001),
+             format = 'file'),
+  
+  # export county polygons to topojson
+  tar_target(p3_counties_conus_oconus_topojson,
+             export_to_topojson(data_sf = p3_counties_conus_oconus_sf,
+                                cols_to_keep = c('GEOID', 'NAMELSAD', 'STATE_NAME', 
+                                                 'geometry'),
+                                tmp_dir = '3_visualize/tmp',
+                                outfile = "public/counties_polys_CONUS_OCONUS_zoom.json",
+                                precision = 0.001),
+             format = 'file'),
+  
+  # export summarized county data w/ county centroid geometry
+  tar_target(p3_county_centroids_conus_oconus_topojson,
+             export_county_data_to_topojson(data = p2_facility_summary_county,
+                                            centroids_sf = p3_counties_conus_oconus_sf,
+                                            tmp_dir = '3_visualize/tmp',
+                                            outfile = "public/counties_centroids_CONUS_OCONUS.json",
+                                            precision = 0.001),
              format = 'file'),
   
   ##### Figure parameters #####
