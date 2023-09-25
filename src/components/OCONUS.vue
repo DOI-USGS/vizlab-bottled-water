@@ -532,12 +532,10 @@ export default {
           .attr("role", "presentation")
           .attr("aria-hidden", true)
           .append("text")
-            .attr("class", "x-axis-label")
+            .attr("class", "x-axis axis-title")
             .attr("x", this.chartDimensions.boundedWidth / 2)
             .attr("y", this.chartDimensions.margin.bottom - 10)
-            .style("fill", "black")
             .style("text-anchor", "middle")
-            .style("font-size", "1.4em")
             .attr("role", "presentation")
             .attr("aria-hidden", true)
       this.chartBounds.append("g")
@@ -545,13 +543,11 @@ export default {
         .attr("role", "presentation")
         .attr("aria-hidden", true)
         .append("text")
-          .attr("class", "y-axis-label")
-          // .attr("transform", "rotate(-90)")
-          .attr("x", -10)
-          .attr("y", this.dimensions.boundedHeight / 2)
-          .style("fill", "black")
+          .attr("class", "y-axis axis-title")
+          .attr("x", -this.chartDimensions.boundedHeight / 2)
+          .attr("y", 0)
+          .attr("transform", "rotate(-90)")
           .style("text-anchor", "middle")
-          .style("font-size", "1.4em")
           .attr("role", "presentation")
           .attr("aria-hidden", true)
     },
@@ -740,13 +736,11 @@ export default {
 
       const barText = rectGroups.select("text")
         .transition(self.getUpdateTransition())
+          .attr("class", "bar-label")
           .attr("x", d => xScale(xAccessor(d)) + xScale.bandwidth()/2)
           .attr("y", d => yScale(yAccessor(d)) - 5)
           .style("text-anchor", "middle")
           .text(d => this.d3.format(',')(yAccessor(d)))
-          .attr("fill", "#666")
-          .style("font-size", "12px")
-          .style("font-family", "sans-serif")
 
       const xAxisGenerator = this.d3.axisBottom()
         .scale(xScale)
@@ -760,7 +754,10 @@ export default {
 
       xAxis.selectAll(".tick line").attr("stroke", "None")
 
-      const xAxisLabel = xAxis.select(".x-axis-label")
+      const xAxisText = xAxis.selectAll(".tick text")
+        .attr("class", "x-axis axis-label")
+
+      const xAxisLabel = xAxis.select(".x-axis.axis-title")
 
       if (state === this.defaultViewName) {
         xAxisLabel
@@ -787,11 +784,10 @@ export default {
 
       yAxis.selectAll(".tick line").attr("stroke", "None")
 
-      const yAxisLabel = yAxis.select(".y-axis-label")
+      const yAxisLabel = yAxis.select(".y-axis.axis-title")
 
       yAxisLabel
         .text('Number of facilities')
-        // .attr("transform", "rotate(-90)")
 
     },
     drawMap(state, scale) {
@@ -1499,6 +1495,18 @@ export default {
   .county_centroid {
     stroke: white;
     stroke-width: 0.3;
+  }
+  .axis-title {
+    font-size: 16px;
+    fill: #000000;
+    font-weight: 700;
+  }
+  .axis-label {
+    font-size: 12px;
+  }
+  .bar-label {
+    font-size: 16px;
+    fill: #666666;
   }
   .dropdown {
     // font-size: 20px;
