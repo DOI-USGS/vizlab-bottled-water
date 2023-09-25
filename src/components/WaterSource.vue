@@ -26,17 +26,7 @@
           </p>
         </div>
         <img src="../assets/images/national_sources_facilities_sankey.png">
-        <div class="text-container">
-          <p>
-            Water source percentage by facility type
-          </p>
-        </div>
         <img src="../assets/images/perc_expanded_self_supply_barplot.png">
-        <div class="text-container">
-          <p>
-            Number of facilities with each source by facility type
-          </p>
-        </div>
         <img src="../assets/images/count_expanded_self_supply_barplot.png">
       </div>
       <div id="img-ws-bw-facet" class="img-container">
