@@ -455,7 +455,7 @@ p3_targets <- list(
                               size_limit =  max(p2_bw_only_inventory$annual_mgd),
                               size_range = c(0.25, 8),
                               width = 16, height = 9,
-                              bw_col = p2_wu_bw_colors[2],
+                              supply_color = p3_wu_availability_facilities_colors,
                               bkgd_color = 'white',
                               text_color = 'black',
                               outfile_template = '3_visualize/out/annual_bottled_water_use_map.png',
