@@ -2669,12 +2669,6 @@ bw_availability_map <- function(conus_sf, conus_outline_col, bw_fill_name,
   showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 700)
   showtext_auto(enable = TRUE)
 
-  bw_inventory_wu_sf <- bw_inventory_wu_sf |>
-    mutate(
-      source = factor(str_to_title(water_source),
-                      levels = c("Public Supply", "Well", "Spring", "Surface Water Intake", "Combination", "Other"))
-    )
-
   ## Only plotting CONUS
   bottling_facilities <- ggplot() +
     # all bottling facilities
