@@ -2811,15 +2811,18 @@ water_use_barplots <- function(width, height, bkgd_color, text_color,
   # % data we do have
   wu_nas_percent_plot <- bw_inventory_w_missing_data |>
     st_drop_geometry() |>
-    count(water_use = ifelse(is.na(annual_mgd), "No water use data", "Water use data available")) |>
-    mutate(
-      water_use = factor(water_use, levels = c("Water use data available", "No water use data")),
-      total = sum(n),
-      percent = n/total *100)
+    # drop na in `facility_category` ?
+    drop_na(facility_category) |>
+    group_by(wu_data_flag, facility_category) %>%
+    summarize(count = n(),
+              percent = count/nrow(bw_inventory_w_missing_data) * 100) %>%
+    mutate(type = ifelse(is.na(wu_data_flag), 'No water use data', "Water use data available"),
+           type = factor(type, levels = c("Water use data available", 'No water use data')))
 
   # Types among WU data
   wu_types_percent_plot <- bw_inventory_wu |>
     st_drop_geometry() |>
+    filter(wu_data_flag == "Y") |>
     count(wb_type) |>
     mutate(percent = n / sum(n) * 100,
            facilities = ifelse(wb_type == "Bottled Water", "Bottled water facilities", "Other facilities"),
@@ -2828,7 +2831,8 @@ water_use_barplots <- function(width, height, bkgd_color, text_color,
   # Source for BW for facilities we have WU data for
   only_bw_wu_source_percent_plot <- bw_inventory_wu |>
     st_drop_geometry() |>
-    filter(wb_type == "Bottled Water") |>
+    filter(wu_data_flag == "Y",
+           wb_type == "Bottled Water") |>
     count(water_source) |>
     mutate(
       percent = n / sum(n) * 100,
@@ -2837,7 +2841,7 @@ water_use_barplots <- function(width, height, bkgd_color, text_color,
     dplyr::select(source, percent)
 
   # % of data we do have
-  perc_water_use <- ggplot(wu_nas_percent_plot, aes(x = 1, y = percent, fill = water_use)) +
+  perc_water_use <- ggplot(wu_nas_percent_plot, aes(x = 1, y = percent, fill = type)) +
     geom_bar(stat="identity") +
     theme_minimal() +
     labs(x= NULL, y = NULL, fill="",
@@ -2855,7 +2859,7 @@ water_use_barplots <- function(width, height, bkgd_color, text_color,
           legend.position = "top",
           legend.justification = "center",
           legend.box = "horizontal" ) +
-    scale_fill_manual(values = supply_avail_cols)+
+    scale_fill_manual(values = supply_avail_cols) +
     scale_y_continuous(breaks = seq(0, 100, by = 25),
                        labels = c("0%", "25%", "50%", "75%", "100%"),
                        expand = c(0, 0.1)) +
@@ -2977,9 +2981,9 @@ water_use_barplots <- function(width, height, bkgd_color, text_color,
                width = 0.25,
                height = 4) +
     draw_image(magick::image_read(bracket2_png_path),
-               x = 0.532,
-               y = -1.536,
-               width = 0.187,
+               x = 0.501,
+               y = -1.535,
+               width = 0.2495,
                height = 4)
 
   ggsave(outfile_template, plt, width = width, height = height, dpi = dpi, bg =  bkgd_color)
