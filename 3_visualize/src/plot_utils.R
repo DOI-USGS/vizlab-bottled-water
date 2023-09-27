@@ -2869,15 +2869,20 @@ water_use_barplots <- function(width, height, bkgd_color, text_color,
   showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 700)
   showtext_auto(enable = TRUE)
 
+  unique_fac_ids_w_missing_data <- bw_inventory_w_missing_data |>
+    distinct(fac_id) |>
+    nrow()
+
   # Light processing - this could also be done in 2_process.R
   # % data we do have
   wu_nas_percent_plot <- bw_inventory_w_missing_data |>
     st_drop_geometry() |>
+    distinct(fac_id, .keep_all = TRUE) |>
     # drop na in `facility_category` ?
     drop_na(facility_category) |>
     group_by(wu_data_flag, facility_category) %>%
     summarize(count = n(),
-              percent = count/nrow(bw_inventory_w_missing_data) * 100) %>%
+              percent = count/unique_fac_ids_w_missing_data * 100) %>%
     mutate(type = ifelse(is.na(wu_data_flag), 'No water use data', "Water use data available"),
            type = factor(type, levels = c("Water use data available", 'No water use data')))
 
@@ -3038,8 +3043,8 @@ water_use_barplots <- function(width, height, bkgd_color, text_color,
               width = 0.2) +
     # add brackets for zoom in on barplots
     draw_image(magick::image_read(bracket1_png_path),
-               x = 0.2045,
-               y = -1.524,
+               x = 0.1908,
+               y = -1.537,
                width = 0.25,
                height = 4) +
     draw_image(magick::image_read(bracket2_png_path),
