@@ -61,7 +61,7 @@ export default {
       countyPoints: null,
       dataAll: null,
       mapDimensions: null,
-      dimensions: null,
+      chartDimensions: null,
       wrapper: null,
       mapBounds: null,
       mapProjection: null,
@@ -219,18 +219,18 @@ export default {
 
       // define histogram dimensions
       const width = 400;
-      this.dimensions = {
+      this.chartDimensions = {
         width,
         height: width*0.9,
         margin: {
           top: 30,
           right: 5,
           bottom: 50,
-          left: 5
+          left: 15
         }
       }
-      this.dimensions.boundedWidth = this.dimensions.width - this.dimensions.margin.left - this.dimensions.margin.right
-      this.dimensions.boundedHeight = this.dimensions.height - this.dimensions.margin.top - this.dimensions.margin.bottom
+      this.chartDimensions.boundedWidth = this.chartDimensions.width - this.chartDimensions.margin.left - this.chartDimensions.margin.right
+      this.chartDimensions.boundedHeight = this.chartDimensions.height - this.chartDimensions.margin.top - this.chartDimensions.margin.bottom
 
       self.initChart()
 
@@ -254,6 +254,7 @@ export default {
         .append("select")
         .attr("id", "state-dropdown")
         .attr("class", "dropdown")
+        .attr("contenteditable", "true")
         .on("change", function() { 
           this.selectedText = this.options[this.selectedIndex].text;
           this.style.width = 20 + (this.selectedText.length * 12) + "px";
@@ -499,23 +500,24 @@ export default {
       // draw canvas for histogram
       const chartSVG = this.d3.select("#chart-container")
         .append("svg")
-          .attr("viewBox", [0, 0, (this.dimensions.width), (this.dimensions.height)].join(' '))
+          .attr("viewBox", [0, 0, (this.chartDimensions.width), (this.chartDimensions.height)].join(' '))
           .attr("width", "100%")
           .attr("height", "100%")
-          // .attr("width", this.dimensions.width)
-          // .attr("height", this.dimensions.height)
+          // .attr("width", this.chartDimensions.width)
+          // .attr("height", this.chartDimensions.height)
           .attr("id", "chart-svg")
 
       // assign role for accessibility
       chartSVG.attr("role", "figure")
         .attr("tabindex", 0)
+        .attr("contenteditable", "true")
         .append("title")
 
       this.chartBounds = chartSVG.append("g")
         .style("transform", `translate(${
-          this.dimensions.margin.left
+          this.chartDimensions.margin.left
         }px, ${
-          this.dimensions.margin.top
+          this.chartDimensions.margin.top
         }px)`)
       
       // init static elements for histogram
@@ -523,25 +525,34 @@ export default {
           .attr("class", "rects")
           .attr("role", "list")
           .attr("tabindex", 0)
+          .attr("contenteditable", "true")
           .attr("aria-label", "bar chart bars")
       this.chartBounds.append("g")
           .attr("class", "x-axis")
           .style("transform", `translateY(${
-            this.dimensions.boundedHeight
+            this.chartDimensions.boundedHeight
           }px)`)
           .attr("role", "presentation")
           .attr("aria-hidden", true)
-        .append("text")
-          .attr("class", "x-axis-label")
-          .attr("x", this.dimensions.boundedWidth / 2)
-          .attr("y", this.dimensions.margin.bottom - 10)
-          .style("fill", "black")
-          .style("text-anchor", "middle")
-          .style("font-size", "1.4em")
-          .attr("role", "presentation")
-          .attr("aria-hidden", true)
+          .append("text")
+            .attr("class", "x-axis axis-title")
+            .attr("x", this.chartDimensions.boundedWidth / 2)
+            .attr("y", this.chartDimensions.margin.bottom - 10)
+            .style("text-anchor", "middle")
+            .attr("role", "presentation")
+            .attr("aria-hidden", true)
       this.chartBounds.append("g")
         .attr("class", "y-axis")
+        .attr("role", "presentation")
+        .attr("aria-hidden", true)
+        .append("text")
+          .attr("class", "y-axis axis-title")
+          .attr("x", -this.chartDimensions.boundedHeight / 2)
+          .attr("y", 0)
+          .attr("transform", "rotate(-90)")
+          .style("text-anchor", "middle")
+          .attr("role", "presentation")
+          .attr("aria-hidden", true)
     },
     drawHistogram(state) {
       const self = this;
@@ -585,13 +596,13 @@ export default {
 
       // create scales   
       const xScale = this.d3.scaleBand()
-        .rangeRound([0, this.dimensions.boundedWidth])
+        .rangeRound([0, this.chartDimensions.boundedWidth])
         .domain(dataTypes) // if want to only include types in each state: data.map(d => d.WB_TYPE)
         .padding(0.1) //0.05
       
       const yScale = this.d3.scaleLinear()
         .domain([0, this.d3.max(data, yAccessor)]) // use y accessor w/ raw data
-        .range([this.dimensions.boundedHeight, 0])
+        .range([this.chartDimensions.boundedHeight, 0])
         .nice()
 
       const colorScale = this.d3.scaleOrdinal()
@@ -607,12 +618,12 @@ export default {
 
       oldRectGroups.selectAll('rect')
         .transition(self.getExitTransition())
-        .attr("y", d => this.dimensions.boundedHeight)
+        .attr("y", d => this.chartDimensions.boundedHeight)
         .attr("height", 0)
 
       oldRectGroups.selectAll('text')
         .transition(self.getExitTransition())
-        .attr("y", d => this.dimensions.boundedHeight)
+        .attr("y", d => this.chartDimensions.boundedHeight)
 
       oldRectGroups.transition(self.getExitTransition()).remove()
 
@@ -620,6 +631,7 @@ export default {
         .attr("class", d => "rect " + state)
         .attr("id", d => 'rect-group-' + identifierAccessor(d))
         .attr("tabindex", "0")
+        .attr("contenteditable", "true")
         .attr("role", "listitem")
         .attr("aria-label", d => `There are ${
           yAccessor(d)
@@ -632,7 +644,7 @@ export default {
       // append rects and set default y and height, so that when appear, come up from bottom
       newRectGroups.append("rect") 
         .attr("x", d => xScale(xAccessor(d)))
-        .attr("y", this.dimensions.boundedHeight)
+        .attr("y", this.chartDimensions.boundedHeight)
         .attr("width", xScale.bandwidth())
         .attr("height", 0)
         .style("fill", d => d.WB_TYPE === this.currentType ? this.focalColor : this.defaultColor) //colorScale(colorAccessor(d)))
@@ -640,7 +652,7 @@ export default {
       // append text and set default position
       newRectGroups.append("text")
         .attr("x", d => xScale(xAccessor(d)) + xScale.bandwidth()/2)
-        .attr("y", this.dimensions.boundedHeight)
+        .attr("y", this.chartDimensions.boundedHeight)
       
       // update rectGroups to include new points
       rectGroups = newRectGroups.merge(rectGroups)
@@ -652,7 +664,7 @@ export default {
           .attr("x", d => xScale(xAccessor(d)))
           .attr("y", d => yScale(yAccessor(d)))
           .attr("width", xScale.bandwidth()) // if negative, bump up to 0
-          .attr("height", d => this.dimensions.boundedHeight - yScale(yAccessor(d)))
+          .attr("height", d => this.chartDimensions.boundedHeight - yScale(yAccessor(d)))
           .style("fill", d => d.WB_TYPE === this.currentType ? this.focalColor : this.defaultColor) // colorScale(colorAccessor(d)))
           .attr("class", d => 'bar ' + identifierAccessor(d))
       
@@ -728,13 +740,11 @@ export default {
 
       const barText = rectGroups.select("text")
         .transition(self.getUpdateTransition())
+          .attr("class", "bar-label")
           .attr("x", d => xScale(xAccessor(d)) + xScale.bandwidth()/2)
           .attr("y", d => yScale(yAccessor(d)) - 5)
           .style("text-anchor", "middle")
           .text(d => this.d3.format(',')(yAccessor(d)))
-          .attr("fill", "#666")
-          .style("font-size", "12px")
-          .style("font-family", "sans-serif")
 
       const xAxisGenerator = this.d3.axisBottom()
         .scale(xScale)
@@ -748,7 +758,10 @@ export default {
 
       xAxis.selectAll(".tick line").attr("stroke", "None")
 
-      const xAxisLabel = xAxis.select(".x-axis-label")
+      const xAxisText = xAxis.selectAll(".tick text")
+        .attr("class", "x-axis axis-label")
+
+      const xAxisLabel = xAxis.select(".x-axis.axis-title")
 
       if (state === this.defaultViewName) {
         xAxisLabel
@@ -760,14 +773,26 @@ export default {
           }`)
       }
 
-      // const yAxisGenerator = d3.axisLeft()
-      //   .scale(yScale)
+      const yAxisGenerator = this.d3.axisLeft()
+        .scale(yScale)
+        .tickValues([]);
 
-      // const yAxis = this.chartBounds.select(".y-axis")
-      //   .transition(self.getUpdateTransition())
-      //   .call(yAxisGenerator)
-      //   .attr("role", "presentation")
-      //   .attr("aria-hidden", true)
+      const yAxis = this.chartBounds.select(".y-axis")
+
+      yAxis
+        .transition(self.getUpdateTransition())
+        .call(yAxisGenerator)
+        .select(".domain").remove()
+        // .attr("role", "presentation")
+        // .attr("aria-hidden", true)
+
+      yAxis.selectAll(".tick line").attr("stroke", "None")
+
+      const yAxisLabel = yAxis.select(".y-axis.axis-title")
+
+      yAxisLabel
+        .text('Number of facilities')
+
     },
     drawMap(state, scale) {
       const self = this;
@@ -1474,6 +1499,18 @@ export default {
   .county_centroid {
     stroke: white;
     stroke-width: 0.3;
+  }
+  .axis-title {
+    font-size: 16px;
+    fill: #000000;
+    font-weight: 700;
+  }
+  .axis-label {
+    font-size: 12px;
+  }
+  .bar-label {
+    font-size: 16px;
+    fill: #666666;
   }
   .dropdown {
     // font-size: 20px;

@@ -1882,74 +1882,78 @@ expanded_ss_barplot <- function(source_summary, supply_colors, font_legend,
   showtext_auto(enable = TRUE)
 
   if (get_percent == TRUE) {
-
-  expand_ss <- source_summary |>
-    mutate(water_source = factor(water_source, levels = reorder_source_category)) |>
-    ggplot(aes(x = WB_TYPE, y = percent, fill = water_source)) +
-    geom_bar(stat="identity", position = "stack") +
-    scale_fill_manual(name = 'water_source', values = supply_colors, drop = FALSE) +
-    scale_x_discrete(expand = c(0,0)) +
-    scale_y_continuous(breaks = seq(0, 100, by = 25),  # Specify breaks at 0, 25, 50, 75, and 100
-                       labels = c("0", "25", "50", "75", "100%"),  # Specify labels for the breaks
-                       expand = c(0, 0.1)) +
-    theme_minimal() +
-    theme(
-      axis.title = element_blank(),
-      panel.grid = element_blank(),
-      axis.ticks.y = element_line(color = "lightgrey", size = 0.5),
-      axis.text.x = element_text(size = 14),
-      legend.position = 'bottom',
-      plot.title = element_text(hjust = 0.5, size = 20),
-      axis.text.y = element_text(size = 14),
-      #legend.title.align = 0.5,
-      legend.title = element_text(vjust = 1, size = 14),
-      legend.title.align = 0.5,
-      #panel.margin = margin(0, 0, 0, 0, "pt"),
-      legend.spacing.x = unit(0.5, "cm"),
-      text = element_text(family = font_legend, size = 14),
-      plot.margin = margin(30, 20, 20, 30),
-      legend.text = element_text(family = font_legend, size = 14)
-    ) +
-    # ggtitle('National') +
-    guides(fill = guide_legend(title = "Water source",
-                               title.position = "top",
-                               nrow = 1,
-                               reverse = TRUE))
+    
+    figure_title <- 'Water source percentage by facility type'
+    
+    expand_ss <- source_summary |>
+      mutate(water_source = factor(water_source, levels = reorder_source_category)) |>
+      ggplot(aes(x = WB_TYPE, y = percent, fill = water_source)) +
+      geom_bar(stat="identity", position = "stack") +
+      scale_fill_manual(name = 'water_source', values = supply_colors, drop = FALSE) +
+      scale_x_discrete(expand = c(0,0)) +
+      scale_y_continuous(breaks = seq(0, 100, by = 25),  # Specify breaks at 0, 25, 50, 75, and 100
+                         labels = c("0", "25", "50", "75", "100%"),  # Specify labels for the breaks
+                         expand = c(0, 0.1)) +
+      theme_minimal() +
+      theme(
+        axis.title = element_blank(),
+        panel.grid = element_blank(),
+        axis.ticks.y = element_line(color = "lightgrey", size = 0.5),
+        axis.text.x = element_text(size = 14),
+        legend.position = 'bottom',
+        plot.title = element_text(hjust = 0.5, size = 20),
+        axis.text.y = element_text(size = 14),
+        #legend.title.align = 0.5,
+        legend.title = element_text(vjust = 1, size = 14),
+        legend.title.align = 0.5,
+        #panel.margin = margin(0, 0, 0, 0, "pt"),
+        legend.spacing.x = unit(0.5, "cm"),
+        text = element_text(family = font_legend, size = 14),
+        plot.margin = margin(30, 20, 20, 30),
+        legend.text = element_text(family = font_legend, size = 14)
+      ) +
+      # ggtitle('National') +
+      guides(fill = guide_legend(title = "Water source",
+                                 title.position = "top",
+                                 nrow = 1,
+                                 reverse = TRUE))
 
   } else {
 
-  expand_ss <- source_summary |>
-    mutate(water_source = factor(water_source, levels = reorder_source_category)) |>
-    ggplot(aes(x = WB_TYPE, y = site_count, fill = water_source)) +
-    geom_bar(stat="identity", position = "stack") +
-    scale_fill_manual(name = 'water_source', values = supply_colors, drop = FALSE) +
-    scale_x_discrete(expand = c(0,0)) +
-    scale_y_continuous(breaks = seq(0, 20000, by = 5000),
-                       labels = c("0", "5000", "10000", "15000", "20000")) + # Specify labels for the breaks) +
-    theme_minimal() +
-    theme(
-      axis.title = element_blank(),
-      panel.grid = element_blank(),
-      axis.ticks.y = element_line(color = "lightgrey", size = 0.5),
-      axis.text.x = element_text(size = 14),
-      legend.position = 'bottom',
-      plot.title = element_text(hjust = 0.5, size = 20),
-      axis.text.y = element_text(size = 14),
-      #legend.title.align = 0.5,
-      legend.title = element_text(vjust = 1, size = 14),
-      legend.title.align = 0.5,
-      #panel.margin = margin(0, 0, 0, 0, "pt"),
-      legend.spacing.x = unit(0.5, "cm"),
-      text = element_text(family = font_legend, size = 14),
-      plot.margin = margin(30, 20, 20, 30),
-      legend.text = element_text(family = font_legend, size = 14)
-    ) +
-    # ggtitle('National') +
-    guides(fill = guide_legend(title = "Water source",
-                               title.position = "top",
-                               nrow = 1,
-                               reverse = TRUE))
-
+    figure_title <- 'Number of facilities using each water source by facility type'
+    
+    expand_ss <- source_summary |>
+      mutate(water_source = factor(water_source, levels = reorder_source_category)) |>
+      ggplot(aes(x = WB_TYPE, y = site_count, fill = water_source)) +
+      geom_bar(stat="identity", position = "stack") +
+      scale_fill_manual(name = 'water_source', values = supply_colors, drop = FALSE) +
+      scale_x_discrete(expand = c(0,0)) +
+      scale_y_continuous(breaks = seq(0, 20000, by = 5000),
+                         labels = c("0", "5000", "10000", "15000", "20000")) + # Specify labels for the breaks) +
+      theme_minimal() +
+      theme(
+        axis.title = element_blank(),
+        panel.grid = element_blank(),
+        axis.ticks.y = element_line(color = "lightgrey", size = 0.5),
+        axis.text.x = element_text(size = 14),
+        legend.position = 'bottom',
+        plot.title = element_text(hjust = 0.5, size = 20),
+        axis.text.y = element_text(size = 14),
+        #legend.title.align = 0.5,
+        legend.title = element_text(vjust = 1, size = 14),
+        legend.title.align = 0.5,
+        #panel.margin = margin(0, 0, 0, 0, "pt"),
+        legend.spacing.x = unit(0.5, "cm"),
+        text = element_text(family = font_legend, size = 14),
+        plot.margin = margin(30, 20, 20, 30),
+        legend.text = element_text(family = font_legend, size = 14)
+      ) +
+      # ggtitle('National') +
+      guides(fill = guide_legend(title = "Water source",
+                                 title.position = "top",
+                                 nrow = 1,
+                                 reverse = TRUE))
+    
   }
 
   plot_margin <- 0.005
@@ -1978,7 +1982,7 @@ expanded_ss_barplot <- function(source_summary, supply_colors, font_legend,
               hjust = 1,
               vjust = 0) +
     # add title
-    draw_label("Distribution of water sources with expanded self supply by facility types",
+    draw_label(figure_title,
                x = 0.025, y = 0.94,
                size = 32,
                hjust = 0,

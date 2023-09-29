@@ -15,14 +15,14 @@
         <img src="../assets/images/public-supply_vs_self-supply.png">
         <div class="text-container">
           <p>
-            Data on water sources by bottling facility are limited. [DATA RELEASE] et al. 2023 performed new mapping analyses to infer the source of water to bottling facilities. These analyses make some assumptions, like assuming that a facility near a well uses that well to source their water, and a facility within a public-supply zone uses public-supply water. Though imperfect, these estimates improve the nation's understanding of where bottling facilities are sourcing their water. The charts below show the primary sources of bottled water in each state. 
+            Data on water sources by bottling facility are limited. [DATA RELEASE] et al. 2023 performed new mapping analyses to infer the source of water to bottling facilities. These analyses make some assumptions, like assuming that a facility near a well uses that well to source their water, and a facility within a public-supply zone uses public-supply water. Although this is an estimate, it improves the nations's understanding of where bottling facilities are sourcing their water. The charts below show the primary source of water for bottling facilities in each state. 
           </p>
         </div>
       </div>
       <div id="img-ws-national-types" class="img-container">
         <div class="text-container">
           <p>
-            How do different facility types source water?
+            Where do different facility types source water?
           </p>
         </div>
         <img src="../assets/images/national_sources_facilities_sankey.png">
@@ -32,11 +32,16 @@
       <div id="img-ws-bw-facet" class="img-container">
         <div class="text-container">
           <p>
-            How do bottled water facilities in each state source water?
+            Let's look more closely at bottled water facilities specifically. Where do bottled water facilities in each state source water?
           </p>
         </div>
         <img src="../assets/images/state_sources_facet_Bottled Water_styled.png">
-        <img src="../assets/images/map_perc_bottled_water_expand_self_supply_map.png">
+        <div class="text-container">
+          <p>
+            Digging even deeper, how does the source for bottled water facilities vary by county?
+          </p>
+        </div>
+        <img src="../assets/images/map_perc_count_bottled_water_map.png">
       </div>
     </div>
   </section>
