@@ -68,5 +68,8 @@ h1 {
 *:focus {
   outline: none;
 }
+[contenteditable="true"]:focus {
+    outline: auto;
+}
 
 </style>
