@@ -27,6 +27,7 @@
 </template>
 <script>
 import * as d3Base from 'd3';
+import * as topojson from "topojson-client";
 import { csv } from 'd3';
 import { isMobile } from 'mobile-device-detect';
 // import Dropdown from '@/components/Dropdown.vue'
@@ -52,12 +53,10 @@ export default {
       mobileView: isMobile, // test for mobile
       statePolysCONUSJSON: null,
       statePolysAKJSON: null,
-      statePolysGUMPJSON: null,
       statePolysHIJSON: null,
-      statePolysPRVIJSON: null,
-      statePolyASJSON: null,
+      statePolysZoom: null,
       statePolys: null,
-      countyPolys: null,
+      countyPolysZoom: null,
       countyPoints: null,
       dataAll: null,
       mapDimensions: null,
@@ -132,71 +131,85 @@ export default {
     loadData(data) {
       const self = this;
 
-      // TO-DO use topojson in place of geojsons
-      // Keep only essential attribute fields to reduce size
       let promises = [
-        self.d3.json(self.publicPath + "states_poly_CONUS.geojson"),
-        self.d3.json(self.publicPath + "counties_crop_poly_oconus.geojson"),
-        self.d3.json(self.publicPath + "counties_crop_centroids_oconus.geojson"),
         self.d3.csv(self.publicPath + 'state_facility_type_summary.csv'),
-        self.d3.json(self.publicPath + "states_poly_AK.geojson"),
-        self.d3.json(self.publicPath + "states_poly_GU_MP.geojson"),
-        self.d3.json(self.publicPath + "states_poly_HI.geojson"),
-        self.d3.json(self.publicPath + "states_poly_PR_VI.geojson"),
-        self.d3.json(self.publicPath + "states_poly_AS.geojson")
+        self.d3.json(self.publicPath + "states_polys_CONUS.json"),
+        self.d3.json(self.publicPath + "states_polys_AK.json"),
+        self.d3.json(self.publicPath + "states_polys_AS.json"),
+        self.d3.json(self.publicPath + "states_polys_GU_MP.json"),
+        self.d3.json(self.publicPath + "states_polys_HI.json"),
+        self.d3.json(self.publicPath + "states_polys_PR_VI.json"),
+        self.d3.json(self.publicPath + "states_polys_CONUS_OCONUS_zoom.json"),
+        self.d3.json(self.publicPath + "counties_polys_CONUS_OCONUS_zoom.json"),
+        self.d3.json(self.publicPath + "counties_centroids_CONUS_OCONUS.json")
       ];
       Promise.all(promises).then(self.callback)
     },
     callback(data){
       const self = this;
 
-      // assign data
-      this.statePolysCONUSJSON = data[0];
+      // Assign data
+
+      // State counts, by type
+      this.dataAll = data[0];
+
+      // High simplification state polgyons, for national view
+      // Loaded separately so that CONUS, AK, and HI jsons can be used 
+      // to arrange national map view in `initMap()`
+      const statePolysCONUStopoJSON = data[1];
+      this.statePolysCONUSJSON = topojson.feature(statePolysCONUStopoJSON, statePolysCONUStopoJSON.objects.states_polys_CONUS)
       const statePolysCONUS = this.statePolysCONUSJSON.features;
 
-      const countyPolyJSON = data[1];
-      this.countyPolys = countyPolyJSON.features;
-
-      const countyPointJSON = data[2];
-      this.countyPoints = countyPointJSON.features;
-
-      this.dataAll = data[3];
-
-      this.statePolysAKJSON = data[4];
+      const statePolysAKtopoJSON = data[2];
+      this.statePolysAKJSON = topojson.feature(statePolysAKtopoJSON, statePolysAKtopoJSON.objects.states_polys_AK);
       const statePolysAK = this.statePolysAKJSON.features;
 
-      this.statePolysGUMPJSON = data[5];
-      const statePolysGUMP = this.statePolysGUMPJSON.features;
+      const statePolysAStopoJSON = data[3];
+      const statePolysAS = topojson.feature(statePolysAStopoJSON, statePolysAStopoJSON.objects.states_polys_AS).features;
 
-      this.statePolysHIJSON = data[6];
+      const statePolysGUMPtopoJSON = data[4];
+      const statePolysGUMP = topojson.feature(statePolysGUMPtopoJSON, statePolysGUMPtopoJSON.objects.states_polys_GU_MP).features;
+
+      const statePolysHItopoJSON = data[5];
+      this.statePolysHIJSON = topojson.feature(statePolysHItopoJSON, statePolysHItopoJSON.objects.states_polys_HI);
       const statePolysHI = this.statePolysHIJSON.features;
 
-      this.statePolysPRVIJSON = data[7];
-      const statePolysPRVI = this.statePolysPRVIJSON.features;
+      const statePolysPRVItopoJSON = data[6];
+      const statePolysPRVI = topojson.feature(statePolysPRVItopoJSON, statePolysPRVItopoJSON.objects.states_polys_PR_VI).features;
 
-      this.statePolysASJSON = data[8];
-      const statePolysAS = this.statePolysASJSON.features;
+      // Low simplification state polygons, for zoom view
+      const statePolysZoomTopoJSON = data[7];
+      this.statePolysZoom = topojson.feature(statePolysZoomTopoJSON, statePolysZoomTopoJSON.objects.states_polys_CONUS_OCONUS_zoom).features;
 
-      // TO DO - If area-specific polys (e.g. this.statePolysAK) aren't used for scaling in initMap(), 
-      // could simply load in a single geojson of OCONUS + CONUS states
+      // County polygons, for zoom view
+      const countyPolysZoomTopoJSON = data[8];
+      this.countyPolysZoom = topojson.feature(countyPolysZoomTopoJSON, countyPolysZoomTopoJSON.objects.counties_polys_CONUS_OCONUS_zoom).features;
+      
+      // County centroids, with county facility counts data
+      const countyPointsTopoJSON = data[9];
+      this.countyPoints = topojson.feature(countyPointsTopoJSON, countyPointsTopoJSON.objects.counties_centroids_CONUS_OCONUS).features;
+
+      // Concatenate low simplification state polygons into single object
       this.statePolys = statePolysCONUS.concat(statePolysAK, statePolysHI, statePolysGUMP, statePolysPRVI, statePolysAS)
-
-      // set active
+      
+      // Set default and current map view
       this.defaultViewName = 'all states and territories'
       this.currentState = this.defaultViewName;
-      
 
-      // set current scale
+      // Set current scale for view (1 = not zoomed)
       this.currentScale = 1;
-
-      // get list of unique states
-      this.stateList = [... new Set(this.dataAll.map(d => d.state_name))]
-      this.stateList.unshift(this.defaultViewName)
       
+      // Set default and current facility type
       this.currentType = 'Bottled Water'
       this.defaultType = 'Bottled Water'
       this.dropdownOptions = this.stateList
       
+      // Set up dropdown
+      // get list of unique states
+      this.stateList = [... new Set(this.dataAll.map(d => d.state_name))]
+      this.stateList.unshift(this.defaultViewName)
+      // store options for dropdown
+      this.dropdownOptions = this.stateList
       // add dropdown
       self.addDropdown(this.stateList)
 
@@ -215,6 +228,7 @@ export default {
       this.mapDimensions.boundedWidth = this.mapDimensions.width - this.mapDimensions.margin.left - this.mapDimensions.margin.right
       this.mapDimensions.boundedHeight = this.mapDimensions.height - this.mapDimensions.margin.top - this.mapDimensions.margin.bottom
         
+      // Initialize map
       self.initMap()
 
       // define histogram dimensions
@@ -232,6 +246,7 @@ export default {
       this.chartDimensions.boundedWidth = this.chartDimensions.width - this.chartDimensions.margin.left - this.chartDimensions.margin.right
       this.chartDimensions.boundedHeight = this.chartDimensions.height - this.chartDimensions.margin.top - this.chartDimensions.margin.bottom
 
+      // Initialize chart
       self.initChart()
 
       // set primary colors
@@ -474,7 +489,7 @@ export default {
       //   .enter()
       //   .append("path")
       //   .attr("class", "locator-paths")
-      //   .attr("id", d => "state-" + d.properties.FIPS)
+      //   .attr("id", d => "state-" + d.properties.GEOID)
       //   .attr("d", mapPathLocator)
 
       this.mapBounds.append("g")
@@ -814,7 +829,7 @@ export default {
       //   selectedMapPath = this.mapPath
       //   featureBounds = self.calculateScaleTranslation(data, selectedMapPath)
       } else {
-        data = this.statePolys.filter(d => 
+        data = this.statePolysZoom.filter(d => 
           d.properties.NAME === state)
         
         // Could set path for area here
@@ -851,7 +866,7 @@ export default {
 
       this.stateGroups = this.mapBounds.selectAll(".states")
         .selectAll(".state")
-        .data(data, d => d.properties.FIPS)
+        .data(data, d => d.properties.data_id)
 
       const oldStateGroups = this.stateGroups.exit()
 
@@ -864,16 +879,16 @@ export default {
 
       const newStateGroups = this.stateGroups.enter().append("g")
         .attr("class", "state")
-        .attr("id", d => 'state-group-' + d.properties.FIPS)
+        .attr("id", d => 'state-group-' + d.properties.GEOID)
         .attr("tabindex", "0")
         .attr("role", "listitem")
         .attr("aria-label", d => d.properties.NAME)
       
-      let stateStrokeWidth = state === this.defaultViewName ? 0.5 : 1 * 2/scale
-      let stateStrokeColor = state === this.defaultViewName ? "#949494" : "#636363"
+      let stateStrokeWidth = state === this.defaultViewName ? 0.5 : 1 * 1/scale
+      let stateStrokeColor = state === this.defaultViewName ? "#949494" : "#757575"
       newStateGroups.append("path")
         .attr("class", "state-paths")
-        .attr("id", d => "state-" + d.properties.FIPS)
+        .attr("id", d => "state-" + d.properties.GEOID)
         .attr("d", d => {
           // let computedBounds = self.calculateScaleTranslation(d, selectedMapPath)
           // // console.log(d.properties.NAME)
@@ -944,7 +959,7 @@ export default {
       const stateShapes = this.stateGroups.select("path")
 
       if (!(state === this.defaultViewName)) {
-        let selectedStateId = data[0].properties.FIPS
+        let selectedStateId = data[0].properties.GEOID
         this.d3.selectAll('#state-group-'+ selectedStateId)
           .raise()
       }
@@ -982,7 +997,7 @@ export default {
       // if (!(state === this.defaultViewName)) {
       //   const selectedStateData = data.filter(d => d.properties.NAME === state)
       //   console.log(selectedStateData)
-      //   const selectedStateId = selectedStateData[0].properties.FIPS
+      //   const selectedStateId = selectedStateData[0].properties.GEOID
 
       //   const selectedStateGroup = d3.selectAll('#state-group-'+ selectedStateId)
       //     .raise()
@@ -1007,12 +1022,12 @@ export default {
       if (state === this.defaultViewName) {
         stateShapes
           .on("mouseover", (event, d) => {
-            this.d3.selectAll("#state-" + d.properties.FIPS)
+            this.d3.selectAll("#state-" + d.properties.GEOID)
               .style("fill", "#000000")
               .style("fill-opacity", 0.1)
           })
           .on("mouseout", (event, d) => {
-            this.d3.selectAll("#state-" + d.properties.FIPS)
+            this.d3.selectAll("#state-" + d.properties.GEOID)
               .style("fill", "#fffff")
               .style("fill-opacity", 0)
           })
@@ -1024,9 +1039,9 @@ export default {
       let data; 
 
       if (state === this.defaultViewName) {
-        data = this.countyPolys
+        data = this.countyPolysZoom
       } else {
-        data = this.countyPolys.filter(d => 
+        data = this.countyPolysZoom.filter(d => 
           d.properties.STATE_NAME === state)
       }
       
@@ -1048,7 +1063,7 @@ export default {
           .attr("id", d => "county-group-" + d.properties.GEOID)
           .attr("tabindex", "0")
           .attr("role", "listitem")
-          .attr("aria-label", d => d.properties.NAME + ', ' + d.properties.STATE_NAME)
+          .attr("aria-label", d => d.properties.NAMELSAD + ', ' + d.properties.STATE_NAME)
 
       let countyStrokeWidth = state === this.defaultViewName ? 0.1 : 0.5 * 1/scale
       let countyStrokeColor = state === this.defaultViewName ? "#E3E3E3" : "#939393"

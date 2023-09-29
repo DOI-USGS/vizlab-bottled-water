@@ -1,10 +1,87 @@
+source('1_fetch/src/file_utils.R')
 source('3_visualize/src/plot_utils.R')
 source('3_visualize/src/sf_utils_shift.R')
 source('3_visualize/src/mapping_utils.R')
+source('3_visualize/src/spatial_data_utils.R')
 
 p3_targets <- list(
-
+  
   ##### Spatial context layers #####
+  tar_target(p3_conus_sf,
+             rmapshaper::ms_simplify(p2_conus_sf, keep=0.2)),
+  
+  tar_target(p3_counties_conus_sf,
+             p2_counties_conus_oconus_sf %>%
+               filter(STATEFP %in% p3_conus_sf$STATEFP) %>%
+               rmapshaper::ms_simplify(keep = 0.2) %>%
+               st_intersection(st_union(p3_conus_sf))),
+  
+  tar_target(p3_conus_oconus_group_simplification,
+             tibble(
+               group = unique(p2_conus_oconus_sf$group)) %>%
+               mutate(
+                 simplification_low = case_when(
+                   group %in% c('AS') ~ 0.06,
+                   group %in% c('PR_VI', 'GU_MP') ~ 0.1,
+                   group %in% c('HI') ~ 0.15,
+                   group %in% c('AK') ~ 0.015,
+                   TRUE ~ 0.3
+                 ),
+                 simplification_high = case_when(
+                   group %in% c('AS') ~ 0.03,
+                   group %in% c('GU_MP') ~ 0.05, # may need to be increased?
+                   group %in% c('PR_VI') ~ 0.03,
+                   group %in% c('HI') ~ 0.05,
+                   group %in% c('AK') ~ 0.01,
+                   TRUE ~ 0.02
+                 )
+               )),
+  
+  tar_target(p3_conus_oconus_low_sf,
+             purrr::pmap_dfr(p3_conus_oconus_group_simplification, function(...) {
+               current_group = tibble(...)
+               p2_conus_oconus_sf %>%
+                 filter(group == current_group$group) %>%
+                 rmapshaper::ms_simplify(keep = current_group$simplification_low)
+             }) %>%
+               st_make_valid() %>%
+               mutate(data_id = paste(GEOID, 'low', sep = '_'))),
+  
+  tar_target(p3_conus_oconus_high_sf,
+             purrr::pmap_dfr(p3_conus_oconus_group_simplification, function(...) {
+               current_group = tibble(...)
+               p2_conus_oconus_sf %>%
+                 filter(group == current_group$group) %>%
+                 rmapshaper::ms_simplify(keep = current_group$simplification_high)
+             }) %>%
+               st_make_valid() %>%
+               mutate(data_id = paste(GEOID, 'high', sep = '_'))),
+  
+  tar_target(p3_conus_oconus_county_group_simplification,
+             tibble(
+               group = unique(p2_conus_oconus_sf$group)) %>%
+               mutate(simplification = case_when(
+                 group %in% c('GU_MP', 'PR_VI', 'HI') ~ 0.02,
+                 group %in% c('AS') ~ 0.5,
+                 group %in% c('AK') ~ 0.06,
+                 TRUE ~ 0.04
+               ))),
+  
+  tar_target(p3_counties_conus_oconus_sf,
+             # Simplify county polygons
+             purrr::pmap_dfr(p3_conus_oconus_county_group_simplification, function(...) {
+               current_group = tibble(...)
+               p2_counties_conus_oconus_sf %>%
+                 filter(group == current_group$group) %>%
+                 rmapshaper::ms_simplify(keep = current_group$simplification)
+             }) %>%
+               # Then crop to simplified state polygons (low simplification)
+               st_intersection(st_union(p3_conus_oconus_low_sf)) %>%
+               # Then add centroids
+               add_centroids() %>%
+               # Cast polygons to multipolygons to ensure consistent geometry
+               sf::st_cast("MULTIPOLYGON")),
+  
   # Apply shifting to the sites
   tar_target(p3_inventory_sites_shifted,
              apply_shifts_to_sites(
@@ -12,13 +89,59 @@ p3_targets <- list(
                proj_str = p1_proj,
                states_shp = p1_nws_states_shp
              )),
-
+  
   # Apply shifting to the state/territory polygons
   tar_target(p3_spatial_shifted,
              generate_usa_map_data(proj_str = p1_proj,
                                    outline_states = TRUE,
                                    states_shp = p1_nws_states_shp)),
-
+  
+  ##### TOPOJSONS #####
+  # Requires system installation of mapshaper
+  # https://github.com/mbloch/mapshaper
+  
+  # Export topojson for each state group in p3_conus_oconus_high_sf 
+  # (high simplification for national map view)
+  tar_target(p3_conus_oconus_high_topojsons,
+             export_to_topojson(data_sf = filter(p3_conus_oconus_high_sf, 
+                                                 group == p3_conus_oconus_group_simplification$group),
+                                cols_to_keep = c('GEOID', 'NAME', 'data_id', 'geometry'),
+                                tmp_dir = '3_visualize/tmp',
+                                outfile = sprintf("public/states_polys_%s.json", 
+                                                  p3_conus_oconus_group_simplification$group),
+                                precision = 0.001),
+             pattern = map(p3_conus_oconus_group_simplification),
+             format = 'file'),
+  
+  # Export single topojson for p3_conus_oconus_low_sf 
+  # (low simplification for zoomed-in state views)
+  tar_target(p3_conus_oconus_low_topojson,
+             export_to_topojson(data_sf = p3_conus_oconus_low_sf,
+                                cols_to_keep = c('GEOID', 'NAME', 'data_id', 'geometry'),
+                                tmp_dir = '3_visualize/tmp',
+                                outfile = "public/states_polys_CONUS_OCONUS_zoom.json",
+                                precision = 0.001),
+             format = 'file'),
+  
+  # export county polygons to topojson
+  tar_target(p3_counties_conus_oconus_topojson,
+             export_to_topojson(data_sf = p3_counties_conus_oconus_sf,
+                                cols_to_keep = c('GEOID', 'NAMELSAD', 'STATE_NAME', 
+                                                 'geometry'),
+                                tmp_dir = '3_visualize/tmp',
+                                outfile = "public/counties_polys_CONUS_OCONUS_zoom.json",
+                                precision = 0.001),
+             format = 'file'),
+  
+  # export summarized county data w/ county centroid geometry
+  tar_target(p3_county_centroids_conus_oconus_topojson,
+             export_county_data_to_topojson(data = p2_facility_summary_county,
+                                            centroids_sf = p3_counties_conus_oconus_sf,
+                                            tmp_dir = '3_visualize/tmp',
+                                            outfile = "public/counties_centroids_CONUS_OCONUS.json",
+                                            precision = 0.001),
+             format = 'file'),
+  
   ##### Figure parameters #####
   tar_target(p3_font_legend,
              {
@@ -64,7 +187,7 @@ p3_targets <- list(
 
   tar_target(p3_sites_map_conus,
              map_sites(site = p2_inventory_sites_sf_CONUS,
-                       states = p2_conus_sf,
+                       states = p3_conus_sf,
                        site_size = p3_sites_map_params$site_size,
                        fill_by_type = FALSE,
                        site_fill_colors = p3_sites_map_params$site_fill_colors,
@@ -164,7 +287,7 @@ p3_targets <- list(
   ##### Facility types (maps and figures) #####
   tar_target(p3_sites_map_conus_type,
              map_sites(sites = filter(p2_inventory_sites_sf_CONUS, WB_TYPE == p2_facility_types),
-                       states = p2_conus_sf,
+                       states = p3_conus_sf,
                        site_size = 1.3,
                        fill_by_type = TRUE,
                        site_fill_colors = p3_site_type_colors,
@@ -335,21 +458,12 @@ p3_targets <- list(
                names(supply_colors) <- p2_source_order
                return(supply_colors)
              }),
-  tar_target(p3_conus_sf,
-             rmapshaper::ms_simplify(p2_conus_sf, keep = 0.2)),
-
-  tar_target(p3_counties_sf,
-             tigris::counties() |>
-               st_transform(crs = p1_proj) |>
-               filter(STATEFP %in% p3_conus_sf$STATEFP) |>
-               rmapshaper::ms_simplify(keep = 0.2) |>
-               st_intersection(st_union(p3_conus_sf))),
 
   # CONUS bottled water percent and count facilities maps
   tar_target(p3_source_perc_count_bottled_water_facet_map_png,
              generate_bw_conus_map(supply_summary_county_bw = p2_bw_inventory_sites_county_CONUS,
                                    conus_sf = p3_conus_sf,
-                                   counties_sf = p3_counties_sf,
+                                   counties_sf = p3_counties_conus_sf,
                                    reorder_source_category = c("self supply", "combination", "public supply"),
                                    count_size_range = c(0.25, 8),
                                    count_size_limit = max(p2_bw_inventory_sites_county_CONUS$site_count),
@@ -492,7 +606,7 @@ p3_targets <- list(
   tar_target(p3_regions_map,
              map_regions(regions = p1_regions_sf,
                          region_info = p1_region_info,
-                         states = p2_conus_sf,
+                         states = p3_conus_sf,
                          state_fill = '#E2E2E2',
                          state_color = "#ffffff",
                          state_size = 0.5,

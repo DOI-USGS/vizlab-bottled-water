@@ -28,6 +28,7 @@
     "lodash": "^4.17.21",
     "mobile-device-detect": "^0.4.3",
     "regenerator-runtime": "^0.13.11",
+    "topojson-client": "^3.1.0",
     "uswds": "^2.14.0",
     "v-img": "^0.2.0",
     "vue": "^2.7.14",
