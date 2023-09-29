@@ -1883,6 +1883,8 @@ expanded_ss_barplot <- function(source_summary, supply_colors, font_legend,
   showtext_auto(enable = TRUE)
 
   if (get_percent == TRUE) {
+    
+    figure_title <- 'Water source percentage by facility type'
 
   expand_ss <- source_summary |>
     mutate(water_source = factor(water_source, levels = reorder_source_category)) |>
@@ -1918,6 +1920,8 @@ expanded_ss_barplot <- function(source_summary, supply_colors, font_legend,
                                reverse = TRUE))
 
   } else {
+    
+    figure_title <- 'Number of facilities using each water source by facility type'
 
   expand_ss <- source_summary |>
     mutate(water_source = factor(water_source, levels = reorder_source_category)) |>
@@ -1981,7 +1985,7 @@ expanded_ss_barplot <- function(source_summary, supply_colors, font_legend,
               hjust = 1,
               vjust = 0) +
     # add title
-    draw_label("Distribution of water sources with expanded self supply by facility types",
+    draw_label(figure_title,
                x = 0.025, y = 0.94,
                size = 32,
                hjust = 0,

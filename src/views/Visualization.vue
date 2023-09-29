@@ -65,4 +65,11 @@ h1 {
   color: $pal_blue_dark;
 }
 
+*:focus {
+  outline: none;
+}
+[contenteditable="true"]:focus {
+    outline: auto;
+}
+
 </style>
