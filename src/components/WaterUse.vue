@@ -29,7 +29,7 @@
         </div>
         <div class="text-container">
           <p>
-            Using the available data, we can take a closer look at water use in bottled water facilities. Of the XX percent of facilities that have available water use data, about XX percent are bottled water facilities. Of those XX bottled water facilities, XX percent of the withdrawals are from wells, XX percent are from public supply, XX percent are from springs, and XX percent are from a combination of different sources.
+            Using the available data, we can take a closer look at water use in bottled water facilities. Of the XX percent of facilities that have available water use data, about XX percent are bottled water facilities. Of those XX bottled water facilities, XX percent source water from wells, XX percent from public supply, XX percent from springs, and XX percent from a combination of different sources.
           </p>
         </div>
         <img src="../assets/images/wu_types_sources.png">
@@ -37,7 +37,7 @@
       <div class="img-bw-use-map">
         <div class="text-container">
           <p>
-            Among bottled water facilities with data, how much water is used, and how does that use vary by water source? This map shows [average annual values / values for the most recent year available] and is based on limited available data (Buchwald and others, 2023).
+            Among bottled water facilities with data, how much water is used, and how does that use vary by water source? This map shows [average annual values / values for the most recent year available] and is based on limited available data (Buchwald and others, 2023). [NOTE: this figure is being revised]
           </p>
         </div>
         <img src="../assets/images/wu_bw_use.png">
