@@ -506,7 +506,7 @@ p3_targets <- list(
                                  width = 16, height = 9,
                                  bkgd_color = 'white',
                                  text_color = 'black',
-                                 y_title = "Number of facilities for water source",
+                                 y_title = "Number of facilities",
                                  bracket_png_path = '3_visualize/in/bracket.png',
                                  outfile_template = '3_visualize/out/count_expanded_self_supply_barplot.png',
                                  dpi = 300),
