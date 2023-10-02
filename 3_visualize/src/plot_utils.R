@@ -2704,26 +2704,22 @@ bw_availability_map <- function(conus_sf, conus_outline_col, bw_fill_name,
 
 }
 
-#' @title create map of annual bottled water use across CONUS
+#' @title create beeswarm of annual bottled water use data across CONUS
 #' @param width width for the final plot
 #' @param height height for the final plot
 #' @param bkgd_color background color for the plot
 #' @param text_color color for text
 #' @param outfile_template filepath template for saving the final plot
 #' @param dpi dpi at which to save the final plot
-#' @param conus_sf, state level sf of CONUS
-#' @param conus_outline_col color for conus map outline
 #' @param bw_only_inventory filtered water use data for bottled water only
 #' @param supply_color, supply color for water sources
-#' @param scale_leg_title, supply title for scale_size legend
-#' @param size_limit, numeric values to supply for `scale_size` limit used for map
-#' @param size_range, numeric values to supply for `scale_size` range used for map
+#' @param axis_title, supply y axis title
+#' @param x_limit, numeric values to supply for `scale_x_continuous` limit for beeswarm
 #' @return the filepath of the saved plot
-annual_bw_wu_map <- function(conus_sf, conus_outline_col,
-                             bw_only_inventory,
+annual_bw_wu_beeswarm <- function(bw_only_inventory,
                              width, height, bkgd_color, text_color,
                              outfile_template, dpi,
-                             scale_leg_title, size_limit, size_range, supply_color) {
+                             axis_title, supply_color, x_lim) {
 
   # import font (p3_font_legend doesn't seem to work on Mac)
   font_legend <- 'Source Sans Pro'
@@ -2731,71 +2727,45 @@ annual_bw_wu_map <- function(conus_sf, conus_outline_col,
   showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 700)
   showtext_auto(enable = TRUE)
 
+  annotate_legend <- "Neucha"
+  sysfonts::font_add_google(annotate_legend)
+  showtext::showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 900)
+  showtext::showtext_auto(enable = TRUE)
+
   bw_only_inventory <- bw_only_inventory |>
     filter(wu_data_flag == "Y")  |>
     mutate(
       water_source = factor(str_to_title(water_source),
-                      levels = c("Public Supply", "Well", "Spring", "Surface Water Intake", "Combination", "Other"))
-    ) |>
-    filter(!water_source == "Other") # extremely minimal 5.48e-06, droping for now
-
-  # Only plotting annual bottled water use for CONUS
-  water_use_map <- ggplot() +
-    geom_sf(data = conus_sf,
-            fill = bkgd_color,
-            color = conus_outline_col,
-            size = 0.6,
-            linetype = "solid") +
-    geom_sf(data = bw_only_inventory,
-            aes(geometry = geometry, size = annual_mgd, fill = water_source),
-            color = bkgd_color,
-            pch = 21) +
-    scale_size(range = size_range, limits = c(0, size_limit),
-               guide = guide_legend(
-                 direction = "vertical",
-                 ncol = 1,
-                 label.position = "top",
-                 override.aes = list(shape = 21))) +
-    facet_wrap(~water_source) +
-    scale_x_continuous(expand = c(0,0)) +
-    scale_y_continuous(expand = c(0,0)) +
-    scale_fill_manual(values = supply_color, guide = "none") +
-    theme_void() +
-    theme(
-      legend.position = "top",
-      legend.text = element_text(size = 16, family = font_legend, color = text_color),
-      plot.margin = unit(c(1,1,1,1), "cm"),
-      text = element_text(family = font_legend, size = 18),
-      strip.text = element_text(margin = margin(5, 0 ,10 ,0), color = text_color, size =18)
+                            levels = c("Public Supply", "Well", "Spring", "Surface Water Intake", "Combination", "Other"))
     )
 
+  # Only plotting annual bottled water use for CONUS
+  water_use_beeswarm <- ggplot(bw_only_inventory, aes(x = annual_mgd, y = water_source, fill = water_source, color = water_source)) +
+    ggdist::geom_dots(side = "both",
+                      shape = 21) +
+    coord_flip() +
+    scale_fill_manual(values = supply_color, guide = 'none') +
+    scale_color_manual(values = supply_color, guide = 'none') +
+    theme_minimal() +
+    labs(y = "", x = axis_title) +
+    theme(
+      plot.margin = unit(c(1,1,1,1), "cm"),
+      text = element_text(family = font_legend, size = 18),
+      axis.title.y = element_text(margin = margin(0, 30, 0, 0))
+      ) +
+    # setting a limit but we can add arrows to indicate greater spread
+    scale_x_continuous(limits = x_lim)
 
-  # create a simplified legend
-  water_use_size_legend <- ggplot() +
-    geom_sf(data = conus_sf,
-            fill = bkgd_color,
-            color = conus_outline_col,
-            size = 0.6,
-            linetype = "solid") +
-    geom_sf(data = bw_only_inventory,
-            aes(geometry = geometry, size = annual_mgd),
-            color = bkgd_color,
-            pch = 21) +
-    scale_size(name = scale_leg_title,
-               range = size_range, limits = c(0, size_limit),
-               guide = guide_legend(
-                 direction = "vertical",
-                 ncol = 1,
-                 label.position = "top")) +
-    guides(size = guide_legend(override.aes = list(shape = 21, color = 'black', fill = 'black'))) +
+  # vertical arrow to indicate sites < 0.5 MDG
+  arrow <- ggplot() +
     theme_void() +
-    theme(legend.key.size = unit(1, "cm"),
-          legend.position = "right",
-          legend.text = element_text(size = 16, family = font_legend, color = text_color),
-          legend.title = element_text(hjust = 0.5, color = text_color),
-          text = element_text(family = font_legend, size = 18, color = text_color),
-          legend.title.align = 0.5,
-          legend.text.align = 0.5 )
+    geom_curve(
+      aes(x = -1.25, y = 0, xend = -1.25, yend = 1),
+      arrow = arrow(length = unit(0.08, "npc"), type = "closed"),
+      color = text_color,
+      linewidth = 0.6,
+      curvature = 0
+    )
 
   # cowplot
   plot_margin <- 0.005
@@ -2806,8 +2776,6 @@ annual_bw_wu_map <- function(conus_sf, conus_outline_col,
     gp = grid::gpar(fill = bkgd_color, alpha = 1, col = bkgd_color)
   )
 
-  water_use_mgd_leg <- cowplot::get_legend(water_use_size_legend)
-
   plt <- ggdraw(ylim = c(0,1), # 0-1 scale makes it easy to place viz items on canvas
                 xlim = c(0,1)) +
     # a background
@@ -2815,18 +2783,50 @@ annual_bw_wu_map <- function(conus_sf, conus_outline_col,
               x = 0, y = 1,
               height = height, width = width,
               hjust = 0, vjust = 1) +
-    draw_plot(water_use_map + theme(legend.position = "none"),
-              x = 0.975,
-              y = 0.1,
-              height = 0.89,
-              width = 0.95,
+    draw_plot(water_use_beeswarm,
+              x = 1,
+              y = 0.01,
+              height = 1,
+              width = 1,
               hjust = 1,
               vjust = 0) +
-    draw_plot(water_use_mgd_leg,
-              x = 0.42,
-              y = -0.18,
-              height = 1.2,
-              width = 0.8)
+    # vertical arrow for public supply
+    draw_plot(arrow,
+              x = 0.1522,
+              y = 0.926,
+              height = 0.045,
+              width = 0.035 - plot_margin) +
+    # vertical arrow for well
+    draw_plot(arrow,
+              x = 0.2965,
+              y =  0.926,
+              height = 0.045,
+              width = 0.035 - plot_margin) +
+    # vertical arrow for spring
+    draw_plot(arrow,
+              x = 0.4408,
+              y =  0.926,
+              height = 0.045,
+              width = 0.035 - plot_margin) +
+    # vertical arrow for combination
+    draw_plot(arrow,
+              x = 0.7294,
+              y =  0.926,
+              height = 0.045,
+              width = 0.035 - plot_margin) +
+  # Explanation arrow + text
+  draw_plot(arrow,
+            x = 0.82,
+            y = 0.015,
+            height = 0.03,
+            width = 0.035 - plot_margin) +
+  draw_label("Contains facilities with < 0.5 MDG",
+             x = 0.91,
+             y = 0.03,
+             size = 12,
+             color = text_color,
+             fontfamily = annotate_legend)
+
 
   ggsave(outfile_template, plt, width = width, height = height, dpi = dpi, bg =  bkgd_color)
 

@@ -30,6 +30,7 @@ tar_option_set(packages = c("tidyverse",
                             'waffle',
                             'ggfx',
                             'ggalluvial',
+                            'ggdist',
                             'FedData')) # need development version
 
 # Phase target makefiles
