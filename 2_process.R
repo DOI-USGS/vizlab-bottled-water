@@ -107,7 +107,7 @@ p2_targets <- list(
   tar_target(p2_bw_inventory_wu_sf,
              inner_join(p2_bw_inventory_conus_sf, p2_water_use_clean, by = "fac_id") |>
                filter(!state_abbv %in% p2_exclude_states)),
-  tar_target(p2_bw_only_inventory,
+  tar_target(p2_bw_only_inventory_sf,
              p2_bw_inventory_wu_sf |>
                filter(wb_type == "Bottled Water")),
   tar_target(p2_bw_inventory_with_missing_data,
