@@ -450,7 +450,7 @@ p3_targets <- list(
 
   # Annual bottled water use - beeswarm
   tar_target(p3_annual_bw_wu_beeswarm_png,
-             annual_bw_wu_beeswarm(bw_only_inventory = p2_bw_only_inventory,
+             annual_bw_wu_beeswarm(bw_only_inventory = p2_bw_only_inventory_sf,
                               axis_title = "Annual Bottled Water Use (MGD)",
                               x_lim = c(0, 0.5),
                               width = 16, height = 9,
