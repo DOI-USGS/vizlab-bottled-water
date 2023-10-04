@@ -2650,10 +2650,9 @@ generate_source_summary_bar_chart <- function(supply_summary_state, supply_color
 #' @param dpi dpi at which to save the final plot
 #' @param conus_sf, state level sf of CONUS
 #' @param conus_outline_col color for conus map outline
-#' @param bw_inventory_sf conus sf of all water use inventory data
-#' @param bw_inventory_wu_sf conus sf of bottled water use inventory data
+#' @param sites_wu_summary_sf sf object of inventory data summary, with `has_wu` field to indicate if facility has water use data
 #' @param supply_colors vector of colors used for displaying all bottling facilities vs bottling facilities wit water use data
-#' @param bw_fill_name supply name for fill variable used for bottling facilities with water use data
+#' @param wu_fill_name supply name for fill variable used for bottling facilities with water use data
 #' @param inventory_fill_name supply name for fill variable used for all bottling facilities
 #' @return the filepath of the saved plot
 bw_availability_map <- function(conus_sf, conus_outline_col, bw_fill_name,
@@ -2672,15 +2671,15 @@ bw_availability_map <- function(conus_sf, conus_outline_col, bw_fill_name,
   ## Only plotting CONUS
   bottling_facilities <- ggplot() +
     # all bottling facilities
-    geom_sf(data = bw_inventory_sf,
+    geom_sf(data = sites_wu_summary_sf,
             aes(geometry = geometry, fill = inventory_fill_name),
             pch = 21,
             color = bkgd_color,
             size = 2,
             alpha = alpha) +
     # bottling facilities with water use data
-    geom_sf(data = bw_inventory_wu_sf,
-            aes(geometry = geometry, fill = bw_fill_name),
+    geom_sf(data = filter(sites_wu_summary_sf , has_wu),
+            aes(geometry = geometry, fill = wu_fill_name),
             pch = 21,
             color = bkgd_color,
             size = 3) +
@@ -2711,7 +2710,7 @@ bw_availability_map <- function(conus_sf, conus_outline_col, bw_fill_name,
 #' @param text_color color for text
 #' @param outfile_template filepath template for saving the final plot
 #' @param dpi dpi at which to save the final plot
-#' @param bw_only_inventory filtered water use data for bottled water only
+#' @param sites_wu_sf sf object of inventory data joined to water use data. Each facility with water use data (field `has_wu` == TRUE) has a row for each year of water use data
 #' @param supply_color, supply color for water sources
 #' @param axis_title, supply y axis title
 #' @param x_limit, numeric values to supply for `scale_x_continuous` limit for beeswarm
@@ -2732,15 +2731,15 @@ annual_bw_wu_beeswarm <- function(bw_only_inventory,
   showtext::showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 900)
   showtext::showtext_auto(enable = TRUE)
 
-  bw_only_inventory <- bw_only_inventory |>
-    filter(wu_data_flag == "Y")  |>
+  bw_sites_wu_sf <- sites_wu_sf |>
+    filter(WB_TYPE == selected_facility_type, has_wu)  |>
     mutate(
       water_source = factor(str_to_title(water_source),
                             levels = c("Public Supply", "Well", "Spring", "Surface Water Intake", "Combination", "Other"))
     )
 
   # Only plotting annual bottled water use for CONUS
-  water_use_beeswarm <- ggplot(bw_only_inventory, aes(x = annual_mgd, y = water_source, fill = water_source, color = water_source)) +
+  water_use_beeswarm <- ggplot(bw_sites_wu_sf, aes(x = annual_mgd, y = water_source, fill = water_source, color = water_source)) +
     ggdist::geom_dots(side = "both",
                       shape = 21) +
     coord_flip() +
@@ -2839,8 +2838,7 @@ annual_bw_wu_beeswarm <- function(bw_only_inventory,
 #' @param text_color color for text
 #' @param outfile_template filepath template for saving the final plot
 #' @param dpi dpi at which to save the final plot
-#' @param bw_inventory_w_missing_data comprehensive water use data that is used to count how many rows of water use data (annual_mgd) is available to plot
-#' @param bw_inventory_wu water use data with water bottled source types that is used to determine types of facilities with water use data
+#' @param sites_wu_summary_sf sf object of inventory data summary, with `has_wu` field to indicate if facility has water use data
 #' @param supply_avail_cols vector of colors to use for water source availability: Water use data available & no water use data
 #' @param supply_type_cols vector of colors to use for water source types: Water use facilities & other facilities
 #' @param supply_facil_cols vector of colors to use for water source facilities: public supply, well, spring, sw intake, combination, other
