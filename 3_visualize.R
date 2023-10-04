@@ -345,7 +345,7 @@ p3_targets <- list(
                rmapshaper::ms_simplify(keep = 0.2) |>
                st_intersection(st_union(p3_conus_sf))),
 
-  # CONUS bottled water percent and count facilities maps
+  # CONUS county level bottled water percent (choropleth) and count (proportional symbol) facilities maps
   tar_target(p3_source_perc_count_bottled_water_facet_map_png,
              generate_bw_conus_map(supply_summary_county_bw = p2_bw_inventory_sites_county_CONUS,
                                    conus_sf = p3_conus_sf,
@@ -367,7 +367,7 @@ p3_targets <- list(
                                    outfile_template = '3_visualize/out/map_perc_count_bottled_water_map.png',
                                    dpi = 300),
              format = 'file'),
-
+  # Percent water source stacked barplots with expanded self supply facilities
   tar_target(p3_perc_expanded_self_supply_barplot_png,
              expanded_ss_barplot(source_summary = p2_source_summary,
                                  supply_colors = p3_supply_ext_ss_colors,
@@ -382,6 +382,7 @@ p3_targets <- list(
                                  outfile_template = '3_visualize/out/perc_expanded_self_supply_barplot.png',
                                  dpi = 300),
              format = "file"),
+  # Site count stacked barplots of water sources with expanded self supply facilities
   tar_target(p3_count_expanded_self_supply_barplot_png,
              expanded_ss_barplot(source_summary = p2_source_summary,
                                  supply_colors = p3_supply_ext_ss_colors,
@@ -410,13 +411,14 @@ p3_targets <- list(
              format = 'file'),
 
   ###### Water Use Figures - adapted from Alisha Chan's script ######
-  ## Water use data availability map
+  # Water use source colors
   tar_target(p3_wu_availability_facilities_colors,
              {
                source_colors <- c("#E2A625", "#90aed5", "#3f6ca6", "#213958", "#787979", "black")
                names(source_colors) <- c("Public Supply", "Well", "Spring", "Surface Water Intake", "Combination", "Other")
                return(source_colors)
              }),
+  # Map displaying all bottling facilities and bottling facilities with water use data
   tar_target(p3_wu_availability_map_png,
              wu_availability_map(conus_sf = p3_conus_sf,
                                  conus_outline_col = 'grey50',
@@ -431,22 +433,22 @@ p3_targets <- list(
                                  outfile_template = '3_visualize/out/bottled_water_availability_map.png',
                                  dpi = 300),
              format = 'file'),
-
-  # # Annual bottled water use - beeswarm
-  # tar_target(p3_annual_bw_wu_beeswarm_png,
-  #            annual_bw_wu_beeswarm(bw_only_inventory = p2_bw_only_inventory_sf,
-  #                             axis_title = "Annual Bottled Water Use (MGD)",
-  #                             x_lim = c(0, 0.5),
-  #                             width = 16, height = 9,
-  #                             supply_color = p3_wu_availability_facilities_colors,
-  #                             bkgd_color = 'white',
-  #                             text_color = 'black',
-  #                             outfile_template = '3_visualize/out/annual_bottled_water_use_beeswarm.png',
-  #                             dpi = 300),
-  #            format = 'file'),
+  # Beeswarm displaying annual bottled water use (MGD)
+  tar_target(p3_annual_bw_wu_beeswarm_png,
+             annual_bw_wu_beeswarm(sites_wu_sf = p2_inventory_sites_wu_conus_sf,
+                                   selected_facility_type = "Bottled Water",
+                                   axis_title = "Annual Bottled Water Use (MGD)",
+                                   x_lim = c(0, 0.5),
+                                   width = 16, height = 9,
+                                   supply_color = p3_wu_availability_facilities_colors,
+                                   bkgd_color = 'white',
+                                   text_color = 'black',
+                                   outfile_template = '3_visualize/out/annual_bottled_water_use_beeswarm.png',
+                                   dpi = 300),
+             format = 'file'),
+  # Combined barplots displaying % water use availability, % bottled water facilities, and % sources of bottled water facilities
   tar_target(p3_water_use_availablity_barplots_png,
-             water_use_barplots(
-               sites_wu_summary_sf = p2_inventory_sites_wu_conus_summary_sf,
+             water_use_barplots(sites_wu_summary_sf = p2_inventory_sites_wu_conus_summary_sf,
                width = 16, height = 9,
                focal_color = "#1599CF",
                supply_facil_cols = p3_wu_availability_facilities_colors,

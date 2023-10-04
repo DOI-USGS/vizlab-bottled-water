@@ -2711,11 +2711,12 @@ wu_availability_map <- function(conus_sf, conus_outline_col, bw_fill_name,
 #' @param outfile_template filepath template for saving the final plot
 #' @param dpi dpi at which to save the final plot
 #' @param sites_wu_sf sf object of inventory data joined to water use data. Each facility with water use data (field `has_wu` == TRUE) has a row for each year of water use data
+#' @param selected_facility_type type of facility to plot by
 #' @param supply_color, supply color for water sources
 #' @param axis_title, supply y axis title
 #' @param x_limit, numeric values to supply for `scale_x_continuous` limit for beeswarm
 #' @return the filepath of the saved plot
-annual_bw_wu_beeswarm <- function(bw_only_inventory,
+annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
                              width, height, bkgd_color, text_color,
                              outfile_template, dpi,
                              axis_title, supply_color, x_lim) {
@@ -2738,8 +2739,8 @@ annual_bw_wu_beeswarm <- function(bw_only_inventory,
                             levels = c("Public Supply", "Well", "Spring", "Surface Water Intake", "Combination", "Other"))
     )
 
-  # Only plotting annual bottled water use for CONUS
-  water_use_beeswarm <- ggplot(bw_sites_wu_sf, aes(x = annual_mgd, y = water_source, fill = water_source, color = water_source)) +
+  water_use_beeswarm <- ggplot(bw_sites_wu_sf,
+                               aes(x = Annual_MGD, y = water_source, fill = water_source, color = water_source)) +
     ggdist::geom_dots(side = "both",
                       shape = 21) +
     coord_flip() +
