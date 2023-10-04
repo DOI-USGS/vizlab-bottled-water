@@ -2655,11 +2655,11 @@ generate_source_summary_bar_chart <- function(supply_summary_state, supply_color
 #' @param wu_fill_name supply name for fill variable used for bottling facilities with water use data
 #' @param inventory_fill_name supply name for fill variable used for all bottling facilities
 #' @return the filepath of the saved plot
-bw_availability_map <- function(conus_sf, conus_outline_col, bw_fill_name,
-                                bw_inventory_sf, bw_inventory_wu_sf,
+wu_availability_map <- function(conus_sf, conus_outline_col, bw_fill_name,
+                                sites_wu_summary_sf,
                                 width, height, bkgd_color, text_color,
                                 outfile_template, dpi, supply_colors,
-                                # bw_fill_name,
+                                wu_fill_name,
                                 inventory_fill_name, alpha) {
 
   # import font (p3_font_legend doesn't seem to work on Mac)
@@ -2848,7 +2848,8 @@ annual_bw_wu_beeswarm <- function(bw_only_inventory,
 #' @param bracket1_png_path path for bracket breaking down first water use data availability barplot
 #' @param bracket1_png_path path for bracket breaking down second types of facilities with water use data barplot
 #' @return the filepath of the saved plot
-water_use_barplots <- function(width, height, bkgd_color, text_color,
+water_use_barplots <- function(sites_wu_summary_sf,
+                               width, height, bkgd_color, text_color,
                                outfile_template, dpi,
                                bw_inventory_w_missing_data,
                                bw_inventory_wu,
@@ -2867,41 +2868,33 @@ water_use_barplots <- function(width, height, bkgd_color, text_color,
   showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 700)
   showtext_auto(enable = TRUE)
 
-  unique_fac_ids_w_missing_data <- bw_inventory_w_missing_data |>
-    distinct(fac_id) |>
-    nrow()
-
-  # Light processing - this could also be done in 2_process.R
   # % data we do have
-  wu_nas_percent_plot <- bw_inventory_w_missing_data |>
-    st_drop_geometry() |>
-    distinct(fac_id, .keep_all = TRUE) |>
-    # drop na in `facility_category` ?
-    drop_na(facility_category) |>
-    group_by(wu_data_flag, facility_category) %>%
-    summarize(count = n(),
-              percent = count/unique_fac_ids_w_missing_data * 100) %>%
-    mutate(type = ifelse(is.na(wu_data_flag), 'No water use data', "Water use data available"),
+  wu_nas_percent_plot <- sites_wu_summary_sf |>
+    group_by(has_wu) |>
+    summarize(count = n()) |>
+    mutate(percent = count/sum(count)*100) |>
+    mutate(type = ifelse(!has_wu, 'No water use data', "Water use data available"),
            type = factor(type, levels = c("Water use data available", 'No water use data')))
 
   # Types among WU data
-  wu_types_percent_plot <- bw_inventory_wu |>
-    st_drop_geometry() |>
-    filter(wu_data_flag == "Y") |>
-    count(wb_type) |>
-    mutate(percent = n / sum(n) * 100,
-           facilities = ifelse(wb_type == "Bottled Water", "Bottled water facilities", "Other facilities"),
+  wu_types_percent_plot <- sites_wu_summary_sf |>
+    mutate(is_BW = WB_TYPE == 'Bottled Water') |>
+    filter(has_wu) |>
+    group_by(is_BW) |>
+    summarize(count = n()) |>
+    mutate(percent = count/sum(count)*100,
+           facilities = ifelse(is_BW, "Bottled water facilities", "Other facilities"),
            facilities = factor(facilities, levels = c("Bottled water facilities", "Other facilities")))
 
+
+
   # Source for BW for facilities we have WU data for
-  only_bw_wu_source_percent_plot <- bw_inventory_wu |>
-    st_drop_geometry() |>
-    filter(wu_data_flag == "Y",
-           wb_type == "Bottled Water") |>
-    count(water_source) |>
-    mutate(
-      percent = n / sum(n) * 100,
-      source = factor(str_to_title(water_source), levels = c("Public Supply", "Well", "Spring", "Surface Water Intake", "Combination", "Other"))
+  only_bw_wu_source_percent_plot <- sites_wu_summary_sf |>
+    filter(has_wu, WB_TYPE == 'Bottled Water') |>
+    group_by(water_source) |>
+    summarize(count = n()) |>
+    mutate(percent = count/sum(count)*100,
+           source = factor(str_to_title(water_source), levels = c("Public Supply", "Well", "Spring", "Surface Water Intake", "Combination", "Other"))
     ) |>
     dplyr::select(source, percent)
 
@@ -3046,8 +3039,8 @@ water_use_barplots <- function(width, height, bkgd_color, text_color,
                width = 0.25,
                height = 4) +
     draw_image(magick::image_read(bracket2_png_path),
-               x = 0.501,
-               y = -1.535,
+               x = 0.514,
+               y = -1.544,
                width = 0.2495,
                height = 4)
 
