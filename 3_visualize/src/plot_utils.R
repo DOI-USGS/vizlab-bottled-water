@@ -2654,17 +2654,16 @@ generate_source_summary_bar_chart <- function(supply_summary_state, supply_color
 #' @param dpi dpi at which to save the final plot
 #' @param conus_sf, state level sf of CONUS
 #' @param conus_outline_col color for conus map outline
-#' @param bw_inventory_sf conus sf of all water use inventory data
-#' @param bw_inventory_wu_sf conus sf of bottled water use inventory data
-#' @param supply_colors vector of colors used for displaying all bottling facilities vs bottling facilities wit water use data
-#' @param bw_fill_name supply name for fill variable used for bottling facilities with water use data
+#' @param sites_wu_summary_sf sf object of inventory data summary, with `has_wu` field to indicate if facility has water use data
+#' @param focal_color color used for displaying  bottling facilities with water use data
+#' @param wu_fill_name supply name for fill variable used for bottling facilities with water use data
 #' @param inventory_fill_name supply name for fill variable used for all bottling facilities
 #' @return the filepath of the saved plot
-bw_availability_map <- function(conus_sf, conus_outline_col, bw_fill_name,
-                                bw_inventory_sf, bw_inventory_wu_sf,
+wu_availability_map <- function(conus_sf, conus_outline_col, bw_fill_name,
+                                sites_wu_summary_sf, focal_color,
                                 width, height, bkgd_color, text_color,
-                                outfile_template, dpi, supply_colors,
-                                # bw_fill_name,
+                                outfile_template, dpi,
+                                wu_fill_name,
                                 inventory_fill_name, alpha) {
 
   # import font (p3_font_legend doesn't seem to work on Mac)
@@ -2676,15 +2675,15 @@ bw_availability_map <- function(conus_sf, conus_outline_col, bw_fill_name,
   ## Only plotting CONUS
   bottling_facilities <- ggplot() +
     # all bottling facilities
-    geom_sf(data = bw_inventory_sf,
+    geom_sf(data = sites_wu_summary_sf,
             aes(geometry = geometry, fill = inventory_fill_name),
             pch = 21,
             color = bkgd_color,
             size = 2,
             alpha = alpha) +
     # bottling facilities with water use data
-    geom_sf(data = bw_inventory_wu_sf,
-            aes(geometry = geometry, fill = bw_fill_name),
+    geom_sf(data = filter(sites_wu_summary_sf , has_wu),
+            aes(geometry = geometry, fill = wu_fill_name),
             pch = 21,
             color = bkgd_color,
             size = 3) +
@@ -2695,7 +2694,7 @@ bw_availability_map <- function(conus_sf, conus_outline_col, bw_fill_name,
             linetype = "solid" ) +
     scale_x_continuous(expand = c(0,0)) +
     scale_y_continuous(expand = c(0,0)) +
-    scale_fill_manual(values = supply_colors) +
+    scale_fill_manual(values = c("grey80", focal_color)) +
     guides(fill = guide_legend(title = "", override.aes = list(size = 3)))+
     theme_void() +
     theme(
@@ -2715,12 +2714,13 @@ bw_availability_map <- function(conus_sf, conus_outline_col, bw_fill_name,
 #' @param text_color color for text
 #' @param outfile_template filepath template for saving the final plot
 #' @param dpi dpi at which to save the final plot
-#' @param bw_only_inventory filtered water use data for bottled water only
+#' @param sites_wu_sf sf object of inventory data joined to water use data. Each facility with water use data (field `has_wu` == TRUE) has a row for each year of water use data
+#' @param selected_facility_type type of facility to plot by
 #' @param supply_color, supply color for water sources
 #' @param axis_title, supply y axis title
 #' @param x_limit, numeric values to supply for `scale_x_continuous` limit for beeswarm
 #' @return the filepath of the saved plot
-annual_bw_wu_beeswarm <- function(bw_only_inventory,
+annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
                              width, height, bkgd_color, text_color,
                              outfile_template, dpi,
                              axis_title, supply_color, x_lim) {
@@ -2736,15 +2736,15 @@ annual_bw_wu_beeswarm <- function(bw_only_inventory,
   showtext::showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 900)
   showtext::showtext_auto(enable = TRUE)
 
-  bw_only_inventory <- bw_only_inventory |>
-    filter(wu_data_flag == "Y")  |>
+  bw_sites_wu_sf <- sites_wu_sf |>
+    filter(WB_TYPE == selected_facility_type, has_wu)  |>
     mutate(
       water_source = factor(str_to_title(water_source),
                             levels = c("Public Supply", "Well", "Spring", "Surface Water Intake", "Combination", "Other"))
     )
 
-  # Only plotting annual bottled water use for CONUS
-  water_use_beeswarm <- ggplot(bw_only_inventory, aes(x = annual_mgd, y = water_source, fill = water_source, color = water_source)) +
+  water_use_beeswarm <- ggplot(bw_sites_wu_sf,
+                               aes(x = Annual_MGD, y = water_source, fill = water_source, color = water_source)) +
     ggdist::geom_dots(side = "both",
                       shape = 21) +
     coord_flip() +
@@ -2843,23 +2843,18 @@ annual_bw_wu_beeswarm <- function(bw_only_inventory,
 #' @param text_color color for text
 #' @param outfile_template filepath template for saving the final plot
 #' @param dpi dpi at which to save the final plot
-#' @param bw_inventory_w_missing_data comprehensive water use data that is used to count how many rows of water use data (annual_mgd) is available to plot
-#' @param bw_inventory_wu water use data with water bottled source types that is used to determine types of facilities with water use data
-#' @param supply_avail_cols vector of colors to use for water source availability: Water use data available & no water use data
-#' @param supply_type_cols vector of colors to use for water source types: Water use facilities & other facilities
+#' @param sites_wu_summary_sf sf object of inventory data summary, with `has_wu` field to indicate if facility has water use data
 #' @param supply_facil_cols vector of colors to use for water source facilities: public supply, well, spring, sw intake, combination, other
+#' @param focal_color, supply color associated with bottled water data
 #' @param wu_avail_title title for water use availability barplot
 #' @param wu_types_title title for types of facilities with water use data
 #' @param wu_facil_title title for sources of bottled water facilities with water use data
 #' @param bracket1_png_path path for bracket breaking down first water use data availability barplot
 #' @param bracket1_png_path path for bracket breaking down second types of facilities with water use data barplot
 #' @return the filepath of the saved plot
-water_use_barplots <- function(width, height, bkgd_color, text_color,
+water_use_barplots <- function(sites_wu_summary_sf, focal_color,
+                               width, height, bkgd_color, text_color,
                                outfile_template, dpi,
-                               bw_inventory_w_missing_data,
-                               bw_inventory_wu,
-                               supply_avail_cols,
-                               supply_type_cols,
                                supply_facil_cols,
                                wu_avail_title,
                                wu_types_title,
@@ -2873,41 +2868,31 @@ water_use_barplots <- function(width, height, bkgd_color, text_color,
   showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 700)
   showtext_auto(enable = TRUE)
 
-  unique_fac_ids_w_missing_data <- bw_inventory_w_missing_data |>
-    distinct(fac_id) |>
-    nrow()
-
-  # Light processing - this could also be done in 2_process.R
   # % data we do have
-  wu_nas_percent_plot <- bw_inventory_w_missing_data |>
-    st_drop_geometry() |>
-    distinct(fac_id, .keep_all = TRUE) |>
-    # drop na in `facility_category` ?
-    drop_na(facility_category) |>
-    group_by(wu_data_flag, facility_category) %>%
-    summarize(count = n(),
-              percent = count/unique_fac_ids_w_missing_data * 100) %>%
-    mutate(type = ifelse(is.na(wu_data_flag), 'No water use data', "Water use data available"),
+  wu_nas_percent_plot <- sites_wu_summary_sf |>
+    group_by(has_wu) |>
+    summarize(count = n()) |>
+    mutate(percent = count/sum(count)*100) |>
+    mutate(type = ifelse(!has_wu, 'No water use data', "Water use data available"),
            type = factor(type, levels = c("Water use data available", 'No water use data')))
 
   # Types among WU data
-  wu_types_percent_plot <- bw_inventory_wu |>
-    st_drop_geometry() |>
-    filter(wu_data_flag == "Y") |>
-    count(wb_type) |>
-    mutate(percent = n / sum(n) * 100,
-           facilities = ifelse(wb_type == "Bottled Water", "Bottled water facilities", "Other facilities"),
+  wu_types_percent_plot <- sites_wu_summary_sf |>
+    mutate(is_BW = WB_TYPE == 'Bottled Water') |>
+    filter(has_wu) |>
+    group_by(is_BW) |>
+    summarize(count = n()) |>
+    mutate(percent = count/sum(count)*100,
+           facilities = ifelse(is_BW, "Bottled water facilities", "Other facilities"),
            facilities = factor(facilities, levels = c("Bottled water facilities", "Other facilities")))
 
   # Source for BW for facilities we have WU data for
-  only_bw_wu_source_percent_plot <- bw_inventory_wu |>
-    st_drop_geometry() |>
-    filter(wu_data_flag == "Y",
-           wb_type == "Bottled Water") |>
-    count(water_source) |>
-    mutate(
-      percent = n / sum(n) * 100,
-      source = factor(str_to_title(water_source), levels = c("Public Supply", "Well", "Spring", "Surface Water Intake", "Combination", "Other"))
+  only_bw_wu_source_percent_plot <- sites_wu_summary_sf |>
+    filter(has_wu, WB_TYPE == 'Bottled Water') |>
+    group_by(water_source) |>
+    summarize(count = n()) |>
+    mutate(percent = count/sum(count)*100,
+           source = factor(str_to_title(water_source), levels = c("Public Supply", "Well", "Spring", "Surface Water Intake", "Combination", "Other"))
     ) |>
     dplyr::select(source, percent)
 
@@ -2930,7 +2915,7 @@ water_use_barplots <- function(width, height, bkgd_color, text_color,
           legend.position = "top",
           legend.justification = "center",
           legend.box = "horizontal" ) +
-    scale_fill_manual(values = supply_avail_cols) +
+    scale_fill_manual(values = c(focal_color, "grey80")) +
     scale_y_continuous(breaks = seq(0, 100, by = 25),
                        labels = c("0%", "25%", "50%", "75%", "100%"),
                        expand = c(0, 0.1)) +
@@ -2955,7 +2940,7 @@ water_use_barplots <- function(width, height, bkgd_color, text_color,
           legend.position = "top",
           legend.justification = "center",
           legend.box = "horizontal" ) +
-    scale_fill_manual(values = supply_type_cols)+
+    scale_fill_manual(values = c(focal_color, "grey80"))+
     scale_y_continuous(breaks = seq(0, 100, by = 25),
                        labels = c("0%", "25%", "50%", "75%", "100%"),
                        expand = c(0, 0.1)) +
@@ -3052,8 +3037,8 @@ water_use_barplots <- function(width, height, bkgd_color, text_color,
                width = 0.25,
                height = 4) +
     draw_image(magick::image_read(bracket2_png_path),
-               x = 0.501,
-               y = -1.535,
+               x = 0.514,
+               y = -1.544,
                width = 0.2495,
                height = 4)
 
