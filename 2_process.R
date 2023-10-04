@@ -92,28 +92,21 @@ p2_targets <- list(
   ###### Water Use  ######
   tar_target(p2_exclude_states,
              c("AK", "HI", "GU", "PR", "VI")),
-  tar_target(p2_bw_inventory,
-             p2_inventory_sites_sf |>
-               janitor::clean_names() |>
-               st_drop_geometry()),
-  tar_target(p2_bw_inventory_conus_sf ,
-             p2_inventory_sites_sf |>
-               janitor::clean_names() |>
-               filter(!state_abbv %in% p2_exclude_states)),
+  tar_target(p2_water_use,
+            read_csv(p1_water_use_csv, col_types = cols())),
 
-  tar_target(p2_water_use_clean,
-             read.csv(p1_water_use_csv) |>
-             janitor::clean_names()),
-  tar_target(p2_bw_inventory_wu_sf,
-             inner_join(p2_bw_inventory_conus_sf, p2_water_use_clean, by = "fac_id") |>
-               filter(!state_abbv %in% p2_exclude_states)),
-  tar_target(p2_bw_only_inventory_sf,
-             p2_bw_inventory_wu_sf |>
-               filter(wb_type == "Bottled Water")),
-  tar_target(p2_bw_inventory_with_missing_data,
-             full_join(p2_bw_inventory_conus_sf, p2_water_use_clean, by = "fac_id") |>
-               filter(!state_abbv %in% p2_exclude_states)),
+  tar_target(
+    p2_inventory_sites_wu_conus_sf,
+    p2_inventory_sites_sf %>%
+      left_join(p2_water_use, by = 'FAC_ID') %>%
+      mutate(has_wu = !is.na(Annual_MGD)) %>% # WU_DATA_FLAG field has errors
+      filter(!STATE_ABBV %in% p2_exclude_states)),
 
+  tar_target(
+    p2_inventory_sites_wu_conus_summary_sf,
+    p2_inventory_sites_wu_conus_sf %>%
+      dplyr::select(WB_TYPE, FAC_ID, has_wu, water_source, source_category) %>%
+      distinct(FAC_ID, .keep_all = TRUE)),
 
   ###### CONUS ######
   # get CONUS subset
