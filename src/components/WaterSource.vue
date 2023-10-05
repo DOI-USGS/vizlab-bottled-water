@@ -1,53 +1,54 @@
 <template>
   <section id="water_source">
-    <div id="grid-container-source">
-      <div id="title">
-        <h3> 
-          Where are bottling facilities sourcing their water?
-        </h3>
+    <div class="text-container">
+      <h3 v-html="sourceText.title" />
+      <p v-html="sourceText.paragraph1" />
+    </div>
+    <div id="grid-container-illustration">
+      <div id="illustration-public-supply" class="img-container">
+        <img class="illustration" src="../assets/images/public-supply_vs_self-supply.png">
       </div>
-      <div id="text">
-        <div class="text-container">
-          <p>
-            Beverage-bottling facilities get water through public supply (water withdrawn by a water supplier and delivered to many users) or self-supply (water withdrawn from a private source for private use). In each case, the water can be sourced from several different pools of the water cycle, like groundwater, surface water, or springs. 
-          </p>
-        </div>
-        <img src="../assets/images/public-supply_vs_self-supply.png">
-        <div class="text-container">
-          <p>
-            Data on water sources by bottling facility are limited. [DATA RELEASE] et al. 2023 performed new mapping analyses to infer the source of water to bottling facilities. These analyses make some assumptions, like assuming that a facility near a well uses that well to source their water, and a facility within a public-supply zone uses public-supply water. Although this is an estimate, it improves the nations's understanding of where bottling facilities are sourcing their water. The charts below show the primary source of water for bottling facilities in each state. 
-          </p>
-        </div>
+      <div id="illustration-self-supply" class="img-container">
+        <img class="illustration" src="../assets/images/public-supply_vs_self-supply.png">
       </div>
-      <div id="img-ws-national-types" class="img-container">
-        <div class="text-container">
-          <p>
-            Where do different facility types source water?
-          </p>
-        </div>
-        <img src="../assets/images/national_sources_facilities_sankey.png">
-        <img src="../assets/images/perc_expanded_self_supply_barplot.png">
-        <img src="../assets/images/count_expanded_self_supply_barplot.png">
+    </div>
+    <div class="text-container">
+      <p v-html="sourceText.paragraph2" />
+      <br>
+      <p v-html="sourceText.subtitle1" />
+    </div>
+    <div id="img-ws-national-types" class="img-container">
+      <img src="../assets/images/perc_expanded_self_supply_barplot.png">
+      <img src="../assets/images/count_expanded_self_supply_barplot.png">
+    </div>
+    <div class="text-container">
+      <p v-html="sourceText.paragraph3" />
+    </div>
+    <div id="grid-container-source-maps">
+      <div id="source-self-count" class="img-container">
+        <img class="source-map" src="../assets/images/map_perc_count_bottled_water_map.png">
       </div>
-      <div id="img-ws-bw-facet" class="img-container">
-        <div class="text-container">
-          <p>
-            Let's look more closely at bottled water facilities specifically. Where do bottled water facilities in each state source water?
-          </p>
-        </div>
-        <img src="../assets/images/state_sources_facet_Bottled Water_styled.png">
-        <div class="text-container">
-          <p>
-            Digging even deeper, how does the source for bottled water facilities vary by county?
-          </p>
-        </div>
-        <img src="../assets/images/map_perc_count_bottled_water_map.png">
+      <div id="source-self-percent" class="img-container">
+        <img class="source-map" src="../assets/images/map_perc_count_bottled_water_map.png">
+      </div>
+      <div id="source-combo-count" class="img-container">
+        <img class="source-map" src="../assets/images/map_perc_count_bottled_water_map.png">
+      </div>
+      <div id="source-combo-percent" class="img-container">
+        <img class="source-map" src="../assets/images/map_perc_count_bottled_water_map.png">
+      </div>
+      <div id="source-public-count" class="img-container">
+        <img class="source-map" src="../assets/images/map_perc_count_bottled_water_map.png">
+      </div>
+      <div id="source-public-percent" class="img-container">
+        <img class="source-map" src="../assets/images/map_perc_count_bottled_water_map.png">
       </div>
     </div>
   </section>
 </template>
 <script>
   import { isMobile } from 'mobile-device-detect';
+  import waterSourceText from "./../assets/text/waterSourceText.js";
 
   export default {
     name: "WaterSource",
@@ -65,6 +66,7 @@
         publicPath: import.meta.env.BASE_URL, // find the files when on different deployment roots
         mobileView: isMobile, // test for mobile
         
+        sourceText: waterSourceText.waterSourceText
       }
     },
     mounted(){      
@@ -88,40 +90,79 @@
   $pal_teal: '#008083';
   $pal_blue_dark: '#042054';
 
-  #grid-container-source {
+  #grid-container-illustration {
       display: grid;
-      grid-template-columns: 1fr;
-      grid-template-rows: 0.5fr max-content max-content;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: max-content;
       grid-template-areas:
-        "title"
-        "text"
-        "ws-national-types"
-        "ws-bw-facet";
+        "public-supply self-supply";
       justify-content: center;
       margin: auto;
       max-width: 1600px;
-  }
-
-  #title {
-      grid-area: title;
-      align-self: center;
-      font-size: 20px;
-      font-family: sans-serif;
-  }
-  #img-ws-national-types {
-    grid-area: ws-national-types;
-  }
-  #img-ws-bw-facet {
-    grid-area: ws-bw-facet;
+      @media screen and (max-width: 600px) {
+        grid-template-columns: 1fr;
+        grid-template-rows: max-content max-content;
+        grid-template-areas:
+          "public-supply"
+          "self-supply";
+      }
   }
   .img-container {
     max-width: 100vw;
   }
-  #text {
-    grid-area: text;
-    justify-self: start;
+  #illustration-public-supply {
+    grid-area: public-supply;
+  }
+  #illustration-self-supply {
+    grid-area: self-supply;
   }
   img {
-    max-width: 900px;
+    max-width: 100%;
+  }
+  .illustration {
+    max-width: 100%;
+  }
+  #grid-container-source-maps {
+    display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: max-content max-content;
+      grid-template-areas:
+        "count-self count-combo count-public"
+        "perc-self perc-combo perc-public";
+      justify-content: center;
+      margin: auto;
+      max-width: 1600px;
+      @media screen and (max-width: 600px) {
+        grid-template-columns: 1fr;
+        grid-template-rows: max-content max-content max-content max-content max-content max-content;
+        grid-template-areas:
+        "count-self"
+        "count-combo"
+        "count-public"
+        "perc-self"
+        "perc-combo"
+        "perc-public";
+      }
+  }
+  #source-self-count {
+    grid-area: count-self;
+  }
+  #source-combo-count {
+    grid-area: count-combo;
+  }
+  #source-public-count {
+    grid-area: count-public;
+  }
+  #source-self-percent {
+    grid-area: perc-self;
+  }
+  #source-combo-percent {
+    grid-area: perc-combo;
+  }
+  #source-public-percent {
+    grid-area: perc-public;
+  }
+  .source-map {
+    max-width: 100%;
   }
 </style>
