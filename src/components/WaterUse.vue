@@ -19,7 +19,7 @@
             For how many inventoried bottling facilities does USGS have water use data?
           </p>
         </div>
-        <img src="../assets/images/wu_sites.png">
+        <img src="../assets/images/bottled_water_availability_map.png">
       </div>
       <div id="img-wu-sites-bar" class="img-container">
         <div class="text-container">
@@ -32,15 +32,15 @@
             Using the available data, we can take a closer look at water use in bottled water facilities. Of the XX percent of facilities that have available water use data, about XX percent are bottled water facilities. Of those XX bottled water facilities, XX percent source water from wells, XX percent from public supply, XX percent from springs, and XX percent from a combination of different sources.
           </p>
         </div>
-        <img src="../assets/images/wu_types_sources.png">
+        <img src="../assets/images/water_use_data_availability_barplots.png">
       </div>
       <div class="img-bw-use-map">
         <div class="text-container">
           <p>
-            Among bottled water facilities with data, how much water is used, and how does that use vary by water source? This map shows [average annual values / values for the most recent year available] and is based on limited available data (Buchwald and others, 2023). [NOTE: this figure is being revised]
+            Among bottled water facilities with data, how much water is used, and how does that use vary by water source? This figure is based on limited available data from 1969 through 2022 (Buchwald and others, 2023).
           </p>
         </div>
-        <img src="../assets/images/wu_bw_use.png">
+        <img src="../assets/images/annual_bottled_water_use_beeswarm.png">
       </div>
     </div>
   </section>
