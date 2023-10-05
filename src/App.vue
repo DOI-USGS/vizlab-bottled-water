@@ -170,8 +170,8 @@ input[type=button] {
 
 // General Layout  
   .text-container {
-    min-width: 300px;
-    max-width: 900px;
+    min-width: 30vw;
+    max-width: 90vw;
     // margin: 0 auto;
     padding: 10px 10px 10px 0px;   
     left:0;
