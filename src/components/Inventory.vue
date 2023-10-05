@@ -7,18 +7,18 @@
             <br>
             <OCONUS id="oconus"/>
             <div id="text" class="text-container">
-                <p v-html="inventoryText.paragraph1" />
-                <br>
-                <img class='image-float' src="../assets/images/bottled-water_consumption-pictogram_small_2023-09-19.png">
-                <p v-html="inventoryText.paragraph2" />
-                <br>
-                <p v-html="inventoryText.paragraph3" />
-                <br>
-                <p v-html="inventoryText.paragraph4" />
-                <br>
-                <li v-html="inventoryText.bullet1" />
-                <li v-html="inventoryText.bullet2" />
-                <li v-html="inventoryText.bullet3" />
+               <p v-html="inventoryText.paragraph1" />
+               <br>
+               <img class='image-float' src="../assets/images/bottled-water_consumption-pictogram_small_2023-09-19.png">
+               <p v-html="inventoryText.paragraph2" />
+               <br>
+               <p v-html="inventoryText.paragraph3" />
+               <br>
+               <p v-html="inventoryText.paragraph4" />
+               <br>
+               <li v-html="inventoryText.bullet1" />
+               <li v-html="inventoryText.bullet2" />
+               <li v-html="inventoryText.bullet3" />
             </div>
         </div>
     </section>
