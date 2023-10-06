@@ -2714,12 +2714,18 @@ wu_availability_map <- function(conus_sf, conus_outline_col, bw_fill_name,
 #' @param selected_facility_type type of facility to plot by
 #' @param supply_color, supply color for water sources
 #' @param axis_title, supply y axis title
-#' @param x_limit, numeric values to supply for `scale_x_continuous` limit for beeswarm
+#' @param scale_y_lim, vector of range for `scale_y_continuous()` limit
+#' @param scale_y_exp, vector of range expansion for `scale_y_continuous()`
+#' @param scale_x_exp, vector of range expansion for `scale_x_continuous()`
+#' @param mobile if else statement where if TRUE, create annual water use by bottled water facilities vertical beeswarm for mobile
 #' @return the filepath of the saved plot
 annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
                              width, height, bkgd_color, text_color,
                              outfile_template, dpi,
-                             axis_title, supply_color, x_lim) {
+                             axis_title, supply_color,
+                             scale_y_lim, scale_y_exp, scale_x_exp,
+                             mobile
+                             ) {
 
   # import font (p3_font_legend doesn't seem to work on Mac)
   font_legend <- 'Source Sans Pro'
@@ -2739,33 +2745,82 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
                             levels = c("Public Supply", "Well", "Spring", "Surface Water Intake", "Combination", "Other"))
     )
 
+  if (mobile == FALSE) {
+
   water_use_beeswarm <- ggplot(bw_sites_wu_sf,
-                               aes(x = Annual_MGD, y = water_source, fill = water_source, color = water_source)) +
+                               aes(x = 1 , y = Annual_MGD, fill = water_source, color = water_source, group = NA)) +
     ggdist::geom_dots(side = "both",
-                      shape = 21) +
+                      shape = 21,
+                      # lots of overlap
+                      # dotsize = 2,
+                      layout = 'swarm',
+                      ) +
     coord_flip() +
-    scale_fill_manual(values = supply_color, guide = 'none') +
+    scale_fill_manual(values = supply_color, name = 'Water source') +
     scale_color_manual(values = supply_color, guide = 'none') +
     theme_minimal() +
     labs(y = "", x = axis_title) +
     theme(
       plot.margin = unit(c(1,1,1,1), "cm"),
       text = element_text(family = font_legend, size = 18),
-      axis.title.y = element_text(margin = margin(0, 30, 0, 0))
+      axis.text.y = element_blank(),
+      axis.title.y = element_text(margin = margin(0, 20, 0, 0)),
+      legend.position = "top",
+      legend.direction = "horizontal",
+      legend.margin = margin(b = 10),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.major.y = element_blank()
       ) +
-    # setting a limit but we can add arrows to indicate greater spread
-    scale_x_continuous(limits = x_lim)
+   scale_y_continuous(limits = scale_y_lim,
+                      expand = scale_y_exp) +
+    guides(fill = guide_legend(direction = "horizontal", label.position = "right",
+                               position = "top", title.position = "left", nrow =1,
+                               override.aes = list(color = supply_color))) +
+    scale_x_continuous(expand = scale_x_exp)
 
-  # vertical arrow to indicate sites < 0.5 MDG
-  arrow <- ggplot() +
-    theme_void() +
-    geom_curve(
-      aes(x = -1.25, y = 0, xend = -1.25, yend = 1),
-      arrow = arrow(length = unit(0.08, "npc"), type = "closed"),
-      color = text_color,
-      linewidth = 0.6,
-      curvature = 0
-    )
+  } else {
+
+    water_use_beeswarm <- ggplot(bw_sites_wu_sf,
+                                 aes(x = 1 , y = Annual_MGD, fill = water_source, color = water_source, group = NA)) +
+      ggdist::geom_dots(side = "both",
+                        shape = 21,
+                        # lots of overlap
+                        # dotsize = 2,
+                        layout = 'swarm',
+      ) +
+      scale_fill_manual(values = supply_color, name = 'Water source') +
+      scale_color_manual(values = supply_color, guide = 'none') +
+      theme_minimal() +
+      labs(x = "", y = axis_title) +
+      theme(
+        plot.margin = unit(c(1,1,1,1), "cm"),
+        text = element_text(family = font_legend, size = 18),
+        axis.text.x = element_blank(),
+        axis.title.y = element_text(margin = margin(0, 20, 0, 0)),
+        legend.position = "top",
+        legend.direction = "horizontal",
+        legend.margin = margin(b = 10),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.x = element_blank()
+      ) +
+      scale_y_continuous(limits = scale_y_lim,
+                         expand = scale_y_exp) +
+      guides(fill = guide_legend(direction = "horizontal", label.position = "right",
+                                 position = "top", title.position = "left", nrow = 2,
+                                 override.aes = list(color = supply_color))) +
+      scale_x_continuous(expand = scale_x_exp)
+
+  }
+
+  # arrow <- ggplot() +
+  #   theme_void() +
+  #   geom_curve(
+  #     aes(x = -1.25, y = 0, xend = -1.25, yend = 1),
+  #     arrow = arrow(length = unit(0.08, "npc"), type = "closed"),
+  #     color = text_color,
+  #     linewidth = 0.6,
+  #     curvature = 0
+  #   )
 
   # cowplot
   plot_margin <- 0.005
@@ -2789,43 +2844,44 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
               height = 1,
               width = 1,
               hjust = 1,
-              vjust = 0) +
-    # vertical arrow for public supply
-    draw_plot(arrow,
-              x = 0.1522,
-              y = 0.926,
-              height = 0.045,
-              width = 0.035 - plot_margin) +
-    # vertical arrow for well
-    draw_plot(arrow,
-              x = 0.2965,
-              y =  0.926,
-              height = 0.045,
-              width = 0.035 - plot_margin) +
-    # vertical arrow for spring
-    draw_plot(arrow,
-              x = 0.4408,
-              y =  0.926,
-              height = 0.045,
-              width = 0.035 - plot_margin) +
-    # vertical arrow for combination
-    draw_plot(arrow,
-              x = 0.7294,
-              y =  0.926,
-              height = 0.045,
-              width = 0.035 - plot_margin) +
-  # Explanation arrow + text
-  draw_plot(arrow,
-            x = 0.82,
-            y = 0.015,
-            height = 0.03,
-            width = 0.035 - plot_margin) +
-  draw_label("Contains facilities with < 0.5 MDG",
-             x = 0.91,
-             y = 0.03,
-             size = 12,
-             color = text_color,
-             fontfamily = annotate_legend)
+              vjust = 0)
+  # +
+  #   # vertical arrow for public supply
+  #   draw_plot(arrow,
+  #             x = 0.1522,
+  #             y = 0.926,
+  #             height = 0.045,
+  #             width = 0.035 - plot_margin) +
+  #   # vertical arrow for well
+  #   draw_plot(arrow,
+  #             x = 0.2965,
+  #             y =  0.926,
+  #             height = 0.045,
+  #             width = 0.035 - plot_margin) +
+  #   # vertical arrow for spring
+  #   draw_plot(arrow,
+  #             x = 0.4408,
+  #             y =  0.926,
+  #             height = 0.045,
+  #             width = 0.035 - plot_margin) +
+  #   # vertical arrow for combination
+  #   draw_plot(arrow,
+  #             x = 0.7294,
+  #             y =  0.926,
+  #             height = 0.045,
+  #             width = 0.035 - plot_margin) +
+  # # Explanation arrow + text
+  # draw_plot(arrow,
+  #           x = 0.82,
+  #           y = 0.015,
+  #           height = 0.03,
+  #           width = 0.035 - plot_margin) +
+  # draw_label("Contains facilities with > 0.5 MGD",
+  #            x = 0.91,
+  #            y = 0.03,
+  #            size = 12,
+  #            color = text_color,
+  #            fontfamily = annotate_legend)
 
 
   ggsave(outfile_template, plt, width = width, height = height, dpi = dpi, bg =  bkgd_color)
