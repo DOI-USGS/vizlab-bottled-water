@@ -24,24 +24,29 @@
     <div class="text-container">
       <p v-html="sourceText.paragraph3" />
     </div>
-    <div id="grid-container-source-maps">
+    <div v-if="!mobileView" id="source-maps-container">
+      <div id="source-count-percent" class="img-container">
+        <img class="source-map" src="../assets/images/perc_count_bottled_water_map.png">
+      </div>
+    </div>
+    <div v-if="mobileView" id="grid-container-source-maps">
       <div id="source-self-count" class="img-container">
-        <img class="source-map" src="../assets/images/map_perc_count_bottled_water_map.png">
+        <img class="source-map" src="../assets/images/map_bottled_water_self_supply_count.png">
       </div>
       <div id="source-self-percent" class="img-container">
-        <img class="source-map" src="../assets/images/map_perc_count_bottled_water_map.png">
+        <img class="source-map" src="../assets/images/map_bottled_water_self_supply_perc.png">
       </div>
       <div id="source-combo-count" class="img-container">
-        <img class="source-map" src="../assets/images/map_perc_count_bottled_water_map.png">
+        <img class="source-map" src="../assets/images/map_bottled_water_combination_count.png">
       </div>
       <div id="source-combo-percent" class="img-container">
-        <img class="source-map" src="../assets/images/map_perc_count_bottled_water_map.png">
+        <img class="source-map" src="../assets/images/map_bottled_water_combination_perc.png">
       </div>
       <div id="source-public-count" class="img-container">
-        <img class="source-map" src="../assets/images/map_perc_count_bottled_water_map.png">
+        <img class="source-map" src="../assets/images/map_bottled_water_public_supply_count.png">
       </div>
       <div id="source-public-percent" class="img-container">
-        <img class="source-map" src="../assets/images/map_perc_count_bottled_water_map.png">
+        <img class="source-map" src="../assets/images/map_bottled_water_public_supply_perc.png">
       </div>
     </div>
   </section>
@@ -124,25 +129,18 @@
   }
   #grid-container-source-maps {
     display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      grid-template-rows: max-content max-content;
-      grid-template-areas:
-        "count-self count-combo count-public"
-        "perc-self perc-combo perc-public";
-      justify-content: center;
-      margin: auto;
-      max-width: 1600px;
-      @media screen and (max-width: 600px) {
-        grid-template-columns: 1fr;
+    grid-template-columns: 1fr;
         grid-template-rows: max-content max-content max-content max-content max-content max-content;
         grid-template-areas:
         "count-self"
-        "count-combo"
-        "count-public"
         "perc-self"
+        "count-combo"
         "perc-combo"
+        "count-public"
         "perc-public";
-      }
+      justify-content: center;
+      margin: auto;
+      max-width: 1600px;
   }
   #source-self-count {
     grid-area: count-self;
