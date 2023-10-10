@@ -71,5 +71,10 @@ h1 {
 [contenteditable="true"]:focus {
     outline: auto;
 }
-
+img {
+  max-width: 100%;
+}
+.image-float {
+  float: right;
+}
 </style>
