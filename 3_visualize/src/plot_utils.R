@@ -2990,12 +2990,12 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
     scale_fill_manual(values = supply_color, name = 'Water source') +
     scale_color_manual(values = supply_color, guide = 'none') +
     theme_minimal() +
-    labs(y = "", x = axis_title) +
+    labs(y = axis_title, x = "") +
     theme(
       plot.margin = unit(c(1,1,1,1), "cm"),
       text = element_text(family = font_legend, size = 18),
       axis.text.y = element_blank(),
-      axis.title.y = element_text(margin = margin(0, 20, 0, 0)),
+      axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
       legend.position = "top",
       legend.direction = "horizontal",
       legend.margin = margin(b = 10),
