@@ -112,8 +112,6 @@
       "text3"
       "source-maps";
     justify-content: center;
-    margin: auto;
-    max-width: 1600px;
   }
   #title {
     grid-area: title;

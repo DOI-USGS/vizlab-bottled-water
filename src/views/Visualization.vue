@@ -1,8 +1,9 @@
 <template>
   <div id="visualization">
     <header>
-      <h1>{{ title }}</h1>
-      <div class="text-container"></div>
+      <div class="text-container">
+        <h1>{{ title }}</h1>
+      </div>
     </header>
     <Inventory />
     <WaterSource />
@@ -59,6 +60,8 @@ $pal_blue_dark: '#042054';
   width: calc(100vw - 10rem);
   position: relative;
   padding: 3rem 0 5rem 5rem;
+  margin: auto;
+  max-width: 1600px;
   @media screen and (max-width: 600px) {
     width: calc(100vw - 1rem);
     position: relative;

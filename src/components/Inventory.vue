@@ -77,8 +77,6 @@ export default {
             "oconus"
             "text";
         justify-content: center;
-        margin: auto;
-        max-width: 1600px;
     }
 
     #title {
