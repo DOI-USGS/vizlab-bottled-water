@@ -95,20 +95,20 @@ $writeFont: 'Nanum Pen Script', cursive;
 // Type
 html,
 body {
-      height: 100%;
-      background-color: $pal_or;
-      margin: 0;
-      padding: 0;
-      line-height: 1.2;
-      font-size: 20px;
-      font-weight: 400;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      width: 100%;
-      @media screen and (max-width: 600px) {
-        font-size: 16px;
-      }
+  height: 100%;
+  background-color: $pal_or;
+  margin: 0;
+  padding: 0;
+  line-height: 1.2;
+  font-size: 20px;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  width: 100%;
+  @media screen and (max-width: 600px) {
+    font-size: 16px;
   }
+}
 h1{
   font-size: 4rem;
   font-weight: 500;
@@ -118,7 +118,7 @@ h1{
   text-shadow: 1px 1px 100px rgba(0,0,0,.8);
     color: $pal_blue_dark;
   @media screen and (max-width: 600px) {
-    font-size: 4rem;
+    font-size: 2rem;
   }
 }
 h2{
@@ -165,63 +165,62 @@ li {
   padding-bottom: 0.5rem;
 }
 input[type=button] {
-        font-family: $SourceSans;
-    }
+  font-family: $SourceSans;
+}
 
 // General Layout  
-  .text-container {
-    min-width: 30vw;
-    max-width: 90vw;
-    // margin: 0 auto;
-    padding: 10px 10px 10px 0px;   
-    left:0;
-    @media screen and (max-width: 600px) {
-      max-width: 95vw;
-      padding: 0.5rem;
-    }  
+.text-container {
+  min-width: 30vw;
+  max-width: 90vw;
+  // margin: 0 auto;
+  padding: 10px 10px 10px 0px;   
+  left:0;
+  @media screen and (max-width: 600px) {
+    max-width: 95vw;
+    padding: 0.5rem;
+  }  
+}
+.flex-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-evenly;
+  align-content: space-around;
+  max-width: 30%;
+  margin: auto;
+  @media screen and (max-width: 600px) {
+      max-width: 100%;
   }
+}
+.flex-item {
+  padding: 20px;
+  min-width: 400px;
+  flex: 0 0 auto;
+  align-self: center;
+}
+@media (max-width: 600px) {
   .flex-container {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    justify-content: space-evenly;
-    align-content: space-around;
-    max-width: 30%;
-    margin: auto;
-    @media screen and (max-width: 600px) {
-        max-width: 100%;
-    }
+    flex-direction: column;
   }
   .flex-item {
-    padding: 20px;
-    min-width: 400px;
-    flex: 0 0 auto;
-    align-self: center;
+    flex: none;
+    padding: 0 0 1em 0;
+    height: 100%;
   }
-  @media (max-width: 600px) {
-    .flex-container {
-      flex-direction: column;
-    }
-    .flex-item {
-      flex: none;
-      padding: 0 0 1em 0;
-      height: 100%;
-    }
+}
+.figure-content {
+  border: 1px white;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-evenly;
+  align-content: space-around;
+  max-width: 100%;
+  margin: auto;
+  @media screen and (max-width: 600px) {
+      padding: 0px; 
   }
-  .figure-content {
-    border: 1px white;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    justify-content: space-evenly;
-    align-content: space-around;
-    max-width: 100%;
-    margin: auto;
-    @media screen and (max-width: 600px) {
-        padding: 0px; 
-    }
-  }
-
+}
 .legend-text {
     fill: black;
     font-family: $SourceSans;
