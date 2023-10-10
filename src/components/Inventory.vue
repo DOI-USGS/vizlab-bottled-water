@@ -1,9 +1,9 @@
 <template>
     <section id="inventory_intro">
         <div id="grid-container-inventory">
-            <div id="title" class="text-container">
+            <!--div id="title" class="text-container">
                <h3 v-html="inventoryText.title" />
-            </div>
+            </div-->
             <br>
             <OCONUS id="oconus"/>
             <div id="text" class="text-container">
@@ -86,7 +86,7 @@ export default {
         font-family: sans-serif;
     }
     #oconus {
-        grid-area: oconus
+        grid-area: oconus;
     }
     #text {
         grid-area: text;
