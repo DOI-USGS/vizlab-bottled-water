@@ -6,10 +6,10 @@
     </div>
     <div id="grid-container-illustration">
       <div id="illustration-public-supply" class="img-container">
-        <img class="illustration" src="../assets/images/public-supply_vs_self-supply.png">
+        <img class="illustration" src="../assets/images/public-supply.png">
       </div>
       <div id="illustration-self-supply" class="img-container">
-        <img class="illustration" src="../assets/images/public-supply_vs_self-supply.png">
+        <img class="illustration" src="../assets/images/self-supply.png">
       </div>
     </div>
     <div class="text-container">
