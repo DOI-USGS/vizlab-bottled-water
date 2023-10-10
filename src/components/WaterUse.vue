@@ -1,44 +1,31 @@
 <template>
   <section id="water_use">
     <div id="grid-container-use">
-      <div id="title">
-          <h3> 
-            How much water are bottling facilities using?
-          </h3>
+      <div class="text-container">
+        <h3 v-html="useText.title" />
       </div>
       <div id="text">
         <div class="text-container">
-          <p>
-            Acquiring water use data can be challenging. Some states do not require reporting of some types of water use. Other states require reporting to state or local agencies, but cannot share site-specific withdrawals. For bottled water and other beverage facilities, the withdrawal amounts are sometimes below reporting thresholds, or the facilities purchase water from public supply systems, and those data are not available. As a result, we have limited water use data for bottling facilites.
-          </p>
+          <p v-html="useText.paragraph1" />
         </div>
       </div>
       <div id="img-wu-sites-map" class="img-container">
         <div class="text-container">
-          <p>
-            For how many inventoried bottling facilities does USGS have water use data?
-          </p>
+          <p v-html="useText.subtitle1" />
         </div>
         <img src="../assets/images/bottled_water_availability_map.png">
       </div>
       <div id="img-wu-sites-bar" class="img-container">
         <div class="text-container">
-          <p>
-            Where do bottled water facilities that have water use data source water?
-          </p>
-        </div>
-        <div class="text-container">
-          <p>
-            Using the available data, we can take a closer look at water use in bottled water facilities. Of the XX percent of facilities that have available water use data, about XX percent are bottled water facilities. Of those XX bottled water facilities, XX percent source water from wells, XX percent from public supply, XX percent from springs, and XX percent from a combination of different sources.
-          </p>
+          <p v-html="useText.subtitle2" />
+          <br>
+          <p v-html="useText.paragraph2" />
         </div>
         <img src="../assets/images/water_use_data_availability_barplots.png">
       </div>
       <div class="img-bw-use-map">
         <div class="text-container">
-          <p>
-            Among bottled water facilities with data, how much water is used, and how does that use vary by water source? This figure is based on limited available data from 1969 through 2022 (Buchwald and others, 2023).
-          </p>
+          <p v-html="useText.paragraph3" />
         </div>
         <img src="../assets/images/annual_bottled_water_use_beeswarm.png">
       </div>
@@ -47,6 +34,7 @@
 </template>
 <script>
   import { isMobile } from 'mobile-device-detect';
+  import waterUseText from "./../assets/text/waterUseText.js";
 
   export default {
     name: "WaterUse",
@@ -61,6 +49,7 @@
         publicPath: import.meta.env.BASE_URL, // find the files when on different deployment roots
         mobileView: isMobile, // test for mobile
         
+        useText: waterUseText.waterUseText
       }
     },
     mounted(){      
