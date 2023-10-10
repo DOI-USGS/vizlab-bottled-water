@@ -1,7 +1,7 @@
 <template>
     <section id="inventory_intro">
         <div id="grid-container-inventory">
-            <div id="title">
+            <div id="title" class="text-container">
                <h3 v-html="inventoryText.title" />
             </div>
             <br>
@@ -9,7 +9,7 @@
             <div id="text" class="text-container">
                <p v-html="inventoryText.paragraph1" />
                <br>
-               <img class='image-float' src="../assets/images/bottled-water_consumption-pictogram_small_2023-09-19.png">
+               <img id="img-pictogram" :class="mobileView ? '' : 'image-float'" src="../assets/images/bottled-water_consumption-pictogram_small_2023-09-19.png">
                <p v-html="inventoryText.paragraph2" />
                <br>
                <p v-html="inventoryText.paragraph3" />
@@ -94,10 +94,9 @@ export default {
         grid-area: text;
         justify-self: start;
     }
-    .image-float {
-        float: right;
-        width: 50vw;
-        max-width: 1000px;
-        margin: 0px 0px 1rem 1rem;
+    #img-pictogram {      
+      width: 50vw;
+      max-width: 1000px;
+      margin: 0px 0px 0.5rem 1.5rem;
     }
 </style>
