@@ -11,12 +11,12 @@
             <!--p>
               The bottled water industry estimates that the United States consumed 15 billion gallons (57 billion liters) of bottled water in 2020. That’s 45 gallons of bottled water per person. If you consider how much water it takes to produce each bottle of water (not including the packaging), the number is closer to 63 gallons—enough to fill a standard bathtub one-and-a-half times. 
             </p -->
-            <p>Use the dropdown menu above or click on the map to filter the data by state, or click on the facility type in the bar chart below to filter the data by facility type. </p>
+            <p>Zoom in a specific state by clicking on the map or by selecting it using the dropdown, above. Select a specific facility type by interacting with the bar chart at right. </p>
         </div>
       </div>
-      <div id="chart-container">
-      </div>           
       <div id="oconus-container">
+      </div>
+      <div id="chart-container">
       </div>
       <mapLabels 
         id = "map-inset-svg"
@@ -232,10 +232,10 @@ export default {
       self.initMap()
 
       // define histogram dimensions
-      const width = 400;
+      const width = 800;
       this.chartDimensions = {
         width,
-        height: width*0.9,
+        height: width*0.4,
         margin: {
           top: 30,
           right: 5,
@@ -1555,14 +1555,20 @@ export default {
 
   #grid-container-interactive {
     display: grid;
-    grid-template-columns: 1.5fr 3fr;
+    grid-template-columns: 1fr 1fr;
     column-gap: 1rem;
-    grid-template-rows: 1fr max-content max-content;
+    grid-template-rows: 5% 20% 75%;
     grid-template-areas:
-      "title title"
-      "text map"
-      "chart map";
+      "title chart"
+      "text chart"
+      "map map";
     justify-content: center;
+    height: 90vh;
+    @media screen and (max-width: 600px) {
+      width: calc(100vw - 1rem);
+      position: relative;
+      padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+    }  
   }
   #title {
     grid-area: title;
@@ -1575,17 +1581,13 @@ export default {
   }
   #chart-container {
     grid-area: chart;
-    align-self: center;
   }
   #oconus-container {
     grid-area: map;
-    align-self: center;
   }
   #map-inset-svg {
     grid-area: map;
     pointer-events: none;
-    width: 100%;
-    height: 100%;
   }
   #text {
     grid-area: text;
