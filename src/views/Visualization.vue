@@ -59,7 +59,7 @@ $pal_blue_dark: '#042054';
 #visualization {
   width: calc(100vw - 10rem);
   position: relative;
-  padding: 3rem 0 5rem 5rem;
+  padding: 3rem 0rem 5rem 0rem;
   margin: auto;
   max-width: 1600px;
   @media screen and (max-width: 600px) {
