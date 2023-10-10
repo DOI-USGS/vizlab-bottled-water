@@ -17,7 +17,8 @@
         <p v-html="useText.paragraph3" />
       </div>
       <div id="img-bw-use-beeswarm" class="img-container">
-        <img src="../assets/images/annual_bottled_water_use_beeswarm.png">
+        <img v-if="!mobileView" src="../assets/images/annual_bottled_water_use_beeswarm.png">
+        <img v-if="mobileView" src="../assets/images/annual_bottled_water_use_beeswarm_mobile.png">
       </div>
     </div>
   </section>
