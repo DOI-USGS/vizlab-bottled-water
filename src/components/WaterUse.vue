@@ -1,32 +1,22 @@
 <template>
   <section id="water_use">
     <div id="grid-container-use">
-      <div class="text-container">
+      <div id="title" class="text-container">
         <h3 v-html="useText.title" />
       </div>
-      <div id="text">
-        <div class="text-container">
-          <p v-html="useText.paragraph1" />
-        </div>
+      <div id="text1" class="text-container">
+        <img id="img-availability-map" :class="mobileView ? '' : 'image-float'" src="../assets/images/bottled_water_availability_map.png">
+        <p v-html="useText.paragraph1" />
+        <br>
+        <p v-html="useText.paragraph2" />
       </div>
-      <div id="img-wu-sites-map" class="img-container">
-        <div class="text-container">
-          <p v-html="useText.subtitle1" />
-        </div>
-        <img src="../assets/images/bottled_water_availability_map.png">
-      </div>
-      <div id="img-wu-sites-bar" class="img-container">
-        <div class="text-container">
-          <p v-html="useText.subtitle2" />
-          <br>
-          <p v-html="useText.paragraph2" />
-        </div>
+      <div id="img-wu-bars" class="img-container">
         <img src="../assets/images/water_use_data_availability_barplots.png">
       </div>
-      <div class="img-bw-use-map">
-        <div class="text-container">
-          <p v-html="useText.paragraph3" />
-        </div>
+      <div id="text2" class="text-container">
+        <p v-html="useText.paragraph3" />
+      </div>
+      <div id="img-bw-use-beeswarm" class="img-container">
         <img src="../assets/images/annual_bottled_water_use_beeswarm.png">
       </div>
     </div>
@@ -76,13 +66,12 @@
   #grid-container-use {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 0.5fr max-content max-content max-content max-content max-content;
+    grid-template-rows: 0.5fr max-content max-content max-content max-content;
     grid-template-areas:
       "title"
-      "text"
-      "wu-sites-map"
-      "wu-sites-bar"
-      "bw-use-map"
+      "text1"
+      "use-bars"
+      "text2"
       "bw-use-source";
     justify-content: center;
     margin: auto;
@@ -90,27 +79,24 @@
   }
   #title {
     grid-area: title;
-    align-self: center;
-    font-size: 20px;
-    font-family: sans-serif;
-  }
-  #text {
-    grid-area: text;
     justify-self: start;
   }
-  #img-wu-sites-map {
-    grid-area: wu-sites-map;
+  #text1 {
+    grid-area: text1;
+    justify-self: start;
   }
-  #img-wu-sites-bar {
-    grid-area: wu-sites-bar;
+  #img-wu-bars {
+    grid-area: use-bars;
   }
-  #img-bw-use-map {
-    grid-area: bw-use-map;
-  }
-  #img-bw-use-source {
+  #img-bw-use-beeswarm {
     grid-area: bw-use-source;
   }
   .img-container {
     max-width: 100vw;
+  }
+  #img-availability-map {    
+    width: 60vw;
+    max-width: 1000px;
+    margin: 0rem 0rem 0rem 0rem;
   }
 </style>
