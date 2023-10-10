@@ -176,7 +176,8 @@ input[type=button] {
     padding: 10px 10px 10px 0px;   
     left:0;
     @media screen and (max-width: 600px) {
-        padding: 10px;
+      max-width: 95vw;
+      padding: 0.5rem;
     }  
   }
   .flex-container {

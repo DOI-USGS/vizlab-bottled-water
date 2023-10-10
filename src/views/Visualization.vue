@@ -59,6 +59,11 @@ $pal_blue_dark: '#042054';
   width: calc(100vw - 10rem);
   position: relative;
   padding: 3rem 0 5rem 5rem;
+  @media screen and (max-width: 600px) {
+    width: calc(100vw - 1rem);
+    position: relative;
+    padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+  }  
 }
 
 h1 {
