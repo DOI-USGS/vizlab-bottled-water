@@ -5,7 +5,7 @@
         <h3 v-html="useText.title" />
       </div>
       <div id="text1" class="text-container">
-        <img id="img-availability-map" :class="mobileView ? '' : 'image-float'" src="../assets/images/bottled_water_availability_map.png">
+        <img :class="mobileView ? 'availability-map img-mobile' : 'availability-map image-float'" src="../assets/images/bottled_water_availability_map.png">
         <p v-html="useText.paragraph1" />
         <br>
         <p v-html="useText.paragraph2" />
@@ -94,9 +94,13 @@
   .img-container {
     max-width: 100vw;
   }
-  #img-availability-map {    
+  .availability-map {    
     width: 60vw;
     max-width: 1000px;
     margin: 0rem 0rem 0rem 0rem;
+  }
+  .availability-map.img-mobile {
+    width: 100%;
+    margin: 0;
   }
 </style>

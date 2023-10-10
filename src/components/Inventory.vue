@@ -9,7 +9,7 @@
             <div id="text" class="text-container">
                <p v-html="inventoryText.paragraph1" />
                <br>
-               <img id="img-pictogram" :class="mobileView ? '' : 'image-float'" src="../assets/images/bottled-water_consumption-pictogram_small_2023-09-19.png">
+               <img :class="mobileView ? 'pictogram img-mobile' : 'pictogram image-float'" src="../assets/images/bottled-water_consumption-pictogram_small_2023-09-19.png">
                <p v-html="inventoryText.paragraph2" />
                <br>
                <p v-html="inventoryText.paragraph3" />
@@ -98,5 +98,14 @@ export default {
       width: 50vw;
       max-width: 1000px;
       margin: 0px 0px 0.5rem 1.5rem;
+    }
+    .pictogram {      
+      width: 50vw;
+      max-width: 1000px;
+      margin: 0px 0px 0.5rem 1.5rem;
+    }
+    .pictogram.img-mobile {
+      width: 100%;
+      margin: 0;
     }
 </style>
