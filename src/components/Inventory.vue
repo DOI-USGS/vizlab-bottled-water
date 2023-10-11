@@ -1,36 +1,42 @@
 <template>
-    <section id="inventory_intro">
-        <div id="grid-container-inventory">
-            <!--div id="title" class="text-container">
+  <section id="inventory_intro">
+    <div id="grid-container-inventory">
+      <!--div id="title" class="text-container">
                <h3 v-html="inventoryText.title" />
             </div-->
-            <br>
-            <OCONUS id="oconus"/>
-            <div id="text" class="text-container">
-               <p v-html="inventoryText.paragraph1" />
-               <br>
-               <img :class="mobileView ? 'pictogram img-mobile' : 'pictogram image-float'" src="../assets/images/bottled-water_consumption-pictogram_portrait_20231011.png">
-               <p v-html="inventoryText.paragraph2" />
-               <br>
-               <p v-html="inventoryText.paragraph3" />
-               <br>
-               <p v-html="inventoryText.paragraph4" />
-               <br>
-               <li v-html="inventoryText.bullet1" />
-               <br>
-               <li v-html="inventoryText.bullet2" />
-               <br>
-               <li v-html="inventoryText.bullet3" />
-            </div>
-        </div>
-    </section>
+      <br>
+      <OCONUS id="oconus" />
+      <div
+        id="text"
+        class="text-container"
+      >
+        <p v-html="inventoryText.paragraph1" />
+        <br>
+        <img
+          :class="mobileView ? 'pictogram img-mobile' : 'pictogram image-float'"
+          src="../assets/images/bottled-water_consumption-pictogram_portrait_20231011.png"
+        >
+        <p v-html="inventoryText.paragraph2" />
+        <br>
+        <p v-html="inventoryText.paragraph3" />
+        <br>
+        <p v-html="inventoryText.paragraph4" />
+        <br>
+        <li v-html="inventoryText.bullet1" />
+        <br>
+        <li v-html="inventoryText.bullet2" />
+        <br>
+        <li v-html="inventoryText.bullet3" />
+      </div>
+    </div>
+  </section>
 </template>
 <script>
 import { isMobile } from 'mobile-device-detect';
 import inventoryText from "./../assets/text/inventoryText.js";
 
 export default {
-  name: "Iventory",
+  name: "InventorySection",
   components: {
     OCONUS: () => import("./../components/OCONUS.vue"),
   },

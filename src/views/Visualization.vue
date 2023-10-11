@@ -5,24 +5,24 @@
         <h1>{{ title }}</h1>
       </div>
     </header>
-    <Inventory />
-    <WaterSource />
-    <WaterUse />
-    <References />
-    <Authorship />
+    <InventorySection />
+    <WaterSourceSection />
+    <WaterUseSection />
+    <ReferencesSection />
+    <AuthorshipSection />
   </div>
 </template>
 
 <script>
 import { ref } from 'vue'
 export default {
-    name: 'Visualization',
+    name: 'VisualizationContent',
     components: {
-      Inventory: () => import("./../components/Inventory.vue"),
-      WaterSource: () => import("./../components/WaterSource.vue"),
-      WaterUse: () => import("./../components/WaterUse.vue"),
-      Authorship: () => import("./../components/Authorship.vue"),
-      References: () => import("./../components/References.vue"),
+      InventorySection: () => import("./../components/Inventory.vue"),
+      WaterSourceSection: () => import("./../components/WaterSource.vue"),
+      WaterUseSection: () => import("./../components/WaterUse.vue"),
+      AuthorshipSection: () => import("./../components/Authorship.vue"),
+      ReferencesSection: () => import("./../components/References.vue"),
     },
     setup() {
       const title = ref('Water bottling across the United States')

@@ -6,17 +6,17 @@ Vue.use(Router);
 const routes = [
     {
       path: "/",
-      name: "Visualization",
+      name: "VisualizationContent",
       component: () => import("@/views/Visualization.vue"),
     },
     {
       path: "/404",
-      name: "error404",
+      name: "ErrorPage404",
       component: () => import("@/components/Error404.vue"),
     },
     {
       path: "*",
-      redirect: { name: "error404" },
+      redirect: { name: "ErrorPage404" },
     },
  ];
 

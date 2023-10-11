@@ -2,27 +2,30 @@
   <section id="oconus_map">
     <div id="grid-container-interactive">
       <div id="title">
-        <h4> Counts of bottling facilities in <span id="state-dropdown-container"></span> by county
+        <h4>
+          Counts of bottling facilities in <span id="state-dropdown-container" /> by county
           <!-- Dropdown v-model="selectedOption" :options="dropdownOptions"/ -->
         </h4>
       </div>
       <div id="text">
-        <div class='text-container'>
-            <!--p>
+        <div class="text-container">
+          <!--p>
               The bottled water industry estimates that the United States consumed 15 billion gallons (57 billion liters) of bottled water in 2020. That’s 45 gallons of bottled water per person. If you consider how much water it takes to produce each bottle of water (not including the packaging), the number is closer to 63 gallons—enough to fill a standard bathtub one-and-a-half times. 
             </p -->
-            <p class = 'italic'>Zoom in a specific state by clicking on the map or by selecting it using the dropdown, above.</p>
-            <br>
-            <p class = 'italic'>Select a specific facility type by interacting with the bar chart. </p>
+          <p class="italic">
+            Zoom in a specific state by clicking on the map or by selecting it using the dropdown, above.
+          </p>
+          <br>
+          <p class="italic">
+            Select a specific facility type by interacting with the bar chart.
+          </p>
         </div>
       </div>
-      <div id="oconus-container">
-      </div>
-      <div id="chart-container">
-      </div>
+      <div id="oconus-container" />
+      <div id="chart-container" />
       <div id="map-label-container">
         <mapLabels 
-          id = "map-inset-svg"
+          id="map-inset-svg"
           class="map labels"
         />
       </div>
@@ -34,7 +37,7 @@ import * as d3Base from 'd3';
 import * as topojson from "topojson-client";
 import { csv } from 'd3';
 import { isMobile } from 'mobile-device-detect';
-// import Dropdown from '@/components/Dropdown.vue'
+// import DropdownMenu from '@/components/Dropdown.vue'
 import { ref, onMounted } from 'vue'
 import mapLabels from '@/components/MapLabels.vue'
 
@@ -42,10 +45,24 @@ export default {
   name: "OCONUS",
   components: {
     mapLabels
-    // Dropdown
+    // DropdownMenu
   },
   props: {
     data: Object
+  },
+  setup() {
+    const self = this;
+    // const selectedOption = ref('')
+    // const dropdownOptions = ref([])
+
+    onMounted(async () => {
+      // const data = await csv(self.publicPath + 'state_facility_type_summary.csv')
+
+      // Assuming the column name in the CSV is 'NAME'
+      // dropdownOptions.value = data.map(d => d.NAME)
+    })
+
+    return { }
   },
   data() {
     return {
@@ -100,20 +117,6 @@ export default {
     const self = this;
     this.loadData() // read in data 
  
-  },
-  setup() {
-    const self = this;
-    // const selectedOption = ref('')
-    // const dropdownOptions = ref([])
-
-    onMounted(async () => {
-      // const data = await csv(self.publicPath + 'state_facility_type_summary.csv')
-
-      // Assuming the column name in the CSV is 'NAME'
-      // dropdownOptions.value = data.map(d => d.NAME)
-    })
-
-    return { }
   },
   /* computed: {
     computedDropdownOptions() {
