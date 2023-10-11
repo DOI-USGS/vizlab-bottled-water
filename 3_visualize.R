@@ -379,7 +379,7 @@ p3_targets <- list(
                                    perc_alpha_range = c(0.1,1),
                                    perc_alpha_limit = c(1, 100),
                                    supply_colors = p3_supply_colors_new,
-                                   width = 16, height = 9,
+                                   width = 8, height = 6,
                                    bkgd_color = 'white',
                                    text_color = 'black',
                                    conus_outline_col = 'grey50',
