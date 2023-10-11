@@ -14,7 +14,7 @@
         <br>
         <img
           :class="mobileView ? 'pictogram img-mobile' : 'pictogram image-float'"
-          src="../assets/images/bottled-water_consumption-pictogram_portrait_20231011.png"
+          src="../assets/images/bottled-water_consumption-pictogram_square_20231011.png"
         >
         <p v-html="inventoryText.paragraph2" />
         <br>
@@ -23,9 +23,7 @@
         <p v-html="inventoryText.paragraph4" />
         <br>
         <li v-html="inventoryText.bullet1" />
-        <br>
         <li v-html="inventoryText.bullet2" />
-        <br>
         <li v-html="inventoryText.bullet3" />
       </div>
     </div>
@@ -107,6 +105,6 @@ export default {
     }
     .pictogram.img-mobile {
       width: 100%;
-      margin: 0;
+      margin: 0px 0px 0.5rem 0rem;
     }
 </style>
