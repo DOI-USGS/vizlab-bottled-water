@@ -57,7 +57,7 @@ $pal_teal: '#008083';
 $pal_blue_dark: '#042054';
 
 #visualization {
-  width: calc(100vw - 10rem);
+  width: 86vw;
   position: relative;
   padding: 3rem 0rem 5rem 0rem;
   margin: auto;
