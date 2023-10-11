@@ -20,10 +20,12 @@
       </div>
       <div id="chart-container">
       </div>
-      <mapLabels 
-        id = "map-inset-svg"
-        class="map labels"
-      />
+      <div id="map-label-container">
+        <mapLabels 
+          id = "map-inset-svg"
+          class="map labels"
+        />
+      </div>
     </div>
   </section>
 </template>
