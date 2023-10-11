@@ -13,7 +13,7 @@
             </p -->
             <p class = 'italic'>Zoom in a specific state by clicking on the map or by selecting it using the dropdown, above.</p>
             <br>
-            <p class = 'italic'>Select a specific facility type by interacting with the bar chart at right. </p>
+            <p class = 'italic'>Select a specific facility type by interacting with the bar chart. </p>
         </div>
       </div>
       <div id="oconus-container">
@@ -238,13 +238,14 @@ export default {
       // define histogram dimensions relative to window **and grid** dimensions
       // Grid is 0.86vw, but maxes out at 1600px
       const width = 0.86*window.innerWidth > 1600 ? 1600*0.49 : 0.86*window.innerWidth*0.49; // grid width (1600px or 0.86 * window height) * column width
+      const height = window.innerHeight < 770 ? window.innerHeight*0.4 : window.innerHeight*0.2; // window height * grid row height
       this.chartDimensions = {
         width,
-        height: window.innerHeight*0.95*0.2, // window height * grid height * row height
+        height: height,
         margin: {
           top: 15,
           right: 5,
-          bottom: 20,
+          bottom: 40,
           left: 15
         }
       }
@@ -557,7 +558,7 @@ export default {
           .append("text")
             .attr("class", "x-axis axis-title")
             .attr("x", this.chartDimensions.boundedWidth / 2)
-            .attr("y", this.chartDimensions.margin.bottom + 17)
+            .attr("y", this.chartDimensions.margin.bottom - 5)
             .style("text-anchor", "middle")
             .attr("role", "presentation")
             .attr("aria-hidden", true)
@@ -762,7 +763,7 @@ export default {
         .transition(self.getUpdateTransition())
           .attr("class", "bar-label")
           .attr("x", d => xScale(xAccessor(d)) + xScale.bandwidth()/2)
-          .attr("y", d => yScale(yAccessor(d)) - 3)
+          .attr("y", d => yScale(yAccessor(d)) - 5)
           .style("text-anchor", "middle")
           .text(d => this.d3.format(',')(yAccessor(d)))
 
