@@ -2995,7 +2995,7 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
     labs(y = axis_title, x = "") +
     theme(
       plot.margin = unit(c(1,1,1,1), "cm"),
-      text = element_text(family = font_legend, size = 18),
+      text = element_text(family = font_legend, size = 22),
       axis.text.y = element_blank(),
       axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
       legend.position = "top",
@@ -3027,7 +3027,7 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
       labs(x = "", y = axis_title) +
       theme(
         plot.margin = unit(c(1,1,1,1), "cm"),
-        text = element_text(family = font_legend, size = 18),
+        text = element_text(family = font_legend, size = 20),
         axis.text.x = element_blank(),
         axis.title.y = element_text(margin = margin(0, 20, 0, 0)),
         legend.position = "top",
