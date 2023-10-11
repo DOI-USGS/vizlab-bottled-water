@@ -820,7 +820,7 @@ generate_site_count_matrix <- function(type_summary, type_summary_state,
                                        bar_fill, width, height, outfile, dpi) {
   # main matrix
   state_matrix <- type_summary_state %>%
-    arrange(state_name) %>%
+    arrange(state_abbr) %>%
     ggplot(aes(x = reorder(state_abbr, state_abbr), y = WB_TYPE)) +
     geom_tile(aes(fill = site_count), color = 'white', width = 1, height = 1) +
     theme_minimal() +
@@ -988,8 +988,8 @@ generate_facility_type_facet_map <- function(type_summary, type_summary_state,
                                              text_color, outfile, dpi) {
 
   state_cartogram <- type_summary_state %>%
-    arrange(state_name) %>%
-    group_by(state_name) %>%
+    arrange(state_abbr) %>%
+    group_by(state_abbr) %>%
     mutate(percent = site_count/sum(site_count)*100) %>%
     ggplot(aes(1, y = percent)) +
     geom_bar(aes(fill = WB_TYPE), stat = 'identity') +

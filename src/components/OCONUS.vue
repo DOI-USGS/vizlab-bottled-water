@@ -105,8 +105,8 @@ export default {
     onMounted(async () => {
       // const data = await csv(self.publicPath + 'state_facility_type_summary.csv')
 
-      // Assuming the column name in the CSV is 'name'
-      // dropdownOptions.value = data.map(d => d.state_name)
+      // Assuming the column name in the CSV is 'NAME'
+      // dropdownOptions.value = data.map(d => d.NAME)
     })
 
     return { }
@@ -116,7 +116,7 @@ export default {
       const dataAll = this.dataRaw
 
       // get list of unique states
-      const stateList = [... new Set(dataAll.map(d => d.state_name))]
+      const stateList = [... new Set(dataAll.map(d => d.NAME))]
       return stateList.map(data => `Option: ${data}`)
     }
   }, */
@@ -206,7 +206,7 @@ export default {
       
       // Set up dropdown
       // get list of unique states
-      this.stateList = [... new Set(this.dataAll.map(d => d.state_name))]
+      this.stateList = [... new Set(this.dataAll.map(d => d.NAME))]
       this.stateList.unshift(this.defaultViewName)
       // store options for dropdown
       this.dropdownOptions = this.stateList
@@ -295,13 +295,13 @@ export default {
               case 'Puerto Rico':
                 zoomPath = self.mapPathPRVI;
                 break;
-              case 'Virgin Islands':
+              case 'United States Virgin Islands':
                 zoomPath = self.mapPathPRVI;
                 break;
               case 'Guam':
                 zoomPath = self.mapPathGUMP;
                 break;
-              case 'Northern Mariana Islands':
+              case 'Commonwealth of the Northern Mariana Islands':
                 zoomPath = self.mapPathGUMP;
                 break;
               case 'American Samoa':
@@ -459,7 +459,7 @@ export default {
 
       // Guam and Northern Mariana Islands map projection
       this.mapProjectionGUMP = this.d3.geoConicEqualArea()
-        .center([0, 13.4])
+        .center([0, 13.9])
         .rotate([-144.75, 0, 0])
         .parallels([13.2, 13.6])
         .scale(mapScale)
@@ -586,7 +586,7 @@ export default {
               return acc + value
             })
           let dataObj = {
-            state_name: self.defaultViewName,
+            NAME: self.defaultViewName,
             state_abbr: null,
             WB_TYPE: type,
             site_count: totalCount
@@ -596,7 +596,7 @@ export default {
         data = dataArray
       } else {
         data = rawData.filter(d => 
-          d.state_name === state)
+          d.NAME === state)
       }
       
       // accessor functions
@@ -824,7 +824,7 @@ export default {
       //   data = this.statePolysAK
       //   selectedMapPath = this.mapPathAK
       //   featureBounds = self.calculateScaleTranslation(data[0], selectedMapPath)
-      // } else if (state === 'Puerto Rico' | state === 'Virgin Islands') {
+      // } else if (state === 'Puerto Rico' | state === 'United States Virgin Islands') {
       //   data = this.statePolysPRVI
       //   selectedMapPath = this.mapPath
       //   featureBounds = self.calculateScaleTranslation(data, selectedMapPath)
@@ -844,13 +844,13 @@ export default {
         //     case 'Puerto Rico':
         //       stateMapPath = this.mapPathPRVI;
         //       break;
-        //     case 'Virgin Islands':
+        //     case 'United States Virgin Islands':
         //       stateMapPath = this.mapPathPRVI;
         //       break;
         //     case 'Guam':
         //       stateMapPath = self.mapPathGUMP;
         //       break;
-        //     case 'Northern Mariana Islands':
+        //     case 'Commonwealth of the Northern Mariana Islands':
         //       stateMapPath = self.mapPathGUMP;
         //       break;
         //     case 'American Samoa':
@@ -907,11 +907,11 @@ export default {
               return this.mapPathHI(d);
             case 'Puerto Rico':
               return this.mapPathPRVI(d);
-            case 'Virgin Islands':
+            case 'United States Virgin Islands':
               return this.mapPathPRVI(d);
             case 'Guam':
               return this.mapPathGUMP(d);
-            case 'Northern Mariana Islands':
+            case 'Commonwealth of the Northern Mariana Islands':
               return this.mapPathGUMP(d);
             case 'American Samoa':
               return this.mapPathAS(d);
@@ -936,13 +936,13 @@ export default {
             case 'Puerto Rico':
               zoomPath = this.mapPathPRVI;
               break;
-            case 'Virgin Islands':
+            case 'United States Virgin Islands':
               zoomPath = this.mapPathPRVI;
               break;
             case 'Guam':
               zoomPath = this.mapPathGUMP;
               break;
-            case 'Northern Mariana Islands':
+            case 'Commonwealth of the Northern Mariana Islands':
               zoomPath = this.mapPathGUMP;
               break;
             case 'American Samoa':
@@ -1078,11 +1078,11 @@ export default {
                 return this.mapPathHI(d);
               case 'Puerto Rico':
                 return this.mapPathPRVI(d);
-              case 'Virgin Islands':
+              case 'United States Virgin Islands':
                 return this.mapPathPRVI(d);
               case 'Guam':
                 return this.mapPathGUMP(d);
-              case 'Northern Mariana Islands':
+              case 'Commonwealth of the Northern Mariana Islands':
                 return this.mapPathGUMP(d);
               case 'American Samoa':
                 return this.mapPathAS(d);
@@ -1176,11 +1176,11 @@ export default {
               return this.mapPathHI.pointRadius(0)(d);
             case 'Puerto Rico':
               return this.mapPathPRVI.pointRadius(0)(d);
-            case 'Virgin Islands':
+            case 'United States Virgin Islands':
               return this.mapPathPRVI.pointRadius(0)(d);
             case 'Guam':
               return this.mapPathGUMP.pointRadius(0)(d);
-            case 'Northern Mariana Islands':
+            case 'Commonwealth of the Northern Mariana Islands':
               return this.mapPathGUMP.pointRadius(0)(d);
             case 'American Samoa':
               return this.mapPathAS.pointRadius(0)(d);
@@ -1215,11 +1215,11 @@ export default {
               return this.mapPathHI.pointRadius(0)(d);
             case 'Puerto Rico':
               return this.mapPathPRVI.pointRadius(0)(d);
-            case 'Virgin Islands':
+            case 'United States Virgin Islands':
               return this.mapPathPRVI.pointRadius(0)(d);
             case 'Guam':
               return this.mapPathGUMP.pointRadius(0)(d);
-            case 'Northern Mariana Islands':
+            case 'Commonwealth of the Northern Mariana Islands':
               return this.mapPathGUMP.pointRadius(0)(d);
             case 'American Samoa':
               return this.mapPathAS.pointRadius(0)(d);
@@ -1246,11 +1246,11 @@ export default {
                 return this.mapPathHI.pointRadius(scaledRadius)(d);
               case 'Puerto Rico':
                 return this.mapPathPRVI.pointRadius(scaledRadius)(d);
-              case 'Virgin Islands':
+              case 'United States Virgin Islands':
                 return this.mapPathPRVI.pointRadius(scaledRadius)(d);
               case 'Guam':
                 return this.mapPathGUMP.pointRadius(scaledRadius)(d);
-              case 'Northern Mariana Islands':
+              case 'Commonwealth of the Northern Mariana Islands':
                 return this.mapPathGUMP.pointRadius(scaledRadius)(d);
               case 'American Samoa':
                 return this.mapPathAS.pointRadius(scaledRadius)(d);
