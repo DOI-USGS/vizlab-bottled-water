@@ -2,26 +2,33 @@
   <section id="oconus_map">
     <div id="grid-container-interactive">
       <div id="title">
-        <h4> Counts of bottling facilities in <span id="state-dropdown-container"></span> by county
+        <h4>
+          Counts of bottling facilities in <span id="state-dropdown-container" /> by county
           <!-- Dropdown v-model="selectedOption" :options="dropdownOptions"/ -->
         </h4>
       </div>
       <div id="text">
-        <div class='text-container'>
-            <!--p>
+        <div class="text-container">
+          <!--p>
               The bottled water industry estimates that the United States consumed 15 billion gallons (57 billion liters) of bottled water in 2020. That’s 45 gallons of bottled water per person. If you consider how much water it takes to produce each bottle of water (not including the packaging), the number is closer to 63 gallons—enough to fill a standard bathtub one-and-a-half times. 
             </p -->
-            <p>Use the dropdown menu above or click on the map to filter the data by state, or click on the facility type in the bar chart below to filter the data by facility type. </p>
+          <p class="italic">
+            Zoom in a specific state by clicking on the map or by selecting it using the dropdown, above.
+          </p>
+          <br>
+          <p class="italic">
+            Select a specific facility type by interacting with the bar chart.
+          </p>
         </div>
       </div>
-      <div id="chart-container">
-      </div>           
-      <div id="oconus-container">
+      <div id="oconus-container" />
+      <div id="chart-container" />
+      <div id="map-label-container">
+        <mapLabels 
+          id="map-inset-svg"
+          class="map labels"
+        />
       </div>
-      <mapLabels 
-        id = "map-inset-svg"
-        class="map labels"
-      />
     </div>
   </section>
 </template>
@@ -30,7 +37,7 @@ import * as d3Base from 'd3';
 import * as topojson from "topojson-client";
 import { csv } from 'd3';
 import { isMobile } from 'mobile-device-detect';
-// import Dropdown from '@/components/Dropdown.vue'
+// import DropdownMenu from '@/components/Dropdown.vue'
 import { ref, onMounted } from 'vue'
 import mapLabels from '@/components/MapLabels.vue'
 
@@ -38,10 +45,24 @@ export default {
   name: "OCONUS",
   components: {
     mapLabels
-    // Dropdown
+    // DropdownMenu
   },
   props: {
     data: Object
+  },
+  setup() {
+    const self = this;
+    // const selectedOption = ref('')
+    // const dropdownOptions = ref([])
+
+    onMounted(async () => {
+      // const data = await csv(self.publicPath + 'state_facility_type_summary.csv')
+
+      // Assuming the column name in the CSV is 'NAME'
+      // dropdownOptions.value = data.map(d => d.NAME)
+    })
+
+    return { }
   },
   data() {
     return {
@@ -97,26 +118,12 @@ export default {
     this.loadData() // read in data 
  
   },
-  setup() {
-    const self = this;
-    // const selectedOption = ref('')
-    // const dropdownOptions = ref([])
-
-    onMounted(async () => {
-      // const data = await csv(self.publicPath + 'state_facility_type_summary.csv')
-
-      // Assuming the column name in the CSV is 'name'
-      // dropdownOptions.value = data.map(d => d.state_name)
-    })
-
-    return { }
-  },
   /* computed: {
     computedDropdownOptions() {
       const dataAll = this.dataRaw
 
       // get list of unique states
-      const stateList = [... new Set(dataAll.map(d => d.state_name))]
+      const stateList = [... new Set(dataAll.map(d => d.NAME))]
       return stateList.map(data => `Option: ${data}`)
     }
   }, */
@@ -206,7 +213,7 @@ export default {
       
       // Set up dropdown
       // get list of unique states
-      this.stateList = [... new Set(this.dataAll.map(d => d.state_name))]
+      this.stateList = [... new Set(this.dataAll.map(d => d.NAME))]
       this.stateList.unshift(this.defaultViewName)
       // store options for dropdown
       this.dropdownOptions = this.stateList
@@ -231,15 +238,19 @@ export default {
       // Initialize map
       self.initMap()
 
-      // define histogram dimensions
-      const width = 400;
+      // define histogram dimensions relative to window **and grid** dimensions
+      // Grid is 0.86vw, but maxes out at 1600px
+      const grid_width = window.innerHeight < 770 ? 0.9 : 0.86;
+      const col_width = window.innerHeight < 770 ? 0.4 : 0.49;
+      const width = 0.86*window.innerWidth > 1600 ? 1600*col_width : grid_width*window.innerWidth*col_width; // grid width (1600px or 0.86 * window height) * column width
+      const height = window.innerHeight < 770 ? window.innerHeight*0.4 : window.innerHeight*0.2; // window height * grid row height
       this.chartDimensions = {
         width,
-        height: width*0.9,
+        height: height,
         margin: {
-          top: 30,
+          top: 15,
           right: 5,
-          bottom: 50,
+          bottom: 40,
           left: 15
         }
       }
@@ -295,13 +306,13 @@ export default {
               case 'Puerto Rico':
                 zoomPath = self.mapPathPRVI;
                 break;
-              case 'Virgin Islands':
+              case 'United States Virgin Islands':
                 zoomPath = self.mapPathPRVI;
                 break;
               case 'Guam':
                 zoomPath = self.mapPathGUMP;
                 break;
-              case 'Northern Mariana Islands':
+              case 'Commonwealth of the Northern Mariana Islands':
                 zoomPath = self.mapPathGUMP;
                 break;
               case 'American Samoa':
@@ -459,7 +470,7 @@ export default {
 
       // Guam and Northern Mariana Islands map projection
       this.mapProjectionGUMP = this.d3.geoConicEqualArea()
-        .center([0, 13.4])
+        .center([0, 13.9])
         .rotate([-144.75, 0, 0])
         .parallels([13.2, 13.6])
         .scale(mapScale)
@@ -552,7 +563,7 @@ export default {
           .append("text")
             .attr("class", "x-axis axis-title")
             .attr("x", this.chartDimensions.boundedWidth / 2)
-            .attr("y", this.chartDimensions.margin.bottom - 10)
+            .attr("y", this.chartDimensions.margin.bottom - 5)
             .style("text-anchor", "middle")
             .attr("role", "presentation")
             .attr("aria-hidden", true)
@@ -586,7 +597,7 @@ export default {
               return acc + value
             })
           let dataObj = {
-            state_name: self.defaultViewName,
+            NAME: self.defaultViewName,
             state_abbr: null,
             WB_TYPE: type,
             site_count: totalCount
@@ -596,7 +607,7 @@ export default {
         data = dataArray
       } else {
         data = rawData.filter(d => 
-          d.state_name === state)
+          d.NAME === state)
       }
       
       // accessor functions
@@ -824,7 +835,7 @@ export default {
       //   data = this.statePolysAK
       //   selectedMapPath = this.mapPathAK
       //   featureBounds = self.calculateScaleTranslation(data[0], selectedMapPath)
-      // } else if (state === 'Puerto Rico' | state === 'Virgin Islands') {
+      // } else if (state === 'Puerto Rico' | state === 'United States Virgin Islands') {
       //   data = this.statePolysPRVI
       //   selectedMapPath = this.mapPath
       //   featureBounds = self.calculateScaleTranslation(data, selectedMapPath)
@@ -844,13 +855,13 @@ export default {
         //     case 'Puerto Rico':
         //       stateMapPath = this.mapPathPRVI;
         //       break;
-        //     case 'Virgin Islands':
+        //     case 'United States Virgin Islands':
         //       stateMapPath = this.mapPathPRVI;
         //       break;
         //     case 'Guam':
         //       stateMapPath = self.mapPathGUMP;
         //       break;
-        //     case 'Northern Mariana Islands':
+        //     case 'Commonwealth of the Northern Mariana Islands':
         //       stateMapPath = self.mapPathGUMP;
         //       break;
         //     case 'American Samoa':
@@ -907,11 +918,11 @@ export default {
               return this.mapPathHI(d);
             case 'Puerto Rico':
               return this.mapPathPRVI(d);
-            case 'Virgin Islands':
+            case 'United States Virgin Islands':
               return this.mapPathPRVI(d);
             case 'Guam':
               return this.mapPathGUMP(d);
-            case 'Northern Mariana Islands':
+            case 'Commonwealth of the Northern Mariana Islands':
               return this.mapPathGUMP(d);
             case 'American Samoa':
               return this.mapPathAS(d);
@@ -936,13 +947,13 @@ export default {
             case 'Puerto Rico':
               zoomPath = this.mapPathPRVI;
               break;
-            case 'Virgin Islands':
+            case 'United States Virgin Islands':
               zoomPath = this.mapPathPRVI;
               break;
             case 'Guam':
               zoomPath = this.mapPathGUMP;
               break;
-            case 'Northern Mariana Islands':
+            case 'Commonwealth of the Northern Mariana Islands':
               zoomPath = this.mapPathGUMP;
               break;
             case 'American Samoa':
@@ -1078,11 +1089,11 @@ export default {
                 return this.mapPathHI(d);
               case 'Puerto Rico':
                 return this.mapPathPRVI(d);
-              case 'Virgin Islands':
+              case 'United States Virgin Islands':
                 return this.mapPathPRVI(d);
               case 'Guam':
                 return this.mapPathGUMP(d);
-              case 'Northern Mariana Islands':
+              case 'Commonwealth of the Northern Mariana Islands':
                 return this.mapPathGUMP(d);
               case 'American Samoa':
                 return this.mapPathAS(d);
@@ -1176,11 +1187,11 @@ export default {
               return this.mapPathHI.pointRadius(0)(d);
             case 'Puerto Rico':
               return this.mapPathPRVI.pointRadius(0)(d);
-            case 'Virgin Islands':
+            case 'United States Virgin Islands':
               return this.mapPathPRVI.pointRadius(0)(d);
             case 'Guam':
               return this.mapPathGUMP.pointRadius(0)(d);
-            case 'Northern Mariana Islands':
+            case 'Commonwealth of the Northern Mariana Islands':
               return this.mapPathGUMP.pointRadius(0)(d);
             case 'American Samoa':
               return this.mapPathAS.pointRadius(0)(d);
@@ -1215,11 +1226,11 @@ export default {
               return this.mapPathHI.pointRadius(0)(d);
             case 'Puerto Rico':
               return this.mapPathPRVI.pointRadius(0)(d);
-            case 'Virgin Islands':
+            case 'United States Virgin Islands':
               return this.mapPathPRVI.pointRadius(0)(d);
             case 'Guam':
               return this.mapPathGUMP.pointRadius(0)(d);
-            case 'Northern Mariana Islands':
+            case 'Commonwealth of the Northern Mariana Islands':
               return this.mapPathGUMP.pointRadius(0)(d);
             case 'American Samoa':
               return this.mapPathAS.pointRadius(0)(d);
@@ -1246,11 +1257,11 @@ export default {
                 return this.mapPathHI.pointRadius(scaledRadius)(d);
               case 'Puerto Rico':
                 return this.mapPathPRVI.pointRadius(scaledRadius)(d);
-              case 'Virgin Islands':
+              case 'United States Virgin Islands':
                 return this.mapPathPRVI.pointRadius(scaledRadius)(d);
               case 'Guam':
                 return this.mapPathGUMP.pointRadius(scaledRadius)(d);
-              case 'Northern Mariana Islands':
+              case 'Commonwealth of the Northern Mariana Islands':
                 return this.mapPathGUMP.pointRadius(scaledRadius)(d);
               case 'American Samoa':
                 return this.mapPathAS.pointRadius(scaledRadius)(d);
@@ -1555,16 +1566,35 @@ export default {
 
   #grid-container-interactive {
     display: grid;
-    grid-template-columns: 1.5fr 3fr;
-    column-gap: 1rem;
-    grid-template-rows: 1fr max-content max-content;
+    grid-template-columns: 49% 49%;
+    column-gap: 2%;
+    grid-template-rows: 4vh 18vh max-content;
     grid-template-areas:
       "title title"
-      "text map"
-      "chart map";
+      "text chart"
+      "map map";
     justify-content: center;
-    margin: auto;
-    max-width: 1600px;
+    // height: 95vh;
+    @media screen and (max-height: 770px) {
+      grid-template-columns: 40% 60%;
+      column-gap: 2%;
+      grid-template-rows: max-content max-content 40vh;
+      grid-template-areas:
+        "title map"
+        "text map"
+        "chart map";
+    }
+    @media screen and (max-width: 600px) {
+      grid-template-columns: 100%;
+      grid-template-rows: max-content max-content 20vh max-content;
+      grid-template-areas:
+        "title"
+        "text"
+        "chart"
+        "map";
+      position: relative;
+      padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+    }  
   }
   #title {
     grid-area: title;
@@ -1577,17 +1607,25 @@ export default {
   }
   #chart-container {
     grid-area: chart;
-    align-self: center;
   }
   #oconus-container {
     grid-area: map;
-    align-self: center;
-  }
-  #map-inset-svg {
-    grid-area: map;
-    pointer-events: none;
-    width: 100%;
+    align-self: start;
     height: 100%;
+    max-height: 68vh;
+    @media screen and (max-height: 770px) {
+      max-height: 90vh;
+    }
+  }
+  #map-label-container {
+    pointer-events: none;
+    grid-area: map;
+    align-self: start;
+    height: 100%;
+    max-height: 68vh;
+    @media screen and (max-height: 770px) {
+      max-height: 90vh;
+    }
   }
   #text {
     grid-area: text;

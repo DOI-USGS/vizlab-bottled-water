@@ -70,8 +70,9 @@ p2_targets <- list(
 
   # Get count of facilities, by state and by type
   tar_target(p2_facility_type_summary_state,
-             p2_inventory_sites%>%
-               group_by(state_name, state_abbr, WB_TYPE) %>%
+             p2_inventory_sites %>%
+               left_join(p2_conus_oconus_sf, by = c('state_fips' = 'STATEFP')) %>%
+               group_by(NAME, state_abbr, WB_TYPE) %>%
                summarize(site_count = n()) %>%
                mutate(WB_TYPE = factor(WB_TYPE, levels = p2_facility_type_summary$WB_TYPE))),
   
