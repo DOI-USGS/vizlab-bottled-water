@@ -22,7 +22,7 @@
 <script>
     import referencesText from "@/assets/text/referencesText";
     export default {
-        name: 'References',
+        name: 'ReferencesSection',
         data() {
             return {
                 text: referencesText.referencesContent
