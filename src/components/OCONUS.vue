@@ -1563,15 +1563,30 @@ export default {
     display: grid;
     grid-template-columns: 49% 49%;
     column-gap: 2%;
-    grid-template-rows: 5% 20% 75%;
+    grid-template-rows: 4vh 18vh max-content;
     grid-template-areas:
       "title title"
       "text chart"
       "map map";
     justify-content: center;
-    height: 95vh;
+    // height: 95vh;
+    @media screen and (max-height: 770px) {
+      grid-template-columns: 40% 60%;
+      column-gap: 2%;
+      grid-template-rows: max-content max-content 40vh;
+      grid-template-areas:
+        "title map"
+        "text map"
+        "chart map";
+    }
     @media screen and (max-width: 600px) {
-      width: calc(100vw - 1rem);
+      grid-template-columns: 100%;
+      grid-template-rows: max-content max-content 20vh max-content;
+      grid-template-areas:
+        "title"
+        "text"
+        "chart"
+        "map";
       position: relative;
       padding: 0.5rem 0.5rem 0.5rem 0.5rem;
     }  
@@ -1590,10 +1605,22 @@ export default {
   }
   #oconus-container {
     grid-area: map;
+    align-self: start;
+    height: 100%;
+    max-height: 68vh;
+    @media screen and (max-height: 770px) {
+      max-height: 90vh;
+    }
   }
-  #map-inset-svg {
-    grid-area: map;
+  #map-label-container {
     pointer-events: none;
+    grid-area: map;
+    align-self: start;
+    height: 100%;
+    max-height: 68vh;
+    @media screen and (max-height: 770px) {
+      max-height: 90vh;
+    }
   }
   #text {
     grid-area: text;

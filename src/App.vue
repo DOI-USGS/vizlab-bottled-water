@@ -117,6 +117,9 @@ h1{
   text-align: left;
   text-shadow: 1px 1px 100px rgba(0,0,0,.8);
     color: $pal_blue_dark;
+  @media screen and (max-height: 770px) {
+    font-size: 3rem;
+  }
   @media screen and (max-width: 600px) {
     font-size: 2rem;
   }
