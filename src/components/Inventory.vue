@@ -9,7 +9,7 @@
             <div id="text" class="text-container">
                <p v-html="inventoryText.paragraph1" />
                <br>
-               <img :class="mobileView ? 'pictogram img-mobile' : 'pictogram image-float'" src="../assets/images/bottled-water_consumption-pictogram_small_2023-09-19.png">
+               <img :class="mobileView ? 'pictogram img-mobile' : 'pictogram image-float'" src="../assets/images/bottled-water_consumption-pictogram_portrait_20231011.png">
                <p v-html="inventoryText.paragraph2" />
                <br>
                <p v-html="inventoryText.paragraph3" />
@@ -17,7 +17,9 @@
                <p v-html="inventoryText.paragraph4" />
                <br>
                <li v-html="inventoryText.bullet1" />
+               <br>
                <li v-html="inventoryText.bullet2" />
+               <br>
                <li v-html="inventoryText.bullet3" />
             </div>
         </div>
@@ -92,13 +94,8 @@ export default {
         grid-area: text;
         justify-self: start;
     }
-    #img-pictogram {      
-      width: 50vw;
-      max-width: 1000px;
-      margin: 0px 0px 0.5rem 1.5rem;
-    }
     .pictogram {      
-      width: 50vw;
+      width: 35vw;
       max-width: 1000px;
       margin: 0px 0px 0.5rem 1.5rem;
     }
