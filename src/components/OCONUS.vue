@@ -11,7 +11,9 @@
             <!--p>
               The bottled water industry estimates that the United States consumed 15 billion gallons (57 billion liters) of bottled water in 2020. That’s 45 gallons of bottled water per person. If you consider how much water it takes to produce each bottle of water (not including the packaging), the number is closer to 63 gallons—enough to fill a standard bathtub one-and-a-half times. 
             </p -->
-            <p>Zoom in a specific state by clicking on the map or by selecting it using the dropdown, above. Select a specific facility type by interacting with the bar chart at right. </p>
+            <p class = 'italic'>Zoom in a specific state by clicking on the map or by selecting it using the dropdown, above.</p>
+            <br>
+            <p class = 'italic'>Select a specific facility type by interacting with the bar chart at right. </p>
         </div>
       </div>
       <div id="oconus-container">
@@ -231,15 +233,16 @@ export default {
       // Initialize map
       self.initMap()
 
-      // define histogram dimensions
-      const width = 800;
+      // define histogram dimensions relative to window **and grid** dimensions
+      // Grid is 0.86vw, but maxes out at 1600px
+      const width = 0.86*window.innerWidth > 1600 ? 1600*0.49 : 0.86*window.innerWidth*0.49; // grid width (1600px or 0.86 * window height) * column width
       this.chartDimensions = {
         width,
-        height: width*0.4,
+        height: window.innerHeight*0.95*0.2, // window height * grid height * row height
         margin: {
-          top: 30,
+          top: 15,
           right: 5,
-          bottom: 50,
+          bottom: 20,
           left: 15
         }
       }
@@ -552,7 +555,7 @@ export default {
           .append("text")
             .attr("class", "x-axis axis-title")
             .attr("x", this.chartDimensions.boundedWidth / 2)
-            .attr("y", this.chartDimensions.margin.bottom - 10)
+            .attr("y", this.chartDimensions.margin.bottom + 17)
             .style("text-anchor", "middle")
             .attr("role", "presentation")
             .attr("aria-hidden", true)
@@ -757,7 +760,7 @@ export default {
         .transition(self.getUpdateTransition())
           .attr("class", "bar-label")
           .attr("x", d => xScale(xAccessor(d)) + xScale.bandwidth()/2)
-          .attr("y", d => yScale(yAccessor(d)) - 5)
+          .attr("y", d => yScale(yAccessor(d)) - 3)
           .style("text-anchor", "middle")
           .text(d => this.d3.format(',')(yAccessor(d)))
 
@@ -1555,15 +1558,15 @@ export default {
 
   #grid-container-interactive {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 1rem;
+    grid-template-columns: 49% 49%;
+    column-gap: 2%;
     grid-template-rows: 5% 20% 75%;
     grid-template-areas:
-      "title chart"
+      "title title"
       "text chart"
       "map map";
     justify-content: center;
-    height: 90vh;
+    height: 95vh;
     @media screen and (max-width: 600px) {
       width: calc(100vw - 1rem);
       position: relative;
