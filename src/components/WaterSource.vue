@@ -9,7 +9,7 @@
       <div id="text">
         <div class="text-container">
           <p>
-            Beverage-bottling facilitiegfhfdsghgfdnhfegs get water through public supply (water withdrawn by a water supplier and delivered to many users) or self-supply (water withdrawn from a private source for private use). In each case, the water can come from several different pools of the water cycle, like groundwater, surface water, or springs. 
+            Beverage-bottling facilities get water through public supply (water withdrawn by a water supplier and delivered to many users) or self-supply (water withdrawn from a private source for private use). In each case, the water can come from several different pools of the water cycle, like groundwater, surface water, or springs. 
           </p>
         </div>
         <div class="text-container">
