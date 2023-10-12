@@ -1899,9 +1899,10 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
           labs(title = str_to_title(df$source_category)) +
           theme(
             legend.position = "none",
-            plot.title = element_text(family = font_legend, hjust = 0.5, size = 16, margin = margin(t = 1, b = -10)),
-            plot.margin = unit(c(1,1,1,1), "cm"),
-            panel.spacing = unit(2, "lines")
+            plot.title = element_text(family = font_legend, hjust = 0.5, size = 16, margin = margin(t = -10, b = -10))
+            #,
+            #plot.margin = unit(c(1,1,1,1), "cm"),
+            #panel.spacing = unit(2, "lines")
           )
         })
 
@@ -1931,9 +1932,10 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
             labs(title = str_to_title(df$source_category)) +
             theme(
                 legend.position = "none",
-                plot.title = element_text(family = font_legend, hjust = 0.5, size = 16, margin = margin(t = 1, b = -10)),
-                plot.margin = unit(c(1,1,1,1), "cm"),
-                panel.spacing = unit(2, "lines")
+                plot.title = element_text(family = font_legend, hjust = 0.5, size = 16, margin = margin(t = -10, b = -10))
+                # ,
+                #plot.margin = unit(c(1,1,1,1), "cm"),
+                #panel.spacing = unit(2, "lines")
               )
         })
 
@@ -1941,8 +1943,8 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
       # legend with count labels
       draw_label('25           50         100        300         600',
                  fontfamily = font_legend,
-                 x = 0.403,
-                 y = 0.023,
+                 x = 0.325,
+                 y = 0.02,
                  size = 14,
                  hjust = 0,
                  vjust = 0,
@@ -1950,8 +1952,8 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
       # count legend title
       draw_label(map_count_legend,
                  fontfamily = font_legend,
-                 x =  0.447,
-                 y = 0.093,
+                 x =  0.392,
+                 y = 0.110,
                  size = 14,
                  hjust = 0,
                  vjust = 0,
@@ -1961,8 +1963,8 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
       # legend with percent labels
       draw_label('1            10           25          75          100%',
                  fontfamily = font_legend,
-                 x = 0.399,
-                 y = 0.023,
+                 x = 0.318,
+                 y = 0.02,
                  size = 14,
                  hjust = 0,
                  vjust = 0,
@@ -1970,8 +1972,8 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
       # percent legend title
       draw_label(map_perc_legend,
                  fontfamily = font_legend,
-                 x =  0.447,
-                 y = 0.093,
+                 x =  0.392,
+                 y = 0.110,
                  size = 14,
                  hjust = 0,
                  vjust = 0,
@@ -1982,97 +1984,97 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
       # Self supply count map
       draw_plot(map_count_list[[1]],
                 x = 0.995,
-                y = 0.08,
+                y = 0.098,
                 height = 0.90,
                 width = 1 - plot_margin,
                 hjust = 1,
                 vjust = 0) +
       #self supply count legend
       draw_plot(legend_list_count[[1]],
-                x = 0.386,
-                y = -0.328,
-                width = 0.35,
+                x = 0.293,
+                y = -0.382,
+                width = 0.695,
                 height = 0.5)
 
     combo_cnt_fnl_plt <- plt_cnt_leg +
       # combination count map
       draw_plot(map_count_list[[2]],
                 x = 0.995,
-                y = 0.08,
+                y = 0.098,
                 height = 0.90,
                 width = 1 - plot_margin,
                 hjust = 1,
                 vjust = 0) +
       # combination count legend
       draw_plot(legend_list_count[[2]],
-                x = 0.386,
-                y = -0.328,
-                width = 0.35,
+                x = 0.293,
+                y = -0.382,
+                width = 0.695,
                 height = 0.5)
 
     ps_cnt_fnl_plt <- plt_cnt_leg +
       # public supply map
       draw_plot(map_count_list[[3]],
                 x = 0.995,
-                y = 0.08,
+                y = 0.098,
                 height = 0.90,
                 width = 1 - plot_margin,
                 hjust = 1,
                 vjust = 0) +
       # public supply count legend
       draw_plot(legend_list_count[[3]],
-                x = 0.386,
-                y = -0.328,
-                width = 0.35,
+                x = 0.293,
+                y = -0.382,
+                width = 0.695,
                 height = 0.5)
 
     ss_perc_fnl_plt <- plt_perc_leg +
       # Self supply perc map
       draw_plot(map_perc_list[[1]],
                 x = 0.995,
-                y = 0.08,
+                y = 0.098,
                 height = 0.90,
                 width = 1 - plot_margin,
                 hjust = 1,
                 vjust = 0) +
       #self supply perc legend
       draw_plot(legend_list_perc[[1]],
-                x = 0.386,
-                y = -0.23,
-                width = 0.35,
-                height = 0.3)
+                x = 0.293,
+                y = -0.365,
+                width = 0.7,
+                height = 0.45)
 
     combo_perc_fnl_plt <- plt_perc_leg +
       # combination perc map
       draw_plot(map_perc_list[[2]],
                 x = 0.995,
-                y = 0.08,
+                y = 0.098,
                 height = 0.90,
                 width = 1 - plot_margin,
                 hjust = 1,
                 vjust = 0) +
       # combination perc legend
       draw_plot(legend_list_perc[[2]],
-                x = 0.386,
-                y = -0.23,
-                width = 0.35,
-                height = 0.3)
+                x = 0.293,
+                y = -0.365,
+                width = 0.7,
+                height = 0.45)
 
     ps_perc_fnl_plt <- plt_perc_leg +
       # public supply perc map
       draw_plot(map_perc_list[[3]],
                 x = 0.995,
-                y = 0.08,
+                y = 0.098,
                 height = 0.90,
                 width = 1 - plot_margin,
                 hjust = 1,
                 vjust = 0) +
       # public supply perc legend
       draw_plot(legend_list_perc[[3]],
-                x = 0.386,
-                y = -0.23,
-                width = 0.35,
-                height = 0.3)
+                x = 0.293,
+                y = -0.365,
+                width = 0.7,
+                height = 0.45)
 
     # Create a list of ggplots
     plots <- list(ss_cnt_fnl_plt, combo_cnt_fnl_plt, ps_cnt_fnl_plt, ss_perc_fnl_plt, combo_perc_fnl_plt, ps_perc_fnl_plt)
@@ -2997,7 +2999,7 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
     labs(y = axis_title, x = "") +
     theme(
       plot.margin = unit(c(1,1,1,1), "cm"),
-      text = element_text(family = font_legend, size = 18),
+      text = element_text(family = font_legend, size = 22),
       axis.text.y = element_blank(),
       axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
       legend.position = "top",
@@ -3029,7 +3031,7 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
       labs(x = "", y = axis_title) +
       theme(
         plot.margin = unit(c(1,1,1,1), "cm"),
-        text = element_text(family = font_legend, size = 18),
+        text = element_text(family = font_legend, size = 20),
         axis.text.x = element_blank(),
         axis.title.y = element_text(margin = margin(0, 20, 0, 0)),
         legend.position = "top",
