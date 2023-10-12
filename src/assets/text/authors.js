@@ -29,9 +29,18 @@ export default {
         lastName: 'Chan',
         fullName: 'Alisha Chan',
         initials: 'AC',
-        profile_link: '',
+        profile_link: 'https://www.usgs.gov/staff-profiles/alisha-yee-chan',
         role: 'contributor',
         contribution: 'created data visualizations of water use data'
+      },
+      {
+        firstName: 'Mandie',
+        lastName: 'Carr',
+        fullName: 'Mandie Carr',
+        initials: 'MC',
+        profile_link: 'https://www.usgs.gov/staff-profiles/amanda-carr',
+        role: 'contributor',
+        contribution: 'wrote the narrative for the site and created the infographics'
       },
       {
         firstName: 'Cee',
@@ -47,8 +56,8 @@ export default {
         lastName: 'Dieter',
         fullName: 'Cheryl Dieter',
         initials: 'CD',
-        profile_link: '',
-        role: '',
+        profile_link: 'https://www.usgs.gov/staff-profiles/cheryl-dieter',
+        role: 'SME',
         contribution: 'was an SME'
       },
       {
@@ -56,8 +65,8 @@ export default {
         lastName: 'Buchwald',
         fullName: 'Cheryl Buchwald',
         initials: 'CB',
-        profile_link: '',
-        role: '',
+        profile_link: 'https://www.usgs.gov/staff-profiles/cheryl-a-buchwald',
+        role: 'SME',
         contribution: 'was an SME'
       }
       ]

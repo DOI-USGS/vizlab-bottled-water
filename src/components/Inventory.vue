@@ -1,49 +1,40 @@
 <template>
-    <section id="inventory_intro">
-        <div id="grid-container-inventory">
-            <div id="title">
-                <h3>
-                    Where is water being bottled?
-                </h3>
-            </div>
-            <br>
-            <OCONUS id="oconus"/>
-            <div id="text">
-                <div class="text-container">
-                    <p>
-                        The bottled water industry estimates that the United States consumed 15 billion gallons (57 billion liters) of bottled water in 2020 (International Bottled Water Association). That's 45 gallons of bottled water per person. If you consider how much water it takes to produce each bottle of water (not including the packaging), the number is closer to 63 gallons—enough to fill a standard bathtub one-and-a-half times. 
-                    </p>
-                </div>
-                <div class="text-container">
-                    <p>
-                        Despite what we know about bottled water consumption, data about how much water is taken from the environment for bottled water and other beverages are harder to come by. Reporting is highly, and some states do not permit public sharing of beverage-bottling data. Without these data, we can't measure the impact that bottled water has on the water cycle locally, regionally, or nationally.  
-                    </p>
-                </div>
-                <div class="text-container">
-                    <p>
-                        To help fill this gap, the USGS Water Mission Area's Bottled Water Impacts project conducted an inventory of bottling facilities across the United States (LINK TO DATA RELEASE). The inventory helps answer the following questions:  
-                    </p>
-                </div>
-                <div class="text-container">
-                    <li>
-                        How many beverage bottling facilities are there, and where are they located?
-                    </li>
-                    <li>
-                        Where are these facilities sourcing their water (e.g., groundwater, spring water, public supply)?
-                    </li>
-                    <li>
-                        How much water are bottling facilities using to make their products? 
-                    </li>
-                </div>
-            </div>
-        </div>
-    </section>
+  <section id="inventory_intro">
+    <div id="grid-container-inventory">
+      <!--div id="title" class="text-container">
+               <h3 v-html="inventoryText.title" />
+            </div-->
+      <br>
+      <OCONUS id="oconus" />
+      <div
+        id="text"
+        class="text-container"
+      >
+        <p v-html="inventoryText.paragraph1" />
+        <br>
+        <img
+          :class="mobileView ? 'pictogram img-mobile' : 'pictogram image-float'"
+          src="../assets/images/bottled-water_consumption-pictogram_square_20231011.png"
+        >
+        <p v-html="inventoryText.paragraph2" />
+        <br>
+        <p v-html="inventoryText.paragraph3" />
+        <br>
+        <p v-html="inventoryText.paragraph4" />
+        <br>
+        <li v-html="inventoryText.bullet1" />
+        <li v-html="inventoryText.bullet2" />
+        <li v-html="inventoryText.bullet3" />
+      </div>
+    </div>
+  </section>
 </template>
 <script>
 import { isMobile } from 'mobile-device-detect';
+import inventoryText from "./../assets/text/inventoryText.js";
 
 export default {
-  name: "Iventory",
+  name: "InventorySection",
   components: {
     OCONUS: () => import("./../components/OCONUS.vue"),
   },
@@ -59,6 +50,7 @@ export default {
       publicPath: import.meta.env.BASE_URL, // find the files when on different deployment roots
       mobileView: isMobile, // test for mobile
       
+      inventoryText: inventoryText.inventoryText
     }
   },
   mounted(){      
@@ -91,8 +83,6 @@ export default {
             "oconus"
             "text";
         justify-content: center;
-        margin: auto;
-        max-width: 1600px;
     }
 
     #title {
@@ -102,10 +92,19 @@ export default {
         font-family: sans-serif;
     }
     #oconus {
-        grid-area: oconus
+        grid-area: oconus;
     }
     #text {
         grid-area: text;
         justify-self: start;
+    }
+    .pictogram {      
+      width: 35vw;
+      max-width: 1000px;
+      margin: 0px 0px 0.5rem 1.5rem;
+    }
+    .pictogram.img-mobile {
+      width: 100%;
+      margin: 0px 0px 0.5rem 0rem;
     }
 </style>

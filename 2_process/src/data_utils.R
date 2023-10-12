@@ -22,17 +22,16 @@ munge_inventory_data <- function(inventory_csv) {
       water_source = case_when(
         WTRSRC == 'Well(s)' ~ 'well',
         WTRSRC == 'Spring(s)' ~ 'spring',
-        WTRSRC == 'SW Intake(s)' ~ 'sw intake',
+        WTRSRC == 'SW Intake(s)' ~ 'surface water intake',
         tolower(WTRSRC) == 'public supply' ~ 'public supply',
         WTRSRC == 'Combination of different sources' ~ 'combination',
         WTRSRC == 'Other (e.g., humidity, sea water)' ~ 'other',
-        TRUE ~ NA_character_
+        TRUE ~ WTRSRC
       ),
       # define source category based on water source
       source_category = case_when(
-        is.na(water_source) ~ 'undetermined',
-        water_source == 'public supply' ~ water_source,
-        water_source == 'combination' ~ 'both',
+        water_source %in% c('undetermined', 'public supply', 
+                            'combination') ~ water_source,
         TRUE ~ 'self supply'
       ),
       # set shared attribute for all entries
@@ -51,4 +50,52 @@ munge_inventory_data <- function(inventory_csv) {
              state_name == 'Virgin Islands' ~ 'VI',
              TRUE ~ STATE_ABBV
            ))
+}
+
+#' @title  
+#' @description  
+#' @param  
+#' @return  
+get_county_facility_counts <- function(sites_sf, counties_sf, states_sf, types) {
+  
+  county_sites <- sites_sf %>% 
+    dplyr::select(-STATE_NAME) %>%
+    st_intersection(counties_sf) %>%
+    # Catch incorrect duplicate for facility on county line
+    filter(!(FAC_ID == 'WI00862' & GEOID == '55027')) %>%
+    left_join(states_sf %>% 
+                st_drop_geometry() %>% 
+                dplyr::select(STUSPS, STATE_NAME = NAME, STATEFP, group), 
+              by = c('STATEFP', 'STUSPS', 'STATE_NAME', 'group'))
+  
+  # Get count of facilities, by type, in each county
+  facility_summary_county <- county_sites %>%
+    filter(WB_TYPE %in% types) %>%
+    group_by(STATE_NAME, STATEFP, STUSPS, NAMELSAD, GEOID) %>%
+    summarize(site_count = n()) %>%
+    mutate(WB_TYPE = 'All') %>%
+    ungroup() %>%
+    st_drop_geometry()
+  
+  # Get count of facilities, by type, in each county
+  facility_type_summary_county <- county_sites %>%
+    filter(WB_TYPE %in% types) %>%
+    group_by(STATE_NAME, STATEFP, STUSPS, NAMELSAD, GEOID, WB_TYPE) %>%
+    summarize(site_count = n()) %>%
+    mutate(WB_TYPE = factor(WB_TYPE, levels = types)) %>%
+    ungroup() %>%
+    st_drop_geometry()
+  
+  # Get max count, across types
+  facility_max_count_county <- facility_type_summary_county %>%
+    group_by(GEOID) %>%
+    summarize(max_count = max(site_count, na.rm = TRUE)) %>%
+    mutate(max_count = ifelse(is.na(max_count), 0, max_count))
+  
+  # Join together overall count and count by type
+  county_summary_all <- bind_rows(facility_summary_county, 
+                                  facility_type_summary_county) %>%
+    left_join(facility_max_count_county, by = 'GEOID')
+  
+  return(county_summary_all)
 }

@@ -1,89 +1,89 @@
 <template>
   <section id="authorship">
-  <div
-    v-if="showAuthors"
-    id="author-container"
-    class="text-content"
-  >
-    <h3>Authors</h3>
-    <p>
-      <span id="primary-author-statment">
-        The {{ appTitle }} data visualization was made by the USGS VizLab in collaboration with the USGS Water Use program. Development was led by 
-        <span
-          v-for="(author, index) in primaryAuthors" 
-          :id="`initial-${author.initials}`"
-          :key="`${author.initials}-attribution`"
-          :class="'author first'"
-        >
-          <a
-            :href="author.profile_link"
-            target="_blank"
-            v-text="author.fullName"
-          />
-          <span v-if="index != Object.keys(primaryAuthors).length - 1 && Object.keys(primaryAuthors).length > 2">, </span>
-          <span v-if="index == Object.keys(primaryAuthors).length - 2"> and </span>
+    <div
+      v-if="showAuthors"
+      id="author-container"
+      class="text-content"
+    >
+      <h3>Authors</h3>
+      <p>
+        <span id="primary-author-statment">
+          The {{ appTitle }} data visualization was made by the USGS VizLab in collaboration with the USGS Water Use program. Development was led by 
+          <span
+            v-for="(author, index) in primaryAuthors" 
+            :id="`initial-${author.initials}`"
+            :key="`${author.initials}-attribution`"
+            :class="'author first'"
+          >
+            <a
+              :href="author.profile_link"
+              target="_blank"
+              v-text="author.fullName"
+            />
+            <span v-if="index != Object.keys(primaryAuthors).length - 1 && Object.keys(primaryAuthors).length > 2">, </span>
+            <span v-if="index == Object.keys(primaryAuthors).length - 2"> and </span>
+          </span>
         </span>
-      </span>
-      <span>
+        <span>
           with contributions from
         </span>
-      <span
-        v-if="showAdditionalAuthors"
-        id="additional-author-statement"
-      >
         <span
-          v-for="(author, index) in additionalAuthors" 
-          :id="`author-${author.initials}`"
-          :key="`${author.initials}-attribution`"
-          :class="'author'"
-        >
-          <a
-            :href="author.profile_link"
-            target="_blank"
-            v-text="author.fullName"
-          />
-          <span v-if="index != Object.keys(additionalAuthors).length - 1 && Object.keys(additionalAuthors).length > 2">, </span>
-          <span v-if="index == Object.keys(additionalAuthors).length - 2"> and </span>
-        </span>.
-      </span>
-      <span
-        v-if="showContributionStatements"
-        id="contribution-statements"
-      >
-        <span id="primary-author-contribution">
-          <span
-            v-for="author in primaryAuthors" 
-            :id="`author-${author.initials}`"
-            :key="`${author.initials}-contribution`"
-            :class="'author'"
-          >
-            <span v-text="author.firstName" /> <span v-text="author.contribution" />. 
-          </span>
-        </span>
-        <span
-          v-if="showAditionalContributionStatement"
-          id="additional-author-contribution"
+          v-if="showAdditionalAuthors"
+          id="additional-author-statement"
         >
           <span
-            v-for="author in additionalAuthors" 
+            v-for="(author, index) in additionalAuthors" 
             :id="`author-${author.initials}`"
-            :key="`${author.initials}-contribution`"
+            :key="`${author.initials}-attribution`"
             :class="'author'"
           >
-            <span v-text="author.firstName" /> <span v-text="author.contribution" />. 
+            <a
+              :href="author.profile_link"
+              target="_blank"
+              v-text="author.fullName"
+            />
+            <span v-if="index != Object.keys(additionalAuthors).length - 1 && Object.keys(additionalAuthors).length > 2">, </span>
+            <span v-if="index == Object.keys(additionalAuthors).length - 2"> and </span>
+          </span>.
+        </span>
+        <span
+          v-if="showContributionStatements"
+          id="contribution-statements"
+        >
+          <span id="primary-author-contribution">
+            <span
+              v-for="author in primaryAuthors" 
+              :id="`author-${author.initials}`"
+              :key="`${author.initials}-contribution`"
+              :class="'author'"
+            >
+              <span v-text="author.firstName" /> <span v-text="author.contribution" />. 
+            </span>
+          </span>
+          <span
+            v-if="showAditionalContributionStatement"
+            id="additional-author-contribution"
+          >
+            <span
+              v-for="author in additionalAuthors" 
+              :id="`author-${author.initials}`"
+              :key="`${author.initials}-contribution`"
+              :class="'author'"
+            >
+              <span v-text="author.firstName" /> <span v-text="author.contribution" />. 
+            </span>
           </span>
         </span>
-      </span>
-    </p>
-  </div>
-</section>
+      </p>
+    </div>
+  </section>
 </template>
 
 <script>
 import { isMobile } from 'mobile-device-detect';
 import authors from "@/assets/text/authors";
 export default {
-  name: "Authorship",
+  name: "AuthorshipSection",
     components: {
     },
     props: {
