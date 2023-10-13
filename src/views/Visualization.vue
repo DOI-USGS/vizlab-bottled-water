@@ -4,32 +4,30 @@
       <div class="text-container">
         <h1><span class = 'first-words'>Water bottling</span> across the U.S.</h1>
       </div>
-      <div class="panel-wrap panel-content">
-        <div class="panel-content">
-          <div class="panel start glass">
-          </div> 
-          <div class="panel glass">
-          </div>        
-          <div class="panel glass">
-          </div>
-          <div class="panel glass">
-          </div>
-          <div class="panel glass">
-          </div>
-          <div class="panel glass">
-          </div>
-          <div class="panel glass">
-          </div>
-          <div class="panel glass">
-          </div>
-          <div class="panel glass">
-          </div>
-          <div v-if="!mobileView" class="panel glass">
-          </div>
-          <div v-if="!mobileView" class="panel glass">
-          </div>
-          <div class="panel end glass">
-          </div>
+      <div class="panel-wrap">
+        <div class="panel start glass">
+        </div> 
+        <div class="panel glass">
+        </div>        
+        <div class="panel glass">
+        </div>
+        <div class="panel glass">
+        </div>
+        <div class="panel glass">
+        </div>
+        <div class="panel glass">
+        </div>
+        <div class="panel glass">
+        </div>
+        <div class="panel glass">
+        </div>
+        <div class="panel glass">
+        </div>
+        <div v-if="!mobileView" class="panel glass">
+        </div>
+        <div v-if="!mobileView" class="panel glass">
+        </div>
+        <div class="panel end glass">
         </div>
         <div class="panel neck glass">
         </div>
@@ -112,7 +110,7 @@ export default {
   }
   .first-words {
     margin: 0rem 5.5rem 0rem 2.25rem;
-    color: #0D6487;
+    color: #2184B5;
     @media screen and (max-height: 770px) {
       margin: 0rem 5.25rem 0rem 1.75rem;
     }
@@ -130,16 +128,6 @@ export default {
     @media screen and (max-width: 600px) {
       top: 2rem;
     }
-  }
-  .panel-content {
-    display: flex;
-    background: rgba(255, 255, 255, 0);
-    // box-shadow: 0 4px 20px rgba(85, 88, 94, 0.3);
-    // box-shadow: inset 0 4px 20px rgba(85, 88, 94, 0.3);
-    border-top-left-radius: 2.5rem;
-    border-bottom-left-radius: 2.5rem;
-    border-top-right-radius: 5rem;
-    border-bottom-right-radius: 5rem;
   }
   .panel {
     width: 3.5rem;
