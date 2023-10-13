@@ -11,19 +11,16 @@
         id="text1"
         class="text-container"
       >
-        <img
-          :class="mobileView ? 'availability-map img-mobile' : 'availability-map image-float'"
-          src="../assets/images/bottled_water_availability_map.png"
-        >
         <p v-html="useText.paragraph1" />
-        <br>
-        <p v-html="useText.paragraph2" />
       </div>
       <div
-        id="img-wu-bars"
+        id="img-infographic"
         class="img-container"
       >
-        <img src="../assets/images/water_use_data_availability_barplots.png">
+        <img
+          class="infographic"
+          src="../assets/images/water-use_infographic.png"
+        >
       </div>
       <div
         id="text2"
@@ -120,5 +117,19 @@
   .availability-map.img-mobile {
     width: 100%;
     margin: 0;
+  }
+  #img-infographic {
+    text-align: center;
+    margin: 4rem 0rem 4rem 0rem;
+  }
+  .infographic {
+    width: 60%;
+    margin: auto;
+    @media screen and (max-height: 770px) {
+      width: 65%;
+    }
+    @media screen and (max-width: 600px) {
+      width: 100%;
+    }
   }
 </style>
