@@ -2,21 +2,21 @@
   <section id="oconus_map">
     <div id="grid-container-interactive">
       <div id="title">
-        <h4>
+        <h3>
           Counts of bottling facilities in <span id="state-dropdown-container" /> by county
           <!-- Dropdown v-model="selectedOption" :options="dropdownOptions"/ -->
-        </h4>
+        </h3>
       </div>
       <div id="text">
         <div class="text-container">
           <!--p>
               The bottled water industry estimates that the United States consumed 15 billion gallons (57 billion liters) of bottled water in 2020. That’s 45 gallons of bottled water per person. If you consider how much water it takes to produce each bottle of water (not including the packaging), the number is closer to 63 gallons—enough to fill a standard bathtub one-and-a-half times. 
             </p -->
-          <p class="italic">
-            Zoom in a specific state by clicking on the map or by selecting it using the dropdown, above.
+          <p class="italic viz-comment">
+            Zoom in on a specific state by clicking on the map or by selecting it using the dropdown, above.
           </p>
           <br>
-          <p class="italic">
+          <p class="italic viz-comment">
             Select a specific facility type by interacting with the bar chart.
           </p>
         </div>
@@ -1527,19 +1527,18 @@ export default {
     stroke-width: 0.3;
   }
   .axis-title {
-    font-size: 16px;
+    font-size: 1.6rem;
     fill: #000000;
     font-weight: 700;
   }
   .axis-label {
-    font-size: 12px;
+    font-size: 1.2rem;
   }
   .bar-label {
-    font-size: 16px;
+    font-size: 1.6rem;
     fill: #666666;
   }
   .dropdown {
-    // font-size: 20px;
     // display: flex;
     flex-direction: row;
     transition: width 2s, height 2s, transform 2s;
@@ -1599,8 +1598,6 @@ export default {
   #title {
     grid-area: title;
     align-self: center;
-    font-size: 20px;
-    font-family: sans-serif;
   }
   #state-dropdown-container {
     grid-area: title;

@@ -68,43 +68,41 @@ export default {
 }
 </script>
 <style lang="scss">
-    $pal_red: '#FD5901';
-    $pal_or: '#F78104';
-    $pal_yell: '#FAAB36';
-    $pal_teal: '#008083';
-    $pal_blue_dark: '#042054';
+  $pal_red: '#FD5901';
+  $pal_or: '#F78104';
+  $pal_yell: '#FAAB36';
+  $pal_teal: '#008083';
+  $pal_blue_dark: '#042054';
 
-    #grid-container-inventory {
-        display: grid;
-        grid-template-columns: 1fr;
-        grid-template-rows: 0.5fr max-content max-content;
-        grid-template-areas:
-            "title"
-            "oconus"
-            "text";
-        justify-content: center;
-    }
+  #grid-container-inventory {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 0.5fr max-content max-content;
+    grid-template-areas:
+        "title"
+        "oconus"
+        "text";
+    justify-content: center;
+  }
 
-    #title {
-        grid-area: title;
-        align-self: center;
-        font-size: 20px;
-        font-family: sans-serif;
-    }
-    #oconus {
-        grid-area: oconus;
-    }
-    #text {
-        grid-area: text;
-        justify-self: start;
-    }
-    .pictogram {      
-      width: 35vw;
-      max-width: 1000px;
-      margin: 0px 0px 0.5rem 1.5rem;
-    }
-    .pictogram.img-mobile {
-      width: 100%;
-      margin: 0px 0px 0.5rem 0rem;
-    }
+  #title {
+    grid-area: title;
+    align-self: center;
+  }
+  #oconus {
+    grid-area: oconus;
+  }
+  #text {
+    grid-area: text;
+    justify-self: start;
+  }
+  .pictogram {      
+    width: 35vw;
+    max-width: 1000px;
+    margin: 0px 0px 0.5rem 1.5rem;
+  }
+  .pictogram.img-mobile {
+    width: 100%;
+    margin: 0px 0px 0.5rem 0rem;
+  }
 </style>

@@ -50,42 +50,42 @@ export default {
 
 <style lang="scss">
 
-$pal_red: '#FD5901';
-$pal_or: '#F78104';
-$pal_yell: '#FAAB36';
-$pal_teal: '#008083';
-$pal_blue_dark: '#042054';
+  $pal_red: '#FD5901';
+  $pal_or: '#F78104';
+  $pal_yell: '#FAAB36';
+  $pal_teal: '#008083';
+  $pal_blue_dark: '#042054';
 
-#visualization {
-  width: 86vw;
-  position: relative;
-  padding: 3rem 0rem 5rem 0rem;
-  margin: auto;
-  max-width: 1600px;
-  @media screen and (max-height: 770px) {
-    width: 90vw;
-  }
-  @media screen and (max-width: 600px) {
-    width: calc(100vw - 1rem);
+  #visualization {
+    width: 86vw;
     position: relative;
-    padding: 0.5rem 0.5rem 0.5rem 0.5rem;
-  }  
-}
+    padding: 3rem 0rem 5rem 0rem;
+    margin: auto;
+    max-width: 1600px;
+    @media screen and (max-height: 770px) {
+      width: 90vw;
+    }
+    @media screen and (max-width: 600px) {
+      width: calc(100vw - 1rem);
+      position: relative;
+      padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+    }  
+  }
 
-h1 {
-  color: $pal_blue_dark;
-}
+  h1 {
+    color: $pal_blue_dark;
+  }
 
-*:focus {
-  outline: none;
-}
-[contenteditable="true"]:focus {
-    outline: auto;
-}
-img {
-  max-width: 100%;
-}
-.image-float {
-  float: right;
-}
+  *:focus {
+    outline: none;
+  }
+  [contenteditable="true"]:focus {
+      outline: auto;
+  }
+  img {
+    max-width: 100%;
+  }
+  .image-float {
+    float: right;
+  }
 </style>
