@@ -237,17 +237,19 @@
     grid-area: source-maps;
     display: grid;
     grid-template-columns: 1fr;
-        grid-template-rows: max-content max-content max-content max-content max-content max-content;
-        grid-template-areas:
-        "count-self"
-        "perc-self"
-        "count-combo"
-        "perc-combo"
-        "count-public"
-        "perc-public";
-      justify-content: center;
-      margin: auto;
-      max-width: 1600px;
+    grid-template-rows: max-content max-content max-content max-content max-content max-content;
+    row-gap: 3vh;
+    grid-template-areas:
+      "count-self"
+      "perc-self"
+      "count-combo"
+      "perc-combo"
+      "count-public"
+      "perc-public";
+    justify-content: center;
+    align-content: center;
+    margin: auto;
+    max-width: 1600px;
   }
   #img-source-self-count {
     grid-area: count-self;
