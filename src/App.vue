@@ -112,15 +112,17 @@
     font-size: 7rem;
     font-weight: 700;
     font-family: $AveriaSansLibre;
-    line-height: 1;
+    line-height: 13rem;
     text-align: left;
-    text-shadow: 1px 1px 100px rgba(0,0,0,.8);
-      color: $pal_blue_dark;
+    color: $textcolor;
+    // text-shadow: 0.1rem 0.1rem 10rem rgba(0,0,0,.8);
     @media screen and (max-height: 770px) {
-      font-size: 6rem;
+      font-size: 5.5rem;
+      line-height: 10rem;
     }
     @media screen and (max-width: 600px) {
-      font-size: 3.5rem;
+      font-size: 4rem;
+      line-height: 7rem;
     }
   }
   h2{
@@ -128,9 +130,9 @@
     text-align: left;
     font-family: $SourceSans;
     font-size: 5rem;
-    margin-top: 5px;
+    color: $textcolor;
+    margin-top: 0.5rem;
     line-height: 1.2;
-    color: $pal_blue_dark;
     @media screen and (max-width: 600px) {
       font-size: 3rem;
     }
