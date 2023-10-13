@@ -198,7 +198,7 @@ export default {
       this.statePolys = statePolysCONUS.concat(statePolysAK, statePolysHI, statePolysGUMP, statePolysPRVI, statePolysAS)
       
       // Set default and current map view
-      this.defaultViewName = 'all states and territories'
+      this.defaultViewName = 'all states and territories\xa0\xa0\xa0▾'
       this.currentState = this.defaultViewName;
 
       // Set current scale for view (1 = not zoomed)
