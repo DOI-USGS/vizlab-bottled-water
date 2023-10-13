@@ -10,7 +10,7 @@
         <br>
         <img
           :class="mobileView ? 'pictogram img-mobile' : 'pictogram image-float'"
-          src="../assets/images/bottled-water_consumption-pictogram_square_20231011.png"
+          src="../assets/images/bottled-water_consumption-pictogram_less-text_20231012.png"
         >
         <p v-html="inventoryText.paragraph2" />
         <br>
