@@ -73,9 +73,9 @@
 <style lang="scss">
 // Fonts
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@200;300;400;500;600;700;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Averia+Sans+Libre:ital,wght@300;400;700&display=swap');
 $SourceSans: 'Source Sans Pro', sans-serif;
-$Roboto: 'Roboto Mono';
+$AveriaSansLibre: 'Averia Sans Libre';
 $textcolor: rgb(21, 21, 21);
 
 $pal_red: '#FD5901';
@@ -111,14 +111,14 @@ body {
 }
 h1{
   font-size: 4rem;
-  font-weight: 500;
-  font-family: $Roboto;
+  font-weight: 700;
+  font-family: $AveriaSansLibre;
   line-height: 1;
   text-align: left;
   text-shadow: 1px 1px 100px rgba(0,0,0,.8);
     color: $pal_blue_dark;
   @media screen and (max-height: 770px) {
-    font-size: 3rem;
+    font-size: 3.7rem;
   }
   @media screen and (max-width: 600px) {
     font-size: 2rem;
