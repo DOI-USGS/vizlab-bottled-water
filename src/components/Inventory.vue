@@ -1,10 +1,6 @@
 <template>
   <section id="inventory_intro">
     <div id="grid-container-inventory">
-      <!--div id="title" class="text-container">
-               <h3 v-html="inventoryText.title" />
-            </div-->
-      <br>
       <OCONUS id="oconus" />
       <div
         id="text"
@@ -68,26 +64,24 @@ export default {
 }
 </script>
 <style lang="scss">
-  $pal_red: '#FD5901';
-  $pal_or: '#F78104';
-  $pal_yell: '#FAAB36';
-  $pal_teal: '#008083';
-  $pal_blue_dark: '#042054';
 
+  #inventory_intro {
+    margin-top: 5rem;
+    @media screen and (max-height: 770px) {
+      margin-top: 5rem;
+    }
+    @media screen and (max-width: 600px) {
+      margin-top: 0.2rem;
+    }
+  }
   #grid-container-inventory {
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 0.5fr max-content max-content;
     grid-template-areas:
-        "title"
         "oconus"
         "text";
     justify-content: center;
-  }
-
-  #title {
-    grid-area: title;
-    align-self: center;
   }
   #oconus {
     grid-area: oconus;
@@ -99,10 +93,10 @@ export default {
   .pictogram {      
     width: 35vw;
     max-width: 1000px;
-    margin: 0px 0px 0.5rem 1.5rem;
+    margin: 0rem 0rem 0.5rem 1.5rem;
   }
   .pictogram.img-mobile {
     width: 100%;
-    margin: 0px 0px 0.5rem 0rem;
+    margin: 0rem 0rem 0.5rem 0rem;
   }
 </style>
