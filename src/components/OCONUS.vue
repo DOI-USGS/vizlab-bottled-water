@@ -283,7 +283,8 @@ export default {
         .attr("contenteditable", "true")
         .on("change", function() { 
           this.selectedText = this.options[this.selectedIndex].text;
-          this.style.width = 20 + (this.selectedText.length * 12) + "px";
+          console.log(this.selectedText.length)
+          this.style.width = 5 + (this.selectedText.length * 1.2) + "rem"; 
 
           let selectedArea = this.value
 
@@ -352,7 +353,7 @@ export default {
 
       let selectId = document.getElementById("state-dropdown");
       this.selectedText = selectId.options[selectId.selectedIndex].text;
-      selectId.style.width = 20 + (this.selectedText.length * 8.5) + "px";
+      selectId.style.width = 5 + (this.selectedText.length * 1.2) + "rem";
     },
     initMap() {
       // draw canvas for map
@@ -1360,7 +1361,7 @@ export default {
         dropdown.property('value', zoomedState)
         // Update dropdown width
         let selectId = document.getElementById("state-dropdown");
-        selectId.style.width = 20 + (zoomedState.length * 12) + "px";
+        selectId.style.width = 5 + (zoomedState.length * 1.2) + "rem";
       }
 
       // Hide the inset map borders and labels
@@ -1492,7 +1493,7 @@ export default {
 
       this.d3.select('select').property('value', this.defaultViewName)
       let selectId = document.getElementById("state-dropdown");
-      selectId.style.width = 20 + (this.currentState.length * 8) + "px";
+      selectId.style.width = 5 + (this.currentState.length * 1.2) + "rem";
 
       this.d3.select("#map-inset-svg")
         .classed("hide", false)
@@ -1544,24 +1545,18 @@ export default {
     transition: width 2s, height 2s, transform 2s;
     will-change: width;
     background-color: white;
-    margin: 0px 5px 0px 5px;
+    margin: 0rem 0.5rem 0rem 0.5rem;
     padding: 0.5rem;
-    box-shadow:  rgba(0, 0, 0, 0.2) 0px 6px 10px 0px,
-    rgba(0, 0, 0, 0.1) 0px 0px 0px 1px;
-    border-radius: 5px;
+    box-shadow:  rgba(0, 0, 0, 0.2) 0rem 0.6rem 1rem 0rem,
+    rgba(0, 0, 0, 0.1) 0rem 0rem 0rem 0.1rem;
+    border-radius: 0.5rem;
   }
   .dropdown:hover {
-    box-shadow:  rgba(0, 0, 0, 0.3) 0px 6px 10px 0px,
-    rgba(0, 0, 0, 0.2) 0px 0px 0px 1px;
+    box-shadow:  rgba(0, 0, 0, 0.3) 0rem 0.6rem 1rem 0rem,
+    rgba(0, 0, 0, 0.2) 0rem 0rem 0rem 0.1rem;
   }
 </style>
 <style scoped lang="scss">
-  $pal_red: '#FD5901';
-  $pal_or: '#F78104';
-  $pal_yell: '#FAAB36';
-  $pal_teal: '#008083';
-  $pal_blue_dark: '#042054';
-
 
   #grid-container-interactive {
     display: grid;

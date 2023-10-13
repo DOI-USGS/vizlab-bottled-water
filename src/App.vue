@@ -182,7 +182,7 @@
     min-width: 30vw;
     max-width: 90vw;
     // margin: 0 auto;
-    padding: 10px 10px 10px 0px;   
+    padding: 1rem 1rem 1rem 0rem;   
     left:0;
     @media screen and (max-width: 600px) {
       max-width: 95vw;
@@ -203,7 +203,7 @@
   }
   .flex-item {
     padding: 2rem;
-    min-width: 400px;
+    min-width: 40rem;
     flex: 0 0 auto;
     align-self: center;
   }
@@ -218,7 +218,7 @@
     }
   }
   .figure-content {
-    border: 1px white;
+    border: 0.1rem white;
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
@@ -227,7 +227,7 @@
     max-width: 100%;
     margin: auto;
     @media screen and (max-width: 600px) {
-        padding: 0px; 
+        padding: 0rem; 
     }
   }
   .legend-text {
@@ -237,6 +237,10 @@
     }
   .viz-comment {
     font-family: $GloriaHallelujah;
+    font-size: 1.8rem;
+    @media screen and (max-width: 600px) {
+      font-size: 1.6rem;
+    }
   }
   .viz-emph {
     font-weight:700;
@@ -252,7 +256,7 @@
   }
   .pseudo-caption {
     font-size: 1.6rem;
-    margin: 0 10px;
+    margin: 0 1rem;
   }
   // Link Styling
 
