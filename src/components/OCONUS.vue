@@ -1561,6 +1561,7 @@ export default {
     grid-template-columns: 49% 49%;
     column-gap: 2%;
     grid-template-rows: 4vh 18vh max-content;
+    row-gap: 2vh;
     grid-template-areas:
       "title title"
       "text chart"
@@ -1602,7 +1603,7 @@ export default {
     grid-area: map;
     align-self: start;
     height: 100%;
-    max-height: 68vh;
+    max-height: 66vh;
     @media screen and (max-height: 770px) {
       max-height: 90vh;
     }
