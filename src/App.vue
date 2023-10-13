@@ -80,11 +80,7 @@
   $GloriaHallelujah: 'Gloria Hallelujah';
   $textcolor: rgb(21, 21, 21);
 
-  $pal_red: '#FD5901';
-  $pal_or: '#F78104';
-  $pal_yell: '#FAAB36';
-  $pal_teal: '#008083';
-  $pal_blue_dark: '#042054';
+  $pale_blue: #F5FAFC;
 
   // whole page except header fit within viewport - no scrolling
   #app {
@@ -99,7 +95,7 @@
   }
   body {
     height: 100%;
-    background-color: $pal_or;
+    background-color: #ffffff;
     margin: 0;
     padding: 0;
     line-height: 1.2;

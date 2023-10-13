@@ -168,11 +168,6 @@
   }
 </script>
 <style lang="scss">
-  $pal_red: '#FD5901';
-  $pal_or: '#F78104';
-  $pal_yell: '#FAAB36';
-  $pal_teal: '#008083';
-  $pal_blue_dark: '#042054';
 
   #grid-container-source {
     display: grid;
