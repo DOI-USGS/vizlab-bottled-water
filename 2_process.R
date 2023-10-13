@@ -4,14 +4,35 @@ source('2_process/src/data_utils.R')
 
 p2_targets <- list(
   ##### Set up state spatial data #####
-
+  
+  # U.S. states
+  tar_target(p2_conus_oconus_sf,
+             tigris::states(cb = TRUE) %>%
+               st_transform(p1_proj) %>%
+               mutate(group = case_when(
+                 STUSPS %in% c(state.abb[!state.abb %in% c('AK', 'HI')], 'DC') ~ 'CONUS',
+                 STUSPS %in% c('GU', 'MP') ~ 'GU_MP',
+                 STUSPS %in% c('PR', 'VI') ~ 'PR_VI',
+                 TRUE ~ STUSPS
+               )) %>%
+               filter(group %in% c('CONUS', 'AK', 'HI', 'GU_MP', 'PR_VI', 'AS'))),
+  
   # CONUS states
   tar_target(p2_conus_sf,
-             tigris::states(cb = TRUE) %>%
+             p2_conus_oconus_sf %>%
                filter(STUSPS %in% state.abb[!state.abb %in% c('AK', 'HI')]) %>%
-               st_transform(p1_proj) %>%
                add_centroids() %>%
                mutate(location = 'mainland')),
+  
+  # All U.S. counties
+  tar_target(p2_counties_conus_oconus_sf,
+             tigris::counties() %>%
+               st_transform(crs = p1_proj) %>%
+               left_join(p2_conus_oconus_sf %>% 
+                           st_drop_geometry() %>% 
+                           dplyr::select(STUSPS, STATE_NAME = NAME, STATEFP, group), 
+                         by = 'STATEFP') %>%
+               filter(group %in% c('CONUS', 'AK', 'HI', 'GU_MP', 'PR_VI', 'AS'))),
 
   ##### Munge site inventory data ######
   tar_target(p2_inventory_sites,
@@ -39,7 +60,7 @@ p2_targets <- list(
                group_by(WB_TYPE) %>%
                summarize(site_count = n()) %>%
                arrange(desc(site_count)) %>%
-               mutate(WB_TYPE = factor(WB_TYPE, levels=WB_TYPE))),
+               mutate(WB_TYPE = factor(WB_TYPE, levels = WB_TYPE))),
 
   # Get count of facilities, by state
   tar_target(p2_facility_summary_state,
@@ -49,11 +70,24 @@ p2_targets <- list(
 
   # Get count of facilities, by state and by type
   tar_target(p2_facility_type_summary_state,
-             p2_inventory_sites%>%
-               group_by(state_name, state_abbr, WB_TYPE) %>%
+             p2_inventory_sites %>%
+               left_join(p2_conus_oconus_sf, by = c('state_fips' = 'STATEFP')) %>%
+               group_by(NAME, state_abbr, WB_TYPE) %>%
                summarize(site_count = n()) %>%
                mutate(WB_TYPE = factor(WB_TYPE, levels = p2_facility_type_summary$WB_TYPE))),
-
+  
+  tar_target(p2_facility_type_summary_state_csv,
+             write_to_csv(data = p2_facility_type_summary_state, 
+                          outfile = 'public/state_facility_type_summary.csv'),
+             format = 'file'),
+  
+  # Get summary counts of facilities, by county
+  tar_target(p2_facility_summary_county,
+             get_county_facility_counts(sites_sf = p2_inventory_sites_sf,
+                                        counties_sf = p2_counties_conus_oconus_sf,
+                                        states_sf = p2_conus_oconus_sf,
+                                        types = p2_facility_types)),
+  
   # Get summary of facility supply source categories, by type
   tar_target(p2_source_category_order,
              c('undetermined', 'combination', 'self supply', 'public supply')),

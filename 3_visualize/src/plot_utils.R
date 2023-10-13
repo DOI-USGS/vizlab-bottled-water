@@ -820,7 +820,7 @@ generate_site_count_matrix <- function(type_summary, type_summary_state,
                                        bar_fill, width, height, outfile, dpi) {
   # main matrix
   state_matrix <- type_summary_state %>%
-    arrange(state_name) %>%
+    arrange(state_abbr) %>%
     ggplot(aes(x = reorder(state_abbr, state_abbr), y = WB_TYPE)) +
     geom_tile(aes(fill = site_count), color = 'white', width = 1, height = 1) +
     theme_minimal() +
@@ -988,8 +988,8 @@ generate_facility_type_facet_map <- function(type_summary, type_summary_state,
                                              text_color, outfile, dpi) {
 
   state_cartogram <- type_summary_state %>%
-    arrange(state_name) %>%
-    group_by(state_name) %>%
+    arrange(state_abbr) %>%
+    group_by(state_abbr) %>%
     mutate(percent = site_count/sum(site_count)*100) %>%
     ggplot(aes(1, y = percent)) +
     geom_bar(aes(fill = WB_TYPE), stat = 'identity') +
@@ -2116,6 +2116,8 @@ expanded_ss_barplot <- function(source_summary, supply_colors, font_legend,
   showtext_auto(enable = TRUE)
 
   if (get_percent == TRUE) {
+    
+    figure_title <- 'Water source percentage by facility type'
 
   expand_ss <- source_summary |>
     mutate(water_source = factor(water_source, levels = reorder_source_category)) |>
@@ -2151,6 +2153,8 @@ expanded_ss_barplot <- function(source_summary, supply_colors, font_legend,
                                reverse = TRUE))
 
   } else {
+    
+    figure_title <- 'Number of facilities using each water source by facility type'
 
   expand_ss <- source_summary |>
     mutate(water_source = factor(water_source, levels = reorder_source_category)) |>
@@ -2214,7 +2218,7 @@ expanded_ss_barplot <- function(source_summary, supply_colors, font_legend,
               hjust = 1,
               vjust = 0) +
     # add title
-    draw_label("Distribution of water sources with expanded self supply by facility types",
+    draw_label(figure_title,
                x = 0.025, y = 0.94,
                size = 32,
                hjust = 0,

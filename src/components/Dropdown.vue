@@ -1,16 +1,39 @@
 <template>
-  <div class="dropdown" :class="{ 'is-active': isOpen }">
-    <div class="dropdown-trigger" @click="toggleDropdown">
-      <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
+  <div
+    class="dropdown"
+    :class="{ 'is-active': isOpen }"
+  >
+    <div
+      class="dropdown-trigger"
+      @click="toggleDropdown"
+    >
+      <button
+        class="button"
+        aria-haspopup="true"
+        aria-controls="dropdown-menu"
+      >
         <span>{{ selected }}</span>
         <span class="icon is-small">
-          <i class="fas fa-angle-down" aria-hidden="true"></i>
+          <i
+            class="fas fa-angle-down"
+            aria-hidden="true"
+          />
         </span>
       </button>
     </div>
-    <div class="dropdown-menu" id="dropdown-menu" role="menu">
+    <div
+      id="dropdown-menu"
+      class="dropdown-menu"
+      role="menu"
+    >
       <div class="dropdown-content">
-        <a href="#" class="dropdown-item" v-for="option in options" :key="option" @click="selectOption(option)">
+        <a
+          v-for="option in options"
+          :key="option"
+          href="#"
+          class="dropdown-item"
+          @click="selectOption(option)"
+        >
           {{ option }}
         </a>
       </div>
@@ -20,7 +43,7 @@
 
 <script>
 export default {
-  name: 'Dropdown',
+  name: 'DropdownMenu',
   props: {
     options: {
       type: Array,
