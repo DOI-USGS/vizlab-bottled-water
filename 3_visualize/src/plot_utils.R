@@ -1740,8 +1740,8 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
         strip.background = element_blank(),
         panel.spacing = unit(2, "lines")
       ) +
-      facet_wrap(~factor(str_to_title(source_category),
-                         levels = c("Self Supply", "Combination", "Public Supply")))
+      facet_wrap(~factor(source_category,
+                         levels = c("Self-supply", "Combination", "Public supply")))
 
     map_perc <- ggplot() +
       geom_sf(data = counties_sf,
@@ -1782,19 +1782,19 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
                 hjust = 1,
                 vjust = 0) +
       # self-supply count legend
-      draw_plot(legend_list_count$`self supply`,
+      draw_plot(legend_list_count$`Self-supply`,
                 x = 0.064,
                 y = 0.138,
                 width = 0.35,
                 height = 0.5) +
       #combination count legend
-      draw_plot(legend_list_count$combination,
+      draw_plot(legend_list_count$Combination,
                 x = 0.386,
                 y = 0.138,
                 width = 0.35,
                 height = 0.5) +
       # public supply count legend
-      draw_plot(legend_list_count$`public supply`,
+      draw_plot(legend_list_count$`Public supply`,
                 x = 0.714,
                 y = 0.138,
                 width = 0.35,
@@ -1826,19 +1826,19 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
                 hjust = 1,
                 vjust = 0) +
       # self supply perc legend
-      draw_plot(legend_list_perc$`self supply`,
+      draw_plot(legend_list_perc$`Self-supply`,
                 x = 0.06,
                 y = -0.23,
                 width = 0.35,
                 height = 0.3) +
       # combination perc legend
-      draw_plot(legend_list_perc$combination,
+      draw_plot(legend_list_perc$Combination,
                 x = 0.382,
                 y = -0.23,
                 width = 0.35,
                 height = 0.3) +
       # public supply perc legend
-      draw_plot(legend_list_perc$`public supply`,
+      draw_plot(legend_list_perc$`Public supply`,
                 x = 0.705,
                 y = -0.23,
                 width = 0.35,
@@ -1902,13 +1902,10 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
                                       nrow = 1,
                                       label.position = "bottom")) +
           theme_void() +
-          labs(title = str_to_title(df$source_category)) +
+          labs(title = df$source_category) +
           theme(
             legend.position = "none",
             plot.title = element_text(family = font_legend, hjust = 0.5, size = 16, margin = margin(t = -10, b = -10))
-            #,
-            #plot.margin = unit(c(1,1,1,1), "cm"),
-            #panel.spacing = unit(2, "lines")
           )
         })
 
@@ -1938,13 +1935,10 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
             theme_void() +
             scale_fill_manual(name = 'Water source',
                               values = supply_colors) +
-            labs(title = str_to_title(df$source_category)) +
+            labs(title = df$source_category) +
             theme(
                 legend.position = "none",
                 plot.title = element_text(family = font_legend, hjust = 0.5, size = 16, margin = margin(t = -10, b = -10))
-                # ,
-                #plot.margin = unit(c(1,1,1,1), "cm"),
-                #panel.spacing = unit(2, "lines")
               )
         })
 
@@ -1994,7 +1988,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
     # final plts
     ss_cnt_fnl_plt <- plt_cnt_leg +
       # Self supply count map
-      draw_plot(map_count_list$`self supply`,
+      draw_plot(map_count_list$`Self-supply`,
                 x = 0.995,
                 y = 0.098,
                 height = 0.90,
@@ -2002,7 +1996,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
                 hjust = 1,
                 vjust = 0) +
       #self supply count legend
-      draw_plot(legend_list_count$`self supply`,
+      draw_plot(legend_list_count$`Self-supply`,
                 x = 0.293,
                 y = -0.382,
                 width = 0.695,
@@ -2010,7 +2004,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
 
     combo_cnt_fnl_plt <- plt_cnt_leg +
       # combination count map
-      draw_plot(map_count_list$combination,
+      draw_plot(map_count_list$Combination,
                 x = 0.995,
                 y = 0.098,
                 height = 0.90,
@@ -2018,7 +2012,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
                 hjust = 1,
                 vjust = 0) +
       # combination count legend
-      draw_plot(legend_list_count$combination,
+      draw_plot(legend_list_count$Combination,
                 x = 0.293,
                 y = -0.382,
                 width = 0.695,
@@ -2026,7 +2020,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
 
     ps_cnt_fnl_plt <- plt_cnt_leg +
       # public supply map
-      draw_plot(map_count_list$`public supply`,
+      draw_plot(map_count_list$`Public supply`,
                 x = 0.995,
                 y = 0.098,
                 height = 0.90,
@@ -2034,7 +2028,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
                 hjust = 1,
                 vjust = 0) +
       # public supply count legend
-      draw_plot(legend_list_count$`public supply`,
+      draw_plot(legend_list_count$`Public supply`,
                 x = 0.293,
                 y = -0.382,
                 width = 0.695,
@@ -2042,7 +2036,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
 
     ss_perc_fnl_plt <- plt_perc_leg +
       # Self supply perc map
-      draw_plot(map_perc_list$`self supply`,
+      draw_plot(map_perc_list$`Self-supply`,
                 x = 0.995,
                 y = 0.098,
                 height = 0.90,
@@ -2050,7 +2044,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
                 hjust = 1,
                 vjust = 0) +
       #self supply perc legend
-      draw_plot(legend_list_perc$`self supply`,
+      draw_plot(legend_list_perc$`Self-supply`,
                 x = 0.293,
                 y = -0.365,
                 width = 0.7,
@@ -2058,7 +2052,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
 
     combo_perc_fnl_plt <- plt_perc_leg +
       # combination perc map
-      draw_plot(map_perc_list$combination,
+      draw_plot(map_perc_list$Combination,
                 x = 0.995,
                 y = 0.098,
                 height = 0.90,
@@ -2066,7 +2060,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
                 hjust = 1,
                 vjust = 0) +
       # combination perc legend
-      draw_plot(legend_list_perc$combination,
+      draw_plot(legend_list_perc$Combination,
                 x = 0.293,
                 y = -0.365,
                 width = 0.7,
@@ -2074,7 +2068,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
 
     ps_perc_fnl_plt <- plt_perc_leg +
       # public supply perc map
-      draw_plot(map_perc_list$`public supply`,
+      draw_plot(map_perc_list$`Public supply`,
                 x = 0.995,
                 y = 0.098,
                 height = 0.90,
@@ -2082,7 +2076,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
                 hjust = 1,
                 vjust = 0) +
       # public supply perc legend
-      draw_plot(legend_list_perc$`public supply`,
+      draw_plot(legend_list_perc$`Public supply`,
                 x = 0.293,
                 y = -0.365,
                 width = 0.7,
@@ -3114,7 +3108,7 @@ water_use_barplots <- function(sites_wu_summary_sf, focal_color,
 
   # Types among WU data
   wu_types_percent_plot <- sites_wu_summary_sf |>
-    mutate(is_BW = WB_TYPE == 'Bottled Water') |>
+    mutate(is_BW = WB_TYPE == 'Bottled water') |>
     filter(has_wu) |>
     group_by(is_BW) |>
     summarize(count = n()) |>
@@ -3124,11 +3118,11 @@ water_use_barplots <- function(sites_wu_summary_sf, focal_color,
 
   # Source for BW for facilities we have WU data for
   only_bw_wu_source_percent_plot <- sites_wu_summary_sf |>
-    filter(has_wu, WB_TYPE == 'Bottled Water') |>
+    filter(has_wu, WB_TYPE == 'Bottled water') |>
     group_by(water_source) |>
     summarize(count = n()) |>
     mutate(percent = count/sum(count)*100,
-           source = factor(str_to_title(water_source), levels = c("Public Supply", "Well", "Spring", "Surface Water Intake", "Combination", "Other"))
+           source = factor(water_source, levels = c("Public supply", "Well", "Spring", "Surface water intake", "Combination", "Other"))
     ) |>
     dplyr::select(source, percent)
 
