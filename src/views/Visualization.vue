@@ -179,8 +179,8 @@ export default {
     box-shadow: 8px 4px 18px 10px rgba(147, 148, 150, 0.25);
   }
   .glass-over {
-    backdrop-filter: blur(0.07rem);
-    -webkit-backdrop-filter: blur(0.07rem);
+    backdrop-filter: blur(0.08rem);
+    -webkit-backdrop-filter: blur(0.08rem);
   }
   .start {
     width: 7rem;
