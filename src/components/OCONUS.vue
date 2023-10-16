@@ -241,7 +241,7 @@ export default {
         width,
         height: height,
         margin: {
-          top: 15,
+          top: 18,
           right: 5,
           bottom: 40,
           left: 15
