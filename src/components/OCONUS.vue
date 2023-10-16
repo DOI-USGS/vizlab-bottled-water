@@ -9,13 +9,8 @@
       </div>
       <div id="text">
         <div class="text-container">
-          <br>
           <p class="viz-comment">
-            Zoom in on a specific state by clicking on the map or by selecting it using the dropdown, above.
-          </p>
-          <br>
-          <p class="viz-comment">
-            Select a specific facility type by interacting with the bar chart.
+            Click on the dropdown menu, bar chart, or map to explore!
           </p>
         </div>
       </div>
