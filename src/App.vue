@@ -152,7 +152,7 @@
     }  
   }
   h4{
-    font-size: 2rem;
+    font-size: 2.5rem;
     padding-top: 0em;
     padding-bottom: .25em;
     font-family: $SourceSans;
