@@ -1572,7 +1572,6 @@ generate_national_sankey <- function(supply_summary, supply_colors, reorder_sour
 #' @param supply_colors vector of colors to use for water source categories
 #' @param reorder_source_category character vector of reorganized source categories to reorder maps by
 #' @param mobile if else statement where if TRUE, create individual CONUS county level bottled water percent (choropleth) and count (proportional symbol) facilities maps
-#' @param outfile_names, character vector of names of individual bottled water count (choropleth) and count (proportional symbol) maps to save by
 #' @return the filepath of the saved plot
 generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
                                   bkgd_color, text_color,
@@ -1582,7 +1581,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
                                   reorder_source_category, conus_sf, counties_sf,
                                   count_size_range, count_size_limit,
                                   perc_alpha_range, perc_alpha_limit,
-                                  map_perc_legend, map_count_legend, mobile, outfile_names) {
+                                  map_perc_legend, map_count_legend, mobile) {
 
   # drop undetermined source color and reorder for maps
   supply_colors <- supply_colors[reorder_source_category]
@@ -2091,7 +2090,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
 
     # Create a list of ggplots
     plots <- list(ss_cnt_fnl_plt, combo_cnt_fnl_plt, ps_cnt_fnl_plt, ss_perc_fnl_plt, combo_perc_fnl_plt, ps_perc_fnl_plt)
-    names(plots) <- outfile_names
+    names(plots) <- c(paste0(gsub(' ', '_', reorder_source_category), '_count'), paste0(gsub(' ', '_', reorder_source_category), '_perc'))
 
     saved_files <- map2(plots, names(plots), ~ {
       filename <- file.path(paste0(outfile_template, .y, ".png"))

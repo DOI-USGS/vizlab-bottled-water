@@ -502,8 +502,6 @@ p3_targets <- list(
                                    map_count_legend = 'Count of facilities',
                                    map_perc_legend = 'Percent of facilities',
                                    mobile = TRUE,
-                                   outfile_names = c("self_supply_count", "combination_count", "public_supply_count",
-                                                     "self_supply_perc", "combination_perc", "public_supply_perc"),
                                    outfile_template = '3_visualize/out/map_bottled_water_',
                                    dpi = 300),
              format = 'file'),
