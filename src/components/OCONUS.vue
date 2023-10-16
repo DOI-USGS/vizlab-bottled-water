@@ -1604,7 +1604,7 @@ export default {
     grid-area: map;
     align-self: start;
     height: 100%;
-    max-height: 66vh;
+    max-height: 68vh;
     @media screen and (max-height: 770px) {
       max-height: 90vh;
     }
