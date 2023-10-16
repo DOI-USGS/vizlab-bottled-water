@@ -2986,8 +2986,8 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
   bw_sites_wu_sf <- sites_wu_sf |>
     filter(WB_TYPE == selected_facility_type, has_wu)  |>
     mutate(
-      water_source = factor(str_to_title(water_source),
-                            levels = c("Public Supply", "Well", "Spring", "Surface Water Intake", "Combination", "Other"))
+      water_source = factor(water_source,
+                            levels = c("Public supply", "Well", "Spring", "Surface water intake", "Combination", "Other"))
     )
 
   water_use_beeswarm_baseplot <-  ggplot(bw_sites_wu_sf,
