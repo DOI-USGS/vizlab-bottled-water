@@ -93,7 +93,7 @@ export default {
   .pictogram {      
     width: 35vw;
     max-width: 1000px;
-    margin: 0rem 0rem 0.5rem 1.5rem;
+    margin: 1rem 0rem 1.5rem 4rem;
   }
   .pictogram.img-mobile {
     width: 100%;

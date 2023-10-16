@@ -1560,13 +1560,14 @@ export default {
     display: grid;
     grid-template-columns: 49% 49%;
     column-gap: 2%;
-    grid-template-rows: 4vh 18vh max-content;
+    grid-template-rows: max-content 18vh max-content;
     row-gap: 2vh;
     grid-template-areas:
       "title title"
       "text chart"
       "map map";
     justify-content: center;
+    margin: 1rem 0rem 3rem 0rem;
     // height: 95vh;
     @media screen and (max-height: 770px) {
       grid-template-columns: 40% 60%;
