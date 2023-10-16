@@ -1,37 +1,67 @@
 <template>
   <div id="visualization">
     <header>
+      <div class="panel-wrap">
+        <div class="panel start start-shadow glass-under">
+        </div> 
+        <div class="panel glass-under">
+        </div>        
+        <div class="panel glass-under">
+        </div>
+        <div class="panel glass-under">
+        </div>
+        <div class="panel glass-under">
+        </div>
+        <div class="panel glass-under">
+        </div>
+        <div class="panel glass-under">
+        </div>
+        <div class="panel glass-under">
+        </div>
+        <div class="panel glass-under">
+        </div>
+        <div v-if="!mobileView" class="panel glass-under">
+        </div>
+        <div v-if="!mobileView" class="panel glass-under">
+        </div>
+        <div class="panel end end-shadow glass-under">
+        </div>
+        <div class="panel neck end-shadow glass-under">
+        </div>
+        <div class="panel cap end-shadow glass-under">
+        </div>
+      </div>
       <div class="text-container">
         <h1><span class = 'first-words'>Water bottling</span> across the U.S.</h1>
       </div>
       <div class="panel-wrap">
-        <div class="panel start glass">
+        <div class="panel start glass-over">
         </div> 
-        <div class="panel glass">
+        <div class="panel glass-over">
         </div>        
-        <div class="panel glass">
+        <div class="panel glass-over">
         </div>
-        <div class="panel glass">
+        <div class="panel glass-over">
         </div>
-        <div class="panel glass">
+        <div class="panel glass-over">
         </div>
-        <div class="panel glass">
+        <div class="panel glass-over">
         </div>
-        <div class="panel glass">
+        <div class="panel glass-over">
         </div>
-        <div class="panel glass">
+        <div class="panel glass-over">
         </div>
-        <div class="panel glass">
+        <div class="panel glass-over">
         </div>
-        <div v-if="!mobileView" class="panel glass">
+        <div v-if="!mobileView" class="panel glass-over">
         </div>
-        <div v-if="!mobileView" class="panel glass">
+        <div v-if="!mobileView" class="panel glass-over">
         </div>
-        <div class="panel end glass">
+        <div class="panel end glass-over">
         </div>
-        <div class="panel neck glass">
+        <div class="panel neck glass-over">
         </div>
-        <div class="panel cap glass">
+        <div class="panel cap glass-over">
         </div>
       </div>
     </header>
@@ -111,6 +141,7 @@ export default {
   .first-words {
     margin: 0rem 5.5rem 0rem 2.25rem;
     color: #2184B5;
+    z-index: 0;
     @media screen and (max-height: 770px) {
       margin: 0rem 5.25rem 0rem 1.75rem;
     }
@@ -141,18 +172,20 @@ export default {
       height: 8.5rem;
     }
   }
-  .glass {
-    background: rgba(255, 255, 255, 0.2);
+  .glass-under {
+    z-index: -1;
+    background: rgba(255, 255, 255, 1);
     border-radius: 1rem;
-    box-shadow: 0 4px 20px 10px rgba(147, 148, 150, 0.25);
-    backdrop-filter: blur(0.1rem);
-    -webkit-backdrop-filter: blur(0.1rem);
+    box-shadow: 8px 4px 18px 10px rgba(147, 148, 150, 0.25);
+  }
+  .glass-over {
+    backdrop-filter: blur(0.07rem);
+    -webkit-backdrop-filter: blur(0.07rem);
   }
   .start {
     width: 7rem;
     border-top-left-radius: 2.5rem;
     border-bottom-left-radius: 2.5rem;
-    box-shadow: 0 4px 20px 10px rgba(147, 148, 150, 0.3);
     @media screen and (max-height: 770px) {
       width: 6rem;
     }
@@ -162,11 +195,13 @@ export default {
       border-bottom-left-radius: 2rem;
     }
   }
+  .start-shadow {
+    box-shadow: 0 4px 18px 8px rgba(147, 148, 150, 0.3);
+  }
   .end {
     width: 8rem;
     border-top-right-radius: 5rem;
     border-bottom-right-radius: 5rem;
-    box-shadow: 0 4px 20px 10px rgba(147, 148, 150, 0.3);
     @media screen and (max-height: 770px) {
       width: 7rem;
       border-top-right-radius: 4.5rem;
@@ -177,6 +212,9 @@ export default {
       border-top-right-radius: 3rem;
       border-bottom-right-radius: 3rem;
     }
+  }
+  .end-shadow {
+    box-shadow: 6px 4px 18px 8px rgba(147, 148, 150, 0.25);
   }
   .neck {
     width: 1rem;
