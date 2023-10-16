@@ -3049,16 +3049,6 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
 
   }
 
-  # arrow <- ggplot() +
-  #   theme_void() +
-  #   geom_curve(
-  #     aes(x = -1.25, y = 0, xend = -1.25, yend = 1),
-  #     arrow = arrow(length = unit(0.08, "npc"), type = "closed"),
-  #     color = text_color,
-  #     linewidth = 0.6,
-  #     curvature = 0
-  #   )
-
   # cowplot
   plot_margin <- 0.005
 
@@ -3082,43 +3072,6 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
               width = 1,
               hjust = 1,
               vjust = 0)
-  # +
-  #   # vertical arrow for public supply
-  #   draw_plot(arrow,
-  #             x = 0.1522,
-  #             y = 0.926,
-  #             height = 0.045,
-  #             width = 0.035 - plot_margin) +
-  #   # vertical arrow for well
-  #   draw_plot(arrow,
-  #             x = 0.2965,
-  #             y =  0.926,
-  #             height = 0.045,
-  #             width = 0.035 - plot_margin) +
-  #   # vertical arrow for spring
-  #   draw_plot(arrow,
-  #             x = 0.4408,
-  #             y =  0.926,
-  #             height = 0.045,
-  #             width = 0.035 - plot_margin) +
-  #   # vertical arrow for combination
-  #   draw_plot(arrow,
-  #             x = 0.7294,
-  #             y =  0.926,
-  #             height = 0.045,
-  #             width = 0.035 - plot_margin) +
-  # # Explanation arrow + text
-  # draw_plot(arrow,
-  #           x = 0.82,
-  #           y = 0.015,
-  #           height = 0.03,
-  #           width = 0.035 - plot_margin) +
-  # draw_label("Contains facilities with > 0.5 MGD",
-  #            x = 0.91,
-  #            y = 0.03,
-  #            size = 12,
-  #            color = text_color,
-  #            fontfamily = annotate_legend)
 
 
   ggsave(outfile_template, plt, width = width, height = height, dpi = dpi, bg =  bkgd_color)
