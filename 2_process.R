@@ -123,6 +123,10 @@ p2_targets <- list(
                group_by(WB_TYPE) %>%
                mutate(percent = site_count/sum(site_count)*100,
                       ratio = site_count/sum(site_count))),
+  
+  tar_target(p2_source_summary_csv,
+             write_to_csv(p2_source_summary, 'public/source_summary.csv'),
+             format = 'file'),
 
   ###### CONUS ######
   # get CONUS subset
