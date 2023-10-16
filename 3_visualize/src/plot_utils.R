@@ -2116,7 +2116,7 @@ expanded_ss_barplot <- function(source_summary, supply_colors, font_legend,
   showtext_auto(enable = TRUE)
 
   if (get_percent == TRUE) {
-    
+
     figure_title <- 'Water source percentage by facility type'
 
   expand_ss <- source_summary |>
@@ -2153,7 +2153,7 @@ expanded_ss_barplot <- function(source_summary, supply_colors, font_legend,
                                reverse = TRUE))
 
   } else {
-    
+
     figure_title <- 'Number of facilities using each water source by facility type'
 
   expand_ss <- source_summary |>
@@ -2955,13 +2955,15 @@ wu_availability_map <- function(conus_sf, conus_outline_col, bw_fill_name,
 #' @param scale_y_exp, vector of range expansion for `scale_y_continuous()`
 #' @param scale_x_exp, vector of range expansion for `scale_x_continuous()`
 #' @param mobile if else statement where if TRUE, create annual water use by bottled water facilities vertical beeswarm for mobile
+#' @param leg_nrow, supply numeric value for nrow call in `guide_legend`
+#' @param font_size, supply numeric value for font size in `theme`
 #' @return the filepath of the saved plot
 annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
                              width, height, bkgd_color, text_color,
                              outfile_template, dpi,
                              axis_title, supply_color,
                              scale_y_lim, scale_y_exp, scale_x_exp,
-                             mobile
+                             mobile, leg_nrow, font_size
                              ) {
 
   # import font (p3_font_legend doesn't seem to work on Mac)
@@ -2982,71 +2984,51 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
                             levels = c("Public Supply", "Well", "Spring", "Surface Water Intake", "Combination", "Other"))
     )
 
-  if (mobile == FALSE) {
-
-  water_use_beeswarm <- ggplot(bw_sites_wu_sf,
-                               aes(x = 1 , y = Annual_MGD, fill = water_source, color = water_source, group = NA)) +
+  water_use_beeswarm_baseplot <-  ggplot(bw_sites_wu_sf,
+                                         aes(x = 1 , y = Annual_MGD, fill = water_source, color = water_source, group = NA)) +
     ggdist::geom_dots(side = "both",
                       shape = 21,
-                      # lots of overlap
-                      # dotsize = 2,
                       layout = 'swarm',
-                      ) +
-    coord_flip() +
+    ) +
     scale_fill_manual(values = supply_color, name = 'Water source') +
     scale_color_manual(values = supply_color, guide = 'none') +
     theme_minimal() +
     labs(y = axis_title, x = "") +
     theme(
       plot.margin = unit(c(1,1,1,1), "cm"),
-      text = element_text(family = font_legend, size = 22),
-      axis.text.y = element_blank(),
-      axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
       legend.position = "top",
       legend.direction = "horizontal",
       legend.margin = margin(b = 10),
-      panel.grid.minor.y = element_blank(),
-      panel.grid.major.y = element_blank()
       ) +
-   scale_y_continuous(limits = scale_y_lim,
-                      expand = scale_y_exp) +
+    scale_y_continuous(limits = scale_y_lim,
+                       expand = scale_y_exp) +
+    scale_x_continuous(expand = scale_x_exp) +
     guides(fill = guide_legend(direction = "horizontal", label.position = "right",
-                               position = "top", title.position = "left", nrow =1,
-                               override.aes = list(color = supply_color))) +
-    scale_x_continuous(expand = scale_x_exp)
+                               position = "top", title.position = "left",
+                               override.aes = list(color = supply_color)))
+
+  if (mobile == FALSE) {
+
+  water_use_beeswarm <- water_use_beeswarm_baseplot +
+    coord_flip() +
+    guides(fill = guide_legend(nrow = leg_nrow)) +
+    theme(text = element_text(family = font_legend, size = font_size),
+          axis.text.y = element_blank(),
+          axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
+          panel.grid.minor.y = element_blank(),
+          panel.grid.major.y = element_blank()
+          )
 
   } else {
 
-    water_use_beeswarm <- ggplot(bw_sites_wu_sf,
-                                 aes(x = 1 , y = Annual_MGD, fill = water_source, color = water_source, group = NA)) +
-      ggdist::geom_dots(side = "both",
-                        shape = 21,
-                        # lots of overlap
-                        # dotsize = 2,
-                        layout = 'swarm',
-      ) +
-      scale_fill_manual(values = supply_color, name = 'Water source') +
-      scale_color_manual(values = supply_color, guide = 'none') +
-      theme_minimal() +
-      labs(x = "", y = axis_title) +
-      theme(
-        plot.margin = unit(c(1,1,1,1), "cm"),
-        text = element_text(family = font_legend, size = 20),
-        axis.text.x = element_blank(),
-        axis.title.y = element_text(margin = margin(0, 20, 0, 0)),
-        legend.position = "top",
-        legend.direction = "horizontal",
-        legend.margin = margin(b = 10),
-        panel.grid.minor.x = element_blank(),
-        panel.grid.major.x = element_blank()
-      ) +
-      scale_y_continuous(limits = scale_y_lim,
-                         expand = scale_y_exp) +
-      guides(fill = guide_legend(direction = "horizontal", label.position = "right",
-                                 position = "top", title.position = "left", nrow = 2,
-                                 override.aes = list(color = supply_color))) +
-      scale_x_continuous(expand = scale_x_exp)
-
+    water_use_beeswarm <- water_use_beeswarm_baseplot +
+      guides(fill = guide_legend(nrow = leg_nrow)) +
+      theme(text = element_text(family = font_legend, size = font_size),
+            axis.text.x = element_blank(),
+            axis.title.y = element_text(margin = margin(0, 20, 0, 0)),
+            panel.grid.minor.x = element_blank(),
+            panel.grid.major.x = element_blank()
+            )
   }
 
   # cowplot
