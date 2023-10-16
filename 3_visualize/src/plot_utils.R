@@ -1597,7 +1597,8 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
   county_bw_sf <- counties_sf %>%
     left_join(supply_summary_county_bw, by = c('GEOID' = 'full_fips')) |>
     drop_na(source_category) |>
-    janitor::clean_names()
+    janitor::clean_names() |>
+    mutate(source_category = factor(source_category, levels = reorder_source_category))
 
   # size legend
   bivariate_color_scale_count <- purrr::map2_df(names(supply_colors), supply_colors, function(source_category, supply_colors) {
@@ -1639,6 +1640,9 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
       )
   })
 
+  # set count legend list names to reorder source category
+  legend_list_count <- set_names(legend_list_count, reorder_source_category)
+
   # percent legend
   bivariate_color_scale_perc <- purrr::map2_df(names(supply_colors), supply_colors, function(source_category, supply_colors) {
     tibble(
@@ -1669,6 +1673,9 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
         plot.margin = unit(c(0,6,6.5,0), "cm")
       )
   })
+
+  # set percent legend list names to reorder source category
+  legend_list_perc <- set_names(legend_list_perc, reorder_source_category)
 
   arranged_legends_count <- cowplot::plot_grid(plotlist = legend_list_count, nrow = 1, ncol = 1, scale = 1)
   arranged_legends_perc <- cowplot::plot_grid(plotlist = legend_list_perc, nrow = 1, ncol = 1, scale = 1)
@@ -1775,20 +1782,20 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
                 width = 1 - plot_margin,
                 hjust = 1,
                 vjust = 0) +
-      # combination count legend
-      draw_plot(legend_list_count[[1]],
+      # self-supply count legend
+      draw_plot(legend_list_count$`self supply`,
                 x = 0.064,
                 y = 0.138,
                 width = 0.35,
                 height = 0.5) +
-      #self supply count legend
-      draw_plot(legend_list_count[[2]],
+      #combination count legend
+      draw_plot(legend_list_count$combination,
                 x = 0.386,
                 y = 0.138,
                 width = 0.35,
                 height = 0.5) +
       # public supply count legend
-      draw_plot(legend_list_count[[3]],
+      draw_plot(legend_list_count$`public supply`,
                 x = 0.714,
                 y = 0.138,
                 width = 0.35,
@@ -1819,20 +1826,20 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
                 width = 1 - plot_margin,
                 hjust = 1,
                 vjust = 0) +
-      # combination perc legend
-      draw_plot(legend_list_perc[[1]],
+      # self supply perc legend
+      draw_plot(legend_list_perc$`self supply`,
                 x = 0.06,
                 y = -0.23,
                 width = 0.35,
                 height = 0.3) +
-      #self supply perc legend
-      draw_plot(legend_list_perc[[2]],
+      # combination perc legend
+      draw_plot(legend_list_perc$combination,
                 x = 0.382,
                 y = -0.23,
                 width = 0.35,
                 height = 0.3) +
       # public supply perc legend
-      draw_plot(legend_list_perc[[3]],
+      draw_plot(legend_list_perc$`public supply`,
                 x = 0.705,
                 y = -0.23,
                 width = 0.35,
@@ -1906,6 +1913,9 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
           )
         })
 
+    # Set count list names to reorder source category
+    map_count_list <- set_names(map_count_list, reorder_source_category)
+
     map_perc_list <- county_bw_sf |>
       group_split(source_category) |>
         map(function(df) {
@@ -1938,6 +1948,9 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
                 #panel.spacing = unit(2, "lines")
               )
         })
+
+    # Set perc list names to reorder source category
+    map_perc_list <- set_names(map_perc_list, reorder_source_category)
 
     plt_cnt_leg <- plt +
       # legend with count labels
@@ -1982,7 +1995,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
     # final plts
     ss_cnt_fnl_plt <- plt_cnt_leg +
       # Self supply count map
-      draw_plot(map_count_list[[1]],
+      draw_plot(map_count_list$`self supply`,
                 x = 0.995,
                 y = 0.098,
                 height = 0.90,
@@ -1990,7 +2003,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
                 hjust = 1,
                 vjust = 0) +
       #self supply count legend
-      draw_plot(legend_list_count[[1]],
+      draw_plot(legend_list_count$`self supply`,
                 x = 0.293,
                 y = -0.382,
                 width = 0.695,
@@ -1998,7 +2011,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
 
     combo_cnt_fnl_plt <- plt_cnt_leg +
       # combination count map
-      draw_plot(map_count_list[[2]],
+      draw_plot(map_count_list$combination,
                 x = 0.995,
                 y = 0.098,
                 height = 0.90,
@@ -2006,7 +2019,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
                 hjust = 1,
                 vjust = 0) +
       # combination count legend
-      draw_plot(legend_list_count[[2]],
+      draw_plot(legend_list_count$combination,
                 x = 0.293,
                 y = -0.382,
                 width = 0.695,
@@ -2014,7 +2027,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
 
     ps_cnt_fnl_plt <- plt_cnt_leg +
       # public supply map
-      draw_plot(map_count_list[[3]],
+      draw_plot(map_count_list$`public supply`,
                 x = 0.995,
                 y = 0.098,
                 height = 0.90,
@@ -2022,7 +2035,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
                 hjust = 1,
                 vjust = 0) +
       # public supply count legend
-      draw_plot(legend_list_count[[3]],
+      draw_plot(legend_list_count$`public supply`,
                 x = 0.293,
                 y = -0.382,
                 width = 0.695,
@@ -2030,7 +2043,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
 
     ss_perc_fnl_plt <- plt_perc_leg +
       # Self supply perc map
-      draw_plot(map_perc_list[[1]],
+      draw_plot(map_perc_list$`self supply`,
                 x = 0.995,
                 y = 0.098,
                 height = 0.90,
@@ -2038,7 +2051,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
                 hjust = 1,
                 vjust = 0) +
       #self supply perc legend
-      draw_plot(legend_list_perc[[1]],
+      draw_plot(legend_list_perc$`self supply`,
                 x = 0.293,
                 y = -0.365,
                 width = 0.7,
@@ -2046,7 +2059,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
 
     combo_perc_fnl_plt <- plt_perc_leg +
       # combination perc map
-      draw_plot(map_perc_list[[2]],
+      draw_plot(map_perc_list$combination,
                 x = 0.995,
                 y = 0.098,
                 height = 0.90,
@@ -2054,7 +2067,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
                 hjust = 1,
                 vjust = 0) +
       # combination perc legend
-      draw_plot(legend_list_perc[[2]],
+      draw_plot(legend_list_perc$combination,
                 x = 0.293,
                 y = -0.365,
                 width = 0.7,
@@ -2062,7 +2075,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
 
     ps_perc_fnl_plt <- plt_perc_leg +
       # public supply perc map
-      draw_plot(map_perc_list[[3]],
+      draw_plot(map_perc_list$`public supply`,
                 x = 0.995,
                 y = 0.098,
                 height = 0.90,
@@ -2070,7 +2083,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
                 hjust = 1,
                 vjust = 0) +
       # public supply perc legend
-      draw_plot(legend_list_perc[[3]],
+      draw_plot(legend_list_perc$`public supply`,
                 x = 0.293,
                 y = -0.365,
                 width = 0.7,
