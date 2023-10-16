@@ -45,8 +45,8 @@
         id="img-ws-national-types"
         class="img-container"
       >
-        <img src="../assets/images/perc_expanded_self_supply_barplot.png">
-        <img src="../assets/images/count_expanded_self_supply_barplot.png">
+        <img class="supply-barplot" src="../assets/images/perc_expanded_self_supply_barplot.png">
+        <img class="supply-barplot" src="../assets/images/count_expanded_self_supply_barplot.png">
       </div>
       <div
         id="text3"
@@ -211,7 +211,7 @@
     grid-template-areas:
       "public-supply self-supply";
     justify-content: center;
-    margin: auto;
+    margin: 3rem auto 3rem auto;
     max-width: 1600px;
     @media screen and (max-width: 600px) {
       grid-template-columns: 1fr;
@@ -221,9 +221,6 @@
         "self-supply";
     }
   }
-  .img-container {
-    max-width: 100vw;
-  }
   #img-illustration-public-supply {
     grid-area: public-supply;
   }
@@ -231,7 +228,11 @@
     grid-area: self-supply;
   }
   .illustration {
-    max-width: 100%;
+    width: 90%;
+  }
+  .supply-barplot {
+    width: 80%;
+    max-width: 1200px;
   }
   #grid-container-source-maps {
     grid-area: source-maps;

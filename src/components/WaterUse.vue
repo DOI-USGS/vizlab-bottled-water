@@ -34,10 +34,12 @@
       >
         <img
           v-if="!mobileView"
+          class="beeswarm"
           src="../assets/images/annual_bottled_water_use_beeswarm.png"
         >
         <img
           v-if="mobileView"
+          class="beeswarm"
           src="../assets/images/annual_bottled_water_use_beeswarm_mobile.png"
         >
       </div>
@@ -106,8 +108,9 @@
   #img-bw-use-beeswarm {
     grid-area: bw-use-source;
   }
-  .img-container {
-    max-width: 100vw;
+  .beeswarm {
+    width: 90%;
+    max-width: 1200px;
   }
   .availability-map {    
     width: 60vw;

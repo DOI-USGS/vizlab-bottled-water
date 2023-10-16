@@ -197,4 +197,8 @@ export default {
       width: 2.5rem;
     }
   }
+  .img-container {
+    max-width: 100vw;
+    text-align: center;
+  }
 </style>
