@@ -2,67 +2,51 @@
   <div id="visualization">
     <header>
       <div class="panel-wrap">
-        <div class="panel start start-shadow glass-under">
-        </div> 
-        <div class="panel glass-under">
-        </div>        
-        <div class="panel glass-under">
-        </div>
-        <div class="panel glass-under">
-        </div>
-        <div class="panel glass-under">
-        </div>
-        <div class="panel glass-under">
-        </div>
-        <div class="panel glass-under">
-        </div>
-        <div class="panel glass-under">
-        </div>
-        <div class="panel glass-under">
-        </div>
-        <div v-if="!mobileView" class="panel glass-under">
-        </div>
-        <div v-if="!mobileView" class="panel glass-under">
-        </div>
-        <div class="panel end end-shadow glass-under">
-        </div>
-        <div class="panel neck end-shadow glass-under">
-        </div>
-        <div class="panel cap end-shadow glass-under">
-        </div>
+        <div class="panel start start-shadow glass-under" /> 
+        <div class="panel glass-under" />        
+        <div class="panel glass-under" />
+        <div class="panel glass-under" />
+        <div class="panel glass-under" />
+        <div class="panel glass-under" />
+        <div class="panel glass-under" />
+        <div class="panel glass-under" />
+        <div class="panel glass-under" />
+        <div
+          v-if="!mobileView"
+          class="panel glass-under"
+        />
+        <div
+          v-if="!mobileView"
+          class="panel glass-under"
+        />
+        <div class="panel end end-shadow glass-under" />
+        <div class="panel neck end-shadow glass-under" />
+        <div class="panel cap end-shadow glass-under" />
       </div>
       <div class="text-container">
-        <h1><span class = 'first-words'>Water bottling</span> across the U.S.</h1>
+        <h1><span class="first-words">Water bottling</span> across the U.S.</h1>
       </div>
       <div class="panel-wrap">
-        <div class="panel start glass-over">
-        </div> 
-        <div class="panel glass-over">
-        </div>        
-        <div class="panel glass-over">
-        </div>
-        <div class="panel glass-over">
-        </div>
-        <div class="panel glass-over">
-        </div>
-        <div class="panel glass-over">
-        </div>
-        <div class="panel glass-over">
-        </div>
-        <div class="panel glass-over">
-        </div>
-        <div class="panel glass-over">
-        </div>
-        <div v-if="!mobileView" class="panel glass-over">
-        </div>
-        <div v-if="!mobileView" class="panel glass-over">
-        </div>
-        <div class="panel end glass-over">
-        </div>
-        <div class="panel neck glass-over">
-        </div>
-        <div class="panel cap glass-over">
-        </div>
+        <div class="panel start glass-over" /> 
+        <div class="panel glass-over" />        
+        <div class="panel glass-over" />
+        <div class="panel glass-over" />
+        <div class="panel glass-over" />
+        <div class="panel glass-over" />
+        <div class="panel glass-over" />
+        <div class="panel glass-over" />
+        <div class="panel glass-over" />
+        <div
+          v-if="!mobileView"
+          class="panel glass-over"
+        />
+        <div
+          v-if="!mobileView"
+          class="panel glass-over"
+        />
+        <div class="panel end glass-over" />
+        <div class="panel neck glass-over" />
+        <div class="panel cap glass-over" />
       </div>
     </header>
     <InventorySection />
