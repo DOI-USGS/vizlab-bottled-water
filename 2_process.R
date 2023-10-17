@@ -115,14 +115,15 @@ p2_targets <- list(
 
   tar_target(p2_source_summary,
              p2_inventory_sites %>%
-               mutate(WB_TYPE = factor(WB_TYPE, levels = p2_facility_type_summary$WB_TYPE)) %>%
-               filter(!water_source == 'other') %>% # exclude other for now (only 6 facilities)
-               group_by(WB_TYPE, water_source) %>%
-               summarize(site_count = n()) %>%
-               mutate(water_source = factor(water_source, levels = p2_source_order)) %>%
-               group_by(WB_TYPE) %>%
-               mutate(percent = site_count/sum(site_count)*100,
-                      ratio = site_count/sum(site_count))),
+                 mutate(WB_TYPE = factor(WB_TYPE, levels = p2_facility_type_summary$WB_TYPE)) %>%
+                 filter(!water_source == 'other') %>% # exclude other for now (only 6 facilities)
+                 group_by(WB_TYPE, water_source) %>%
+                 summarize(site_count = n(), .groups = 'drop') %>%
+                 complete(WB_TYPE, water_source, fill = list(site_count = 0)) %>%
+                 mutate(water_source = factor(water_source, levels = p2_source_order)) %>%
+                 group_by(WB_TYPE) %>%
+                 mutate(percent = site_count/sum(site_count)*100,
+                        ratio = site_count/sum(site_count))),
   
   tar_target(p2_source_summary_csv,
              write_to_csv(p2_source_summary, 'public/source_summary.csv'),
