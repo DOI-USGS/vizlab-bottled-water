@@ -1456,7 +1456,7 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
               y = 0.793,
               height = 0.08,
               width = 0.035 - plot_margin) +
-    draw_label(paste("Vermont\nsources", paste0(round(max(supply_summary_vt$percent)), "%"),"\nfrom self supply"),
+    draw_label(paste("Vermont\nsources", paste0(round(max(supply_summary_vt$percent)), "%"),"\nfrom self-supply"),
                x = 0.753,
                y = 0.922,
                size = 16,
