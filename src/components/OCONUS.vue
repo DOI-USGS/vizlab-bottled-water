@@ -2,22 +2,15 @@
   <section id="oconus_map">
     <div id="grid-container-interactive">
       <div id="title">
-        <h4>
+        <h3>
           Counts of bottling facilities in <span id="state-dropdown-container" /> by county
           <!-- Dropdown v-model="selectedOption" :options="dropdownOptions"/ -->
-        </h4>
+        </h3>
       </div>
       <div id="text">
         <div class="text-container">
-          <!--p>
-              The bottled water industry estimates that the United States consumed 15 billion gallons (57 billion liters) of bottled water in 2020. That’s 45 gallons of bottled water per person. If you consider how much water it takes to produce each bottle of water (not including the packaging), the number is closer to 63 gallons—enough to fill a standard bathtub one-and-a-half times. 
-            </p -->
-          <p class="italic">
-            Zoom in a specific state by clicking on the map or by selecting it using the dropdown, above.
-          </p>
-          <br>
-          <p class="italic">
-            Select a specific facility type by interacting with the bar chart.
+          <p class="viz-comment">
+            Click on the dropdown menu, bar chart, or map to explore!
           </p>
         </div>
       </div>
@@ -200,7 +193,7 @@ export default {
       this.statePolys = statePolysCONUS.concat(statePolysAK, statePolysHI, statePolysGUMP, statePolysPRVI, statePolysAS)
       
       // Set default and current map view
-      this.defaultViewName = 'all states and territories'
+      this.defaultViewName = 'all states and territories\xa0\xa0\xa0▾'
       this.currentState = this.defaultViewName;
 
       // Set current scale for view (1 = not zoomed)
@@ -248,7 +241,7 @@ export default {
         width,
         height: height,
         margin: {
-          top: 15,
+          top: 18,
           right: 5,
           bottom: 40,
           left: 15
@@ -283,7 +276,8 @@ export default {
         .attr("contenteditable", "true")
         .on("change", function() { 
           this.selectedText = this.options[this.selectedIndex].text;
-          this.style.width = 20 + (this.selectedText.length * 12) + "px";
+          console.log(this.selectedText.length)
+          this.style.width = 5 + (this.selectedText.length * 1.2) + "rem"; 
 
           let selectedArea = this.value
 
@@ -352,7 +346,7 @@ export default {
 
       let selectId = document.getElementById("state-dropdown");
       this.selectedText = selectId.options[selectId.selectedIndex].text;
-      selectId.style.width = 20 + (this.selectedText.length * 8.5) + "px";
+      selectId.style.width = 5 + (this.selectedText.length * 1.2) + "rem";
     },
     initMap() {
       // draw canvas for map
@@ -1360,7 +1354,7 @@ export default {
         dropdown.property('value', zoomedState)
         // Update dropdown width
         let selectId = document.getElementById("state-dropdown");
-        selectId.style.width = 20 + (zoomedState.length * 12) + "px";
+        selectId.style.width = 5 + (zoomedState.length * 1.2) + "rem";
       }
 
       // Hide the inset map borders and labels
@@ -1492,7 +1486,7 @@ export default {
 
       this.d3.select('select').property('value', this.defaultViewName)
       let selectId = document.getElementById("state-dropdown");
-      selectId.style.width = 20 + (this.currentState.length * 8) + "px";
+      selectId.style.width = 5 + (this.currentState.length * 1.2) + "rem";
 
       this.d3.select("#map-inset-svg")
         .classed("hide", false)
@@ -1527,53 +1521,48 @@ export default {
     stroke-width: 0.3;
   }
   .axis-title {
-    font-size: 16px;
+    font-size: 1.6rem;
     fill: #000000;
     font-weight: 700;
   }
   .axis-label {
-    font-size: 12px;
+    font-size: 1.2rem;
   }
   .bar-label {
-    font-size: 16px;
+    font-size: 1.6rem;
     fill: #666666;
   }
   .dropdown {
-    // font-size: 20px;
     // display: flex;
     flex-direction: row;
     transition: width 2s, height 2s, transform 2s;
     will-change: width;
     background-color: white;
-    margin: 0px 5px 0px 5px;
+    margin: 0rem 0.5rem 0rem 0.5rem;
     padding: 0.5rem;
-    box-shadow:  rgba(0, 0, 0, 0.2) 0px 6px 10px 0px,
-    rgba(0, 0, 0, 0.1) 0px 0px 0px 1px;
-    border-radius: 5px;
+    box-shadow:  rgba(0, 0, 0, 0.2) 0rem 0.6rem 1rem 0rem,
+    rgba(0, 0, 0, 0.1) 0rem 0rem 0rem 0.1rem;
+    border-radius: 0.5rem;
   }
   .dropdown:hover {
-    box-shadow:  rgba(0, 0, 0, 0.3) 0px 6px 10px 0px,
-    rgba(0, 0, 0, 0.2) 0px 0px 0px 1px;
+    box-shadow:  rgba(0, 0, 0, 0.3) 0rem 0.6rem 1rem 0rem,
+    rgba(0, 0, 0, 0.2) 0rem 0rem 0rem 0.1rem;
   }
 </style>
 <style scoped lang="scss">
-  $pal_red: '#FD5901';
-  $pal_or: '#F78104';
-  $pal_yell: '#FAAB36';
-  $pal_teal: '#008083';
-  $pal_blue_dark: '#042054';
-
 
   #grid-container-interactive {
     display: grid;
     grid-template-columns: 49% 49%;
     column-gap: 2%;
-    grid-template-rows: 4vh 18vh max-content;
+    grid-template-rows: max-content 18vh max-content;
+    row-gap: 2vh;
     grid-template-areas:
       "title title"
       "text chart"
       "map map";
     justify-content: center;
+    margin: 1rem 0rem 3rem 0rem;
     // height: 95vh;
     @media screen and (max-height: 770px) {
       grid-template-columns: 40% 60%;
@@ -1599,8 +1588,6 @@ export default {
   #title {
     grid-area: title;
     align-self: center;
-    font-size: 20px;
-    font-family: sans-serif;
   }
   #state-dropdown-container {
     grid-area: title;

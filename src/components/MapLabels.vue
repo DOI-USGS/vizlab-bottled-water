@@ -122,18 +122,18 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-    .borders {
-        stroke-dasharray: 0 0 0.5 4;
-        fill: none;
-        stroke: #606161;
-        stroke-miterlimit: 10;
-        stroke-width: .75px;
-    }
+  .borders {
+      stroke-dasharray: 0 0 0.5 4;
+      fill: none;
+      stroke: #606161;
+      stroke-miterlimit: 10;
+      stroke-width: .75px;
+  }
 
-    .labels {
-        fill: #231f20;
-        font-family: SourceSansPro-It, 'Source Sans Pro';
-        font-size: 16px;
-        font-style: italic;
-    }
+  .labels {
+      fill: #231f20;
+      font-family: SourceSansPro-It, 'Source Sans Pro';
+      font-size: 1.6rem;
+      font-style: italic;
+  }
 </style>

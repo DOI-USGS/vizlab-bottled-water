@@ -1,10 +1,6 @@
 <template>
   <section id="inventory_intro">
     <div id="grid-container-inventory">
-      <!--div id="title" class="text-container">
-               <h3 v-html="inventoryText.title" />
-            </div-->
-      <br>
       <OCONUS id="oconus" />
       <div
         id="text"
@@ -14,7 +10,7 @@
         <br>
         <img
           :class="mobileView ? 'pictogram img-mobile' : 'pictogram image-float'"
-          src="../assets/images/bottled-water_consumption-pictogram_square_20231011.png"
+          src="../assets/images/bottled-water_consumption-pictogram_less-text_20231016.png"
         >
         <p v-html="inventoryText.paragraph2" />
         <br>
@@ -68,43 +64,39 @@ export default {
 }
 </script>
 <style lang="scss">
-    $pal_red: '#FD5901';
-    $pal_or: '#F78104';
-    $pal_yell: '#FAAB36';
-    $pal_teal: '#008083';
-    $pal_blue_dark: '#042054';
 
-    #grid-container-inventory {
-        display: grid;
-        grid-template-columns: 1fr;
-        grid-template-rows: 0.5fr max-content max-content;
-        grid-template-areas:
-            "title"
-            "oconus"
-            "text";
-        justify-content: center;
+  #inventory_intro {
+    margin-top: 5rem;
+    @media screen and (max-height: 770px) {
+      margin-top: 5rem;
     }
-
-    #title {
-        grid-area: title;
-        align-self: center;
-        font-size: 20px;
-        font-family: sans-serif;
+    @media screen and (max-width: 600px) {
+      margin-top: 0.2rem;
     }
-    #oconus {
-        grid-area: oconus;
-    }
-    #text {
-        grid-area: text;
-        justify-self: start;
-    }
-    .pictogram {      
-      width: 35vw;
-      max-width: 1000px;
-      margin: 0px 0px 0.5rem 1.5rem;
-    }
-    .pictogram.img-mobile {
-      width: 100%;
-      margin: 0px 0px 0.5rem 0rem;
-    }
+  }
+  #grid-container-inventory {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 0.5fr max-content max-content;
+    grid-template-areas:
+        "oconus"
+        "text";
+    justify-content: center;
+  }
+  #oconus {
+    grid-area: oconus;
+  }
+  #text {
+    grid-area: text;
+    justify-self: start;
+  }
+  .pictogram {      
+    width: 35vw;
+    max-width: 1000px;
+    margin: 1rem 0rem 1.5rem 4rem;
+  }
+  .pictogram.img-mobile {
+    width: 100%;
+    margin: 0rem 0rem 0.5rem 0rem;
+  }
 </style>

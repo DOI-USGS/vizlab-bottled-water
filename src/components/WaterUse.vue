@@ -11,25 +11,16 @@
         id="text1"
         class="text-container"
       >
-        <img
-          :class="mobileView ? 'availability-map img-mobile' : 'availability-map image-float'"
-          src="../assets/images/bottled_water_availability_map.png"
-        >
         <p v-html="useText.paragraph1" />
-        <br>
-        <p v-html="useText.paragraph2" />
       </div>
       <div
-        id="img-wu-bars"
+        id="img-infographic"
         class="img-container"
       >
-        <img src="../assets/images/water_use_data_availability_barplots.png">
-      </div>
-      <div
-        id="text2"
-        class="text-container"
-      >
-        <p v-html="useText.paragraph3" />
+        <img
+          class="infographic"
+          src="../assets/images/water-use_infographic.png"
+        >
       </div>
       <div
         id="img-bw-use-beeswarm"
@@ -37,10 +28,12 @@
       >
         <img
           v-if="!mobileView"
+          class="beeswarm"
           src="../assets/images/annual_bottled_water_use_beeswarm.png"
         >
         <img
           v-if="mobileView"
+          class="beeswarm"
           src="../assets/images/annual_bottled_water_use_beeswarm_mobile.png"
         >
       </div>
@@ -82,21 +75,15 @@
   }
 </script>
 <style scoped lang="scss">
-  $pal_red: '#FD5901';
-  $pal_or: '#F78104';
-  $pal_yell: '#FAAB36';
-  $pal_teal: '#008083';
-  $pal_blue_dark: '#042054';
 
   #grid-container-use {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 0.5fr max-content max-content max-content max-content;
+    grid-template-rows: 0.5fr max-content max-content max-content;
     grid-template-areas:
       "title"
       "text1"
       "use-bars"
-      "text2"
       "bw-use-source";
     justify-content: center;
   }
@@ -114,8 +101,9 @@
   #img-bw-use-beeswarm {
     grid-area: bw-use-source;
   }
-  .img-container {
-    max-width: 100vw;
+  .beeswarm {
+    width: 90%;
+    max-width: 1200px;
   }
   .availability-map {    
     width: 60vw;
@@ -125,5 +113,19 @@
   .availability-map.img-mobile {
     width: 100%;
     margin: 0;
+  }
+  #img-infographic {
+    text-align: center;
+    margin: 4rem 0rem 4rem 0rem;
+  }
+  .infographic {
+    width: 60%;
+    margin: auto;
+    @media screen and (max-height: 770px) {
+      width: 65%;
+    }
+    @media screen and (max-width: 600px) {
+      width: 100%;
+    }
   }
 </style>
