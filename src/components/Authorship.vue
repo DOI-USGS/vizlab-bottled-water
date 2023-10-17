@@ -119,8 +119,8 @@ export default {
 }
 </script>
 <style>
-#author-container {
-  height: auto;
-  padding: 10px 0px 0px 0px;
-}
+  #author-container {
+    height: auto;
+    padding: 10px 0px 0px 0px;
+  }
 </style>
