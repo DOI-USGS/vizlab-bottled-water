@@ -73,7 +73,7 @@
 <style lang="scss">
   // Fonts
   @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@200;300;400;500;600;700;800&display=swap');
-  @import url('https://fonts.googleapis.com/css2?family=Averia+Sans+Libre:ital,wght@300;400;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Averia+Sans+Libre:wght@300;400;700&display=swap');
   @import url('https://fonts.googleapis.com/css2?family=Gloria+Hallelujah&display=swap');
   $SourceSans: 'Source Sans Pro', sans-serif;
   $AveriaSansLibre: 'Averia Sans Libre';
