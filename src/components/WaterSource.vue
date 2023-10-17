@@ -38,8 +38,6 @@
         class="text-container"
       >
         <p v-html="sourceText.paragraph2" />
-        <br>
-        <h4 v-html="sourceText.subtitle1" />
       </div>
       <div
         id="img-ws-national-types"

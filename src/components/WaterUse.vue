@@ -23,12 +23,6 @@
         >
       </div>
       <div
-        id="text2"
-        class="text-container"
-      >
-        <p v-html="useText.paragraph3" />
-      </div>
-      <div
         id="img-bw-use-beeswarm"
         class="img-container"
       >
@@ -85,12 +79,11 @@
   #grid-container-use {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 0.5fr max-content max-content max-content max-content;
+    grid-template-rows: 0.5fr max-content max-content max-content;
     grid-template-areas:
       "title"
       "text1"
       "use-bars"
-      "text2"
       "bw-use-source";
     justify-content: center;
   }
