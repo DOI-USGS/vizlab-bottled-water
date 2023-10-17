@@ -226,10 +226,6 @@
   .illustration {
     width: 90%;
   }
-  .supply-barplot {
-    width: 80%;
-    max-width: 1200px;
-  }
   #grid-container-source-maps {
     grid-area: source-maps;
     display: grid;
