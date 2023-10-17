@@ -116,7 +116,7 @@ p2_targets <- list(
   tar_target(p2_source_summary,
              p2_inventory_sites %>%
                  mutate(WB_TYPE = factor(WB_TYPE, levels = p2_facility_type_summary$WB_TYPE)) %>%
-                 filter(!water_source == 'other') %>% # exclude other for now (only 6 facilities)
+                 filter(!water_source == 'Other') %>% # exclude other for now (only 6 facilities)
                  group_by(WB_TYPE, water_source) %>%
                  summarize(site_count = n(), .groups = 'drop') %>%
                  complete(WB_TYPE, water_source, fill = list(site_count = 0)) %>%
