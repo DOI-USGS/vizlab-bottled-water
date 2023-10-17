@@ -38,17 +38,21 @@
         class="text-container"
       >
         <p v-html="sourceText.paragraph2" />
-        <br>
-        <p v-html="sourceText.subtitle1" />
       </div>
       <sourceBarplots id="source-barplots" />
-      <!--div
+      <div
         id="img-ws-national-types"
         class="img-container"
       >
-        <img src="../assets/images/perc_expanded_self_supply_barplot.png">
-        <img src="../assets/images/count_expanded_self_supply_barplot.png">
-      </div-->
+        <img
+          class="supply-barplot"
+          src="../assets/images/perc_expanded_self_supply_barplot.png"
+        >
+        <img
+          class="supply-barplot"
+          src="../assets/images/count_expanded_self_supply_barplot.png"
+        >
+      </div>
       <div
         id="text3"
         class="text-container"
@@ -170,11 +174,6 @@
   }
 </script>
 <style lang="scss">
-  $pal_red: '#FD5901';
-  $pal_or: '#F78104';
-  $pal_yell: '#FAAB36';
-  $pal_teal: '#008083';
-  $pal_blue_dark: '#042054';
 
   #grid-container-source {
     display: grid;
@@ -221,7 +220,7 @@
     grid-template-areas:
       "public-supply self-supply";
     justify-content: center;
-    margin: auto;
+    margin: 3rem auto 3rem auto;
     max-width: 1600px;
     @media screen and (max-width: 600px) {
       grid-template-columns: 1fr;
@@ -231,9 +230,6 @@
         "self-supply";
     }
   }
-  .img-container {
-    max-width: 100vw;
-  }
   #img-illustration-public-supply {
     grid-area: public-supply;
   }
@@ -241,23 +237,29 @@
     grid-area: self-supply;
   }
   .illustration {
-    max-width: 100%;
+    width: 90%;
+  }
+  .supply-barplot {
+    width: 80%;
+    max-width: 1200px;
   }
   #grid-container-source-maps {
     grid-area: source-maps;
     display: grid;
     grid-template-columns: 1fr;
-        grid-template-rows: max-content max-content max-content max-content max-content max-content;
-        grid-template-areas:
-        "count-self"
-        "perc-self"
-        "count-combo"
-        "perc-combo"
-        "count-public"
-        "perc-public";
-      justify-content: center;
-      margin: auto;
-      max-width: 1600px;
+    grid-template-rows: max-content max-content max-content max-content max-content max-content;
+    row-gap: 3vh;
+    grid-template-areas:
+      "count-self"
+      "perc-self"
+      "count-combo"
+      "perc-combo"
+      "count-public"
+      "perc-public";
+    justify-content: center;
+    align-content: center;
+    margin: auto;
+    max-width: 1600px;
   }
   #img-source-self-count {
     grid-area: count-self;

@@ -4,7 +4,7 @@ source('2_process/src/data_utils.R')
 
 p2_targets <- list(
   ##### Set up state spatial data #####
-  
+
   # U.S. states
   tar_target(p2_conus_oconus_sf,
              tigris::states(cb = TRUE) %>%
@@ -16,21 +16,21 @@ p2_targets <- list(
                  TRUE ~ STUSPS
                )) %>%
                filter(group %in% c('CONUS', 'AK', 'HI', 'GU_MP', 'PR_VI', 'AS'))),
-  
+
   # CONUS states
   tar_target(p2_conus_sf,
              p2_conus_oconus_sf %>%
                filter(STUSPS %in% state.abb[!state.abb %in% c('AK', 'HI')]) %>%
                add_centroids() %>%
                mutate(location = 'mainland')),
-  
+
   # All U.S. counties
   tar_target(p2_counties_conus_oconus_sf,
              tigris::counties() %>%
                st_transform(crs = p1_proj) %>%
-               left_join(p2_conus_oconus_sf %>% 
-                           st_drop_geometry() %>% 
-                           dplyr::select(STUSPS, STATE_NAME = NAME, STATEFP, group), 
+               left_join(p2_conus_oconus_sf %>%
+                           st_drop_geometry() %>%
+                           dplyr::select(STUSPS, STATE_NAME = NAME, STATEFP, group),
                          by = 'STATEFP') %>%
                filter(group %in% c('CONUS', 'AK', 'HI', 'GU_MP', 'PR_VI', 'AS'))),
 
@@ -75,22 +75,22 @@ p2_targets <- list(
                group_by(NAME, state_abbr, WB_TYPE) %>%
                summarize(site_count = n()) %>%
                mutate(WB_TYPE = factor(WB_TYPE, levels = p2_facility_type_summary$WB_TYPE))),
-  
+
   tar_target(p2_facility_type_summary_state_csv,
-             write_to_csv(data = p2_facility_type_summary_state, 
+             write_to_csv(data = p2_facility_type_summary_state,
                           outfile = 'public/state_facility_type_summary.csv'),
              format = 'file'),
-  
+
   # Get summary counts of facilities, by county
   tar_target(p2_facility_summary_county,
              get_county_facility_counts(sites_sf = p2_inventory_sites_sf,
                                         counties_sf = p2_counties_conus_oconus_sf,
                                         states_sf = p2_conus_oconus_sf,
                                         types = p2_facility_types)),
-  
+
   # Get summary of facility supply source categories, by type
   tar_target(p2_source_category_order,
-             c('undetermined', 'combination', 'self supply', 'public supply')),
+             c('Undetermined', 'Combination', 'Self-supply', 'Public supply')),
 
   tar_target(p2_supply_summary,
              p2_inventory_sites %>%
@@ -111,7 +111,7 @@ p2_targets <- list(
 
   # Get summary of facility supply sources, by type
   tar_target(p2_source_order,
-             c('undetermined', 'combination', 'well', 'spring', 'surface water intake', 'public supply')),
+             c('Undetermined', 'Combination', 'Well', 'Spring', 'Surface water intake', 'Public supply')),
 
   tar_target(p2_source_summary,
              p2_inventory_sites %>%
@@ -129,6 +129,25 @@ p2_targets <- list(
              write_to_csv(p2_source_summary, 'public/source_summary.csv'),
              format = 'file'),
 
+  ###### Water Use  ######
+  tar_target(p2_exclude_states,
+             c("AK", "HI", "GU", "PR", "VI")),
+  tar_target(p2_water_use,
+            read_csv(p1_water_use_csv, col_types = cols())),
+
+  tar_target(
+    p2_inventory_sites_wu_conus_sf,
+    p2_inventory_sites_sf %>%
+      left_join(p2_water_use, by = 'FAC_ID') %>%
+      mutate(has_wu = !is.na(Annual_MGD)) %>% # WU_DATA_FLAG field has errors
+      filter(!STATE_ABBV %in% p2_exclude_states)),
+
+  tar_target(
+    p2_inventory_sites_wu_conus_summary_sf,
+    p2_inventory_sites_wu_conus_sf %>%
+      dplyr::select(WB_TYPE, FAC_ID, has_wu, water_source, source_category) %>%
+      distinct(FAC_ID, .keep_all = TRUE)),
+
   ###### CONUS ######
   # get CONUS subset
   tar_target(p2_inventory_sites_sf_CONUS,
@@ -138,16 +157,16 @@ p2_targets <- list(
   tar_target(p2_bw_inventory_sites_county_CONUS,
              p2_inventory_sites_sf_CONUS |>
                janitor::clean_names() |>
-               filter(wb_type == "Bottled Water") |>
+               filter(wb_type == "Bottled water") |>
                group_by(full_fips, source_category) |>
                summarize(site_count = n()) |>
                group_by(full_fips) |>
                mutate(percent = site_count/sum(site_count)*100) |>
                # Filter out type 'undetermined' for now
                filter(source_category %in%
-                        c("self supply", "combination", "public supply")) |>
+                        c("Self-supply", "Combination", "Public supply")) |>
                mutate(source_category = factor(source_category, levels =
-                                                 c("self supply", "combination", "public supply"))) |>
+                                                 c("Self-supply", "Combination", "Public supply"))) |>
                st_drop_geometry()),
 
   ##### Regional statistics #####

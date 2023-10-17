@@ -5,17 +5,17 @@ source('3_visualize/src/mapping_utils.R')
 source('3_visualize/src/spatial_data_utils.R')
 
 p3_targets <- list(
-  
+
   ##### Spatial context layers #####
   tar_target(p3_conus_sf,
              rmapshaper::ms_simplify(p2_conus_sf, keep=0.2)),
-  
+
   tar_target(p3_counties_conus_sf,
              p2_counties_conus_oconus_sf %>%
                filter(STATEFP %in% p3_conus_sf$STATEFP) %>%
                rmapshaper::ms_simplify(keep = 0.2) %>%
                st_intersection(st_union(p3_conus_sf))),
-  
+
   tar_target(p3_conus_oconus_group_simplification,
              tibble(
                group = unique(p2_conus_oconus_sf$group)) %>%
@@ -36,7 +36,7 @@ p3_targets <- list(
                    TRUE ~ 0.02
                  )
                )),
-  
+
   tar_target(p3_conus_oconus_low_sf,
              purrr::pmap_dfr(p3_conus_oconus_group_simplification, function(...) {
                current_group = tibble(...)
@@ -46,7 +46,7 @@ p3_targets <- list(
              }) %>%
                st_make_valid() %>%
                mutate(data_id = paste(GEOID, 'low', sep = '_'))),
-  
+
   tar_target(p3_conus_oconus_high_sf,
              purrr::pmap_dfr(p3_conus_oconus_group_simplification, function(...) {
                current_group = tibble(...)
@@ -56,7 +56,7 @@ p3_targets <- list(
              }) %>%
                st_make_valid() %>%
                mutate(data_id = paste(GEOID, 'high', sep = '_'))),
-  
+
   tar_target(p3_conus_oconus_county_group_simplification,
              tibble(
                group = unique(p2_conus_oconus_sf$group)) %>%
@@ -66,7 +66,7 @@ p3_targets <- list(
                  group %in% c('AK') ~ 0.06,
                  TRUE ~ 0.04
                ))),
-  
+
   tar_target(p3_counties_conus_oconus_sf,
              # Simplify county polygons
              purrr::pmap_dfr(p3_conus_oconus_county_group_simplification, function(...) {
@@ -81,7 +81,7 @@ p3_targets <- list(
                add_centroids() %>%
                # Cast polygons to multipolygons to ensure consistent geometry
                sf::st_cast("MULTIPOLYGON")),
-  
+
   # Apply shifting to the sites
   tar_target(p3_inventory_sites_shifted,
              apply_shifts_to_sites(
@@ -89,31 +89,31 @@ p3_targets <- list(
                proj_str = p1_proj,
                states_shp = p1_nws_states_shp
              )),
-  
+
   # Apply shifting to the state/territory polygons
   tar_target(p3_spatial_shifted,
              generate_usa_map_data(proj_str = p1_proj,
                                    outline_states = TRUE,
                                    states_shp = p1_nws_states_shp)),
-  
+
   ##### TOPOJSONS #####
   # Requires system installation of mapshaper
   # https://github.com/mbloch/mapshaper
-  
-  # Export topojson for each state group in p3_conus_oconus_high_sf 
+
+  # Export topojson for each state group in p3_conus_oconus_high_sf
   # (high simplification for national map view)
   tar_target(p3_conus_oconus_high_topojsons,
-             export_to_topojson(data_sf = filter(p3_conus_oconus_high_sf, 
+             export_to_topojson(data_sf = filter(p3_conus_oconus_high_sf,
                                                  group == p3_conus_oconus_group_simplification$group),
                                 cols_to_keep = c('GEOID', 'NAME', 'data_id', 'geometry'),
                                 tmp_dir = '3_visualize/tmp',
-                                outfile = sprintf("public/states_polys_%s.json", 
+                                outfile = sprintf("public/states_polys_%s.json",
                                                   p3_conus_oconus_group_simplification$group),
                                 precision = 0.001),
              pattern = map(p3_conus_oconus_group_simplification),
              format = 'file'),
-  
-  # Export single topojson for p3_conus_oconus_low_sf 
+
+  # Export single topojson for p3_conus_oconus_low_sf
   # (low simplification for zoomed-in state views)
   tar_target(p3_conus_oconus_low_topojson,
              export_to_topojson(data_sf = p3_conus_oconus_low_sf,
@@ -122,17 +122,17 @@ p3_targets <- list(
                                 outfile = "public/states_polys_CONUS_OCONUS_zoom.json",
                                 precision = 0.001),
              format = 'file'),
-  
+
   # export county polygons to topojson
   tar_target(p3_counties_conus_oconus_topojson,
              export_to_topojson(data_sf = p3_counties_conus_oconus_sf,
-                                cols_to_keep = c('GEOID', 'NAMELSAD', 'STATE_NAME', 
+                                cols_to_keep = c('GEOID', 'NAMELSAD', 'STATE_NAME',
                                                  'geometry'),
                                 tmp_dir = '3_visualize/tmp',
                                 outfile = "public/counties_polys_CONUS_OCONUS_zoom.json",
                                 precision = 0.001),
              format = 'file'),
-  
+
   # export summarized county data w/ county centroid geometry
   tar_target(p3_county_centroids_conus_oconus_topojson,
              export_county_data_to_topojson(data = p2_facility_summary_county,
@@ -141,7 +141,7 @@ p3_targets <- list(
                                             outfile = "public/counties_centroids_CONUS_OCONUS.json",
                                             precision = 0.001),
              format = 'file'),
-  
+
   ##### Figure parameters #####
   tar_target(p3_font_legend,
              {
@@ -429,8 +429,8 @@ p3_targets <- list(
              generate_facility_bw_source_facet_map(supply_summary = p2_supply_summary,
                                                    supply_summary_state = p2_supply_summary_state,
                                                    supply_colors = p3_supply_colors_new,
-                                                   reorder_source_category = c("undetermined", "self supply", "combination", "public supply"),
-                                                   selected_facility_type = "Bottled Water",
+                                                   reorder_source_category = c("Undetermined", "Self-supply", "Combination", "Public supply"),
+                                                   selected_facility_type = "Bottled water",
                                                    width = 16, height = 9,
                                                    bkgd_color = 'white',
                                                    text_color = 'black',
@@ -440,7 +440,7 @@ p3_targets <- list(
   tar_target(p3_national_source_facilities_sankey_png,
              generate_national_sankey(supply_summary = p2_supply_summary,
                                      supply_colors = p3_supply_colors_new,
-                                     reorder_source_category = c("undetermined", "self supply", "combination", "public supply"),
+                                     reorder_source_category = c("Undetermined", "Self-supply", "Combination", "Public supply"),
                                      font_legend = p3_font_legend,
                                      width = 16, height = 9,
                                      bkgd_color = 'white',
@@ -451,20 +451,20 @@ p3_targets <- list(
 
   tar_target(p3_supply_ext_ss_colors,
              {
-               supply_colors <- c(p3_supply_colors_new[['undetermined']],
-                                  p3_supply_colors_new[['combination']],
+               supply_colors <- c(p3_supply_colors_new[['Undetermined']],
+                                  p3_supply_colors_new[['Combination']],
                                   '#90aed5', '#3f6ca6', '#213958',
-                                  p3_supply_colors_new[['public supply']])
+                                  p3_supply_colors_new[['Public supply']])
                names(supply_colors) <- p2_source_order
                return(supply_colors)
              }),
 
-  # CONUS bottled water percent and count facilities maps
+  # CONUS county level bottled water percent (choropleth) and count (proportional symbol) facilities maps
   tar_target(p3_source_perc_count_bottled_water_facet_map_png,
              generate_bw_conus_map(supply_summary_county_bw = p2_bw_inventory_sites_county_CONUS,
                                    conus_sf = p3_conus_sf,
                                    counties_sf = p3_counties_conus_sf,
-                                   reorder_source_category = c("self supply", "combination", "public supply"),
+                                   reorder_source_category = c("Self-supply", "Combination", "Public supply"),
                                    count_size_range = c(0.25, 8),
                                    count_size_limit = max(p2_bw_inventory_sites_county_CONUS$site_count),
                                    perc_alpha_range = c(0.1,1),
@@ -478,15 +478,41 @@ p3_targets <- list(
                                    font_legend = p3_font_legend,
                                    map_count_legend = 'Count of facilities',
                                    map_perc_legend = 'Percent of facilities',
-                                   outfile_template = '3_visualize/out/map_perc_count_bottled_water_map.png',
+                                   mobile = FALSE,
+                                   outfile_template = '3_visualize/out/perc_count_bottled_water_map.png',
+                                   dpi = 300),
+             format = 'file'),
+  # CONUS county level bottled water percent (choropleth) and count (proportional symbol) facilities maps - mobile maps
+  tar_target(p3_source_perc_count_bottled_water_facet_map_mobile_png,
+             generate_bw_conus_map(supply_summary_county_bw = p2_bw_inventory_sites_county_CONUS,
+                                   conus_sf = p3_conus_sf,
+                                   counties_sf = p3_counties_conus_sf,
+                                   reorder_source_category = c("Self-supply", "Combination", "Public supply"),
+                                   count_size_range = c(0.25, 8),
+                                   count_size_limit = max(p2_bw_inventory_sites_county_CONUS$site_count),
+                                   perc_alpha_range = c(0.1,1),
+                                   perc_alpha_limit = c(1, 100),
+                                   supply_colors = p3_supply_colors_new,
+                                   width = 8, height = 6,
+                                   bkgd_color = 'white',
+                                   text_color = 'black',
+                                   conus_outline_col = 'grey50',
+                                   counties_outline_col = "grey70",
+                                   font_legend = p3_font_legend,
+                                   map_count_legend = 'Count of facilities',
+                                   map_perc_legend = 'Percent of facilities',
+                                   mobile = TRUE,
+                                   outfile_template = '3_visualize/out/map_bottled_water_',
                                    dpi = 300),
              format = 'file'),
 
+
+  # Percent water source stacked barplots with expanded self supply facilities
   tar_target(p3_perc_expanded_self_supply_barplot_png,
              expanded_ss_barplot(source_summary = p2_source_summary,
                                  supply_colors = p3_supply_ext_ss_colors,
-                                 reorder_source_category = c("undetermined", "well", "spring",
-                                                             "surface water intake", "combination", "public supply"),
+                                 reorder_source_category = c("Undetermined", "Well", "Spring",
+                                                             "Surface water intake", "Combination", "Public supply"),
                                  font_legend = p3_font_legend,
                                  get_percent = TRUE,
                                  width = 16, height = 9,
@@ -496,16 +522,18 @@ p3_targets <- list(
                                  outfile_template = '3_visualize/out/perc_expanded_self_supply_barplot.png',
                                  dpi = 300),
              format = "file"),
+  # Site count stacked barplots of water sources with expanded self supply facilities
   tar_target(p3_count_expanded_self_supply_barplot_png,
              expanded_ss_barplot(source_summary = p2_source_summary,
                                  supply_colors = p3_supply_ext_ss_colors,
-                                 reorder_source_category = c("undetermined", "well", "spring",
-                                                             "surface water intake", "combination", "public supply"),
+                                 reorder_source_category = c("Undetermined", "Well", "Spring",
+                                                             "Surface water intake", "Combination", "Public supply"),
                                  font_legend = p3_font_legend,
                                  get_percent = FALSE,
                                  width = 16, height = 9,
                                  bkgd_color = 'white',
                                  text_color = 'black',
+                                 y_title = "Number of facilities",
                                  bracket_png_path = '3_visualize/in/bracket.png',
                                  outfile_template = '3_visualize/out/count_expanded_self_supply_barplot.png',
                                  dpi = 300),
@@ -521,61 +549,138 @@ p3_targets <- list(
                                                 outfile_template = '3_visualize/out/state_sources_facet.png',
                                                 dpi = 300),
              format = 'file'),
-  ######  state source faceted geofaceted treemaps   ######
-  tar_target(p3_source_facet_treemap_all_types_png,
-             generate_facility_source_facet_treemap(supply_summary = p2_supply_summary,
-                                                supply_summary_state = p2_supply_summary_state,
-                                                supply_colors = p3_supply_colors,
-                                                selected_facility_type = 'All',
-                                                width = 16, height = 9,
-                                                bkgd_color = 'white',
-                                                text_color = 'black',
-                                                font_legend = p3_font_legend,
-                                                outfile_template = '3_visualize/out/state_sources_facet_treemap.png',
-                                                dpi = 300),
+
+  ###### Water Use Figures - adapted from Alisha Chan's script ######
+  # Water use source colors
+  tar_target(p3_wu_availability_facilities_colors,
+             {
+               source_colors <- c("#E2A625", "#90aed5", "#3f6ca6", "#213958", "#787979", "black")
+               names(source_colors) <- c("Public supply", "Well", "Spring", "Surface water intake", "Combination", "Other")
+               return(source_colors)
+             }),
+  # Map displaying all bottling facilities and bottling facilities with water use data
+  tar_target(p3_wu_availability_map_png,
+             wu_availability_map(conus_sf = p3_conus_sf,
+                                 conus_outline_col = 'grey50',
+                                 sites_wu_summary_sf = p2_inventory_sites_wu_conus_summary_sf,
+                                 focal_color = "#1599CF",
+                                 inventory_fill_name = "All bottling facilities",
+                                 wu_fill_name = "Bottling facilities with water use data",
+                                 alpha = 0.5,
+                                 width = 16, height = 9,
+                                 bkgd_color = 'white',
+                                 text_color = 'black',
+                                 outfile_template = '3_visualize/out/bottled_water_availability_map.png',
+                                 dpi = 300),
+             format = 'file'),
+  # Beeswarm displaying annual bottled water use (MGD) - desktop version
+  tar_target(p3_annual_bw_wu_beeswarm_png,
+             annual_bw_wu_beeswarm(sites_wu_sf = p2_inventory_sites_wu_conus_sf,
+                                   selected_facility_type = "Bottled water",
+                                   axis_title = "Average annual water use by bottled water facilities, million gallons per day",
+                                   scale_y_lim =  c(0, 2),
+                                   scale_y_exp = c(0, 0.05),
+                                   scale_x_exp= c(0, -0.11),
+                                   mobile = FALSE,
+                                   leg_nrow = 1,
+                                   font_size = 22,
+                                   width = 16, height = 9,
+                                   supply_color = p3_wu_availability_facilities_colors,
+                                   bkgd_color = 'white',
+                                   text_color = 'black',
+                                   outfile_template = '3_visualize/out/annual_bottled_water_use_beeswarm.png',
+                                   dpi = 300),
+             format = 'file'),
+  # Beeswarm displaying annual bottled water use (MGD) - mobile version
+  tar_target(p3_annual_bw_wu_beeswarm_mobile_png,
+             annual_bw_wu_beeswarm(sites_wu_sf = p2_inventory_sites_wu_conus_sf,
+                                   selected_facility_type = "Bottled water",
+                                   axis_title = "Average annual water use by bottled water facilities, million gallons per day",
+                                   scale_y_lim =  c(0, 2),
+                                   scale_y_exp = c(0, 0.05),
+                                   scale_x_exp= c(0, -0.11),
+                                   mobile = TRUE,
+                                   leg_nrow = 2,
+                                   font_size = 20,
+                                   width = 9, height = 16,
+                                   supply_color = p3_wu_availability_facilities_colors,
+                                   bkgd_color = 'white',
+                                   text_color = 'black',
+                                   outfile_template = '3_visualize/out/annual_bottled_water_use_beeswarm_mobile.png',
+                                   dpi = 300),
+             format = 'file'),
+  # Combined barplots displaying % water use availability, % bottled water facilities, and % sources of bottled water facilities
+  tar_target(p3_water_use_availablity_barplots_png,
+             water_use_barplots(sites_wu_summary_sf = p2_inventory_sites_wu_conus_summary_sf,
+                                width = 16, height = 9,
+                                focal_color = "#1599CF",
+                                supply_facil_cols = p3_wu_availability_facilities_colors,
+                                bkgd_color = 'white',
+                                text_color = 'black',
+                                wu_avail_title = "Water use data availability",
+                                wu_types_title = "Types of facilities with water use data",
+                                wu_facil_title = "Sources for bottled water facilities\nwith water use data",
+                                bracket1_png_path = '3_visualize/in/bracket1_water_use.png',
+                                bracket2_png_path = '3_visualize/in/bracket2_water_use.png',
+                                outfile_template = '3_visualize/out/water_use_data_availability_barplots.png',
+                                dpi = 300),
              format = 'file'),
 
-  tar_target(p3_source_facet_treemap_pngs,
-             generate_facility_source_facet_treemap(supply_summary = p2_supply_summary,
-                                                supply_summary_state = p2_supply_summary_state,
-                                                supply_colors = p3_supply_colors,
-                                                selected_facility_type = p2_facility_types,
-                                                width = 16, height = 9,
-                                                bkgd_color = 'white',
-                                                text_color = 'black',
-                                                font_legend = p3_font_legend,
-                                                outfile_template = '3_visualize/out/state_sources_facet_treemap_%s.png',
-                                                dpi = 300),
-             pattern = map(p2_facility_types),
-             format = 'file'),
+  ######  state source faceted geofaceted treemaps   ######
+  # tar_target(p3_source_facet_treemap_all_types_png,
+  #            generate_facility_source_facet_treemap(supply_summary = p2_supply_summary,
+  #                                               supply_summary_state = p2_supply_summary_state,
+  #                                               supply_colors = p3_supply_colors,
+  #                                               selected_facility_type = 'All',
+  #                                               width = 16, height = 9,
+  #                                               bkgd_color = 'white',
+  #                                               text_color = 'black',
+  #                                               font_legend = p3_font_legend,
+  #                                               outfile_template = '3_visualize/out/state_sources_facet_treemap.png',
+  #                                               dpi = 300),
+  #            format = 'file'),
+  #
+  # tar_target(p3_source_facet_treemap_pngs,
+  #            generate_facility_source_facet_treemap(supply_summary = p2_supply_summary,
+  #                                               supply_summary_state = p2_supply_summary_state,
+  #                                               supply_colors = p3_supply_colors,
+  #                                               selected_facility_type = p2_facility_types,
+  #                                               width = 16, height = 9,
+  #                                               bkgd_color = 'white',
+  #                                               text_color = 'black',
+  #                                               font_legend = p3_font_legend,
+  #                                               outfile_template = '3_visualize/out/state_sources_facet_treemap_%s.png',
+  #                                               dpi = 300),
+  #            pattern = map(p2_facility_types),
+  #            format = 'file'),
 
   ######  individual state level treemaps of water source for all facilities output in subfolder: `3_visualize/out/state_source_treemap`  ######
-  tar_target(p3_source_treemap_all_types_png,
-             generate_facility_source_treemap(supply_summary = p2_supply_summary,
-                                              supply_summary_state = p2_supply_summary_state,
-                                              supply_colors = p3_supply_colors,
-                                              selected_facility_type = 'All',
-                                              width = 6, height = 4,
-                                              bkgd_color = 'white',
-                                              text_color = 'black',
-                                              font_legend = p3_font_legend,
-                                              outfile_subfolder = '3_visualize/out/state_source_treemap_all',
-                                              dpi = 300),
-             format = 'file'),
-
-  ######  individual state level waffle charts of water source for all facilities output in subfolder: `3_visualize/out/state_source_waffle`   ######
-  tar_target(p3_source_waffle_all_types_png,
-             generate_facility_source_waffle(supply_summary = p2_supply_summary,
-                                              supply_summary_state = p2_supply_summary_state,
-                                              supply_colors = p3_supply_colors,
-                                              selected_facility_type = 'All',
-                                              width = 6, height = 4,
-                                              bkgd_color = 'white',
-                                              text_color = 'black',
-                                              font_legend = p3_font_legend,
-                                              outfile_subfolder = '3_visualize/out/state_source_waffle_all',
-                                              dpi = 300),
-             format = 'file'),
+  # tar_target(p3_source_treemap_all_types_png,
+  #            generate_facility_source_treemap(supply_summary = p2_supply_summary,
+  #                                             supply_summary_state = p2_supply_summary_state,
+  #                                             supply_colors = p3_supply_colors,
+  #                                             selected_facility_type = 'All',
+  #                                             width = 6, height = 4,
+  #                                             bkgd_color = 'white',
+  #                                             text_color = 'black',
+  #                                             font_legend = p3_font_legend,
+  #                                             outfile_subfolder = '3_visualize/out/state_source_treemap_all',
+  #                                             dpi = 300),
+  #            format = 'file'),
+  #
+  # ######  individual state level waffle charts of water source for all facilities output in subfolder: `3_visualize/out/state_source_waffle`   ######
+  # tar_target(p3_source_waffle_all_types_png,
+  #            generate_facility_source_waffle(supply_summary = p2_supply_summary,
+  #                                             supply_summary_state = p2_supply_summary_state,
+  #                                             supply_colors = p3_supply_colors,
+  #                                             selected_facility_type = 'All',
+  #                                             width = 6, height = 4,
+  #                                             bkgd_color = 'white',
+  #                                             text_color = 'black',
+  #                                             font_legend = p3_font_legend,
+  #                                             outfile_subfolder = '3_visualize/out/state_source_waffle_all',
+  #                                             dpi = 300),
+  #            format = 'file'),
 
   ##### U.S. map with state abbreviation shift   #####
   tar_target(p3_map_shift_state_abbr,
