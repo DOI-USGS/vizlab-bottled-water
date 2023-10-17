@@ -17,7 +17,7 @@
       <div id="oconus-container" />
       <div id="chart-container" />
       <div id="map-label-container">
-        <mapLabels 
+        <mapLabels
           id="map-inset-svg"
           class="map labels"
         />
@@ -104,12 +104,12 @@ export default {
       currentScale: null,
     }
   },
-  mounted(){      
+  mounted(){
     this.d3 = Object.assign(d3Base);
 
     const self = this;
-    this.loadData() // read in data 
- 
+    this.loadData() // read in data
+
   },
   /* computed: {
     computedDropdownOptions() {
@@ -154,7 +154,7 @@ export default {
       this.dataAll = data[0];
 
       // High simplification state polgyons, for national view
-      // Loaded separately so that CONUS, AK, and HI jsons can be used 
+      // Loaded separately so that CONUS, AK, and HI jsons can be used
       // to arrange national map view in `initMap()`
       const statePolysCONUStopoJSON = data[1];
       this.statePolysCONUSJSON = topojson.feature(statePolysCONUStopoJSON, statePolysCONUStopoJSON.objects.states_polys_CONUS)
@@ -184,26 +184,26 @@ export default {
       // County polygons, for zoom view
       const countyPolysZoomTopoJSON = data[8];
       this.countyPolysZoom = topojson.feature(countyPolysZoomTopoJSON, countyPolysZoomTopoJSON.objects.counties_polys_CONUS_OCONUS_zoom).features;
-      
+
       // County centroids, with county facility counts data
       const countyPointsTopoJSON = data[9];
       this.countyPoints = topojson.feature(countyPointsTopoJSON, countyPointsTopoJSON.objects.counties_centroids_CONUS_OCONUS).features;
 
       // Concatenate low simplification state polygons into single object
       this.statePolys = statePolysCONUS.concat(statePolysAK, statePolysHI, statePolysGUMP, statePolysPRVI, statePolysAS)
-      
+
       // Set default and current map view
       this.defaultViewName = 'all states and territories\xa0\xa0\xa0▾'
       this.currentState = this.defaultViewName;
 
       // Set current scale for view (1 = not zoomed)
       this.currentScale = 1;
-      
+
       // Set default and current facility type
-      this.currentType = 'Bottled Water'
-      this.defaultType = 'Bottled Water'
+      this.currentType = 'Bottled water'
+      this.defaultType = 'Bottled water'
       this.dropdownOptions = this.stateList
-      
+
       // Set up dropdown
       // get list of unique states
       this.stateList = [... new Set(this.dataAll.map(d => d.NAME))]
@@ -227,7 +227,7 @@ export default {
       }
       this.mapDimensions.boundedWidth = this.mapDimensions.width - this.mapDimensions.margin.left - this.mapDimensions.margin.right
       this.mapDimensions.boundedHeight = this.mapDimensions.height - this.mapDimensions.margin.top - this.mapDimensions.margin.bottom
-        
+
       // Initialize map
       self.initMap()
 
@@ -274,10 +274,10 @@ export default {
         .attr("id", "state-dropdown")
         .attr("class", "dropdown")
         .attr("contenteditable", "true")
-        .on("change", function() { 
+        .on("change", function() {
           this.selectedText = this.options[this.selectedIndex].text;
           console.log(this.selectedText.length)
-          this.style.width = 5 + (this.selectedText.length * 1.2) + "rem"; 
+          this.style.width = 5 + (this.selectedText.length * 1.2) + "rem";
 
           let selectedArea = this.value
 
@@ -288,7 +288,7 @@ export default {
             // If dropdown has _changed_ to a specific state that means we need to zoom into that state
             // The zoom function will take care of redrawing the map and histogram
             let stateData = self.statePolys.filter(d => d.properties.NAME === this.value)
-            
+
             let zoomPath;
             switch(selectedArea) {
               case 'Alaska':
@@ -315,10 +315,10 @@ export default {
               default:
                 zoomPath = self.mapPath;
             }
-            
+
             self.zoomToState(stateData[0], zoomPath, 'dropdown')
           }
-          // self.drawHistogram(selectedArea) 
+          // self.drawHistogram(selectedArea)
           // self.drawCounties(selectedArea, this.currentScale)
           // self.drawMap(selectedArea, this.currentScale)
           // self.drawCountyPoints(selectedArea, this.currentScale, self.currentType)
@@ -385,7 +385,7 @@ export default {
       const boundsStatePolysCONUS = this.d3.geoBounds(this.statePolysCONUSJSON)
       const conusWidth = boundsStatePolysCONUS[1][0] - boundsStatePolysCONUS[0][0]
       const conusHeight = boundsStatePolysCONUS[1][1] - boundsStatePolysCONUS[0][1]
-      
+
       const boundsStatePolysAK = this.d3.geoBounds(this.statePolysAKJSON)
       const akWidth = (180 - Math.abs(boundsStatePolysAK[1][0])) + (180 - boundsStatePolysAK[0][0])
       const akHeight = boundsStatePolysAK[1][1] - boundsStatePolysAK[0][1]
@@ -419,7 +419,7 @@ export default {
       //   .projection(mapProjectionLocator);
 
       // CONUS map projection
-      this.mapProjection = this.d3.geoConicEqualArea() 
+      this.mapProjection = this.d3.geoConicEqualArea()
         .center([0, 38])
         .rotate([96, 0, 0])
         .parallels([29.5, 45.5])
@@ -514,7 +514,7 @@ export default {
         .attr("role", "list")
         .attr("tabindex", 0)
         .attr("aria-label", "state polygons")
-      
+
     },
     initChart() {
       // draw canvas for histogram
@@ -539,7 +539,7 @@ export default {
         }px, ${
           this.chartDimensions.margin.top
         }px)`)
-      
+
       // init static elements for histogram
       this.chartBounds.append("g")
           .attr("class", "rects")
@@ -600,10 +600,10 @@ export default {
         })
         data = dataArray
       } else {
-        data = rawData.filter(d => 
+        data = rawData.filter(d =>
           d.NAME === state)
       }
-      
+
       // accessor functions
       const xAccessor = d => d.WB_TYPE
       const yAccessor = d => parseInt(d.site_count) // # values in each bin
@@ -614,12 +614,12 @@ export default {
       this.d3.select("#chart-container").select("Title")
         .text(`Bar chart of distribution of facility types for ${state}`)
 
-      // create scales   
+      // create scales
       const xScale = this.d3.scaleBand()
         .rangeRound([0, this.chartDimensions.boundedWidth])
         .domain(dataTypes) // if want to only include types in each state: data.map(d => d.WB_TYPE)
         .padding(0.1) //0.05
-      
+
       const yScale = this.d3.scaleLinear()
         .domain([0, this.d3.max(data, yAccessor)]) // use y accessor w/ raw data
         .range([this.chartDimensions.boundedHeight, 0])
@@ -628,11 +628,11 @@ export default {
       const colorScale = this.d3.scaleOrdinal()
         .domain([... new Set(data.map(d => colorAccessor(d)))].sort())
         .range(["darkmagenta","teal","gold","indianred","steelblue","pink"])
-      
+
       // draw data
       let rectGroups = self.chartBounds.selectAll(".rects")
         .selectAll(".rect")
-        .data(data, d => d.WB_TYPE)        
+        .data(data, d => d.WB_TYPE)
 
       const oldRectGroups = rectGroups.exit()
 
@@ -662,23 +662,23 @@ export default {
         }`)
 
       // append rects and set default y and height, so that when appear, come up from bottom
-      newRectGroups.append("rect") 
+      newRectGroups.append("rect")
         .attr("x", d => xScale(xAccessor(d)))
         .attr("y", this.chartDimensions.boundedHeight)
         .attr("width", xScale.bandwidth())
         .attr("height", 0)
         .style("fill", d => d.WB_TYPE === this.currentType ? this.focalColor : this.defaultColor) //colorScale(colorAccessor(d)))
-      
+
       // append text and set default position
       newRectGroups.append("text")
         .attr("x", d => xScale(xAccessor(d)) + xScale.bandwidth()/2)
         .attr("y", this.chartDimensions.boundedHeight)
-      
+
       // update rectGroups to include new points
       rectGroups = newRectGroups.merge(rectGroups)
 
       const barRects = rectGroups.select("rect")
-      
+
       barRects.transition(self.getUpdateTransition())
           .attr("id", d => 'rect-' + identifierAccessor(d))
           .attr("x", d => xScale(xAccessor(d)))
@@ -687,7 +687,7 @@ export default {
           .attr("height", d => this.chartDimensions.boundedHeight - yScale(yAccessor(d)))
           .style("fill", d => d.WB_TYPE === this.currentType ? this.focalColor : this.defaultColor) // colorScale(colorAccessor(d)))
           .attr("class", d => 'bar ' + identifierAccessor(d))
-      
+
       barRects
         .on("click", (event, d) => {
           this.currentType = colorAccessor(d)
@@ -720,7 +720,7 @@ export default {
 
       self.chartBounds.selectAll(".rects")
         .on("mouseleave", (event, d) => {
-          this.currentType = this.defaultType 
+          this.currentType = this.defaultType
           let currentIdentifier = this.currentType.replace(' ', '-')
           self.drawCountyPoints(state, this.currentScale, this.currentType)
 
@@ -834,9 +834,9 @@ export default {
       //   selectedMapPath = this.mapPath
       //   featureBounds = self.calculateScaleTranslation(data, selectedMapPath)
       } else {
-        data = this.statePolysZoom.filter(d => 
+        data = this.statePolysZoom.filter(d =>
           d.properties.NAME === state)
-        
+
         // Could set path for area here
         // let stateMapPath;
         // switch(state) {
@@ -888,7 +888,7 @@ export default {
         .attr("tabindex", "0")
         .attr("role", "listitem")
         .attr("aria-label", d => d.properties.NAME)
-      
+
       let stateStrokeWidth = state === this.defaultViewName ? 0.5 : 1 * 1/scale
       let stateStrokeColor = state === this.defaultViewName ? "#949494" : "#757575"
       newStateGroups.append("path")
@@ -975,7 +975,7 @@ export default {
           .style("stroke-width", stateStrokeWidth)
           .style("fill", "#ffffff") // "None"
           .style("fill-opacity", 0)
-      
+
 
       // const allStates = d3.selectAll(".state-paths")
       // if (currentState === this.defaultViewName) {
@@ -1017,7 +1017,7 @@ export default {
       //     .style("fill", "None")
       //     .style("stroke", "#636363")
       //     .style("stroke-width", 1)
-        
+
       //   currentState = state
       // }
 
@@ -1041,15 +1041,15 @@ export default {
     drawCounties(state, scale) {
       const self = this;
 
-      let data; 
+      let data;
 
       if (state === this.defaultViewName) {
         data = this.countyPolysZoom
       } else {
-        data = this.countyPolysZoom.filter(d => 
+        data = this.countyPolysZoom.filter(d =>
           d.properties.STATE_NAME === state)
       }
-      
+
       this.countyGroups = this.mapBounds.selectAll(".counties")
         .selectAll(".county")
         .data(data, d => d.properties.GEOID)
@@ -1103,7 +1103,7 @@ export default {
       this.countyGroups = newCountyGroups.merge(this.countyGroups)
 
       const countyShapes = this.countyGroups.select("path")
-      
+
       countyShapes.transition(self.getUpdateTransition())
         .style("stroke", countyStrokeColor)
         .style("stroke-width", countyStrokeWidth)
@@ -1149,17 +1149,17 @@ export default {
           // Get max value for nation, in any category except 'All'
           dataMax = this.d3.max(this.countyPoints, d => parseInt(d.properties.max_count))
         }
-        
+
       } else {
-        
+
         dataPoints = this.countyPoints.filter(d => d.properties.STATE_NAME === state)
         // Get max value for state, in any category except 'All'
         dataMax = this.d3.max(dataPoints, d => parseInt(d.properties.max_count))
       }
-      
-      // create scales   
+
+      // create scales
       let scaleFactor = scale === 1 ? 1 : 2/scale
-      
+
       const sizeScale = this.d3.scaleLinear()
         .range([0.8 * scaleFactor, 11 * scaleFactor])
         .domain([1, dataMax])
@@ -1207,7 +1207,7 @@ export default {
         } facilities in ${
           d.properties.NAMELSAD
         }`)
-    
+
       // append points
       newCountyCentroidGroups.append("path")
         .attr("id", d => "county-point-" + d.properties.GEOID)
@@ -1238,7 +1238,7 @@ export default {
       this.countyCentroidGroups = newCountyCentroidGroups.merge(this.countyCentroidGroups)
 
       const countyCentroidPoints = this.countyCentroidGroups.select("path")
-      
+
       countyCentroidPoints
           .transition(self.getUpdateTransition())
           .attr("d", d => {
@@ -1335,7 +1335,7 @@ export default {
     },
     zoomToState(d, path, callMethod) {
       const self = this;
-      
+
       // Store name of selected state
       let zoomedState = d.properties.NAME
 
@@ -1376,7 +1376,7 @@ export default {
         //   self.mapBounds.attr("stroke-width", 1 / transform.k);
         //   console.log("transformed mapBounds")
         // }
-        
+
         // const zoom = this.d3.zoom()
         //   // .on('zoom', (event) => {
         //   //   this.mapBounds.attr("transform", event.transform);
@@ -1408,11 +1408,11 @@ export default {
         self.drawCounties(zoomedState, this.currentScale)
         self.drawMap(zoomedState, this.currentScale)
         self.drawHistogram(zoomedState)
-        
+
         // Transition map groups
         this.stateGroups.transition(self.getUpdateTransition)
           .attr("transform", "translate(" + translate + ") scale(" + scale + ")");
-          
+
         this.countyGroups.transition(self.getUpdateTransition)
           .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
 
@@ -1452,7 +1452,7 @@ export default {
           y = (bounds[0][1] + bounds[1][1]) / 2,
           scale = .9 / Math.max(dx / this.mapDimensions.width, dy / this.mapDimensions.height),
           translate = [this.mapDimensions.width / 2 - scale * x, this.mapDimensions.height / 2 - scale * y];
-        
+
         // set global scale variable
         this.currentScale = scale;
 
@@ -1461,7 +1461,7 @@ export default {
         self.drawCounties(zoomedState, this.currentScale)
         self.drawMap(zoomedState, this.currentScale)
         self.drawHistogram(zoomedState)
-        
+
         // Transition map groups
         this.stateGroups.transition(self.getUpdateTransition)
           .attr("transform", "translate(" + translate + ") scale(" + scale + ")");
@@ -1583,7 +1583,7 @@ export default {
         "map";
       position: relative;
       padding: 0.5rem 0.5rem 0.5rem 0.5rem;
-    }  
+    }
   }
   #title {
     grid-area: title;
