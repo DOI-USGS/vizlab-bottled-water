@@ -41,19 +41,6 @@
       </div>
       <sourceBarplots id="source-barplots" />
       <div
-        id="img-ws-national-types"
-        class="img-container"
-      >
-        <img
-          class="supply-barplot"
-          src="../assets/images/perc_expanded_self_supply_barplot.png"
-        >
-        <img
-          class="supply-barplot"
-          src="../assets/images/count_expanded_self_supply_barplot.png"
-        >
-      </div>
-      <div
         id="text3"
         class="text-container"
       >
