@@ -59,21 +59,6 @@
         <p v-html="sourceText.paragraph3" />
       </div>
       <div
-        v-if="!mobileView"
-        id="source-maps-container"
-      >
-        <div
-          id="img-source-count-percent"
-          class="img-container"
-        >
-          <img
-            class="source-map"
-            src="../assets/images/perc_count_bottled_water_map.png"
-          >
-        </div>
-      </div>
-      <div
-        v-if="mobileView"
         id="grid-container-source-maps"
       >
         <div
@@ -241,20 +226,30 @@
   #grid-container-source-maps {
     grid-area: source-maps;
     display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: max-content max-content max-content max-content max-content max-content;
-    row-gap: 3vh;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: max-content max-content max-content;
+    row-gap: 5vh;
     grid-template-areas:
-      "count-self"
-      "perc-self"
-      "count-combo"
-      "perc-combo"
-      "count-public"
-      "perc-public";
+      "count-self perc-self"
+      "count-combo perc-combo"
+      "count-public perc-public";
     justify-content: center;
     align-content: center;
-    margin: auto;
+    margin: 4rem auto 2rem auto;
     max-width: 1600px;
+    @media screen and (max-width: 600px) {
+      grid-template-columns: 1fr;
+      grid-template-rows: max-content max-content max-content max-content max-content max-content;
+      row-gap: 3vh;
+      grid-template-areas:
+        "count-self"
+        "perc-self"
+        "count-combo"
+        "perc-combo"
+        "count-public"
+        "perc-public";
+      margin: 3rem auto 3rem auto;
+    }
   }
   #img-source-self-count {
     grid-area: count-self;
@@ -275,6 +270,9 @@
     grid-area: perc-public;
   }
   .source-map {
-    max-width: 100%;
+    max-width: 90%;
+    @media screen and (max-width: 600px) {
+      max-width: 100%;
+    }
   }
 </style>
