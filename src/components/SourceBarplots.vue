@@ -19,6 +19,8 @@ export default {
       d3: null,
       publicPath: import.meta.env.BASE_URL, // find the files when on different deployment roots
       mobileView: isMobile, // test for mobile
+      sourceSummaryCount: null,
+      sourceSummaryPerc: null,
       summaryType: null,
       barplotDimensions: null,
       barplotBounds: null,
@@ -50,9 +52,21 @@ export default {
     },
     callback(data){
       const self = this;
-
+      
       // Assign data
       const sourceSummary = data[0];
+      
+      // Build data series for stacked bar charts
+      // Count
+      this.sourceSummaryCount = this.d3.stack()
+        .keys(this.d3.union(sourceSummary.map(d => d.water_source))) // distinct series keys, in input order
+        .value(([, D], key) => D.get(key).site_count) // get value for each series key and stack
+        (this.d3.index(sourceSummary, d => d.WB_TYPE, d => d.water_source)); // group by stack then series key
+      // Percent
+      this.sourceSummaryPerc = this.d3.stack()
+        .keys(this.d3.union(sourceSummary.map(d => d.water_source))) // distinct series keys, in input order
+        .value(([, D], key) => D.get(key).percent) // get value for each series key and stack
+        (this.d3.index(sourceSummary, d => d.WB_TYPE, d => d.water_source)); // group by stack then series key
 
       // Set default summaryType
       this.summaryType = 'Count'
@@ -110,7 +124,7 @@ export default {
 
       // scale for the x-axis
       this.xScale = this.d3.scaleBand()
-        .domain(data.map(d => d.WB_TYPE).sort(this.d3.ascending))
+        .domain(this.d3.union(data.map(d => d.WB_TYPE).sort(this.d3.ascending)))
         .range([0, this.barplotDimensions.boundedWidth])
         .padding(0.1);
 
@@ -134,12 +148,12 @@ export default {
       const self = this;
 
       const categoryColors = {
-        'public supply': '#E2A625',
-        'surface water intake': '#213958',
-        'spring': '#3f6ca6',
-        'well': '#90aed5',
-        'combination': '#787979',
-        'undetermined': '#D4D4D4'
+        'Public supply': '#E2A625',
+        'Surface water intake': '#213958',
+        'Spring': '#3f6ca6',
+        'Well': '#90aed5',
+        'Combination': '#787979',
+        'Undetermined': '#D4D4D4'
       };
 
       const waterSources = Array.from(new Set(data.map(d => d.water_source)));
@@ -153,14 +167,14 @@ export default {
       const self = this;
 
       // Accessor function
-      const xAccessor = d => d.WB_TYPE
-      const yAccessor = d => currentSummaryType === 'Count' ? parseInt(d.site_count) : d.percent // # values in each bin
-      const colorAccessor = d => d.water_source
+      const series = currentSummaryType === 'Count' ? this.sourceSummaryCount : this.sourceSummaryPerc
 
-      const yScale = this.d3.scaleLinear()
-        .domain([0, this.d3.max(data, yAccessor)]) // use y accessor w/ raw data
+      let yScale = this.d3.scaleLinear()
+        .domain([0, this.d3.max(series, d => this.d3.max(d, d => d[1]))])
         .range([this.barplotDimensions.boundedHeight, 0])
-        .nice()
+        // .nice()
+      
+      yScale = currentSummaryType === 'Count' ? yScale.nice() : yScale
 
       // y-axis
       this.barplotBounds.append("g")
@@ -171,16 +185,21 @@ export default {
 
       const rectGroups = self.barplotBounds.selectAll(".rects")
         .selectAll(".rect")
-        .data(data, d => d.WB_TYPE)
-        .enter().append("g")
-        .attr("class", d => "rect " + xAccessor(d) + " " + colorAccessor(d))
+        .data(series)
+        .enter()
+        .append("g")
+        .attr("class", d => d.key)
 
-      rectGroups.append("rect") 
-        .attr("x", d => this.xScale(xAccessor(d)))
-        .attr("y", d => yScale(yAccessor(d))) //this.barplotDimensions.boundedHeight
+      rectGroups.selectAll('rect')
+        .data(D => D.map(d => (d.key = D.key, d)))
+        .enter()
+        .append("rect") 
+        .attr("class", d => d.key + ' ' + d.data[0])
+        .attr("x", d => this.xScale(d.data[0]))
+        .attr("y", d => yScale(d[1]))
         .attr("width", this.xScale.bandwidth())
-        .attr("height", d => this.barplotDimensions.boundedHeight - yScale(yAccessor(d))) //0
-        .style("fill", d => colorScale(colorAccessor(d)))
+        .attr("height", d => yScale(d[0]) - yScale(d[1]))
+        .style("fill", d => colorScale(d.key))
     },
     addLegend() {
 
