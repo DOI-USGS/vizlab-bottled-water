@@ -74,17 +74,17 @@ export default {
 </script>
 
 <style scoped>
-.dropdown {
-  position: relative;
-  width: 50vw;
-}
-.dropdown-content {
-  position: absolute;
-  background-color: white;
-  width: 100%;
-  border: 1px solid #dbdbdb;
-  border-radius: 3px;
-  box-shadow: 2px 2px 3px rgba(0,0,0,.1);
-  z-index: 1;
-}
+  .dropdown {
+    position: relative;
+    width: 50vw;
+  }
+  .dropdown-content {
+    position: absolute;
+    background-color: white;
+    width: 100%;
+    border: 1px solid #dbdbdb;
+    border-radius: 3px;
+    box-shadow: 2px 2px 3px rgba(0,0,0,.1);
+    z-index: 1;
+  }
 </style>

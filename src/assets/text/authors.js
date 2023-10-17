@@ -22,16 +22,7 @@ export default {
         initials: 'EA',
         profile_link: 'https://www.usgs.gov/staff-profiles/elmera-azadpour',
         role: 'contributor',
-        contribution: 'created data visualizations of water source data'
-      },
-      {
-        firstName: 'Alisha',
-        lastName: 'Chan',
-        fullName: 'Alisha Chan',
-        initials: 'AC',
-        profile_link: 'https://www.usgs.gov/staff-profiles/alisha-yee-chan',
-        role: 'contributor',
-        contribution: 'created data visualizations of water use data'
+        contribution: 'created data visualizations of water source data and water use data'
       },
       {
         firstName: 'Mandie',
@@ -43,13 +34,22 @@ export default {
         contribution: 'wrote the narrative for the site and created the infographics'
       },
       {
+        firstName: 'Alisha',
+        lastName: 'Chan',
+        fullName: 'Alisha Chan',
+        initials: 'AC',
+        profile_link: 'https://www.usgs.gov/staff-profiles/alisha-yee-chan',
+        role: 'contributor',
+        contribution: 'created data visualizations of water use data'
+      },
+      {
         firstName: 'Cee',
         lastName: 'Nell',
         fullName: 'Cee Nell',
         initials: 'CN',
         profile_link: 'https://www.usgs.gov/staff-profiles/cee-nell',
         role: 'team lead',
-        contribution: 'contributed to site development'
+        contribution: 'contributed to site design and development'
       },
       {
         firstName: 'Cheryl Dieter',
@@ -58,7 +58,7 @@ export default {
         initials: 'CD',
         profile_link: 'https://www.usgs.gov/staff-profiles/cheryl-dieter',
         role: 'SME',
-        contribution: 'was an SME'
+        contribution: 'advised on site content as a subject matter expert'
       },
       {
         firstName: 'Cheryl Buchwald',
@@ -67,7 +67,7 @@ export default {
         initials: 'CB',
         profile_link: 'https://www.usgs.gov/staff-profiles/cheryl-a-buchwald',
         role: 'SME',
-        contribution: 'was an SME'
+        contribution: 'advised on site content as a subject matter expert'
       }
       ]
 };
