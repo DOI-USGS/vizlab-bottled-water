@@ -1,14 +1,5 @@
-<<<<<<< Updated upstream
-NAME,state_abbr,WB_TYPE,site_count
-=======
-<<<<<<< Updated upstream
-state_name,state_abbr,WB_TYPE,site_count
->>>>>>> Stashed changes
-Alabama,AL,Bottled Water,81
-=======
 NAME,state_abbr,WB_TYPE,site_count
 Alabama,AL,Bottled water,81
->>>>>>> Stashed changes
 Alabama,AL,Brewery,95
 Alabama,AL,Distillery,22
 Alabama,AL,Ice,17
@@ -277,20 +268,10 @@ Texas,TX,Distillery,340
 Texas,TX,Ice,57
 Texas,TX,Soft drinks,169
 Texas,TX,Winery,291
-<<<<<<< Updated upstream
-United States Virgin Islands,VI,Bottled Water,1
-United States Virgin Islands,VI,Distillery,2
-United States Virgin Islands,VI,Ice,1
-=======
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-Utah,UT,Bottled Water,76
-=======
 United States Virgin Islands,VI,Bottled water,1
 United States Virgin Islands,VI,Distillery,2
 United States Virgin Islands,VI,Ice,1
 Utah,UT,Bottled water,76
->>>>>>> Stashed changes
 Utah,UT,Brewery,66
 Utah,UT,Distillery,10
 Utah,UT,Ice,3
@@ -302,17 +283,7 @@ Vermont,VT,Distillery,22
 Vermont,VT,Ice,3
 Vermont,VT,Soft drinks,5
 Vermont,VT,Winery,11
-<<<<<<< Updated upstream
-=======
-<<<<<<< Updated upstream
-Virgin Islands,VI,Bottled Water,1
-Virgin Islands,VI,Distillery,2
-Virgin Islands,VI,Ice,1
->>>>>>> Stashed changes
-Virginia,VA,Bottled Water,138
-=======
 Virginia,VA,Bottled water,138
->>>>>>> Stashed changes
 Virginia,VA,Brewery,380
 Virginia,VA,Distillery,61
 Virginia,VA,Ice,11
