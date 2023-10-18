@@ -1,6 +1,7 @@
 <template>
     <section>
       <div id="grid-container-barplots">
+        <div id="toggle-container" />
         <div id="barplot-container" />
       </div>
     </section>
@@ -70,6 +71,9 @@ export default {
 
       // Set default summaryType
       this.summaryType = 'Count'
+
+      // Add toggle
+      self.addToggle()
 
       // Initialize barplot
       self.initBarplot(sourceSummary)
@@ -203,13 +207,132 @@ export default {
     },
     addLegend() {
 
+    },
+    addToggle() {
+      // https://codepen.io/meijer3/pen/WzweRo
+
+      const self = this;
+
+      const container = this.d3.select('#toggle-container')
+
+      container.append('div')
+        .attr('class','graph-buttons-switch')
+        .html(self.createSwitch('Count','Percent'))
+      
+      this.d3.selectAll('.graph-buttons-switch label').on("mousedown touchstart", function(event) {
+        var dragger = self.d3.select(this.parentNode)
+        var startx = 0
+        //d3.event.preventDefault(); // disable text dragging
+        dragger
+          .on("mousedown touchstart", function(event) {
+            startx = self.d3.pointer(event)[0]
+            // If start on right, correct
+            startx = (startx<dragger.node().getBoundingClientRect().width /2)? startx:startx-(dragger.node().getBoundingClientRect().width /2)
+
+          })
+          .on("mousemove touchmove", function(event) {
+            var xcoord = self.d3.pointer(event)[0]-startx
+
+            xcoord = ( xcoord > dragger.node().getBoundingClientRect().width /2) ? dragger.node().getBoundingClientRect().width /2 : xcoord
+            xcoord = ( xcoord < 0) ? 2 : xcoord
+            dragger.select('.graph-buttons-switch-selection').attr('style','left:'+xcoord+'px;');
+            
+          })
+          .on("mouseup touchend", function (event) {
+            dragger.on("mousedown touchstart", null)
+            dragger.on("touchmove mousemove", null) 
+            dragger.on("mouseup touchend", null)
+            var xcoord = self.d3.pointer(event)[0]
+            // over width of first label? 0 left | 1 right
+            var id = (xcoord < dragger.select('label').node().getBoundingClientRect().width) ? 0 : 1;
+            
+            dragger
+              .selectAll('input')
+              .filter(function(d, i) { return i == id; }).node().checked = true;
+
+            var chos = dragger.selectAll('input').filter(function(d, i) { return i == id; })
+            console.log(chos.node().value, chos.node().checked, self.d3.select('#id_Percent').property('checked'))
+            //remove styling
+            dragger.select('.graph-buttons-switch-selection').attr('style','');
+            
+            // Do action
+            console.log(`Current selection is ${chos.node().value}`)
+          });          
+      });
+    },
+    createSwitch(def,alt){
+      var html = '<input type="radio" class="graph-buttons-switch-input" name="'+def+alt+'" value="'+def+'" id="id_'+def+'" checked><label for="id_'+def+'" class="graph-buttons-switch-label graph-buttons-switch-label-off">'+def+'</label><input type="radio" class="graph-buttons-switch-input" name="'+def+alt+'" value="'+alt+'" id="id_'+alt+'"><label for="id_'+alt+'" class="graph-buttons-switch-label graph-buttons-switch-label-on" >'+alt+'</label><span class="graph-buttons-switch-selection"></span>';
+      return html
+    },
+    funct(e) {
+      const self = this;
+
+      var r = this.d3.select('#response')
+      r.transition().duration(100)
+        .style('opacity','0').transition()
+      .text(e).transition().duration(100).style('opacity','1')
     }
   }
 }
 </script>
 <style lang="scss">
-// Elements added w/ D3
+  // Elements added w/ D3
+  .graph-buttons-switch {
+    position: relative;
+    background: rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px rgba(255, 255, 255, 0.1);
+
+      -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+      -khtml-user-select: none; /* Konqueror HTML */
+        -moz-user-select: none; /* Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome and Opera */
+  }
+  .graph-buttons-switch-label {
+    position: relative;
+    z-index: 2;
+    float: left;
+    width: 78px;
+    line-height: 26px;
+    // font-size: 13px;
+    // color: rgba(255, 255, 255, 0.85);
+    text-align: center;
+    cursor: pointer;
+  }
+  .graph-buttons-switch-label-off {padding-left: 2px;}
+  .graph-buttons-switch-label-on {padding-right: 2px;}
+  .graph-buttons-switch-input {display: none;}
+  .graph-buttons-switch-input:checked + .graph-buttons-switch-label {
+    font-weight: bold;
+    // color: rgba(0, 0, 0, 0.65);
+    /*text-shadow: 0 1px rgba(255, 255, 255, 0.25);*/
+    -webkit-transition: 0.15s ease-out;
+    -moz-transition: 0.15s ease-out;
+    -o-transition: 0.15s ease-out;
+    transition: 0.15s ease-out;
+  }
+  .graph-buttons-switch-input:checked + .graph-buttons-switch-label-on ~ .graph-buttons-switch-selection {left: 80px;}
+  .graph-buttons-switch-selection {
+    display: block;
+    position: absolute;
+    z-index: 1;
+    top: 2px;
+    left: 2px;
+    width: 78px;
+    height: 22px;
+    background: rgba(255, 255, 255,1);
+    border-radius: 2px;
+    -webkit-box-shadow: inset 0 1px rgba(255, 255, 255,0.6), 0 0 2px rgba(0, 0, 0, 0.3);
+    box-shadow: inset 0 1px rgba(255, 255, 255,0.6), 0 0 2px rgba(0, 0, 0, 0.3);
+    -webkit-transition: left 0.15s ease-out,background 0.3s;
+    -moz-transition: left 0.15s ease-out,background 0.3s;
+    -o-transition: left 0.15s ease-out,background 0.3s;
+    transition: left 0.15s ease-out,background 0.3s ;
+  /* 	transition: background 0.3s ; */
+  }
 </style>
 <style scoped lang="scss">
-
 </style>
