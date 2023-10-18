@@ -91,8 +91,8 @@ export default {
       self.drawBarplot(summaryType)
     },
     initBarplot(data) {
-      const  width = 800;
-      const height = 400;
+      const  width = window.innerWidth*0.8;
+      const height = window.innerHeight*0.7;
       this.barplotDimensions = {
         width,
         height,
@@ -100,7 +100,7 @@ export default {
           top: 15,
           right: 5,
           bottom: 40,
-          left: 35
+          left: 60
         }
       }
       this.barplotDimensions.boundedWidth = this.barplotDimensions.width - this.barplotDimensions.margin.left - this.barplotDimensions.margin.right
@@ -133,16 +133,22 @@ export default {
       this.xScale = this.d3.scaleBand()
         .domain(this.d3.union(this.sourceSummary.map(d => d.WB_TYPE).sort(this.d3.ascending)))
         .range([0, this.barplotDimensions.boundedWidth])
-        .padding(0.1);
+        .padding(0.3);
 
       // x-axis
-      this.barplotBounds.append("g")
+      const xAxis = this.barplotBounds.append("g")
         .attr("class", "x-axis")
         .attr("transform", `translate(0,${this.barplotDimensions.boundedHeight})`)
         .attr("role", "presentation")
         .attr("aria-hidden", true)
-        .call(this.d3.axisBottom(this.xScale))
+
+      xAxis
+        .call(this.d3.axisBottom(this.xScale).tickSize(0).tickPadding(10))
+        .select(".domain").remove()
+
+      xAxis
         .selectAll("text")
+        .attr("class", "axis-text")
         .style("text-anchor", "middle");
 
       // scale for y-axis
@@ -152,13 +158,14 @@ export default {
       // create y axis generator
       this.yAxis = this.d3.axisLeft()
         .scale(this.yScale)
+        .ticks(7)
+        .tickSize(- this.barplotDimensions.boundedWidth)
 
       // y-axis
       this.barplotBounds.append("g")
         .attr("class", "y-axis")
         .attr("role", "presentation")
         .attr("aria-hidden", true)
-        // .call(this.yAxis)
 
       // Add groups for bars
       this.bars = this.barplotBounds.append("g")
@@ -193,7 +200,7 @@ export default {
 
       // Build data series
       // https://observablehq.com/@d3/stacked-bar-chart/2
-      const expressed = currentSummaryType === 'Count' ? 'site_count' : 'percent'
+      const expressed = currentSummaryType === 'Count' ? 'site_count' : 'ratio'
       const series = this.d3.stack()
         .keys(this.d3.union(this.sourceSummary.map(d => d.water_source))) // distinct series keys, in input order
         .value(([, D], key) => D.get(key)[expressed]) // get value for each series key and stack
@@ -209,9 +216,23 @@ export default {
       // Redefine scale of y axis
       this.yAxis.scale(this.yScale)
 
+      // Set formatting for y axis
+      this.yAxis = currentSummaryType === 'Count' ? this.yAxis.tickFormat(this.d3.format(",")) : this.yAxis.tickFormat(this.d3.format(".0%"))
+
       // Re-append axis to chart
-      this.barplotBounds.select(".y-axis")
+      const yAxis = this.barplotBounds.select(".y-axis")
+
+      // Remove domain
+      yAxis
         .call(this.yAxis)
+        .select(".domain").remove()
+      
+      // Add class to y-axis labels
+      yAxis
+        .selectAll("text")
+        .attr("class", "axis-text")
+
+      yAxis.selectAll(".tick line").attr("class", "y-axis-tick")
 
       // Set up transition.
       const dur = 1000;
@@ -275,10 +296,10 @@ export default {
         width,
         height,
         margin: {
-          top: 15,
+          top: 7,
           right: 5,
           bottom: 40,
-          left: 35
+          left: this.barplotDimensions.margin.left
         }
       }
       legendDimensions.boundedWidth = legendDimensions.width - legendDimensions.margin.left - legendDimensions.margin.right
@@ -293,7 +314,7 @@ export default {
           .attr("id", "legend-svg")
 
       const legendRectSize = 15; // Size of legend color rectangles
-      const interItemSpacing = 15;
+      const interItemSpacing = 25;
       const intraItemSpacing = 6;
 
       // Add group for bounds
@@ -338,12 +359,12 @@ export default {
       // https://stackoverflow.com/questions/20224611/d3-position-text-element-dependent-on-length-of-element-before
       legendGroup
         .attr("transform", (d, i) => {
-          console.log(this.d3.select('#legend-title')._groups[0][0].getBBox().width)
+          // Compute total width of preceeding legend items, with spacing
           let cumulativeWidth = this.d3.select('#legend-title')._groups[0][0].getBBox().width + interItemSpacing;
           for (let j = 0; j < i; j++) {
             cumulativeWidth = cumulativeWidth + legendGroup._groups[0][j].getBBox().width + interItemSpacing;
           }
-          console.log(`i: ${i}, cumulativeWidth: ${cumulativeWidth}`)
+          // translate by that width
           return "translate(" + cumulativeWidth + ",0)"
         })
     },
@@ -407,12 +428,19 @@ export default {
 </script>
 <style lang="scss">
   // Elements added w/ D3
+  .axis-text {
+    font-size: 1.6rem;
+  }
+  .y-axis-tick {
+    stroke: #CCCCCC;
+    stroke-width: 0.075rem;
+  }
   #legend-title {
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     font-weight: 700;
   }
   .legend-text {
-    font-size: 1.4rem;
+    font-size: 1.6rem;
   }
 </style>
 <style scoped lang="scss">
@@ -425,6 +453,7 @@ export default {
       "toggle"
       "legend"
       "barplot";
+    row-gap: 1rem;
     justify-content: center;
     margin: 1rem 0rem 1rem 0rem;
   }
