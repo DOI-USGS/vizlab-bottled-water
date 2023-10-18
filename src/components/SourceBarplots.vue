@@ -11,6 +11,7 @@
             <span class="graph-buttons-switch-selection"></span>
           </div>
         </div>
+        <div id="legend-container" />
         <div id="barplot-container" />
       </div>
     </section>
@@ -68,6 +69,9 @@ export default {
       // Assign data
       this.sourceSummary = data[0];
 
+      // ID unique sources
+      const waterSources = Array.from(new Set(this.sourceSummary.map(d => d.water_source)));
+
       // Set default summaryType
       const summaryType = 'Count'
 
@@ -78,13 +82,13 @@ export default {
       self.initBarplot(this.sourceSummary)
 
       // Generate color scale
-      this.colorScale = self.makeColorScale(this.sourceSummary)
+      this.colorScale = self.makeColorScale(waterSources)
+
+      // Draw legend
+      self.addLegend(waterSources)
 
       // Draw barplot
       self.drawBarplot(summaryType)
-
-      // Draw legend
-      self.addLegend()
     },
     initBarplot(data) {
       const  width = 800;
@@ -176,10 +180,9 @@ export default {
         'Undetermined': '#D4D4D4'
       };
 
-      const waterSources = Array.from(new Set(this.sourceSummary.map(d => d.water_source)));
       const colorScale = this.d3.scaleOrdinal()
-        .domain(waterSources)
-        .range(waterSources.map(category => categoryColors[category]));
+        .domain(data)
+        .range(data.map(category => categoryColors[category]));
 
       return colorScale;
     },
@@ -263,8 +266,86 @@ export default {
         .attr("height", d => this.yScale(d[0]) - this.yScale(d[1]))
         .style("fill", d => this.colorScale(d.key))
     },
-    addLegend() {
+    addLegend(data) {
+      const self = this;
 
+      const width = this.barplotDimensions.width;
+      const height = 30;
+      const legendDimensions = {
+        width,
+        height,
+        margin: {
+          top: 15,
+          right: 5,
+          bottom: 40,
+          left: 35
+        }
+      }
+      legendDimensions.boundedWidth = legendDimensions.width - legendDimensions.margin.left - legendDimensions.margin.right
+      legendDimensions.boundedHeight = legendDimensions.height - legendDimensions.margin.top - legendDimensions.margin.bottom
+
+      // draw canvas for legend
+      const legendSVG = this.d3.select("#legend-container")
+        .append("svg")
+          .attr("viewBox", [0, 0, (legendDimensions.width), (legendDimensions.height)].join(' '))
+          .attr("width", "100%")
+          .attr("height", "100%")
+          .attr("id", "legend-svg")
+
+      const legendRectSize = 15; // Size of legend color rectangles
+      const interItemSpacing = 15;
+      const intraItemSpacing = 6;
+
+      // Add group for bounds
+      const legendBounds = legendSVG.append("g")
+        .style("transform", `translate(${
+          legendDimensions.margin.left
+        }px, ${
+          legendDimensions.margin.top
+        }px)`)
+
+      // Add legend title
+      legendBounds.append("text")
+        .text('Water source:')
+        .attr("id", "legend-title")
+        .attr("y", legendRectSize - intraItemSpacing)
+        .attr("alignment-baseline", "middle")
+
+      // Append group for each legend entry
+      const legendGroup = legendBounds.selectAll(".legend-item")
+        .data(data)
+        .enter()
+        .append("g")
+        .attr("class", "legend-item")
+
+      // Add rectangles for each group
+      
+      legendGroup.append("rect")
+        .attr("width", legendRectSize)
+        .attr("height", legendRectSize)
+        .attr("fill", d => this.colorScale(d));
+
+      // Add text for each group
+      legendGroup.append("text")
+        .attr("class", "legend-text")
+        .attr("x", legendRectSize + intraItemSpacing) // put text to the right of the rectangle
+        .attr("y", legendRectSize - intraItemSpacing)
+        .attr("text-anchor", "start") // left-align text
+        .attr("alignment-baseline", "middle") // center text
+        .text(d => d);
+
+      // Position legend groups
+      // https://stackoverflow.com/questions/20224611/d3-position-text-element-dependent-on-length-of-element-before
+      legendGroup
+        .attr("transform", (d, i) => {
+          console.log(this.d3.select('#legend-title')._groups[0][0].getBBox().width)
+          let cumulativeWidth = this.d3.select('#legend-title')._groups[0][0].getBBox().width + interItemSpacing;
+          for (let j = 0; j < i; j++) {
+            cumulativeWidth = cumulativeWidth + legendGroup._groups[0][j].getBBox().width + interItemSpacing;
+          }
+          console.log(`i: ${i}, cumulativeWidth: ${cumulativeWidth}`)
+          return "translate(" + cumulativeWidth + ",0)"
+        })
     },
     addToggle() {
       // https://codepen.io/meijer3/pen/WzweRo
@@ -326,6 +407,13 @@ export default {
 </script>
 <style lang="scss">
   // Elements added w/ D3
+  #legend-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+  .legend-text {
+    font-size: 1.4rem;
+  }
 </style>
 <style scoped lang="scss">
   $switchWidth: 7.8rem;
@@ -335,8 +423,8 @@ export default {
     grid-template-rows: max-content max-content max-content;
     grid-template-areas:
       "toggle"
-      "barplot"
-      "legend";
+      "legend"
+      "barplot";
     justify-content: center;
     margin: 1rem 0rem 1rem 0rem;
   }
@@ -406,6 +494,9 @@ export default {
     -o-transition: left 0.3s ease-out,background 0.3s;
     transition: left 0.3s ease-out,background 0.3s ;
   /* 	transition: background 0.3s ; */
+  }
+  #legend-container {
+    grid-area: legend;
   }
   #barplot-container {
     grid-area: barplot;
