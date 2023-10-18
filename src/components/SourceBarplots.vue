@@ -455,7 +455,14 @@ export default {
       "barplot";
     row-gap: 1rem;
     justify-content: center;
-    margin: 1rem 0rem 1rem 0rem;
+    margin: 1rem auto 1rem auto;
+    width: 90%;
+    @media screen and (max-height: 770px) {
+      width: 100%;
+    }
+    @media screen and (max-width: 600px) {
+      width: 100%;
+    }
   }
   #toggle-container {
     grid-area: toggle;
