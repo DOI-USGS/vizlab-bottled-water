@@ -179,8 +179,8 @@ export default {
 
       const self = this;
 
-      // Accessor function
-      // const series = currentSummaryType === 'Count' ? this.sourceSummaryCount : this.sourceSummaryPerc
+      // Build data series
+      // https://observablehq.com/@d3/stacked-bar-chart/2
       const expressed = currentSummaryType === 'Count' ? 'site_count' : 'percent'
       const series = this.d3.stack()
         .keys(this.d3.union(this.sourceSummary.map(d => d.water_source))) // distinct series keys, in input order
