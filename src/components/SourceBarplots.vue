@@ -20,12 +20,14 @@ export default {
       d3: null,
       publicPath: import.meta.env.BASE_URL, // find the files when on different deployment roots
       mobileView: isMobile, // test for mobile
-      sourceSummaryCount: null,
-      sourceSummaryPerc: null,
-      summaryType: null,
+      sourceSummary: null,
+      colorScale: null,
       barplotDimensions: null,
       barplotBounds: null,
       xScale: null,
+      yScale: null,
+      yAxis: null,
+      bars: null
     }
   },
   mounted(){      
@@ -55,34 +57,22 @@ export default {
       const self = this;
       
       // Assign data
-      const sourceSummary = data[0];
-      
-      // Build data series for stacked bar charts
-      // Count
-      this.sourceSummaryCount = this.d3.stack()
-        .keys(this.d3.union(sourceSummary.map(d => d.water_source))) // distinct series keys, in input order
-        .value(([, D], key) => D.get(key).site_count) // get value for each series key and stack
-        (this.d3.index(sourceSummary, d => d.WB_TYPE, d => d.water_source)); // group by stack then series key
-      // Percent
-      this.sourceSummaryPerc = this.d3.stack()
-        .keys(this.d3.union(sourceSummary.map(d => d.water_source))) // distinct series keys, in input order
-        .value(([, D], key) => D.get(key).percent) // get value for each series key and stack
-        (this.d3.index(sourceSummary, d => d.WB_TYPE, d => d.water_source)); // group by stack then series key
+      this.sourceSummary = data[0];
 
       // Set default summaryType
-      this.summaryType = 'Count'
+      const summaryType = 'Count'
 
       // Add toggle
       self.addToggle()
 
       // Initialize barplot
-      self.initBarplot(sourceSummary)
+      self.initBarplot(this.sourceSummary)
 
       // Generate color scale
-      const colorScale = self.makeColorScale(sourceSummary)
+      this.colorScale = self.makeColorScale(this.sourceSummary)
 
       // Draw barplot
-      self.drawBarplot(sourceSummary, colorScale, this.summaryType)
+      self.drawBarplot(summaryType)
 
       // Draw legend
       self.addLegend()
@@ -128,12 +118,13 @@ export default {
 
       // scale for the x-axis
       this.xScale = this.d3.scaleBand()
-        .domain(this.d3.union(data.map(d => d.WB_TYPE).sort(this.d3.ascending)))
+        .domain(this.d3.union(this.sourceSummary.map(d => d.WB_TYPE).sort(this.d3.ascending)))
         .range([0, this.barplotDimensions.boundedWidth])
         .padding(0.1);
 
       // x-axis
       this.barplotBounds.append("g")
+        .attr("class", "x-axis")
         .attr("transform", `translate(0,${this.barplotDimensions.boundedHeight})`)
         .attr("role", "presentation")
         .attr("aria-hidden", true)
@@ -141,7 +132,23 @@ export default {
         .selectAll("text")
         .style("text-anchor", "middle");
 
+      // scale for y-axis
+      this.yScale = this.d3.scaleLinear()
+        .range([this.barplotDimensions.boundedHeight, 0])
+
+      // create y axis generator
+      this.yAxis = this.d3.axisLeft()
+        .scale(this.yScale)
+
+      // y-axis
       this.barplotBounds.append("g")
+        .attr("class", "y-axis")
+        .attr("role", "presentation")
+        .attr("aria-hidden", true)
+        // .call(this.yAxis)
+
+      // Add groups for bars
+      this.bars = this.barplotBounds.append("g")
         .attr("class", "rects")
         .attr("role", "list")
         .attr("tabindex", 0)
@@ -160,50 +167,92 @@ export default {
         'Undetermined': '#D4D4D4'
       };
 
-      const waterSources = Array.from(new Set(data.map(d => d.water_source)));
+      const waterSources = Array.from(new Set(this.sourceSummary.map(d => d.water_source)));
       const colorScale = this.d3.scaleOrdinal()
         .domain(waterSources)
         .range(waterSources.map(category => categoryColors[category]));
 
       return colorScale;
     },
-    drawBarplot(data, colorScale, currentSummaryType) {
+    drawBarplot(currentSummaryType) {
+      // https://stackoverflow.com/questions/66603432/d3-js-how-to-add-the-general-update-pattern-to-a-stacked-bar-chart
+
       const self = this;
 
       // Accessor function
-      const series = currentSummaryType === 'Count' ? this.sourceSummaryCount : this.sourceSummaryPerc
+      // const series = currentSummaryType === 'Count' ? this.sourceSummaryCount : this.sourceSummaryPerc
+      const expressed = currentSummaryType === 'Count' ? 'site_count' : 'percent'
+      const series = this.d3.stack()
+        .keys(this.d3.union(this.sourceSummary.map(d => d.water_source))) // distinct series keys, in input order
+        .value(([, D], key) => D.get(key)[expressed]) // get value for each series key and stack
+        (this.d3.index(this.sourceSummary, d => d.WB_TYPE, d => d.water_source));
 
-      let yScale = this.d3.scaleLinear()
+      // Update domain of yScale
+      this.yScale
         .domain([0, this.d3.max(series, d => this.d3.max(d, d => d[1]))])
-        .range([this.barplotDimensions.boundedHeight, 0])
-        // .nice()
       
-      yScale = currentSummaryType === 'Count' ? yScale.nice() : yScale
+      // If Count, make 'nice' (adds nice round value at top)
+      this.yScale = currentSummaryType === 'Count' ? this.yScale.nice() : this.yScale
 
-      // y-axis
-      this.barplotBounds.append("g")
-        .attr("class", "y-axis")
-        .attr("role", "presentation")
-        .attr("aria-hidden", true)
-        .call(this.d3.axisLeft(yScale))
+      // Redefine scale of y axis
+      this.yAxis.scale(this.yScale)
 
-      const rectGroups = self.barplotBounds.selectAll(".rects")
-        .selectAll(".rect")
-        .data(series)
-        .enter()
-        .append("g")
-        .attr("class", d => d.key)
+      // Re-append axis to chart
+      this.barplotBounds.select(".y-axis")
+        .call(this.yAxis)
 
+      // Set up transition.
+      const dur = 1000;
+      const t = this.d3.transition().duration(dur);
+      
+      // Update groups for bars, assigning data
+      const rectGroups = this.bars.selectAll("g")
+        .data(series, d => d.key)
+        .join(
+          enter => enter
+              .append("g")
+              .attr("class", d => d.key),
+          
+          null, // no update function
+
+          exit => {
+            exit
+              .transition()
+              .duration(dur / 2)
+              .style("fill-opacity", 0)
+              .remove();
+          }
+        )
+      
+      // Update bars within groups
       rectGroups.selectAll('rect')
         .data(D => D.map(d => (d.key = D.key, d)))
-        .enter()
-        .append("rect") 
-        .attr("class", d => d.key + ' ' + d.data[0])
+        .join(
+            enter => enter
+                .append("rect")
+                .attr("class", d => d.key + ' ' + d.data[0])
+                .attr("x", d => this.xScale(d.data[0]))
+                .attr("y", d => this.yScale(0))
+                .attr("width", this.xScale.bandwidth())
+                .attr("height", this.barplotDimensions.boundedHeight - this.yScale(0))
+                .style("fill", d => this.colorScale(d.key))
+            ,
+            null,
+            exit => {
+              exit
+                .transition()
+                .duration(dur / 2)
+                .style("fill-opacity", 0)
+                .remove();
+            }
+          )
+        .transition(t)
+        .delay((d, i) => i * 20)
         .attr("x", d => this.xScale(d.data[0]))
-        .attr("y", d => yScale(d[1]))
+        .attr("y", d => this.yScale(d[1]))
         .attr("width", this.xScale.bandwidth())
-        .attr("height", d => yScale(d[0]) - yScale(d[1]))
-        .style("fill", d => colorScale(d.key))
+        .attr("height", d => this.yScale(d[0]) - this.yScale(d[1]))
+        .style("fill", d => this.colorScale(d.key))
     },
     addLegend() {
 
@@ -251,12 +300,13 @@ export default {
               .filter(function(d, i) { return i == id; }).node().checked = true;
 
             var chos = dragger.selectAll('input').filter(function(d, i) { return i == id; })
-            console.log(chos.node().value, chos.node().checked, self.d3.select('#id_Percent').property('checked'))
+            // console.log(chos.node().value, chos.node().checked, self.d3.select('#id_Percent').property('checked'))
             //remove styling
             dragger.select('.graph-buttons-switch-selection').attr('style','');
             
             // Do action
-            console.log(`Current selection is ${chos.node().value}`)
+            self.drawBarplot(chos.node().value)
+            // console.log(`Current selection is ${chos.node().value}`)
           });          
       });
     },
