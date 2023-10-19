@@ -39,19 +39,7 @@
       >
         <p v-html="sourceText.paragraph2" />
       </div>
-      <div
-        id="img-ws-national-types"
-        class="img-container"
-      >
-        <img
-          class="supply-barplot"
-          src="../assets/images/perc_expanded_self_supply_barplot.png"
-        >
-        <img
-          class="supply-barplot"
-          src="../assets/images/count_expanded_self_supply_barplot.png"
-        >
-      </div>
+      <sourceBarplots id="source-barplots" />
       <div
         id="text3"
         class="text-container"
@@ -144,6 +132,7 @@
   export default {
     name: "WaterSourceSection",
     components: {
+      sourceBarplots: () => import("./../components/SourceBarplots.vue"),
     },
     props: {
       data: Object
@@ -202,6 +191,9 @@
     grid-area: text2;
     justify-self: start;
   }
+  #source-barplots {
+    grid-area: source-bars;
+  }
   #img-ws-national-types {
     grid-area: source-bars;
     justify-self: center;
@@ -236,10 +228,6 @@
   }
   .illustration {
     width: 90%;
-  }
-  .supply-barplot {
-    width: 80%;
-    max-width: 1200px;
   }
   #grid-container-source-maps {
     grid-area: source-maps;
