@@ -219,10 +219,10 @@ export default {
       // Set formatting for y axis
       this.yAxis = currentSummaryType === 'Count' ? this.yAxis.tickFormat(this.d3.format(",")) : this.yAxis.tickFormat(this.d3.format(".0%"))
 
-      // Re-append axis to chart
+      // Select y-axis
       const yAxis = this.barplotBounds.select(".y-axis")
 
-      // Remove domain
+      // Re-append axis to chart then remove domain
       yAxis
         .call(this.yAxis)
         .select(".domain").remove()
