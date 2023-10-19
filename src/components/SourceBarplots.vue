@@ -306,14 +306,14 @@ export default {
       const self = this;
 
       const width = this.barplotDimensions.width;
-      const height = 30;
+      const height = 60;
       const legendDimensions = {
         width,
         height,
         margin: {
           top: 7,
           right: 5,
-          bottom: 40,
+          bottom: 5,
           left: this.barplotDimensions.margin.left
         }
       }
@@ -371,6 +371,8 @@ export default {
 
       // Position legend groups
       // https://stackoverflow.com/questions/20224611/d3-position-text-element-dependent-on-length-of-element-before
+      let selfSupplyStart;
+      let selfSupplyEnd;
       legendGroup
         .attr("transform", (d, i) => {
           // Compute total width of preceeding legend items, with spacing
@@ -378,9 +380,45 @@ export default {
           for (let j = 0; j < i; j++) {
             cumulativeWidth = cumulativeWidth + legendGroup._groups[0][j].getBBox().width + interItemSpacing;
           }
+          // If first of self-supply items, store cumulative width
+          if (d === 'Surface water intake') {
+            selfSupplyStart = cumulativeWidth;
+          }
+          // If 'Undetermined', store cumulative width
+          if (d === 'Undetermined') {
+            selfSupplyEnd = cumulativeWidth - interItemSpacing;
+          }
           // translate by that width
           return "translate(" + cumulativeWidth + ",0)"
         })
+
+        // Append bracket for self-supply items
+        // Don't need scale for d3.line() b/c using computed svg units
+        const line = this.d3.line()
+          .x(d => d.x)
+          .y(d => d.y)
+
+        const bracketHeightStart = legendRectSize + intraItemSpacing;
+        const bracketHeightEnd = bracketHeightStart + intraItemSpacing;
+        legendBounds
+          .append('path') // add a path to the existing svg
+          .datum([
+            { x: selfSupplyStart - interItemSpacing / 4,   y: bracketHeightStart },
+            { x: selfSupplyStart - interItemSpacing / 4,  y: bracketHeightEnd},
+            { x: selfSupplyEnd + interItemSpacing / 4,  y: bracketHeightEnd},
+            { x: selfSupplyEnd + interItemSpacing / 4,  y: bracketHeightStart }
+          ])
+          .attr('d', line)
+          .attr('class', 'bracket')
+
+        // Append group title for self-supply items
+        legendBounds.append("text")
+          .text('Self-supply')
+          .attr("id", "legend-group-title")
+          .attr("x", selfSupplyStart + (selfSupplyEnd - selfSupplyStart) / 2)
+          .attr("y", bracketHeightEnd + intraItemSpacing)
+          .attr("alignment-baseline", "hanging")
+          .attr("text-anchor", "middle")
     },
     addToggle() {
       // https://codepen.io/meijer3/pen/WzweRo
@@ -460,6 +498,15 @@ export default {
   }
   .legend-text {
     font-size: 1.6rem;
+  }
+  #legend-group-title {
+    font-size: 1.6rem;
+    font-style: italic;
+  }
+  .bracket {
+    stroke: black;
+    stroke-width: 0.1rem;
+    fill: none;
   }
 </style>
 <style scoped lang="scss">
