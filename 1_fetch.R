@@ -43,15 +43,20 @@ p1_targets <- list(
   
   tar_target(p1_nws_states_shp,
              open_highres_spatial_zip('1_fetch/out/nws_states.shp', p1_nws_states_zip, '1_fetch/tmp')),
+  ##### Inventory data #####
+  tar_target(p1_sb_id,
+             '649d8a39d34ef77fcb03f8a6'),
   
-  ##### Water use data #####
+  ###### Water use data ######
   tar_target(p1_water_use_csv,
              '1_fetch/in/For_Amy_WaterBottlingInventory_DR/WBinventory_WaterUse.csv',
              format = 'file'),
   
-  ##### Inventory data #####
-  tar_target(p1_inventory_csv,
-             '1_fetch/in/For_Amy_WaterBottlingInventory_DR/WBinventory_Facility.csv',
+  ###### Facility inventory ######
+  tar_target(p1_inventory_txt,
+             download_from_sb(sb_id = p1_sb_id,
+                              filename = 'WBinventory_FacilityList.txt',
+                              dest_dir = '1_fetch/out'),
              format='file'),
   
   ##### Regional data #####
