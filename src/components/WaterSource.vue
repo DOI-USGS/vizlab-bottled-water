@@ -73,7 +73,7 @@
         >
           <img
             class="source-map"
-            src="../assets/images/map_bottled_water_self_supply_count.png"
+            src="../assets/images/map_bottled_water_Self-supply_count.png"
           >
         </div>
         <div
@@ -82,7 +82,7 @@
         >
           <img
             class="source-map"
-            src="../assets/images/map_bottled_water_self_supply_perc.png"
+            src="../assets/images/map_bottled_water_Self-supply_perc.png"
           >
         </div>
         <div
@@ -97,7 +97,7 @@
         >
           <img
             class="source-map"
-            src="../assets/images/map_bottled_water_combination_count.png"
+            src="../assets/images/map_bottled_water_Combination_count.png"
           >
         </div>
         <div
@@ -106,7 +106,7 @@
         >
           <img
             class="source-map"
-            src="../assets/images/map_bottled_water_combination_perc.png"
+            src="../assets/images/map_bottled_water_Combination_perc.png"
           >
         </div>
         <div
@@ -121,7 +121,7 @@
         >
           <img
             class="source-map"
-            src="../assets/images/map_bottled_water_public_supply_count.png"
+            src="../assets/images/map_bottled_water_Public_supply_count.png"
           >
         </div>
         <div
@@ -130,7 +130,7 @@
         >
           <img
             class="source-map"
-            src="../assets/images/map_bottled_water_public_supply_perc.png"
+            src="../assets/images/map_bottled_water_Public_supply_perc.png"
           >
         </div>
       </div>
