@@ -602,5 +602,6 @@ export default {
   }
   #barplot-container {
     grid-area: barplot;
+    max-height: 70vh;
   }
 </style>
