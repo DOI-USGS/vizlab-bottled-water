@@ -1,16 +1,14 @@
 #' @title munge inventory data
 #' @description function that cleans the raw inventory data,
 #' correcting variable names and data entry errors
-#' @param inventory_csv the raw inventory data provided by
-#' collaborators as a csv file
+#' @param inventory_txt the raw inventory data downloaded from ScienceBase
 #' @return a dataframe of cleaned data w/ all spaces removed
 #' from variable names, cleaned water source info, and source
 #' category information
-munge_inventory_data <- function(inventory_csv) {
-  # read in csv, with empty, 9999, and -9999 values as NA
-  readr::read_csv(inventory_csv, col_types = cols(), na = c('', 'NA', '9999', '-9999')) %>%
-    # Remove columns w/ entirely NA values
-    dplyr::select(where(function(x) !all(is.na(x)))) %>%
+munge_inventory_data <- function(inventory_txt) {
+  
+  # read in txt, with empty, 9999, and -9999 values as NA
+  readr::read_tsv(inventory_txt, col_types = cols(), na = c('', 'NA', '9999', '-9999')) %>%
     # clean data
     mutate(
       # # fix types in WB_TYPE
@@ -41,15 +39,7 @@ munge_inventory_data <- function(inventory_csv) {
     separate_wider_delim(STATE_NAME, delim = ':', names = c('state_fips', 'state_name'), cols_remove = FALSE) %>%
     separate_wider_delim(COUNTY, delim = ':', names = c('full_fips', 'county_name'), cols_remove = FALSE) %>%
     # need to drop first 2 digits to get county fips b/c refers to state
-    mutate(county_fips = sub('..', '', full_fips),
-           # fix bad STATE_ABBV values
-           state_abbr = case_when(
-             state_name == 'Illinois' ~ 'IL',
-             state_name == 'Maryland' ~ 'MD',
-             state_name == 'Texas' ~ 'TX',
-             state_name == 'Virgin Islands' ~ 'VI',
-             TRUE ~ STATE_ABBV
-           ))
+    mutate(county_fips = sub('..', '', full_fips))
 }
 
 #' @title

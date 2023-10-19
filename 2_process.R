@@ -36,7 +36,7 @@ p2_targets <- list(
 
   ##### Munge site inventory data ######
   tar_target(p2_inventory_sites,
-             munge_inventory_data(p1_inventory_csv)),
+             munge_inventory_data(inventory_txt = p1_inventory_txt)),
 
   # Get unique facility types
   tar_target(p2_facility_types,
@@ -65,14 +65,14 @@ p2_targets <- list(
   # Get count of facilities, by state
   tar_target(p2_facility_summary_state,
              p2_inventory_sites %>%
-               group_by(state_name, state_abbr) %>%
+               group_by(state_name, STATE_ABBV) %>%
                summarize(site_count = n())),
 
   # Get count of facilities, by state and by type
   tar_target(p2_facility_type_summary_state,
              p2_inventory_sites %>%
                left_join(p2_conus_oconus_sf, by = c('state_fips' = 'STATEFP')) %>%
-               group_by(NAME, state_abbr, WB_TYPE) %>%
+               group_by(NAME, STATE_ABBV, WB_TYPE) %>%
                summarize(site_count = n()) %>%
                mutate(WB_TYPE = factor(WB_TYPE, levels = p2_facility_type_summary$WB_TYPE))),
 
@@ -105,7 +105,7 @@ p2_targets <- list(
   tar_target(p2_supply_summary_state,
              p2_inventory_sites %>%
                mutate(WB_TYPE = factor(WB_TYPE, levels = p2_facility_type_summary$WB_TYPE)) %>%
-               group_by(state_name, state_abbr, WB_TYPE, source_category) %>%
+               group_by(state_name, STATE_ABBV, WB_TYPE, source_category) %>%
                summarize(site_count = n()) %>%
                mutate(source_category = factor(source_category, levels = p2_source_category_order))),
 
@@ -123,31 +123,14 @@ p2_targets <- list(
                group_by(WB_TYPE) %>%
                mutate(percent = site_count/sum(site_count)*100,
                       ratio = site_count/sum(site_count))),
-  ###### Water Use  ######
-  tar_target(p2_exclude_states,
-             c("AK", "HI", "GU", "PR", "VI")),
-  tar_target(p2_water_use,
-            read_csv(p1_water_use_csv, col_types = cols())),
-
-  tar_target(
-    p2_inventory_sites_wu_conus_sf,
-    p2_inventory_sites_sf %>%
-      left_join(p2_water_use, by = 'FAC_ID') %>%
-      mutate(has_wu = !is.na(Annual_MGD)) %>% # WU_DATA_FLAG field has errors
-      filter(!STATE_ABBV %in% p2_exclude_states)),
-
-  tar_target(
-    p2_inventory_sites_wu_conus_summary_sf,
-    p2_inventory_sites_wu_conus_sf %>%
-      dplyr::select(WB_TYPE, FAC_ID, has_wu, water_source, source_category) %>%
-      distinct(FAC_ID, .keep_all = TRUE)),
 
   ###### CONUS ######
   # get CONUS subset
   tar_target(p2_inventory_sites_sf_CONUS,
              filter(p2_inventory_sites_sf,
                     state_name %in% state.name,
-                    !(state_abbr %in% c('AK','HI')))),
+                    !(STATE_ABBV %in% c('AK','HI')))),
+  
   tar_target(p2_bw_inventory_sites_county_CONUS,
              p2_inventory_sites_sf_CONUS |>
                janitor::clean_names() |>
@@ -163,6 +146,25 @@ p2_targets <- list(
                                                  c("Self-supply", "Combination", "Public supply"))) |>
                st_drop_geometry()),
 
+  ##### Munge water use data #####
+  tar_target(p2_exclude_states,
+             c("AK", "HI", "GU", "PR", "VI")),
+  tar_target(p2_water_use,
+             read_csv(p1_water_use_csv, col_types = cols())),
+  
+  tar_target(
+    p2_inventory_sites_wu_conus_sf,
+    p2_inventory_sites_sf %>%
+      left_join(p2_water_use, by = 'FAC_ID') %>%
+      mutate(has_wu = !is.na(Annual_MGD)) %>% # WU_DATA_FLAG field has errors
+      filter(!STATE_ABBV %in% p2_exclude_states)),
+  
+  tar_target(
+    p2_inventory_sites_wu_conus_summary_sf,
+    p2_inventory_sites_wu_conus_sf %>%
+      dplyr::select(WB_TYPE, FAC_ID, has_wu, water_source, source_category) %>%
+      distinct(FAC_ID, .keep_all = TRUE)),
+  
   ##### Regional statistics #####
 
   # get region areas
