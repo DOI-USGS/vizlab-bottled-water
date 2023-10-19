@@ -48,8 +48,10 @@ p1_targets <- list(
              '649d8a39d34ef77fcb03f8a6'),
   
   ###### Water use data ######
-  tar_target(p1_water_use_csv,
-             '1_fetch/in/For_Amy_WaterBottlingInventory_DR/WBinventory_WaterUse.csv',
+  tar_target(p1_water_use_txt,
+             download_from_sb(sb_id = p1_sb_id,
+                              filename = 'WBinventory_WaterUse.txt',
+                              dest_dir = '1_fetch/out'),
              format = 'file'),
   
   ###### Facility inventory ######

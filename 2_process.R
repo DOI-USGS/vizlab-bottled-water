@@ -149,14 +149,15 @@ p2_targets <- list(
   ##### Munge water use data #####
   tar_target(p2_exclude_states,
              c("AK", "HI", "GU", "PR", "VI")),
+  
   tar_target(p2_water_use,
-             read_csv(p1_water_use_csv, col_types = cols())),
+             read_tsv(p1_water_use_txt, col_types = cols())),
   
   tar_target(
     p2_inventory_sites_wu_conus_sf,
     p2_inventory_sites_sf %>%
       left_join(p2_water_use, by = 'FAC_ID') %>%
-      mutate(has_wu = !is.na(Annual_MGD)) %>% # WU_DATA_FLAG field has errors
+      mutate(has_wu = WU_DATA_FLAG == 'Y') %>%
       filter(!STATE_ABBV %in% p2_exclude_states)),
   
   tar_target(
