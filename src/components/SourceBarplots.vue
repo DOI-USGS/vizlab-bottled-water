@@ -169,7 +169,6 @@ export default {
         .append("text")
           .attr("class", "y-axis axis-title")
           .attr("x", -this.barplotDimensions.boundedHeight / 2)
-          .attr("y", - this.barplotDimensions.margin.left + 15)
           .attr("transform", "rotate(-90)")
           .style("text-anchor", "middle")
           .attr("role", "presentation")
@@ -246,7 +245,9 @@ export default {
 
       // Add title to y-axis
       const axisTitle = currentSummaryType === 'Count' ? 'Number of facilities' : 'Percent of facilities';
+      const axisOffset = currentSummaryType === 'Count' ? 15 : 25
       yAxis.select(".y-axis.axis-title")
+        .attr("y", - this.barplotDimensions.margin.left + axisOffset)
         .text(axisTitle)
 
       // Set up transition.
