@@ -340,7 +340,6 @@ export default {
         .attr("class", "legend-item")
 
       // Add rectangles for each group
-      
       legendGroup.append("rect")
         .attr("width", legendRectSize)
         .attr("height", legendRectSize)
