@@ -242,8 +242,6 @@
   }
   .viz-emph {
     font-weight:700;
-    fill: white;
-    font-family: $SourceSans;
     font-size: 2rem;
   }
   .emph {

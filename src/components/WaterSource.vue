@@ -59,23 +59,14 @@
         <p v-html="sourceText.paragraph3" />
       </div>
       <div
-        v-if="!mobileView"
-        id="source-maps-container"
-      >
-        <div
-          id="img-source-count-percent"
-          class="img-container"
-        >
-          <img
-            class="source-map"
-            src="../assets/images/perc_count_bottled_water_map.png"
-          >
-        </div>
-      </div>
-      <div
-        v-if="mobileView"
         id="grid-container-source-maps"
       >
+        <div
+          id="source-map-title-self"
+          class="text-container map-title-container"
+        >
+          <p class="viz-emph">Self-supply</p>
+        </div>
         <div
           id="img-source-self-count"
           class="img-container"
@@ -95,6 +86,12 @@
           >
         </div>
         <div
+          id="source-map-title-combo"
+          class="text-container map-title-container"
+        >
+          <p class="viz-emph">Combination</p>
+        </div>
+        <div
           id="img-source-combo-count"
           class="img-container"
         >
@@ -111,6 +108,12 @@
             class="source-map"
             src="../assets/images/map_bottled_water_combination_perc.png"
           >
+        </div>
+        <div
+          id="source-map-title-public"
+          class="text-container map-title-container"
+        >
+          <p class="viz-emph">Public supply</p>
         </div>
         <div
           id="img-source-public-count"
@@ -241,20 +244,47 @@
   #grid-container-source-maps {
     grid-area: source-maps;
     display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: max-content max-content max-content max-content max-content max-content;
-    row-gap: 3vh;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: max-content max-content max-content max-content;
     grid-template-areas:
-      "count-self"
-      "perc-self"
-      "count-combo"
-      "perc-combo"
-      "count-public"
-      "perc-public";
+      "title-self title-self"
+      "count-self perc-self"
+      "title-combo title-combo"
+      "count-combo perc-combo"
+      "title-public title-public"
+      "count-public perc-public";
     justify-content: center;
     align-content: center;
-    margin: auto;
+    margin: 1rem auto 2rem auto;
     max-width: 1600px;
+    @media screen and (max-width: 600px) {
+      grid-template-columns: 1fr;
+      grid-template-rows: max-content max-content max-content max-content max-content max-content max-content;
+      grid-template-areas:
+        "title-self"
+        "count-self"
+        "perc-self"
+        "title-combo"
+        "count-combo"
+        "perc-combo"
+        "title-public"
+        "count-public"
+        "perc-public";
+      margin: 0rem auto 3rem auto;
+    }
+  }
+  .map-title-container {
+    text-align: center;
+    margin-top: 2rem;
+  }
+  #source-map-title-self {
+    grid-area: title-self;
+  }
+  #source-map-title-combo {
+    grid-area: title-combo;
+  }
+  #source-map-title-public {
+    grid-area: title-public;
   }
   #img-source-self-count {
     grid-area: count-self;
@@ -275,6 +305,9 @@
     grid-area: perc-public;
   }
   .source-map {
-    max-width: 100%;
+    max-width: 90%;
+    @media screen and (max-width: 600px) {
+      max-width: 100%;
+    }
   }
 </style>
