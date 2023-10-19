@@ -202,7 +202,6 @@ export default {
       // Set default and current facility type
       this.currentType = 'Bottled water'
       this.defaultType = 'Bottled water'
-      this.dropdownOptions = this.stateList
 
       // Set up dropdown
       // get list of unique states
