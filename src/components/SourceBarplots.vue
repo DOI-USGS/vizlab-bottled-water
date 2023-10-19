@@ -100,7 +100,7 @@ export default {
           top: 15,
           right: 5,
           bottom: 40,
-          left: 60
+          left: 75
         }
       }
       this.barplotDimensions.boundedWidth = this.barplotDimensions.width - this.barplotDimensions.margin.left - this.barplotDimensions.margin.right
@@ -166,6 +166,14 @@ export default {
         .attr("class", "y-axis")
         .attr("role", "presentation")
         .attr("aria-hidden", true)
+        .append("text")
+          .attr("class", "y-axis axis-title")
+          .attr("x", -this.barplotDimensions.boundedHeight / 2)
+          .attr("y", - this.barplotDimensions.margin.left + 15)
+          .attr("transform", "rotate(-90)")
+          .style("text-anchor", "middle")
+          .attr("role", "presentation")
+          .attr("aria-hidden", true)
 
       // Add groups for bars
       this.bars = this.barplotBounds.append("g")
@@ -227,12 +235,19 @@ export default {
         .call(this.yAxis)
         .select(".domain").remove()
       
-      // Add class to y-axis labels
+      // Add class to y-axis labels, for styling
       yAxis
+        .selectAll("g")
         .selectAll("text")
         .attr("class", "axis-text")
 
+      // Add class to y-axis ticks, for styling
       yAxis.selectAll(".tick line").attr("class", "y-axis-tick")
+
+      // Add title to y-axis
+      const axisTitle = currentSummaryType === 'Count' ? 'Number of facilities' : 'Percent of facilities';
+      yAxis.select(".y-axis.axis-title")
+        .text(axisTitle)
 
       // Set up transition.
       const dur = 1000;
@@ -427,6 +442,11 @@ export default {
 </script>
 <style lang="scss">
   // Elements added w/ D3
+  .axis-title {
+    font-size: 1.6rem;
+    fill: #000000;
+    font-weight: 700;
+  }
   .axis-text {
     font-size: 1.6rem;
   }
