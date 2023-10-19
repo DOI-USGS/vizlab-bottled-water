@@ -62,6 +62,12 @@
         id="grid-container-source-maps"
       >
         <div
+          id="source-map-title-self-supply"
+          class="text-container"
+        >
+          <p class="viz-emph">Self-supply</p>
+        </div>
+        <div
           id="img-source-self-count"
           class="img-container"
         >
@@ -227,9 +233,10 @@
     grid-area: source-maps;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: max-content max-content max-content;
+    grid-template-rows: max-content max-content max-content max-content;
     row-gap: 5vh;
     grid-template-areas:
+      "title-self title-self"
       "count-self perc-self"
       "count-combo perc-combo"
       "count-public perc-public";
@@ -239,9 +246,10 @@
     max-width: 1600px;
     @media screen and (max-width: 600px) {
       grid-template-columns: 1fr;
-      grid-template-rows: max-content max-content max-content max-content max-content max-content;
+      grid-template-rows: max-content max-content max-content max-content max-content max-content max-content;
       row-gap: 3vh;
       grid-template-areas:
+        "title-self"
         "count-self"
         "perc-self"
         "count-combo"
@@ -250,6 +258,10 @@
         "perc-public";
       margin: 3rem auto 3rem auto;
     }
+  }
+  #source-map-title-self-supply {
+    grid-area: title-self;
+    text-align: center;
   }
   #img-source-self-count {
     grid-area: count-self;
