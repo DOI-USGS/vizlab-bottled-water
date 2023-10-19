@@ -62,8 +62,8 @@
         id="grid-container-source-maps"
       >
         <div
-          id="source-map-title-self-supply"
-          class="text-container"
+          id="source-map-title-self"
+          class="text-container map-title-container"
         >
           <p class="viz-emph">Self-supply</p>
         </div>
@@ -86,6 +86,12 @@
           >
         </div>
         <div
+          id="source-map-title-combo"
+          class="text-container map-title-container"
+        >
+          <p class="viz-emph">Combination</p>
+        </div>
+        <div
           id="img-source-combo-count"
           class="img-container"
         >
@@ -102,6 +108,12 @@
             class="source-map"
             src="../assets/images/map_bottled_water_combination_perc.png"
           >
+        </div>
+        <div
+          id="source-map-title-public"
+          class="text-container map-title-container"
+        >
+          <p class="viz-emph">Public supply</p>
         </div>
         <div
           id="img-source-public-count"
@@ -234,34 +246,45 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: max-content max-content max-content max-content;
-    row-gap: 5vh;
     grid-template-areas:
       "title-self title-self"
       "count-self perc-self"
+      "title-combo title-combo"
       "count-combo perc-combo"
+      "title-public title-public"
       "count-public perc-public";
     justify-content: center;
     align-content: center;
-    margin: 4rem auto 2rem auto;
+    margin: 1rem auto 2rem auto;
     max-width: 1600px;
     @media screen and (max-width: 600px) {
       grid-template-columns: 1fr;
       grid-template-rows: max-content max-content max-content max-content max-content max-content max-content;
-      row-gap: 3vh;
       grid-template-areas:
         "title-self"
         "count-self"
         "perc-self"
+        "title-combo"
         "count-combo"
         "perc-combo"
+        "title-public"
         "count-public"
         "perc-public";
-      margin: 3rem auto 3rem auto;
+      margin: 0rem auto 3rem auto;
     }
   }
-  #source-map-title-self-supply {
-    grid-area: title-self;
+  .map-title-container {
     text-align: center;
+    margin-top: 2rem;
+  }
+  #source-map-title-self {
+    grid-area: title-self;
+  }
+  #source-map-title-combo {
+    grid-area: title-combo;
+  }
+  #source-map-title-public {
+    grid-area: title-public;
   }
   #img-source-self-count {
     grid-area: count-self;
