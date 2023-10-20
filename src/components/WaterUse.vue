@@ -22,21 +22,6 @@
           src="../assets/images/water-use_infographic.png"
         >
       </div>
-      <div
-        id="img-bw-use-beeswarm"
-        class="img-container"
-      >
-        <img
-          v-if="!mobileView"
-          class="beeswarm"
-          src="../assets/images/annual_bottled_water_use_beeswarm.png"
-        >
-        <img
-          v-if="mobileView"
-          class="beeswarm"
-          src="../assets/images/annual_bottled_water_use_beeswarm_mobile.png"
-        >
-      </div>
     </div>
   </section>
 </template>
@@ -82,9 +67,7 @@
     grid-template-rows: 0.5fr max-content max-content max-content;
     grid-template-areas:
       "title"
-      "text1"
-      "use-bars"
-      "bw-use-source";
+      "text1";
     justify-content: center;
   }
   #title {
@@ -94,25 +77,6 @@
   #text1 {
     grid-area: text1;
     justify-self: start;
-  }
-  #img-wu-bars {
-    grid-area: use-bars;
-  }
-  #img-bw-use-beeswarm {
-    grid-area: bw-use-source;
-  }
-  .beeswarm {
-    width: 90%;
-    max-width: 1200px;
-  }
-  .availability-map {    
-    width: 60vw;
-    max-width: 1000px;
-    margin: 0rem 0rem 0rem 0rem;
-  }
-  .availability-map.img-mobile {
-    width: 100%;
-    margin: 0;
   }
   #img-infographic {
     text-align: center;
