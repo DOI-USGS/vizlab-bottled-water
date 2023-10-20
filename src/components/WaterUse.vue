@@ -67,7 +67,8 @@
     grid-template-rows: 0.5fr max-content max-content max-content;
     grid-template-areas:
       "title"
-      "text1";
+      "text1"
+      "img-infographic";
     justify-content: center;
   }
   #title {

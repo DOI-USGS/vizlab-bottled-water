@@ -1,5 +1,5 @@
 export default {
-    bottledWaterText: {
+    bottledWaterFocusText: {
        title: "Focus on bottled water facilities",
        paragraph1: "Let’s take a closer look at bottled water facilities. Most facilities that have water use data are bottled water facilities. Based on limited available data from 1969 through 2022 (Buchwald and others, 2023), we estimate that annual water use at bottled water facilities ranges from less than 0.1 million gallons per day (MGD) to more than 1.5 MGD. The sources of water for these facilities with water use data varies, with the largest proportion (39%) using water from wells.",
        paragraph2: "When we look at all bottled water facilities (not just those with water use data), these estimates for water source change. Most bottled water facilities nationwide source their water from public supply. However, the proportion of bottled water facilities using different water sources varies by county. In some counties, most bottled water facilities use self-supply water. In others, most facilities use a combination of sources.",

@@ -92,9 +92,7 @@
       "text1"
       "illustration"
       "text2"
-      "source-bars"
-      "text3"
-      "source-maps";
+      "source-bars";
     justify-content: center;
   }
   #title {
@@ -111,14 +109,6 @@
   }
   #source-barplots {
     grid-area: source-bars;
-  }
-  #img-ws-national-types {
-    grid-area: source-bars;
-    justify-self: center;
-  }
-  #text3 {
-    grid-area: text3;
-    justify-self: start;
   }
   #grid-container-illustration {
     grid-area: illustration;
@@ -146,74 +136,5 @@
   }
   .illustration {
     width: 90%;
-  }
-  #grid-container-source-maps {
-    grid-area: source-maps;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: max-content max-content max-content max-content;
-    grid-template-areas:
-      "title-self title-self"
-      "count-self perc-self"
-      "title-combo title-combo"
-      "count-combo perc-combo"
-      "title-public title-public"
-      "count-public perc-public";
-    justify-content: center;
-    align-content: center;
-    margin: 1rem auto 2rem auto;
-    max-width: 1600px;
-    @media screen and (max-width: 600px) {
-      grid-template-columns: 1fr;
-      grid-template-rows: max-content max-content max-content max-content max-content max-content max-content;
-      grid-template-areas:
-        "title-self"
-        "count-self"
-        "perc-self"
-        "title-combo"
-        "count-combo"
-        "perc-combo"
-        "title-public"
-        "count-public"
-        "perc-public";
-      margin: 0rem auto 3rem auto;
-    }
-  }
-  .map-title-container {
-    text-align: center;
-    margin-top: 2rem;
-  }
-  #source-map-title-self {
-    grid-area: title-self;
-  }
-  #source-map-title-combo {
-    grid-area: title-combo;
-  }
-  #source-map-title-public {
-    grid-area: title-public;
-  }
-  #img-source-self-count {
-    grid-area: count-self;
-  }
-  #img-source-combo-count {
-    grid-area: count-combo;
-  }
-  #img-source-public-count {
-    grid-area: count-public;
-  }
-  #img-source-self-percent {
-    grid-area: perc-self;
-  }
-  #img-source-combo-percent {
-    grid-area: perc-combo;
-  }
-  #img-source-public-percent {
-    grid-area: perc-public;
-  }
-  .source-map {
-    max-width: 90%;
-    @media screen and (max-width: 600px) {
-      max-width: 100%;
-    }
   }
 </style>
