@@ -161,7 +161,7 @@
 </script>
 <style scoped lang="scss">
 
-  #grid-container-use {
+  #grid-container-bw {
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 0.5fr max-content max-content max-content;
