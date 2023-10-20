@@ -4,7 +4,6 @@
       <div id="title">
         <h3>
           Counts of bottling facilities in <span id="state-dropdown-container" /> by county
-          <!-- Dropdown v-model="selectedOption" :options="dropdownOptions"/ -->
         </h3>
       </div>
       <div id="text">
@@ -45,23 +44,14 @@ export default {
   },
   setup() {
     const self = this;
-    // const selectedOption = ref('')
-    // const dropdownOptions = ref([])
 
     onMounted(async () => {
-      // const data = await csv(self.publicPath + 'state_facility_type_summary.csv')
-
-      // Assuming the column name in the CSV is 'NAME'
-      // dropdownOptions.value = data.map(d => d.NAME)
     })
 
     return { }
   },
   data() {
     return {
-      // selectedOption: 'all states and territories',
-      dropdownOptions: [],
-
       d3: null,
       publicPath: import.meta.env.BASE_URL, // find the files when on different deployment roots
       mobileView: isMobile, // test for mobile
@@ -207,8 +197,6 @@ export default {
       // get list of unique states
       this.stateList = [... new Set(this.dataAll.map(d => d.NAME))]
       this.stateList.unshift(this.defaultViewName)
-      // store options for dropdown
-      this.dropdownOptions = this.stateList
       // add dropdown
       self.addDropdown(this.stateList)
 
