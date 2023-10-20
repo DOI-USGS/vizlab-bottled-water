@@ -262,9 +262,8 @@ export default {
         .attr("class", "dropdown")
         .attr("contenteditable", "true")
         .on("change", function() {
-          this.selectedText = this.options[this.selectedIndex].text;
-          console.log(this.selectedText.length)
-          this.style.width = 5 + (this.selectedText.length * 1.2) + "rem";
+          // Update dropdown text + width
+          self.updateDropdown(this.options[this.selectedIndex].text)
 
           let selectedArea = this.value
 
@@ -1337,11 +1336,8 @@ export default {
       // If user clicked on map to zoom
       if (callMethod === 'click') {
         let dropdown = this.d3.select('select')
-        // Update dropdown text
-        dropdown.property('value', zoomedState)
-        // Update dropdown width
-        let selectId = document.getElementById("state-dropdown");
-        selectId.style.width = 5 + (zoomedState.length * 1.2) + "rem";
+        // Update dropdown text and width
+        self.updateDropdown(zoomedState)
       }
 
       // Hide the inset map borders and labels
@@ -1471,9 +1467,8 @@ export default {
       this.currentState = this.defaultViewName //this.d3.select(null);
       this.currentScale = 1;
 
-      this.d3.select('select').property('value', this.defaultViewName)
-      let selectId = document.getElementById("state-dropdown");
-      selectId.style.width = 5 + (this.currentState.length * 1.2) + "rem";
+      // Update dropdown value and width
+      self.updateDropdown(this.defaultViewName)
 
       this.d3.select("#map-inset-svg")
         .classed("hide", false)
