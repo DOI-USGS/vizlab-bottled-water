@@ -183,7 +183,7 @@ export default {
       this.statePolys = statePolysCONUS.concat(statePolysAK, statePolysHI, statePolysGUMP, statePolysPRVI, statePolysAS)
 
       // Set default and current map view
-      this.defaultViewName = 'all states and territories\xa0\xa0\xa0▾'
+      this.defaultViewName = 'all states and territories'
       this.currentState = this.defaultViewName;
 
       // Set current scale for view (1 = not zoomed)
@@ -335,9 +335,10 @@ export default {
       window.document.body.appendChild(tmpSelect)
       
       // Update dropdown width based on width of tmp dropdown
-      const tmpDropdownWidth = tmpSelect.offsetWidth
+      const tmpDropdownWidth = tmpSelect.offsetWidth / 10 // Divide by 10 to get in rem instead of px
       const dropdownElement = document.getElementById("state-dropdown");
-      dropdownElement.style.width = tmpDropdownWidth + "px";
+      const bufferForBorder = 1 // in rem, same as border-right in .dropdown class
+      dropdownElement.style.width = tmpDropdownWidth + bufferForBorder + "rem";
 
       // Remove tmp dropdown
       window.document.body.removeChild(tmpSelect)
@@ -1526,10 +1527,13 @@ export default {
     width: 50px;
   }
   .dropdown {
+    appearance: menulist; // adds arrow to dropdown
+    -webkit-appearance: menulist; // adds arrow to dropdown
+    border-right: 1rem solid transparent; // Add space to right of dropdown arrow
     transition: width 2s, transform 1s;
     background-color: white;
     margin: 0rem 0.5rem 0rem 0.5rem;
-    padding: 0.5rem 1rem 0.5rem 1rem;
+    padding: 0.5rem 0rem 0.5rem 1rem;
     box-shadow:  rgba(0, 0, 0, 0.2) 0rem 0.6rem 1rem 0rem,
     rgba(0, 0, 0, 0.1) 0rem 0rem 0rem 0.1rem;
     border-radius: 0.5rem;
