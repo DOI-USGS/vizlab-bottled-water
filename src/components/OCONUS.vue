@@ -304,35 +304,43 @@ export default {
 
             self.zoomToState(stateData[0], zoomPath, 'dropdown')
           }
-          // self.drawHistogram(selectedArea)
-          // self.drawCounties(selectedArea, this.currentScale)
-          // self.drawMap(selectedArea, this.currentScale)
-          // self.drawCountyPoints(selectedArea, this.currentScale, self.currentType)
         })
 
-
-      // const dropdownDefaultText = this.defaultViewName
-      // let titleOption = dropdown.append("option")
-      //   .attr("class", "option title")
-      //   .attr("disabled", "true")
-      //   .text(dropdownDefaultText)
-      //   .append("text")
-      //   .text(" ▼")
-
+      // Append options to dropdown
       let stateOptions = dropdown.selectAll("stateOptions")
         .data(data)
         .enter()
         .append("option")
-        .attr("class", "option stateName")
         .attr("value", d => d)
         .text(d => d)
 
-      // set default value
-      dropdown.property('value', this.currentState)
+      // Set default value and width of dropdown
+      self.updateDropdown(this.defaultViewName)
+    },
+    updateDropdown(text) {
+      // Update dropdown text
+      this.d3.select('#state-dropdown')
+        .property('value', text)
 
-      let selectId = document.getElementById("state-dropdown");
-      this.selectedText = selectId.options[selectId.selectedIndex].text;
-      selectId.style.width = 5 + (this.selectedText.length * 1.2) + "rem";
+      // Add tmp dropdown, which will only ever have one option (the current one)
+      // https://stackoverflow.com/questions/20091481/auto-resizing-the-select-element-according-to-selected-options-width
+      const tmpSelect = document.createElement("select")
+      tmpSelect.classList.add('dropdown') // Add dropdown class to match dropdown styling
+      tmpSelect.classList.add('tmp-dropdown') // add tmp-dropdown class to match h3 styling
+      const tmpOption = document.createElement("option");
+      tmpOption.setAttribute("value", text);
+      var t = document.createTextNode(text);
+      tmpOption.appendChild(t);
+      tmpSelect.appendChild(tmpOption);
+      window.document.body.appendChild(tmpSelect)
+      
+      // Update dropdown width based on width of tmp dropdown
+      const tmpDropdownWidth = tmpSelect.offsetWidth
+      const dropdownElement = document.getElementById("state-dropdown");
+      dropdownElement.style.width = tmpDropdownWidth + "px";
+
+      // Remove tmp dropdown
+      window.document.body.removeChild(tmpSelect)
     },
     initMap() {
       // draw canvas for map
@@ -1514,14 +1522,14 @@ export default {
     font-size: 1.6rem;
     fill: #666666;
   }
+  #state-dropdown {
+    width: 50px;
+  }
   .dropdown {
-    // display: flex;
-    flex-direction: row;
-    transition: width 2s, height 2s, transform 2s;
-    will-change: width;
+    transition: width 2s, transform 1s;
     background-color: white;
     margin: 0rem 0.5rem 0rem 0.5rem;
-    padding: 0.5rem;
+    padding: 0.5rem 1rem 0.5rem 1rem;
     box-shadow:  rgba(0, 0, 0, 0.2) 0rem 0.6rem 1rem 0rem,
     rgba(0, 0, 0, 0.1) 0rem 0rem 0rem 0.1rem;
     border-radius: 0.5rem;
@@ -1530,9 +1538,20 @@ export default {
     box-shadow:  rgba(0, 0, 0, 0.3) 0rem 0.6rem 1rem 0rem,
     rgba(0, 0, 0, 0.2) 0rem 0rem 0rem 0.1rem;
   }
+  .tmp-dropdown {
+    font-size: 3rem; // style same as h3 in App.vue
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    font-weight: 700;
+    @media screen and (max-height: 770px) {
+      font-size: 3rem;
+    }
+    @media screen and (max-width: 600px) {
+        font-size: 2rem;
+    }
+  }
 </style>
 <style scoped lang="scss">
-
   #grid-container-interactive {
     display: grid;
     grid-template-columns: 49% 49%;
