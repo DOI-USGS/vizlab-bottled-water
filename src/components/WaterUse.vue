@@ -14,11 +14,11 @@
         <p v-html="useText.paragraph1" />
       </div>
       <div
-        id="img-infographic"
+        id="img-infographic-wu"
         class="img-container"
       >
         <img
-          class="infographic"
+          class="infographic-wu"
           src="../assets/images/water-use_infographic.png"
         >
       </div>
@@ -68,7 +68,7 @@
     grid-template-areas:
       "title"
       "text1"
-      "img-infographic";
+      "img-infographic-wu";
     justify-content: center;
   }
   #title {
@@ -79,11 +79,11 @@
     grid-area: text1;
     justify-self: start;
   }
-  #img-infographic {
+  #img-infographic-wu {
     text-align: center;
     margin: 4rem 0rem 4rem 0rem;
   }
-  .infographic {
+  .infographic-wu {
     width: 60%;
     margin: auto;
     @media screen and (max-height: 770px) {

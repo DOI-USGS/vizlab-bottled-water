@@ -14,21 +14,6 @@
         <p v-html="bottledWaterFocusText.paragraph1" />
       </div>
       <div
-        id="img-bw-use-beeswarm"
-        class="img-container"
-      >
-        <img
-          v-if="!mobileView"
-          class="beeswarm"
-          src="../assets/images/annual_bottled_water_use_beeswarm.png"
-        >
-        <img
-          v-if="mobileView"
-          class="beeswarm"
-          src="../assets/images/annual_bottled_water_use_beeswarm_mobile.png"
-        >
-      </div>
-      <div
         id="text2"
         class="text-container"
       >
@@ -122,6 +107,42 @@
       >
         <p v-html="bottledWaterFocusText.paragraph3" />
       </div>
+      <div
+        id="img-infographic-bw"
+        class="img-container"
+      >
+        <img
+          class="infographic-bw"
+          src="../assets/images/bottled_water_use_infographic.png"
+        >
+      </div>
+      <div
+        id="text4"
+        class="text-container"
+      >
+        <p v-html="bottledWaterFocusText.paragraph4" />
+      </div>
+      <div
+        id="img-bw-use-beeswarm"
+        class="img-container"
+      >
+        <img
+          v-if="!mobileView"
+          class="beeswarm"
+          src="../assets/images/annual_bottled_water_use_beeswarm.png"
+        >
+        <img
+          v-if="mobileView"
+          class="beeswarm"
+          src="../assets/images/annual_bottled_water_use_beeswarm_mobile.png"
+        >
+      </div>
+      <div
+        id="text5"
+        class="text-container"
+      >
+        <p v-html="bottledWaterFocusText.paragraph5" />
+      </div>
     </div>
   </section>
 </template>
@@ -168,10 +189,13 @@
     grid-template-areas:
       "title"
       "text1"
-      "bw-use-source"
       "text2"
       "source-maps"
-      "text3";
+      "text3"
+      "img-infographic-bw"
+      "text4"
+      "bw-use-source"
+      "text5";
     justify-content: center;
   }
   #title {
@@ -188,6 +212,14 @@
   }
   #text3 {
     grid-area: text3;
+    justify-self: start;
+  }
+  #text4 {
+    grid-area: text4;
+    justify-self: start;
+  }
+  #text5 {
+    grid-area: text5;
     justify-self: start;
   }
   #img-bw-use-beeswarm {
@@ -264,6 +296,20 @@
   max-width: 90%;
   @media screen and (max-width: 600px) {
     max-width: 100%;
+  }
+}
+#img-infographic-bw {
+    text-align: center;
+    margin: 4rem 0rem 4rem 0rem;
+  }
+.infographic-bw {
+  width: 60%;
+  margin: auto;
+  @media screen and (max-height: 770px) {
+    width: 65%;
+  }
+  @media screen and (max-width: 600px) {
+    width: 100%;
   }
 }
 </style>
