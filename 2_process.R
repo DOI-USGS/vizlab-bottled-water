@@ -85,7 +85,6 @@ p2_targets <- list(
   tar_target(p2_facility_summary_county,
              get_county_facility_counts(sites_sf = p2_inventory_sites_sf,
                                         counties_sf = p2_counties_conus_oconus_sf,
-                                        states_sf = p2_conus_oconus_sf,
                                         types = p2_facility_types)),
 
   # Get summary of facility supply source categories, by type
