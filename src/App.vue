@@ -229,11 +229,6 @@
         padding: 0rem; 
     }
   }
-  .legend-text {
-      fill: black;
-      font-family: $SourceSans;
-      font-size: 1.6rem;
-    }
   .viz-comment {
     font-family: $GloriaHallelujah;
     font-size: 1.8rem;

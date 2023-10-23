@@ -91,8 +91,10 @@ export default {
       self.drawBarplot(summaryType)
     },
     initBarplot(data) {
-      const  width = window.innerWidth*0.8;
-      const height = window.innerHeight*0.7;
+      const self = this;
+
+      const width = document.getElementById("barplot-container").offsetWidth * 0.9; // Match #barplot-container settings
+      const height = window.innerHeight*0.7; // Match #barplot-container settings
       this.barplotDimensions = {
         width,
         height,
@@ -100,7 +102,7 @@ export default {
           top: 15,
           right: 5,
           bottom: 40,
-          left: 75
+          left: 35
         }
       }
       this.barplotDimensions.boundedWidth = this.barplotDimensions.width - this.barplotDimensions.margin.left - this.barplotDimensions.margin.right
@@ -245,7 +247,7 @@ export default {
 
       // Add title to y-axis
       const axisTitle = currentSummaryType === 'Count' ? 'Number of facilities' : 'Percent of facilities';
-      const axisOffset = currentSummaryType === 'Count' ? 15 : 25
+      const axisOffset = currentSummaryType === 'Count' ? -25 : -10
       yAxis.select(".y-axis.axis-title")
         .attr("y", - this.barplotDimensions.margin.left + axisOffset)
         .text(axisTitle)
@@ -306,7 +308,7 @@ export default {
     addLegend(data) {
       const self = this;
 
-      const width = this.barplotDimensions.width;
+      const width = document.getElementById("legend-container").offsetWidth * 0.9; // Match #legend-container settings
       const height = 60;
       const legendDimensions = {
         width,
@@ -315,7 +317,7 @@ export default {
           top: 7,
           right: 5,
           bottom: 5,
-          left: this.barplotDimensions.margin.left
+          left: 0
         }
       }
       legendDimensions.boundedWidth = legendDimensions.width - legendDimensions.margin.left - legendDimensions.margin.right
@@ -520,10 +522,10 @@ export default {
       "toggle"
       "legend"
       "barplot";
-    row-gap: 1rem;
+    row-gap: 2rem;
     justify-content: center;
-    margin: 1rem auto 1rem auto;
-    width: 90%;
+    margin: 2rem auto 1rem auto;
+    width: 100%;
     @media screen and (max-height: 770px) {
       width: 100%;
     }
@@ -600,9 +602,13 @@ export default {
   }
   #legend-container {
     grid-area: legend;
+    width: 90%;
+    justify-self: center;
   }
   #barplot-container {
     grid-area: barplot;
+    width: 90%;
+    justify-self: center;
     max-height: 70vh;
   }
 </style>
