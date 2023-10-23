@@ -14,27 +14,12 @@
         <p v-html="useText.paragraph1" />
       </div>
       <div
-        id="img-infographic"
+        id="img-infographic-wu"
         class="img-container"
       >
         <img
-          class="infographic"
+          class="infographic-wu"
           src="../assets/images/water-use_infographic.png"
-        >
-      </div>
-      <div
-        id="img-bw-use-beeswarm"
-        class="img-container"
-      >
-        <img
-          v-if="!mobileView"
-          class="beeswarm"
-          src="../assets/images/annual_bottled_water_use_beeswarm.png"
-        >
-        <img
-          v-if="mobileView"
-          class="beeswarm"
-          src="../assets/images/annual_bottled_water_use_beeswarm_mobile.png"
         >
       </div>
     </div>
@@ -83,8 +68,7 @@
     grid-template-areas:
       "title"
       "text1"
-      "use-bars"
-      "bw-use-source";
+      "img-infographic-wu";
     justify-content: center;
   }
   #title {
@@ -95,30 +79,11 @@
     grid-area: text1;
     justify-self: start;
   }
-  #img-wu-bars {
-    grid-area: use-bars;
-  }
-  #img-bw-use-beeswarm {
-    grid-area: bw-use-source;
-  }
-  .beeswarm {
-    width: 90%;
-    max-width: 1200px;
-  }
-  .availability-map {    
-    width: 60vw;
-    max-width: 1000px;
-    margin: 0rem 0rem 0rem 0rem;
-  }
-  .availability-map.img-mobile {
-    width: 100%;
-    margin: 0;
-  }
-  #img-infographic {
+  #img-infographic-wu {
     text-align: center;
     margin: 4rem 0rem 4rem 0rem;
   }
-  .infographic {
+  .infographic-wu {
     width: 60%;
     margin: auto;
     @media screen and (max-height: 770px) {

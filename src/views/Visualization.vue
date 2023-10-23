@@ -52,6 +52,7 @@
     <InventorySection />
     <WaterSourceSection />
     <WaterUseSection />
+    <BottledWaterFocusSection />
     <ReferencesSection />
     <AuthorshipSection />
   </div>
@@ -66,6 +67,7 @@ export default {
       InventorySection: () => import("./../components/Inventory.vue"),
       WaterSourceSection: () => import("./../components/WaterSource.vue"),
       WaterUseSection: () => import("./../components/WaterUse.vue"),
+      BottledWaterFocusSection: () => import("./../components/BottledWaterFocus.vue"),
       AuthorshipSection: () => import("./../components/Authorship.vue"),
       ReferencesSection: () => import("./../components/References.vue"),
     },
