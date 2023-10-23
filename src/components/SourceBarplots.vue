@@ -528,6 +528,7 @@ export default {
           .attr("x", selfSupplyStart + (selfSupplyEnd - selfSupplyStart) / 2)
           .attr("y", bracketHeightEnd + intraItemSpacing)
           .attr("alignment-baseline", "hanging")
+          .attr("dominant-baseline", "hanging") // required for Firefox
           .attr("text-anchor", "middle")
     },
     addToggle() {
