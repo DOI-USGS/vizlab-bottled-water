@@ -366,13 +366,13 @@ export default {
       const self = this;
 
       const width = document.getElementById("legend-container").offsetWidth; // Match #legend-container settings
-      const height = 60;
+      const height = this.mobileView ? 110 : 60;
       const legendDimensions = {
         width,
         height,
         margin: {
           top: 7,
-          right: 5,
+          right: this.mobileView ? 0 : 5,
           bottom: 5,
           left: 0
         }
@@ -389,7 +389,7 @@ export default {
           .attr("id", "legend-svg")
 
       const legendRectSize = 15; // Size of legend color rectangles
-      const interItemSpacing = 25;
+      const interItemSpacing = this.mobileView ? 15 : 25;
       const intraItemSpacing = 6;
 
       // Add group for bounds
@@ -433,23 +433,70 @@ export default {
       // https://stackoverflow.com/questions/20224611/d3-position-text-element-dependent-on-length-of-element-before
       let selfSupplyStart;
       let selfSupplyEnd;
+      const xBuffer = 6; // set xBuffer for use in mobile row x translations
       legendGroup
         .attr("transform", (d, i) => {
           // Compute total width of preceeding legend items, with spacing
-          let cumulativeWidth = this.d3.select('#legend-title')._groups[0][0].getBBox().width + interItemSpacing;
-          for (let j = 0; j < i; j++) {
-            cumulativeWidth = cumulativeWidth + legendGroup._groups[0][j].getBBox().width + interItemSpacing;
+          // Start with width of legend title
+          const titleWidth = this.d3.select('#legend-title')._groups[0][0].getBBox().width + interItemSpacing;
+          
+          // Begin right of legend
+          let cumulativeWidth = titleWidth;
+          if (this.mobileView) {
+            // On mobile, only use preceding items in same row to find cumulative width
+            // row 1: items 0 and 1
+            if (i < 2) {
+              for (let j = 0; j < i; j++) {
+                cumulativeWidth = cumulativeWidth + legendGroup._groups[0][j].getBBox().width + interItemSpacing;
+              }
+            }
+            // row 2: items 2, 3 and 4
+            else if (i < 5) {
+              for (let j = 2; j < i; j++) {
+                cumulativeWidth = cumulativeWidth + legendGroup._groups[0][j].getBBox().width + interItemSpacing;
+              }
+            }
+            // row 3: item 5 
+            else if (i === 5) {
+              for (let j = 2; j < i; j++) {
+                // Actually storing width of row 2 here, to use to set selfSupplyEnd
+                cumulativeWidth = cumulativeWidth + legendGroup._groups[0][j].getBBox().width + interItemSpacing;
+              }
+            }
+          } else {
+            // on desktop, iterate through all preceding items to find cumulative width, since all items in 1 row
+            for (let j = 0; j < i; j++) {
+              cumulativeWidth = cumulativeWidth + legendGroup._groups[0][j].getBBox().width + interItemSpacing;
+            }
           }
+          
           // If first of self-supply items, store cumulative width
-          if (d === 'Surface water intake') {
-            selfSupplyStart = cumulativeWidth;
+          if (i === 2) {
+            selfSupplyStart = this.mobileView ? 0 : cumulativeWidth;
           }
-          // If 'Undetermined', store cumulative width
-          if (d === 'Undetermined') {
-            selfSupplyEnd = cumulativeWidth - interItemSpacing;
+          // If last item, store cumulative width
+          if (i === 5) {
+            selfSupplyEnd = this.mobileView ? cumulativeWidth - interItemSpacing - titleWidth + xBuffer : cumulativeWidth - interItemSpacing;
           }
-          // translate by that width
-          return "translate(" + cumulativeWidth + ",0)"
+
+          let yTranslation = 0;
+          // Determine x and y translation on mobile
+          // set y translation for each row
+          // adjust row starting position for 2nd and third rows by -titleWidth
+          if (this.mobileView) {
+            if (i < 2) {
+              yTranslation = 0;
+            } else if (i < 5) {
+              yTranslation = legendRectSize * 2;
+              cumulativeWidth = cumulativeWidth - titleWidth + xBuffer;
+            } else {
+              yTranslation = legendRectSize * 5.75
+              cumulativeWidth = xBuffer; // for last item just translate by xBuffer
+            } 
+          }
+
+          // translate each group by that width and height
+          return "translate(" + cumulativeWidth + "," + yTranslation + ")"
         })
 
         // Append bracket for self-supply items
@@ -458,15 +505,18 @@ export default {
           .x(d => d.x)
           .y(d => d.y)
 
-        const bracketHeightStart = legendRectSize + intraItemSpacing;
+        const bracketHeightStart = this.mobileView ? legendRectSize * 3 + intraItemSpacing : legendRectSize + intraItemSpacing;
         const bracketHeightEnd = bracketHeightStart + intraItemSpacing;
+        const bracketBuffer = this.mobileView ? xBuffer / 2 : interItemSpacing / 4
+        const bracketStart = this.mobileView ? selfSupplyStart + bracketBuffer : selfSupplyStart - bracketBuffer
+        
         legendBounds
           .append('path') // add a path to the existing svg
           .datum([
-            { x: selfSupplyStart - interItemSpacing / 4,   y: bracketHeightStart },
-            { x: selfSupplyStart - interItemSpacing / 4,  y: bracketHeightEnd},
-            { x: selfSupplyEnd + interItemSpacing / 4,  y: bracketHeightEnd},
-            { x: selfSupplyEnd + interItemSpacing / 4,  y: bracketHeightStart }
+            { x: bracketStart, y: bracketHeightStart},
+            { x: bracketStart, y: bracketHeightEnd},
+            { x: selfSupplyEnd + bracketBuffer, y: bracketHeightEnd},
+            { x: selfSupplyEnd + bracketBuffer, y: bracketHeightStart}
           ])
           .attr('d', line)
           .attr('class', 'bracket')
