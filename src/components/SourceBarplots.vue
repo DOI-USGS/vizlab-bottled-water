@@ -93,7 +93,7 @@ export default {
     // function to wrap text added with d3 modified from
     // https://stackoverflow.com/questions/24784302/wrapping-text-in-d3
     // which is adapted from https://bl.ocks.org/mbostock/7555321
-    wrap(text) {
+    wrapHorizontalLabels(text, width) {
       const self = this;
       text.each(function () {
           var text = self.d3.select(this),
@@ -101,16 +101,15 @@ export default {
               word,
               line = [],
               lineNumber = 0,
-              lineHeight = 1.1, // ems
-              x = text.attr("x"),
-              y = text.attr("y"),
-              width = text.attr("data-width"),
+              lineHeight = 0.8,
+              x = 0,
+              y = text.attr("x"), // Use x b/c wrapping horizontal labels
               dy = 0, //parseFloat(text.attr("dy")),
               tspan = text.text(null)
                           .append("tspan")
                           .attr("x", x)
                           .attr("y", y)
-                          .attr("dy", dy + "em");
+                          .attr("dy", dy + "rem");
           while (word = words.pop()) {
               line.push(word);
               tspan.text(line.join(" "));
@@ -121,7 +120,7 @@ export default {
                   tspan = text.append("tspan")
                               .attr("x", x)
                               .attr("y", y)
-                              .attr("dy", ++lineNumber * lineHeight + dy + "em")
+                              .attr("dy", ++lineNumber * lineHeight + dy + "rem")
                               .text(word);
               }
           }
@@ -172,7 +171,7 @@ export default {
       this.xScale = this.d3.scaleBand()
         .domain(this.d3.union(this.sourceSummary.map(d => d.WB_TYPE).sort(this.d3.ascending)))
         .range([0, this.barplotDimensions.boundedWidth])
-        .padding(0.3);
+        .padding(this.mobileView ? 0.1 : 0.3);
 
       // x-axis
       const xAxis = this.barplotBounds.append("g")
@@ -189,9 +188,8 @@ export default {
         .selectAll("text")
         .attr("class", "axis-text")
         .style("text-anchor", "middle")
-        // .attr("y", (d, i) => i % 2 == 0 ? 8 : 28)
-        // .attr("data-width", 0)
-        // .call(self.wrap);
+        // Wrap x-axis labels on mobile
+        .call(d => this.mobileView ? self.wrapHorizontalLabels(d, 10) : d);
 
       // scale for y-axis
       this.yScale = this.d3.scaleLinear()
@@ -545,6 +543,9 @@ export default {
   }
   .axis-text {
     font-size: 1.6rem;
+    @media screen and (max-width: 600px) {
+      font-size: 1.4rem;
+    }
   }
   .y-axis-tick {
     stroke: #CCCCCC;
