@@ -606,7 +606,7 @@ p3_targets <- list(
                                    supply_color = p3_wu_availability_facilities_colors,
                                    bkgd_color = 'white',
                                    text_color = 'black',
-                                   outfile_template = '3_visualize/out/annual_bottled_water_use_beeswarm_mobile.png',
+                                   outfile_template = 'src/assets/images/annual_bottled_water_use_beeswarm_mobile.png',
                                    dpi = 300),
              format = 'file'),
   # Combined barplots displaying % water use availability, % bottled water facilities, and % sources of bottled water facilities
