@@ -105,7 +105,7 @@ export default {
               word,
               line = [],
               lineNumber = 0,
-              lineHeight = 0.8,
+              lineHeight = 0.6,
               x = 0,
               y = text.attr("x"), // Use x b/c wrapping horizontal labels
               dy = 0, //parseFloat(text.attr("dy")),
@@ -124,7 +124,7 @@ export default {
                   tspan = text.append("tspan")
                               .attr("x", x)
                               .attr("y", y)
-                              .attr("dy", ++lineNumber * lineHeight + dy + "rem")
+                              .attr("dy", ++lineNumber * lineHeight + dy + "em")
                               .text(word);
               }
           }
