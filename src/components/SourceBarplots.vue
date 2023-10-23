@@ -139,7 +139,7 @@ export default {
           top: 15,
           right: this.mobileView ? 0 : 5,
           bottom: 60,
-          left: this.mobileView ? 25 : 85
+          left: this.mobileView ? 30 : 85
         }
       }
       this.barplotDimensions.boundedWidth = this.barplotDimensions.width - this.barplotDimensions.margin.left - this.barplotDimensions.margin.right
@@ -206,6 +206,8 @@ export default {
       // y-axis
       this.barplotBounds.append("g")
         .attr("class", "y-axis")
+        // On mobile, translate y axis in negative x direction by the left margin
+        .attr("transform", this.mobileView ? `translate(-${this.barplotDimensions.margin.left},0)` : "translate(0,0)")
         .attr("role", "presentation")
         .attr("aria-hidden", true)
         .append("text")
@@ -267,7 +269,8 @@ export default {
 
       // Set formatting for y axis
       const countFormat = this.mobileView ? this.d3.format(".2s") : this.d3.format(",")
-      this.yAxis = currentSummaryType === 'Count' ? this.yAxis.tickFormat(countFormat) : this.yAxis.tickFormat(this.d3.format(".0%"))
+      // Integrate axis title into label for 20k on mobile
+      this.yAxis = currentSummaryType === 'Count' ? this.yAxis.tickFormat((d) => d === 20000 && this.mobileView ? '20k facilities' : countFormat(d)) : this.yAxis.tickFormat(this.d3.format(".0%"))
 
       // Select y-axis
       const yAxis = this.barplotBounds.select(".y-axis")
@@ -278,20 +281,31 @@ export default {
         .select(".domain").remove()
       
       // Add class to y-axis labels, for styling
-      yAxis
+      const yAxisText = yAxis
         .selectAll("g")
         .selectAll("text")
+        .attr("id", d => currentSummaryType === 'Count' ? "axis-text-" + d : "axis-text-" + d * 100) // label-specific id
         .attr("class", "axis-text")
+        .attr("text-anchor", this.mobileView ? "start" : "end")
 
       // Add class to y-axis ticks, for styling
-      yAxis.selectAll(".tick line").attr("class", "y-axis-tick")
+      yAxis
+        .selectAll(".tick line")
+        .attr("class", "y-axis-tick")
+        .attr("x1", d => {
+          // On mobile, use width of label to adjust starting x value of tick line
+          const idValue = currentSummaryType === 'Count' ? d : d * 100
+          return this.mobileView ? self.d3.select('#axis-text-' + idValue)._groups[0][0].getBBox().width + 1 : 0;
+        })
+        // On mobile, adjust end value of tick line to account for x transformation of y axis
+        .attr("x2", this.mobileView ? this.barplotDimensions.boundedWidth + this.barplotDimensions.margin.left : this.barplotDimensions.boundedWidth)
 
       // Add title to y-axis
       const axisTitle = currentSummaryType === 'Count' ? 'Number of facilities' : 'Percent of facilities';
       const axisOffset = currentSummaryType === 'Count' ? 25 : 35
       yAxis.select(".y-axis.axis-title")
         .attr("y", - this.barplotDimensions.margin.left + axisOffset)
-        .text(axisTitle)
+        .text(this.mobileView ? '' : axisTitle) // Don't add the axis title on mobile
 
       // Set up transition.
       const dur = 1000;
