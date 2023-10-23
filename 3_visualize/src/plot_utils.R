@@ -1902,10 +1902,11 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
                                       nrow = 1,
                                       label.position = "bottom")) +
           theme_void() +
-          labs(title = df$source_category) +
+          #labs(title = df$source_category) +
           theme(
-            legend.position = "none",
-            plot.title = element_text(family = font_legend, hjust = 0.5, size = 16, margin = margin(t = -10, b = -10))
+            legend.position = "none"
+            # ,
+            # plot.title = element_text(family = font_legend, hjust = 0.5, size = 16, margin = margin(t = -10, b = -10))
           )
         })
 
@@ -1935,10 +1936,11 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
             theme_void() +
             scale_fill_manual(name = 'Water source',
                               values = supply_colors) +
-            labs(title = df$source_category) +
+            #labs(title = df$source_category) +
             theme(
-                legend.position = "none",
-                plot.title = element_text(family = font_legend, hjust = 0.5, size = 16, margin = margin(t = -10, b = -10))
+                legend.position = "none"
+                # ,
+                # plot.title = element_text(family = font_legend, hjust = 0.5, size = 16, margin = margin(t = -10, b = -10))
               )
         })
 
