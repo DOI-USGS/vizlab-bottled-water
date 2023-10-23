@@ -209,7 +209,7 @@ export default {
       this.barplotBounds.append("g")
         .attr("class", "y-axis")
         // On mobile, translate y axis in negative x direction by the left margin
-        .attr("transform", this.mobileView ? `translate(-${this.barplotDimensions.margin.left},0)` : "translate(0,0)")
+        .attr("transform", this.mobileView ? `translate(-${this.barplotDimensions.margin.left - 4},0)` : "translate(0,0)")
         .attr("role", "presentation")
         .attr("aria-hidden", true)
         .append("text")
