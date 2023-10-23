@@ -215,6 +215,7 @@
     @media screen and (max-width: 600px) {
       grid-template-columns: 1fr;
       grid-template-rows: max-content max-content;
+      row-gap: 2rem;
       grid-template-areas:
         "public-supply"
         "self-supply";
