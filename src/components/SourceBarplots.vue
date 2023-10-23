@@ -93,7 +93,7 @@ export default {
     initBarplot(data) {
       const self = this;
 
-      const width = document.getElementById("barplot-container").offsetWidth * 0.9; // Match #barplot-container settings
+      const width = document.getElementById("barplot-container").offsetWidth; // Match #barplot-container settings
       const height = window.innerHeight*0.7; // Match #barplot-container settings
       this.barplotDimensions = {
         width,
@@ -102,7 +102,7 @@ export default {
           top: 15,
           right: 5,
           bottom: 40,
-          left: 35
+          left: 85
         }
       }
       this.barplotDimensions.boundedWidth = this.barplotDimensions.width - this.barplotDimensions.margin.left - this.barplotDimensions.margin.right
@@ -247,7 +247,7 @@ export default {
 
       // Add title to y-axis
       const axisTitle = currentSummaryType === 'Count' ? 'Number of facilities' : 'Percent of facilities';
-      const axisOffset = currentSummaryType === 'Count' ? -25 : -10
+      const axisOffset = currentSummaryType === 'Count' ? 25 : 35
       yAxis.select(".y-axis.axis-title")
         .attr("y", - this.barplotDimensions.margin.left + axisOffset)
         .text(axisTitle)
@@ -308,7 +308,7 @@ export default {
     addLegend(data) {
       const self = this;
 
-      const width = document.getElementById("legend-container").offsetWidth * 0.9; // Match #legend-container settings
+      const width = document.getElementById("legend-container").offsetWidth; // Match #legend-container settings
       const height = 60;
       const legendDimensions = {
         width,
