@@ -36,7 +36,7 @@
         >
           <img
             class="source-map"
-            src="../assets/images/map_bottled_water_self_supply_count.png"
+            src="../assets/images/map_bottled_water_Self-supply_count.png"
           >
         </div>
         <div
@@ -45,7 +45,7 @@
         >
           <img
             class="source-map"
-            src="../assets/images/map_bottled_water_self_supply_perc.png"
+            src="../assets/images/map_bottled_water_Self-supply_perc.png"
           >
         </div>
         <div

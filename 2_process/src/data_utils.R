@@ -1,16 +1,14 @@
 #' @title munge inventory data
 #' @description function that cleans the raw inventory data,
 #' correcting variable names and data entry errors
-#' @param inventory_csv the raw inventory data provided by
-#' collaborators as a csv file
+#' @param inventory_txt the raw inventory data downloaded from ScienceBase
 #' @return a dataframe of cleaned data w/ all spaces removed
 #' from variable names, cleaned water source info, and source
 #' category information
-munge_inventory_data <- function(inventory_csv) {
-  # read in csv, with empty, 9999, and -9999 values as NA
-  readr::read_csv(inventory_csv, col_types = cols(), na = c('', 'NA', '9999', '-9999')) %>%
-    # Remove columns w/ entirely NA values
-    dplyr::select(where(function(x) !all(is.na(x)))) %>%
+munge_inventory_data <- function(inventory_txt) {
+  
+  # read in txt, with empty, 9999, and -9999 values as NA
+  readr::read_tsv(inventory_txt, col_types = cols(), na = c('', 'NA', '9999', '-9999')) %>%
     # clean data
     mutate(
       # # fix types in WB_TYPE
@@ -41,41 +39,32 @@ munge_inventory_data <- function(inventory_csv) {
     separate_wider_delim(STATE_NAME, delim = ':', names = c('state_fips', 'state_name'), cols_remove = FALSE) %>%
     separate_wider_delim(COUNTY, delim = ':', names = c('full_fips', 'county_name'), cols_remove = FALSE) %>%
     # need to drop first 2 digits to get county fips b/c refers to state
-    mutate(county_fips = sub('..', '', full_fips),
-           # fix bad STATE_ABBV values
-           state_abbr = case_when(
-             state_name == 'Illinois' ~ 'IL',
-             state_name == 'Maryland' ~ 'MD',
-             state_name == 'Texas' ~ 'TX',
-             state_name == 'Virgin Islands' ~ 'VI',
-             TRUE ~ STATE_ABBV
-           ))
+    mutate(county_fips = sub('..', '', full_fips))
 }
 
-#' @title
-#' @description
-#' @param
-#' @return
-get_county_facility_counts <- function(sites_sf, counties_sf, states_sf, types) {
-
+#' @title Get county facility counts
+#' @description Get counts of facilities for each county - overall and by type
+#' @param sites_sf sf object of inventory sites
+#' @param counties_sf sf object of U.S. counties
+#' @param types vector of facility types
+#' @return summarized dataframe with the overall county of facilities in each
+#' county as well as the count by facility type
+get_county_facility_counts <- function(sites_sf, counties_sf, types) {
+  
+  # Join county data to sites data to get county fields for later spatial join
   county_sites <- sites_sf %>%
+    st_drop_geometry() %>%
     dplyr::select(-STATE_NAME) %>%
-    st_intersection(counties_sf) %>%
-    # Catch incorrect duplicate for facility on county line
-    filter(!(FAC_ID == 'WI00862' & GEOID == '55027')) %>%
-    left_join(states_sf %>%
-                st_drop_geometry() %>%
-                dplyr::select(STUSPS, STATE_NAME = NAME, STATEFP, group),
-              by = c('STATEFP', 'STUSPS', 'STATE_NAME', 'group'))
+    left_join(st_drop_geometry(counties_sf), by = c('full_fips' = 'GEOID'), keep = TRUE) %>%
+    dplyr::select(WB_TYPE, FAC_ID, STATE_NAME, STATEFP, STUSPS, NAMELSAD, GEOID, WB_TYPE)
 
-  # Get count of facilities, by type, in each county
+  # Get count of facilities in each county
   facility_summary_county <- county_sites %>%
     filter(WB_TYPE %in% types) %>%
     group_by(STATE_NAME, STATEFP, STUSPS, NAMELSAD, GEOID) %>%
     summarize(site_count = n()) %>%
     mutate(WB_TYPE = 'All') %>%
-    ungroup() %>%
-    st_drop_geometry()
+    ungroup()
 
   # Get count of facilities, by type, in each county
   facility_type_summary_county <- county_sites %>%
@@ -83,8 +72,7 @@ get_county_facility_counts <- function(sites_sf, counties_sf, states_sf, types) 
     group_by(STATE_NAME, STATEFP, STUSPS, NAMELSAD, GEOID, WB_TYPE) %>%
     summarize(site_count = n()) %>%
     mutate(WB_TYPE = factor(WB_TYPE, levels = types)) %>%
-    ungroup() %>%
-    st_drop_geometry()
+    ungroup()
 
   # Get max count, across types
   facility_max_count_county <- facility_type_summary_county %>%

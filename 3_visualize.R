@@ -452,10 +452,10 @@ p3_targets <- list(
   tar_target(p3_supply_ext_ss_colors,
              {
                supply_colors <- c(p3_supply_colors_new[['Undetermined']],
-                                  p3_supply_colors_new[['Combination']],
                                   '#90aed5', '#3f6ca6', '#213958',
+                                  p3_supply_colors_new[['Combination']],
                                   p3_supply_colors_new[['Public supply']])
-               names(supply_colors) <- p2_source_order
+               names(supply_colors) <- rev(p2_source_order)
                return(supply_colors)
              }),
 

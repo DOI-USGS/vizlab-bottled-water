@@ -105,3 +105,20 @@ export_to_topojson <- function(data_sf, cols_to_keep, tmp_dir, outfile, precisio
   convert_to_topojson(geojson = tmp_geojson, outfile = outfile, 
                       precision = precision)
 }
+
+#' @title Download file from ScienceBase
+#' @description Download a file from ScienceBase and save it to a specified
+#' directory
+#' @param sb_id id for ScienceBase data release
+#' @param filename filename of item in data release
+#' @param dest_dir directory to which to download the file
+#' @return the filepath of the saved file
+download_from_sb <- function(sb_id, filename, dest_dir) {
+  filepath <- file.path(dest_dir, filename)
+
+  sbtools::item_file_download(sb_id = sb_id,
+                              names = filename,
+                              destinations = filepath)
+  
+  return(filepath)
+}
