@@ -1,27 +1,46 @@
 <template>
-    <section>
-      <div id="grid-container-barplots">
-        <div id="toggle-container">
-          <p>Explore where different facility types source water. Showing the data summarized by</p>
-          <div class="graph-buttons-switch">
-            <input type="radio" class="graph-buttons-switch-input" name="CountPercent" value="Count" id="id_Count" checked>
-            <label for="id_Count" class="graph-buttons-switch-label graph-buttons-switch-label-off">count</label>
-            <input type="radio" class="graph-buttons-switch-input" name="CountPercent" value="Percent" id="id_Percent">
-            <label for="id_Percent" class="graph-buttons-switch-label graph-buttons-switch-label-on" >percent</label>
-            <span class="graph-buttons-switch-selection"></span>
-          </div>
+  <section>
+    <div id="grid-container-barplots">
+      <div id="toggle-container">
+        <p>Explore where different facility types source water. Showing the data summarized by</p>
+        <div class="graph-buttons-switch">
+          <input
+            id="id_Count"
+            type="radio"
+            class="graph-buttons-switch-input"
+            name="CountPercent"
+            value="Count"
+            checked
+          >
+          <label
+            for="id_Count"
+            class="graph-buttons-switch-label graph-buttons-switch-label-off"
+          >count</label>
+          <input
+            id="id_Percent"
+            type="radio"
+            class="graph-buttons-switch-input"
+            name="CountPercent"
+            value="Percent"
+          >
+          <label
+            for="id_Percent"
+            class="graph-buttons-switch-label graph-buttons-switch-label-on"
+          >percent</label>
+          <span class="graph-buttons-switch-selection" />
         </div>
-        <div id="legend-container" />
-        <div id="barplot-container" />
       </div>
-    </section>
+      <div id="legend-container" />
+      <div id="barplot-container" />
+    </div>
+  </section>
 </template>
 <script>
 import * as d3Base from 'd3';
 import { isMobile } from 'mobile-device-detect';
 
 export default {
-  name: "supplyBarplots",
+  name: "SupplyBarplots",
   components: {
   },
   data() {
