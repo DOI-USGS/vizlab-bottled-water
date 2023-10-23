@@ -4,7 +4,6 @@
       <div id="title">
         <h3>
           Counts of bottling facilities in <span id="state-dropdown-container" /> by county
-          <!-- Dropdown v-model="selectedOption" :options="dropdownOptions"/ -->
         </h3>
       </div>
       <div id="text">
@@ -45,23 +44,14 @@ export default {
   },
   setup() {
     const self = this;
-    // const selectedOption = ref('')
-    // const dropdownOptions = ref([])
 
     onMounted(async () => {
-      // const data = await csv(self.publicPath + 'state_facility_type_summary.csv')
-
-      // Assuming the column name in the CSV is 'NAME'
-      // dropdownOptions.value = data.map(d => d.NAME)
     })
 
     return { }
   },
   data() {
     return {
-      // selectedOption: 'all states and territories',
-      dropdownOptions: [],
-
       d3: null,
       publicPath: import.meta.env.BASE_URL, // find the files when on different deployment roots
       mobileView: isMobile, // test for mobile
@@ -193,7 +183,7 @@ export default {
       this.statePolys = statePolysCONUS.concat(statePolysAK, statePolysHI, statePolysGUMP, statePolysPRVI, statePolysAS)
 
       // Set default and current map view
-      this.defaultViewName = 'all states and territories\xa0\xa0\xa0▾'
+      this.defaultViewName = 'all states and territories'
       this.currentState = this.defaultViewName;
 
       // Set current scale for view (1 = not zoomed)
@@ -207,8 +197,6 @@ export default {
       // get list of unique states
       this.stateList = [... new Set(this.dataAll.map(d => d.NAME))]
       this.stateList.unshift(this.defaultViewName)
-      // store options for dropdown
-      this.dropdownOptions = this.stateList
       // add dropdown
       self.addDropdown(this.stateList)
 
@@ -274,9 +262,8 @@ export default {
         .attr("class", "dropdown")
         .attr("contenteditable", "true")
         .on("change", function() {
-          this.selectedText = this.options[this.selectedIndex].text;
-          console.log(this.selectedText.length)
-          this.style.width = 5 + (this.selectedText.length * 1.2) + "rem";
+          // Update dropdown text + width
+          self.updateDropdown(this.options[this.selectedIndex].text)
 
           let selectedArea = this.value
 
@@ -317,35 +304,44 @@ export default {
 
             self.zoomToState(stateData[0], zoomPath, 'dropdown')
           }
-          // self.drawHistogram(selectedArea)
-          // self.drawCounties(selectedArea, this.currentScale)
-          // self.drawMap(selectedArea, this.currentScale)
-          // self.drawCountyPoints(selectedArea, this.currentScale, self.currentType)
         })
 
-
-      // const dropdownDefaultText = this.defaultViewName
-      // let titleOption = dropdown.append("option")
-      //   .attr("class", "option title")
-      //   .attr("disabled", "true")
-      //   .text(dropdownDefaultText)
-      //   .append("text")
-      //   .text(" ▼")
-
+      // Append options to dropdown
       let stateOptions = dropdown.selectAll("stateOptions")
         .data(data)
         .enter()
         .append("option")
-        .attr("class", "option stateName")
         .attr("value", d => d)
         .text(d => d)
 
-      // set default value
-      dropdown.property('value', this.currentState)
+      // Set default value and width of dropdown
+      self.updateDropdown(this.defaultViewName)
+    },
+    updateDropdown(text) {
+      // Update dropdown text
+      this.d3.select('#state-dropdown')
+        .property('value', text)
 
-      let selectId = document.getElementById("state-dropdown");
-      this.selectedText = selectId.options[selectId.selectedIndex].text;
-      selectId.style.width = 5 + (this.selectedText.length * 1.2) + "rem";
+      // Add tmp dropdown, which will only ever have one option (the current one)
+      // https://stackoverflow.com/questions/20091481/auto-resizing-the-select-element-according-to-selected-options-width
+      const tmpSelect = document.createElement("select")
+      tmpSelect.classList.add('dropdown') // Add dropdown class to match dropdown styling
+      tmpSelect.classList.add('tmp-dropdown') // add tmp-dropdown class to match h3 styling
+      const tmpOption = document.createElement("option");
+      tmpOption.setAttribute("value", text);
+      var t = document.createTextNode(text);
+      tmpOption.appendChild(t);
+      tmpSelect.appendChild(tmpOption);
+      window.document.body.appendChild(tmpSelect)
+      
+      // Update dropdown width based on width of tmp dropdown
+      const tmpDropdownWidth = tmpSelect.offsetWidth / 10 // Divide by 10 to get in rem instead of px
+      const dropdownElement = document.getElementById("state-dropdown");
+      const bufferForBorder = 1 // in rem, same as border-right in .dropdown class
+      dropdownElement.style.width = tmpDropdownWidth + bufferForBorder + "rem";
+
+      // Remove tmp dropdown
+      window.document.body.removeChild(tmpSelect)
     },
     initMap() {
       // draw canvas for map
@@ -1349,11 +1345,8 @@ export default {
       // If user clicked on map to zoom
       if (callMethod === 'click') {
         let dropdown = this.d3.select('select')
-        // Update dropdown text
-        dropdown.property('value', zoomedState)
-        // Update dropdown width
-        let selectId = document.getElementById("state-dropdown");
-        selectId.style.width = 5 + (zoomedState.length * 1.2) + "rem";
+        // Update dropdown text and width
+        self.updateDropdown(zoomedState)
       }
 
       // Hide the inset map borders and labels
@@ -1483,9 +1476,8 @@ export default {
       this.currentState = this.defaultViewName //this.d3.select(null);
       this.currentScale = 1;
 
-      this.d3.select('select').property('value', this.defaultViewName)
-      let selectId = document.getElementById("state-dropdown");
-      selectId.style.width = 5 + (this.currentState.length * 1.2) + "rem";
+      // Update dropdown value and width
+      self.updateDropdown(this.defaultViewName)
 
       this.d3.select("#map-inset-svg")
         .classed("hide", false)
@@ -1531,14 +1523,17 @@ export default {
     font-size: 1.6rem;
     fill: #666666;
   }
+  #state-dropdown {
+    width: 50px;
+  }
   .dropdown {
-    // display: flex;
-    flex-direction: row;
-    transition: width 2s, height 2s, transform 2s;
-    will-change: width;
+    appearance: menulist; // adds arrow to dropdown
+    -webkit-appearance: menulist; // adds arrow to dropdown
+    border-right: 1rem solid transparent; // Add space to right of dropdown arrow
+    transition: width 2s, transform 1s;
     background-color: white;
     margin: 0rem 0.5rem 0rem 0.5rem;
-    padding: 0.5rem;
+    padding: 0.5rem 0rem 0.5rem 1rem;
     box-shadow:  rgba(0, 0, 0, 0.2) 0rem 0.6rem 1rem 0rem,
     rgba(0, 0, 0, 0.1) 0rem 0rem 0rem 0.1rem;
     border-radius: 0.5rem;
@@ -1547,9 +1542,20 @@ export default {
     box-shadow:  rgba(0, 0, 0, 0.3) 0rem 0.6rem 1rem 0rem,
     rgba(0, 0, 0, 0.2) 0rem 0rem 0rem 0.1rem;
   }
+  .tmp-dropdown {
+    font-size: 3rem; // style same as h3 in App.vue
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    font-weight: 700;
+    @media screen and (max-height: 770px) {
+      font-size: 3rem;
+    }
+    @media screen and (max-width: 600px) {
+        font-size: 2rem;
+    }
+  }
 </style>
 <style scoped lang="scss">
-
   #grid-container-interactive {
     display: grid;
     grid-template-columns: 49% 49%;
