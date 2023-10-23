@@ -588,7 +588,7 @@ p3_targets <- list(
                                    supply_color = p3_wu_availability_facilities_colors,
                                    bkgd_color = 'white',
                                    text_color = 'black',
-                                   outfile_template = '3_visualize/out/annual_bottled_water_use_beeswarm.png',
+                                   outfile_template = 'src/assets/images/annual_bottled_water_use_beeswarm.png',
                                    dpi = 300),
              format = 'file'),
   # Beeswarm displaying annual bottled water use (MGD) - mobile version
