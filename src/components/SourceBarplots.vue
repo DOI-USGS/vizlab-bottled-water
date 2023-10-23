@@ -90,6 +90,43 @@ export default {
       // Draw barplot
       self.drawBarplot(summaryType)
     },
+    // function to wrap text added with d3 modified from
+    // https://stackoverflow.com/questions/24784302/wrapping-text-in-d3
+    // which is adapted from https://bl.ocks.org/mbostock/7555321
+    wrap(text) {
+      const self = this;
+      text.each(function () {
+          var text = self.d3.select(this),
+              words = text.text().split(/\s+/).reverse(),
+              word,
+              line = [],
+              lineNumber = 0,
+              lineHeight = 1.1, // ems
+              x = text.attr("x"),
+              y = text.attr("y"),
+              width = text.attr("data-width"),
+              dy = 0, //parseFloat(text.attr("dy")),
+              tspan = text.text(null)
+                          .append("tspan")
+                          .attr("x", x)
+                          .attr("y", y)
+                          .attr("dy", dy + "em");
+          while (word = words.pop()) {
+              line.push(word);
+              tspan.text(line.join(" "));
+              if (tspan.node().getComputedTextLength() > width) {
+                  line.pop();
+                  tspan.text(line.join(" "));
+                  line = [word];
+                  tspan = text.append("tspan")
+                              .attr("x", x)
+                              .attr("y", y)
+                              .attr("dy", ++lineNumber * lineHeight + dy + "em")
+                              .text(word);
+              }
+          }
+      });
+    },
     initBarplot(data) {
       const self = this;
 
@@ -100,9 +137,9 @@ export default {
         height,
         margin: {
           top: 15,
-          right: 5,
-          bottom: 40,
-          left: 85
+          right: this.mobileView ? 0 : 5,
+          bottom: 60,
+          left: this.mobileView ? 25 : 85
         }
       }
       this.barplotDimensions.boundedWidth = this.barplotDimensions.width - this.barplotDimensions.margin.left - this.barplotDimensions.margin.right
@@ -151,7 +188,10 @@ export default {
       xAxis
         .selectAll("text")
         .attr("class", "axis-text")
-        .style("text-anchor", "middle");
+        .style("text-anchor", "middle")
+        // .attr("y", (d, i) => i % 2 == 0 ? 8 : 28)
+        // .attr("data-width", 0)
+        // .call(self.wrap);
 
       // scale for y-axis
       this.yScale = this.d3.scaleLinear()
@@ -226,7 +266,8 @@ export default {
       this.yAxis.scale(this.yScale)
 
       // Set formatting for y axis
-      this.yAxis = currentSummaryType === 'Count' ? this.yAxis.tickFormat(this.d3.format(",")) : this.yAxis.tickFormat(this.d3.format(".0%"))
+      const countFormat = this.mobileView ? this.d3.format(".2s") : this.d3.format(",")
+      this.yAxis = currentSummaryType === 'Count' ? this.yAxis.tickFormat(countFormat) : this.yAxis.tickFormat(this.d3.format(".0%"))
 
       // Select y-axis
       const yAxis = this.barplotBounds.select(".y-axis")
@@ -604,11 +645,17 @@ export default {
     grid-area: legend;
     width: 90%;
     justify-self: center;
+    @media screen and (max-width: 600px) {
+      width: 100%;
+    }
   }
   #barplot-container {
     grid-area: barplot;
     width: 90%;
     justify-self: center;
     max-height: 70vh;
+    @media screen and (max-width: 600px) {
+      width: 100%;
+    }
   }
 </style>
