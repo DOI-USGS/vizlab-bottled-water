@@ -557,17 +557,19 @@ combine_conus_maps <- function(map1, map2, title1, title2, width, height,
 #' @return stacked bar chart indicating percent of sites that have water use data
 #' and percent of sites that do not
 chart_wateruse_availability <- function(sites, has_wu_color, no_wu_color) {
+  
   wu_summary <- sites %>%
-    group_by(WU_DATA_FLAG, facility_category) %>%
+    mutate(has_wu = ifelse(WU_DATA_FLAG == 'Y', WU_DATA_FLAG, NA)) %>%
+    group_by(has_wu, facility_category) %>%
     summarize(count = n(), percent = count/nrow(sites)) %>%
-    mutate(type = ifelse(is.na(WU_DATA_FLAG), 'No water use data', 'Has water use data'))
+    mutate(type = ifelse(is.na(has_wu), 'No water use data', 'Has water use data'))
   max_per <- max(wu_summary$percent)
   min_per <- min(wu_summary$percent)
   wu_summary_plot <- wu_summary %>%
     ggplot() +
-    geom_bar(aes(x = facility_category, y = count, fill = WU_DATA_FLAG),
+    geom_bar(aes(x = facility_category, y = count, fill = has_wu),
              stat = 'identity', position = "fill") +
-    scale_fill_manual(name = 'WU_DATA_FLAG', values = has_wu_color,
+    scale_fill_manual(name = 'has_wu', values = has_wu_color,
                       na.value = no_wu_color) +
     theme_void() +
     scale_y_continuous(position = 'right',
@@ -820,8 +822,8 @@ generate_site_count_matrix <- function(type_summary, type_summary_state,
                                        bar_fill, width, height, outfile, dpi) {
   # main matrix
   state_matrix <- type_summary_state %>%
-    arrange(state_abbr) %>%
-    ggplot(aes(x = reorder(state_abbr, state_abbr), y = WB_TYPE)) +
+    arrange(STATE_ABBV) %>%
+    ggplot(aes(x = reorder(STATE_ABBV, STATE_ABBV), y = WB_TYPE)) +
     geom_tile(aes(fill = site_count), color = 'white', width = 1, height = 1) +
     theme_minimal() +
     scico::scale_fill_scico(palette = palette, begin = 0, end = 1,
@@ -854,7 +856,7 @@ generate_site_count_matrix <- function(type_summary, type_summary_state,
 
   # right-hand bar chart
   state_totals <- state_summary %>%
-    ggplot(aes(x = reorder(state_abbr, state_abbr), y = site_count)) +
+    ggplot(aes(x = reorder(STATE_ABBV, STATE_ABBV), y = site_count)) +
     geom_bar(fill = bar_fill, color = 'white', stat = 'identity', width = 1) +
     scale_x_discrete(position = 'top') +
     scale_y_continuous(trans = "reverse",
@@ -988,15 +990,15 @@ generate_facility_type_facet_map <- function(type_summary, type_summary_state,
                                              text_color, outfile, dpi) {
 
   state_cartogram <- type_summary_state %>%
-    arrange(state_abbr) %>%
-    group_by(state_abbr) %>%
+    arrange(STATE_ABBV) %>%
+    group_by(STATE_ABBV) %>%
     mutate(percent = site_count/sum(site_count)*100) %>%
     ggplot(aes(1, y = percent)) +
     geom_bar(aes(fill = WB_TYPE), stat = 'identity') +
     scale_fill_manual(name = 'WB_TYPE', values = colors) +
     theme_bw() +
     theme_facet(base = 12, bkgd_color = bkgd_color, text_color = text_color) +
-    geofacet::facet_geo(~ state_abbr, grid = grid_pr_vi_gu(), move_axes = TRUE)
+    geofacet::facet_geo(~ STATE_ABBV, grid = grid_pr_vi_gu(), move_axes = TRUE)
 
   national_plot <- type_summary %>%
     mutate(percent = site_count/sum(site_count)*100) %>%
@@ -1114,15 +1116,15 @@ process_supply_state_sum <- function(supply_summary_state, selected_facility_typ
     supply_summary_state <- supply_summary_state %>%
       filter(WB_TYPE == selected_facility_type) %>%
       arrange(state_name) %>%
-      group_by(state_name, state_abbr) %>%
+      group_by(state_name, STATE_ABBV) %>%
       mutate(percent = site_count/sum(site_count)*100) |>
       mutate(ratio = site_count/sum(site_count))
   } else {
     supply_summary_state <- supply_summary_state %>%
       arrange(state_name) %>%
-      group_by(state_name, state_abbr, source_category) %>%
+      group_by(state_name, STATE_ABBV, source_category) %>%
       summarize(site_count = sum(site_count)) %>%
-      group_by(state_name, state_abbr) %>%
+      group_by(state_name, STATE_ABBV) %>%
       mutate(percent = site_count/sum(site_count)*100) |>
       mutate(ratio = site_count/sum(site_count))
   }
@@ -1162,7 +1164,7 @@ generate_facility_source_facet_map <- function(supply_summary, supply_summary_st
     scale_fill_manual(name = 'source_category', values = supply_colors) +
     theme_bw() +
     theme_facet(base = 12, bkgd_color = bkgd_color, text_color = text_color) +
-    geofacet::facet_geo(~ state_abbr, grid = grid_pr_vi_gu(), move_axes = TRUE)
+    geofacet::facet_geo(~ STATE_ABBV, grid = grid_pr_vi_gu(), move_axes = TRUE)
 
   national_plot <- supply_summary %>%
     ggplot(aes(1, y = percent)) +
@@ -1276,13 +1278,13 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
                                        selected_facility_type = selected_facility_type)
 
   supply_summary_tx <- supply_summary_state |>
-    filter(state_abbr == "TX")
+    filter(STATE_ABBV == "TX")
 
   supply_summary_ri <- supply_summary_state |>
-    filter(state_abbr == "RI")
+    filter(STATE_ABBV == "RI")
 
   supply_summary_vt <- supply_summary_state |>
-    filter(state_abbr == "VT")
+    filter(STATE_ABBV == "VT")
 
   font_legend <- "Source Sans Pro"
   sysfonts::font_add_google(font_legend)
@@ -1314,7 +1316,7 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
           plot.margin = margin(50, 50, 50, 50, "pt"),
           panel.spacing.y = unit(-5, "pt"),
           panel.spacing.x = unit(4, "pt")) +
-    geofacet::facet_geo(~ state_abbr, grid = grid_pr_vi_gu(), move_axes = TRUE)
+    geofacet::facet_geo(~ STATE_ABBV, grid = grid_pr_vi_gu(), move_axes = TRUE)
 
   national_plot <- supply_summary %>%
     mutate(source_category = factor(source_category, levels = reorder_source_category)) |>
@@ -2308,7 +2310,7 @@ generate_facility_source_facet_treemap <- function(supply_summary, supply_summar
                                        selected_facility_type = selected_facility_type)
 
   # state level treemaps
-  tm <- treemap(dtf = supply_summary_state, vSize = 'percent', index = c('state_abbr', 'source_category', 'site_count'), type = 'index')
+  tm <- treemap(dtf = supply_summary_state, vSize = 'percent', index = c('STATE_ABBV', 'source_category', 'site_count'), type = 'index')
   tm_df <- tm$tm
 
   tm_df_plot <- tm_df %>%
@@ -2321,7 +2323,7 @@ generate_facility_source_facet_treemap <- function(supply_summary, supply_summar
 
   # adjust coordinates
   tm_df_plot_mod <- filter(tm_df_plot, !is.na(source_category)) %>%
-    group_by(state_abbr) %>%
+    group_by(STATE_ABBV) %>%
     group_modify( ~{
       min_x <- min(.x$x0)
       min_y <- min(.x$y0)
@@ -2337,7 +2339,7 @@ generate_facility_source_facet_treemap <- function(supply_summary, supply_summar
     # add fill and borders for groups and subgroups
     geom_rect(aes(fill = source_category),
               show.legend = TRUE, color = text_color) +
-    geofacet::facet_geo(~state_abbr, grid = grid_pr_vi_gu(), move_axes = TRUE) +
+    geofacet::facet_geo(~ STATE_ABBV, grid = grid_pr_vi_gu(), move_axes = TRUE) +
     theme(panel.grid = element_blank(),
           panel.background = element_rect(color = text_color, fill = NA),
           strip.background = element_rect(color = text_color, fill = NA),
@@ -2846,19 +2848,19 @@ generate_source_summary_bar_chart <- function(supply_summary_state, supply_color
     group_by(state_name) %>%
     mutate(percent = site_count/sum(site_count)*100)
 
-  states <- unique(bottled_water_summary$state_abbr)
+  states <- unique(bottled_water_summary$STATE_ABBV)
 
   supply_ranking <- bottled_water_summary %>%
     filter(source_category == 'public supply') %>%
     arrange(desc(percent)) %>%
-    pull(state_abbr)
+    pull(STATE_ABBV)
 
   supply_ranking <- c(supply_ranking, states[!(states %in% supply_ranking)])
 
   bottled_water_summary <- bottled_water_summary %>%
-    mutate(state_abbr = factor(state_abbr, levels = supply_ranking))
+    mutate(STATE_ABBV = factor(STATE_ABBV, levels = supply_ranking))
 
-  ggplot(bottled_water_summary, aes(state_abbr, y = percent)) +
+  ggplot(bottled_water_summary, aes(STATE_ABBV, y = percent)) +
     geom_bar(aes(fill = source_category), stat = 'identity') +
     scale_fill_manual(name = 'source_category', values = supply_colors) +
     scale_y_continuous(breaks = rev(c(0, 25, 50, 75, 100)),

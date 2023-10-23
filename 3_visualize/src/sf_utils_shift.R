@@ -216,8 +216,8 @@ apply_shifts_to_sites <- function(sites_sf, proj_str, states_shp) {
   )
 
   # Separate sites in CONUS vs O-CONUS
-  conus_sites_sf <- sites_sf %>% filter(!state_abbr %in% oconus_abbr_list)
-  oconus_sites_sf <- sites_sf %>% filter(state_abbr %in% oconus_abbr_list)
+  conus_sites_sf <- sites_sf %>% filter(!STATE_ABBV %in% oconus_abbr_list)
+  oconus_sites_sf <- sites_sf %>% filter(STATE_ABBV %in% oconus_abbr_list)
   
   # Only shift sites that are in one of those shifted regions:
   oconus_site_sf_shifted <- purrr::map_df(
@@ -225,7 +225,7 @@ apply_shifts_to_sites <- function(sites_sf, proj_str, states_shp) {
     list("AK","HI",c("PR", "VI"), c("GU", "MP"), "AS"),
     function(region) {
       # Generate the sf object for the current region(s)
-      pts_sf <- filter(oconus_sites_sf, state_abbr %in% region)
+      pts_sf <- filter(oconus_sites_sf, STATE_ABBV %in% region)
       
       # Generate the matching polygon to use as a reference when scaling
       ref_sf <- generate_single_oconus_sf(region, proj_str, states_shp)
