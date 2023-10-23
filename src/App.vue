@@ -106,7 +106,7 @@
     -moz-osx-font-smoothing: grayscale;
     width: 100%;
     @media screen and (max-width: 600px) {
-      font-size: 1.6rem;
+      font-size: 1.8rem;
     }
   }
   h1{

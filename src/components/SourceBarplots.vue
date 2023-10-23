@@ -1,8 +1,12 @@
 <template>
     <section>
       <div id="grid-container-barplots">
+        <div id="intro-container" v-if="mobileView">
+          <p>Explore where different facility types source water.</p>
+        </div>
         <div id="toggle-container">
-          <p>Explore where different facility types source water. Showing the data summarized by</p>
+          <p v-if="!mobileView">Explore where different facility types source water. Showing the data summarized by</p>
+          <p v-if="mobileView">Summarize the data by</p>
           <div class="graph-buttons-switch">
             <input type="radio" class="graph-buttons-switch-input" name="CountPercent" value="Count" id="id_Count" checked>
             <label for="id_Count" class="graph-buttons-switch-label graph-buttons-switch-label-off">count</label>
@@ -586,8 +590,17 @@ export default {
       width: 100%;
     }
     @media screen and (max-width: 600px) {
+      grid-template-rows: max-content max-content max-content max-content;
+      grid-template-areas:
+      "intro"
+      "toggle"
+      "legend"
+      "barplot";
       width: 100%;
     }
+  }
+  #intro-container {
+    grid-area: intro;
   }
   #toggle-container {
     grid-area: toggle;
@@ -611,6 +624,9 @@ export default {
           -ms-user-select: none; /* Internet Explorer/Edge */
               user-select: none; /* Non-prefixed version, currently
                                     supported by Chrome and Opera */
+    @media screen and (max-width: 600px) {
+      height: 2.6rem;
+    }
   }
   .graph-buttons-switch-label {
     position: relative;
@@ -620,6 +636,9 @@ export default {
     line-height: 2.4rem;
     text-align: center;
     cursor: pointer;
+    @media screen and (max-width: 600px) {
+      line-height: 2.2rem;
+    }
   }
   .graph-buttons-switch-label-off {
     padding-left: 0.2rem;
@@ -655,6 +674,9 @@ export default {
     -o-transition: left 0.3s ease-out,background 0.3s;
     transition: left 0.3s ease-out,background 0.3s ;
   /* 	transition: background 0.3s ; */
+    @media screen and (max-width: 600px) {
+      height: 2.2rem;
+    }
   }
   #legend-container {
     grid-area: legend;
