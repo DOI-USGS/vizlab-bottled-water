@@ -255,7 +255,7 @@
     justify-content: center;
     align-content: center;
     margin: 1rem auto 2rem auto;
-    max-width: 1600px;
+    max-width: 1400px;
     @media screen and (max-width: 600px) {
       grid-template-columns: 1fr;
       grid-template-rows: max-content max-content max-content max-content max-content max-content max-content;
