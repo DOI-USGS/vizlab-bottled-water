@@ -2005,7 +2005,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
         scale_alpha(range = perc_alpha_range, limits = perc_alpha_limit, name = '') +
         geom_text(data = filter(bivariate_color_scale_perc, 
                                 ws_category == source_category),
-                  aes(x = alpha, y = 0.1, label = alpha), size = 20/.pt,
+                  aes(x = alpha, y = 0.1, label = ifelse(alpha == 100, paste0(alpha, "%"), alpha)), size = 20/.pt,
                   family = font_legend, hjust = 0, nudge_x = -12.5) +
         scale_y_continuous(limits = c(0,1)) +
         # scale_y_discrete(position = "right", expand = c(0,0)) +
