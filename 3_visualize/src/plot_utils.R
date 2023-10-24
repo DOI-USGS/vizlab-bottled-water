@@ -3031,6 +3031,15 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
   showtext::showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 900)
   showtext::showtext_auto(enable = TRUE)
 
+  # cowplot
+  plot_margin <- 0.005
+
+  canvas <- grid::rectGrob(
+    x = 0, y = 0,
+    width = width, height = height,
+    gp = grid::gpar(fill = bkgd_color, alpha = 1, col = bkgd_color)
+  )
+
   bw_sites_wu_sf <- sites_wu_sf |>
     filter(WB_TYPE == selected_facility_type, has_wu)  |>
     mutate(
@@ -3044,18 +3053,20 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
                       shape = 21,
                       layout = 'swarm',
     ) +
-    scale_fill_manual(values = supply_color, name = 'Water source') +
+    scale_fill_manual(values = supply_color, name = '') +
     scale_color_manual(values = supply_color, guide = 'none') +
     theme_minimal() +
-    labs(y = axis_title, x = "") +
+    labs(y = "", x = "") +
     theme(
-      plot.margin = unit(c(1,1,1,1), "cm"),
+      plot.margin = unit(c(1,0,0,0), "cm"),
       legend.position = "top",
       legend.direction = "horizontal",
-      legend.margin = margin(b = 10),
+      legend.margin = margin(b = 10, r = 50)
       ) +
     scale_y_continuous(limits = scale_y_lim,
-                       expand = scale_y_exp) +
+                       expand = scale_y_exp,
+                       breaks = c(0, 0.5, 1, 1.5, 2),
+                       labels = c("0","0.5", "1.0", "1.5", " ")) +
     scale_x_continuous(expand = scale_x_exp) +
     guides(fill = guide_legend(direction = "horizontal", label.position = "right",
                                position = "top", title.position = "left",
@@ -3068,31 +3079,10 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
     guides(fill = guide_legend(nrow = leg_nrow)) +
     theme(text = element_text(family = font_legend, size = font_size),
           axis.text.y = element_blank(),
-          axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
+          #axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
           panel.grid.minor.y = element_blank(),
           panel.grid.major.y = element_blank()
           )
-
-  } else {
-
-    water_use_beeswarm <- water_use_beeswarm_baseplot +
-      guides(fill = guide_legend(nrow = leg_nrow)) +
-      theme(text = element_text(family = font_legend, size = font_size),
-            axis.text.x = element_blank(),
-            axis.title.y = element_text(margin = margin(0, 20, 0, 0)),
-            panel.grid.minor.x = element_blank(),
-            panel.grid.major.x = element_blank()
-            )
-  }
-
-  # cowplot
-  plot_margin <- 0.005
-
-  canvas <- grid::rectGrob(
-    x = 0, y = 0,
-    width = width, height = height,
-    gp = grid::gpar(fill = bkgd_color, alpha = 1, col = bkgd_color)
-  )
 
   plt <- ggdraw(ylim = c(0,1), # 0-1 scale makes it easy to place viz items on canvas
                 xlim = c(0,1)) +
@@ -3109,6 +3099,38 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
               hjust = 1,
               vjust = 0)
 
+  } else {
+
+    water_use_beeswarm <- water_use_beeswarm_baseplot +
+      guides(fill = guide_legend(nrow = leg_nrow)) +
+      theme(text = element_text(family = font_legend, size = font_size),
+            axis.text.x = element_blank(),
+            panel.grid.minor.x = element_blank(),
+            panel.grid.major.x = element_blank()
+            )
+
+    plt <- ggdraw(ylim = c(0,1), # 0-1 scale makes it easy to place viz items on canvas
+                  xlim = c(0,1)) +
+      # a background
+      draw_grob(canvas,
+                x = 0, y = 1,
+                height = height, width = width,
+                hjust = 0, vjust = 1) +
+      draw_plot(water_use_beeswarm,
+                x = 0.98,
+                y = 0.01,
+                height = 1,
+                width = 1,
+                hjust = 1,
+                vjust = 0) +
+      draw_label("2.0\nmillion\ngallons\nper day",
+                 x = 0.022, y = 0.888,
+                 size = font_size - 4,
+                 hjust = 0,
+                 vjust = 1,
+                 color = '#4d4d4d',
+                 fontfamily = font_legend)
+  }
 
   ggsave(outfile_template, plt, width = width, height = height, dpi = dpi, bg =  bkgd_color)
 
