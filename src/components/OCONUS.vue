@@ -1337,7 +1337,7 @@ export default {
       // Determine if need to zoom in or out
       let zoomAction = this.currentState === zoomedState ? 'Zoom out' : 'Zoom in'
 
-      console.log(`You selected ${d.properties.NAME} by ${callMethod}. Currently shown area is ${this.currentState}. This.currentlyZoomed is ${this.currentlyZoomed}. Planned zoom action is ${zoomAction}`)
+      // console.log(`You selected ${d.properties.NAME} by ${callMethod}. Currently shown area is ${this.currentState}. This.currentlyZoomed is ${this.currentlyZoomed}. Planned zoom action is ${zoomAction}`)
 
       // If need to zoom out, zoom out to all states + territories
       if (zoomAction === 'Zoom out') return self.reset();
@@ -1355,7 +1355,7 @@ export default {
 
       // If not already zoomed in
       if (!this.currentlyZoomed) {
-        console.log(`this.currentlyZoomed is ${this.currentlyZoomed} and planned zoom action is ${zoomAction}, so going to zoom in from full view`)
+        // console.log(`this.currentlyZoomed is ${this.currentlyZoomed} and planned zoom action is ${zoomAction}, so going to zoom in from full view`)
 
         // const [[x0, y0], [x1, y1]] = this.mapPath.bounds(d);
         // event.stopPropagation();
@@ -1414,11 +1414,11 @@ export default {
         // set current state to zoomed state
         this.currentlyZoomed = true;
         this.currentState = zoomedState;
-        console.log(`Zoomed in on ${zoomedState}, so this.currentlyZoomed is ${this.currentlyZoomed}`)
+        // console.log(`Zoomed in on ${zoomedState}, so this.currentlyZoomed is ${this.currentlyZoomed}`)
 
       } else {
         // If already zoomed in,
-        console.log(`this.currentlyZoomed is ${this.currentlyZoomed} and planned zoom action is ${zoomAction}, so going to zoom out and then in to state`)
+        // console.log(`this.currentlyZoomed is ${this.currentlyZoomed} and planned zoom action is ${zoomAction}, so going to zoom out and then in to state`)
 
         // NEED TO REVAMP - THIS IS MESSY
 
@@ -1467,7 +1467,7 @@ export default {
         // set current state to zoomed state
         this.currentlyZoomed = true;
         this.currentState = zoomedState;
-        console.log(`Zoomed in on ${zoomedState}, so this.currentlyZoomed is ${this.currentlyZoomed}`)
+        // console.log(`Zoomed in on ${zoomedState}, so this.currentlyZoomed is ${this.currentlyZoomed}`)
       }
     },
     reset() {
@@ -1497,7 +1497,7 @@ export default {
         .attr("transform", "");
 
       this.currentlyZoomed = false;
-      console.log(`Zoomed out, so this.currentlyZoomed is ${this.currentlyZoomed}`)
+      // console.log(`Zoomed out, so this.currentlyZoomed is ${this.currentlyZoomed}`)
     }
   }
 }
