@@ -1601,7 +1601,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
     janitor::clean_names() |>
     mutate(source_category = factor(source_category, levels = reorder_source_category))
 
-  # size legend
+  # size legend data
   bivariate_color_scale_count <- purrr::map2_df(names(supply_colors), supply_colors, function(source_category, supply_colors) {
     tibble(
       ws_category = rep(source_category, 5),
@@ -1611,40 +1611,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
   }) %>%
     mutate(ws_category = factor(ws_category, levels = rev(reorder_source_category)))
 
-  # size legend list
-  legend_list_count <- purrr::map2(names(supply_colors), supply_colors, function(source_category_name, supply_colors) {
-
-    # for size with custom labels and reversed order
-    bivariate_color_scale_count$size_factor <- factor(
-      bivariate_color_scale_count$size,
-      levels = rev(unique(bivariate_color_scale_count$size)),
-      labels = seq(min(bivariate_color_scale_count$size),
-                   max(bivariate_color_scale_count$size),
-                   length.out = length(unique(bivariate_color_scale_count$size)))
-    )
-
-    ggplot() +
-      geom_point(
-        data = filter(bivariate_color_scale_count, ws_category == source_category_name),
-        mapping = aes(
-          x = size_factor,
-          y = ws_category,
-          color = color,
-          size = size)
-      ) +
-      scale_color_identity() +
-      scale_size(range = count_size_range, limits = c(1, count_size_limit)) +
-      theme_void() +
-      theme(
-        legend.position = 'none',
-        plot.margin = unit(c(0,6,6.5,0), "cm")
-      )
-  })
-
-  # set count legend list names to reorder source category
-  legend_list_count <- set_names(legend_list_count, reorder_source_category)
-
-  # percent legend
+  # percent legend data
   bivariate_color_scale_perc <- purrr::map2_df(names(supply_colors), supply_colors, function(source_category, supply_colors) {
     tibble(
       ws_category = rep(source_category, 5),
@@ -1654,32 +1621,8 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
   }) %>%
     mutate(ws_category = factor(ws_category, levels = rev(reorder_source_category)))
 
-  # percent legend list
-  legend_list_perc <- purrr::map2(names(supply_colors), supply_colors, function(source_category, supply_colors) {
-    ggplot() +
-      geom_tile(
-        data = filter(bivariate_color_scale_perc, ws_category == source_category),
-        mapping = aes(
-          x = alpha,
-          y = ws_category,
-          fill = fill,
-          alpha = alpha)
-      ) +
-      scale_fill_identity() +
-      scale_alpha(range = perc_alpha_range, limits = perc_alpha_limit, name = '') +
-      scale_y_discrete(position = "right", expand = c(0,0)) +
-      theme_void() +
-      theme(
-        legend.position = 'none',
-        plot.margin = unit(c(0,6,6.5,0), "cm")
-      )
-  })
-
-  # set percent legend list names to reorder source category
-  legend_list_perc <- set_names(legend_list_perc, reorder_source_category)
-
-  arranged_legends_count <- cowplot::plot_grid(plotlist = legend_list_count, nrow = 1, ncol = 1, scale = 1)
-  arranged_legends_perc <- cowplot::plot_grid(plotlist = legend_list_perc, nrow = 1, ncol = 1, scale = 1)
+  # arranged_legends_count <- cowplot::plot_grid(plotlist = legend_list_count, nrow = 1, ncol = 1, scale = 1)
+  # arranged_legends_perc <- cowplot::plot_grid(plotlist = legend_list_perc, nrow = 1, ncol = 1, scale = 1)
 
   # cowplot
   plot_margin <- 0.005
@@ -1774,6 +1717,63 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
         panel.spacing = unit(2, "lines")
       ) +
       facet_wrap(~source_category)
+    
+    # size legend list
+    legend_list_count <- purrr::map2(names(supply_colors), supply_colors, function(source_category_name, supply_colors) {
+      
+      # for size with custom labels and reversed order
+      bivariate_color_scale_count$size_factor <- factor(
+        bivariate_color_scale_count$size,
+        levels = rev(unique(bivariate_color_scale_count$size)),
+        labels = seq(min(bivariate_color_scale_count$size),
+                     max(bivariate_color_scale_count$size),
+                     length.out = length(unique(bivariate_color_scale_count$size)))
+      )
+      
+      ggplot() +
+        geom_point(
+          data = filter(bivariate_color_scale_count, ws_category == source_category_name),
+          mapping = aes(
+            x = size_factor,
+            y = ws_category,
+            color = color,
+            size = size)
+        ) +
+        scale_color_identity() +
+        scale_size(range = count_size_range, limits = c(1, count_size_limit)) +
+        theme_void() +
+        theme(
+          legend.position = 'none',
+          plot.margin = unit(c(0,6,6.5,0), "cm")
+        )
+    })
+    
+    # set count legend list names to reorder source category
+    legend_list_count <- set_names(legend_list_count, reorder_source_category)
+    
+    # percent legend list
+    legend_list_perc <- purrr::map2(names(supply_colors), supply_colors, function(source_category, supply_colors) {
+      ggplot() +
+        geom_tile(
+          data = filter(bivariate_color_scale_perc, ws_category == source_category),
+          mapping = aes(
+            x = alpha,
+            y = ws_category,
+            fill = fill,
+            alpha = alpha)
+        ) +
+        scale_fill_identity() +
+        scale_alpha(range = perc_alpha_range, limits = perc_alpha_limit, name = '') +
+        scale_y_discrete(position = "right", expand = c(0,0)) +
+        theme_void() +
+        theme(
+          legend.position = 'none',
+          plot.margin = unit(c(0,6,6.5,0), "cm")
+        )
+    })
+    
+    # set percent legend list names to reorder source category
+    legend_list_perc <- set_names(legend_list_perc, reorder_source_category)
 
     fnl_plt <- plt +
       draw_plot(map_count,
@@ -1948,143 +1948,187 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
 
     # Set perc list names to reorder source category
     map_perc_list <- set_names(map_perc_list, reorder_source_category)
+    
+    # size legend list
+    legend_list_count <- purrr::map2(names(supply_colors), supply_colors, function(source_category_name, supply_colors) {
+      
+      # for size with custom labels and reversed order
+      bivariate_color_scale_count$size_factor <- factor(
+        bivariate_color_scale_count$size,
+        levels = rev(unique(bivariate_color_scale_count$size)),
+        labels = seq(min(bivariate_color_scale_count$size),
+                     max(bivariate_color_scale_count$size),
+                     length.out = length(unique(bivariate_color_scale_count$size)))
+      )
+      
+      ggplot() +
+        geom_point(
+          data = filter(bivariate_color_scale_count, ws_category == source_category_name),
+          mapping = aes(
+            x = size_factor,
+            y = 0.6,
+            color = color,
+            size = size)
+        ) +
+        scale_color_identity() +
+        scale_size(range = count_size_range, limits = c(1, count_size_limit)) +
+        geom_text(data = filter(bivariate_color_scale_count, 
+                                ws_category == source_category_name),
+                  aes(x = size_factor, y = 0.1, label = size), size = 20/.pt,
+                  family = font_legend) +
+        scale_y_continuous(limits = c(0,1)) +
+        theme_void() +
+        theme(
+          legend.position = 'none',
+          plot.margin = unit(c(0, 0, 0, 0), "cm"),
+          plot.title = element_text(hjust = 0.5, family = font_legend, size = 20)
+        ) +
+        ggtitle(map_count_legend)
+    })
+    
+    # set count legend list names to reorder source category
+    legend_list_count <- set_names(legend_list_count, reorder_source_category)
 
-    plt_cnt_leg <- plt +
-      # legend with count labels
-      draw_label('25           50         100        300         600',
-                 fontfamily = font_legend,
-                 x = 0.325,
-                 y = 0.02,
-                 size = 14,
-                 hjust = 0,
-                 vjust = 0,
-                 color = text_color) +
-      # count legend title
-      draw_label(map_count_legend,
-                 fontfamily = font_legend,
-                 x =  0.392,
-                 y = 0.110,
-                 size = 14,
-                 hjust = 0,
-                 vjust = 0,
-                 color = text_color)
-
-    plt_perc_leg <- plt +
-      # legend with percent labels
-      draw_label('1            10           25          75          100%',
-                 fontfamily = font_legend,
-                 x = 0.318,
-                 y = 0.02,
-                 size = 14,
-                 hjust = 0,
-                 vjust = 0,
-                 color = text_color) +
-      # percent legend title
-      draw_label(map_perc_legend,
-                 fontfamily = font_legend,
-                 x =  0.392,
-                 y = 0.110,
-                 size = 14,
-                 hjust = 0,
-                 vjust = 0,
-                 color = text_color)
-
+    # percent legend list
+    legend_list_perc <- purrr::map2(names(supply_colors), supply_colors, function(source_category, supply_colors) {
+      ggplot() +
+        geom_tile(
+          data = filter(bivariate_color_scale_perc, ws_category == source_category),
+          mapping = aes(
+            x = alpha,
+            y = 0.6,
+            height = 0.3,
+            fill = fill,
+            alpha = alpha)
+        ) +
+        scale_fill_identity() +
+        scale_alpha(range = perc_alpha_range, limits = perc_alpha_limit, name = '') +
+        geom_text(data = filter(bivariate_color_scale_perc, 
+                                ws_category == source_category),
+                  aes(x = alpha, y = 0.1, label = alpha), size = 20/.pt,
+                  family = font_legend, hjust = 0, nudge_x = -12.5) +
+        scale_y_continuous(limits = c(0,1)) +
+        # scale_y_discrete(position = "right", expand = c(0,0)) +
+        theme_void() +
+        theme(
+          legend.position = 'none',
+          plot.margin = unit(c(0, 0, 0, 0), "cm"),
+          plot.title = element_text(hjust = 0.5, family = font_legend, size = 20)
+        ) +
+        ggtitle(map_perc_legend)
+    })
+    
+    # set percent legend list names to reorder source category
+    legend_list_perc <- set_names(legend_list_perc, reorder_source_category)
+    
     # final plts
-    ss_cnt_fnl_plt <- plt_cnt_leg +
+    ss_cnt_fnl_plt <- plt +
       # Self supply count map
       draw_plot(map_count_list$`Self-supply`,
                 x = 0.995,
-                y = 0.098,
+                y = 0.13,
                 height = 0.90,
                 width = 1 - plot_margin,
                 hjust = 1,
                 vjust = 0) +
       #self supply count legend
       draw_plot(legend_list_count$`Self-supply`,
-                x = 0.293,
-                y = -0.382,
-                width = 0.695,
-                height = 0.5)
+                x = 0.5,
+                y = 0.01,
+                width = 0.5,
+                height = 0.16,
+                hjust = 0.5,
+                halign = 0.5)
 
-    combo_cnt_fnl_plt <- plt_cnt_leg +
+    combo_cnt_fnl_plt <- plt +
       # combination count map
       draw_plot(map_count_list$Combination,
                 x = 0.995,
-                y = 0.098,
+                y = 0.13,
                 height = 0.90,
                 width = 1 - plot_margin,
                 hjust = 1,
                 vjust = 0) +
       # combination count legend
       draw_plot(legend_list_count$Combination,
-                x = 0.293,
-                y = -0.382,
-                width = 0.695,
-                height = 0.5)
+                x = 0.5,
+                y = 0.01,
+                width = 0.5,
+                height = 0.16,
+                hjust = 0.5,
+                halign = 0.5)
 
-    ps_cnt_fnl_plt <- plt_cnt_leg +
+    ps_cnt_fnl_plt <- plt +
       # public supply map
       draw_plot(map_count_list$`Public supply`,
                 x = 0.995,
-                y = 0.098,
+                y = 0.13,
                 height = 0.90,
                 width = 1 - plot_margin,
                 hjust = 1,
                 vjust = 0) +
       # public supply count legend
       draw_plot(legend_list_count$`Public supply`,
-                x = 0.293,
-                y = -0.382,
-                width = 0.695,
-                height = 0.5)
+                x = 0.5,
+                y = 0.01,
+                width = 0.5,
+                height = 0.16,
+                hjust = 0.5,
+                halign = 0.5)
 
-    ss_perc_fnl_plt <- plt_perc_leg +
+    ss_perc_fnl_plt <- plt +
       # Self supply perc map
       draw_plot(map_perc_list$`Self-supply`,
                 x = 0.995,
-                y = 0.098,
+                y = 0.13,
                 height = 0.90,
                 width = 1 - plot_margin,
                 hjust = 1,
                 vjust = 0) +
       #self supply perc legend
       draw_plot(legend_list_perc$`Self-supply`,
-                x = 0.293,
-                y = -0.365,
-                width = 0.7,
-                height = 0.45)
+                x = 0.5,
+                y = 0.01,
+                width = 0.5,
+                height = 0.16,
+                hjust = 0.5,
+                halign = 0.5)
 
-    combo_perc_fnl_plt <- plt_perc_leg +
+    combo_perc_fnl_plt <- plt +
       # combination perc map
       draw_plot(map_perc_list$Combination,
                 x = 0.995,
-                y = 0.098,
+                y = 0.13,
                 height = 0.90,
                 width = 1 - plot_margin,
                 hjust = 1,
                 vjust = 0) +
       # combination perc legend
       draw_plot(legend_list_perc$Combination,
-                x = 0.293,
-                y = -0.365,
-                width = 0.7,
-                height = 0.45)
+                x = 0.5,
+                y = 0.01,
+                width = 0.5,
+                height = 0.16,
+                hjust = 0.5,
+                halign = 0.5)
 
-    ps_perc_fnl_plt <- plt_perc_leg +
+    ps_perc_fnl_plt <- plt +
       # public supply perc map
       draw_plot(map_perc_list$`Public supply`,
                 x = 0.995,
-                y = 0.098,
+                y = 0.13,
                 height = 0.90,
                 width = 1 - plot_margin,
                 hjust = 1,
                 vjust = 0) +
       # public supply perc legend
       draw_plot(legend_list_perc$`Public supply`,
-                x = 0.293,
-                y = -0.365,
-                width = 0.7,
-                height = 0.45)
+                x = 0.5,
+                y = 0.01,
+                width = 0.5,
+                height = 0.16,
+                hjust = 0.5,
+                halign = 0.5)
 
     # Create a list of ggplots
     plots <- list(ss_cnt_fnl_plt, combo_cnt_fnl_plt, ps_cnt_fnl_plt, ss_perc_fnl_plt, combo_perc_fnl_plt, ps_perc_fnl_plt)
