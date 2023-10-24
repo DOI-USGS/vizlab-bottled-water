@@ -316,7 +316,7 @@ export default {
       const self = this;
 
       // set universal map frame dimensions
-      const map_width = 900
+      const map_width = 900;
       this.mapDimensions = {
         width: map_width,
         height: map_width * 0.75,
@@ -336,8 +336,6 @@ export default {
           .attr("viewBox", [0, 0, (this.mapDimensions.width), (this.mapDimensions.height)].join(' '))
           .attr("width", "100%")
           .attr("height", "100%")
-          // .attr("width", this.mapDimensions.width)
-          // .attr("height", this.mapDimensions.height)
           .attr("id", "map-svg")
 
       // assign role for accessibility
@@ -388,7 +386,7 @@ export default {
       const akPropWidth = conusPropWidth * akConusWidthRatio
 
       // Set universal map scale
-      const mapScale = 800
+      const mapScale = 800;
 
       // // Locator map projection
       // const mapProjectionLocator = this.d3.geoOrthographic()
@@ -1582,7 +1580,7 @@ export default {
     }
     @media screen and (max-width: 600px) {
       grid-template-columns: 100%;
-      grid-template-rows: max-content max-content 18vh max-content;
+      grid-template-rows: max-content max-content max-content 18vh;
       grid-template-areas:
         "title"
         "text"
