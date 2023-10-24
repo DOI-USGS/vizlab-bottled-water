@@ -218,25 +218,6 @@ export default {
       // Initialize map
       self.initMap()
 
-      // define histogram dimensions relative to window **and grid** dimensions
-      // Grid is 0.86vw, but maxes out at 1600px
-      const grid_width = window.innerHeight < 770 ? 0.9 : 0.86;
-      const col_width = window.innerHeight < 770 ? 0.4 : 0.49;
-      const width = 0.86*window.innerWidth > 1600 ? 1600*col_width : grid_width*window.innerWidth*col_width; // grid width (1600px or 0.86 * window height) * column width
-      const height = window.innerHeight < 770 ? window.innerHeight*0.4 : window.innerHeight*0.2; // window height * grid row height
-      this.chartDimensions = {
-        width,
-        height: height,
-        margin: {
-          top: 18,
-          right: 5,
-          bottom: 40,
-          left: 15
-        }
-      }
-      this.chartDimensions.boundedWidth = this.chartDimensions.width - this.chartDimensions.margin.left - this.chartDimensions.margin.right
-      this.chartDimensions.boundedHeight = this.chartDimensions.height - this.chartDimensions.margin.top - this.chartDimensions.margin.bottom
-
       // Initialize chart
       self.initChart()
 
@@ -512,6 +493,27 @@ export default {
 
     },
     initChart() {
+      const self = this;
+
+      // define histogram dimensions relative to window **and grid** dimensions
+      // Grid is 0.86vw, but maxes out at 1600px
+      const grid_width = window.innerHeight < 770 ? 0.9 : 0.86;
+      const col_width = window.innerHeight < 770 ? 0.4 : 0.49;
+      const width = 0.86*window.innerWidth > 1600 ? 1600*col_width : grid_width*window.innerWidth*col_width; // grid width (1600px or 0.86 * window height) * column width
+      const height = window.innerHeight < 770 ? window.innerHeight*0.4 : window.innerHeight*0.2; // window height * grid row height
+      this.chartDimensions = {
+        width,
+        height: height,
+        margin: {
+          top: 18,
+          right: 5,
+          bottom: 40,
+          left: 15
+        }
+      }
+      this.chartDimensions.boundedWidth = this.chartDimensions.width - this.chartDimensions.margin.left - this.chartDimensions.margin.right
+      this.chartDimensions.boundedHeight = this.chartDimensions.height - this.chartDimensions.margin.top - this.chartDimensions.margin.bottom
+
       // draw canvas for histogram
       const chartSVG = this.d3.select("#chart-container")
         .append("svg")
