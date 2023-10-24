@@ -626,6 +626,18 @@ p3_targets <- list(
                                 dpi = 300),
              format = 'file'),
 
+  # Individual % water use availability barplot
+  tar_target(p3_perc_wu_availablity_barplot_png,
+             perc_wu_avail_barplot(sites_wu_summary_sf = p2_inventory_sites_wu_conus_summary_sf,
+                                width = 2, height = 6,
+                                focal_color = "#1599CF",
+                                text_size = 14,
+                                bkgd_color = 'white',
+                                text_color = 'black',
+                                outfile_template = '3_visualize/out/perc_water_use_availability_barplot.png',
+                                dpi = 300),
+             format = 'file'),
+
   ######  state source faceted geofaceted treemaps   ######
   # tar_target(p3_source_facet_treemap_all_types_png,
   #            generate_facility_source_facet_treemap(supply_summary = p2_supply_summary,
