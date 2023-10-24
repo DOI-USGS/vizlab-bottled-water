@@ -3053,20 +3053,15 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
                       shape = 21,
                       layout = 'swarm',
     ) +
-    scale_fill_manual(values = supply_color, name = '') +
     scale_color_manual(values = supply_color, guide = 'none') +
     theme_minimal() +
-    labs(y = "", x = "") +
+    labs(y = axis_title, x = "") +
     theme(
       plot.margin = unit(c(1,0,0,0), "cm"),
       legend.position = "top",
       legend.direction = "horizontal",
       legend.margin = margin(b = 10, r = 50)
       ) +
-    scale_y_continuous(limits = scale_y_lim,
-                       expand = scale_y_exp,
-                       breaks = c(0, 0.5, 1, 1.5, 2),
-                       labels = c("0","0.5", "1.0", "1.5", " ")) +
     scale_x_continuous(expand = scale_x_exp) +
     guides(fill = guide_legend(direction = "horizontal", label.position = "right",
                                position = "top", title.position = "left",
@@ -3075,11 +3070,14 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
   if (mobile == FALSE) {
 
   water_use_beeswarm <- water_use_beeswarm_baseplot +
+    scale_fill_manual(values = supply_color, name = 'Water source') +
+    scale_y_continuous(limits = scale_y_lim,
+                       expand = scale_y_exp) +
     coord_flip() +
     guides(fill = guide_legend(nrow = leg_nrow)) +
     theme(text = element_text(family = font_legend, size = font_size),
           axis.text.y = element_blank(),
-          #axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
+          axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
           panel.grid.minor.y = element_blank(),
           panel.grid.major.y = element_blank()
           )
@@ -3102,12 +3100,18 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
   } else {
 
     water_use_beeswarm <- water_use_beeswarm_baseplot +
+      labs(y = "") +
+      scale_y_continuous(limits = scale_y_lim,
+                         expand = scale_y_exp,
+                         breaks = c(0, 0.5, 1, 1.5, 2),
+                         labels = c("0","0.5", "1.0", "1.5", " ")) +
       guides(fill = guide_legend(nrow = leg_nrow)) +
       theme(text = element_text(family = font_legend, size = font_size),
             axis.text.x = element_blank(),
             panel.grid.minor.x = element_blank(),
             panel.grid.major.x = element_blank()
-            )
+            ) +
+      scale_fill_manual(values = supply_color, name = " ")
 
     plt <- ggdraw(ylim = c(0,1), # 0-1 scale makes it easy to place viz items on canvas
                   xlim = c(0,1)) +
