@@ -153,7 +153,7 @@ export default {
       const self = this;
 
       const width = document.getElementById("barplot-container").offsetWidth; // Match #barplot-container settings
-      const height = window.innerHeight*0.7; // Match #barplot-container settings
+      const height = window.innerHeight*0.55; // Match #barplot-container settings
       this.barplotDimensions = {
         width,
         height,
@@ -628,13 +628,22 @@ export default {
   #legend-title {
     font-size: 1.6rem;
     font-weight: 700;
+    @media screen and (max-width: 600px) {
+      font-size: 1.4rem;
+    }
   }
   .legend-text {
     font-size: 1.6rem;
+    @media screen and (max-width: 600px) {
+      font-size: 1.4rem;
+    }
   }
   #legend-group-title {
     font-size: 1.6rem;
     font-style: italic;
+    @media screen and (max-width: 600px) {
+      font-size: 1.4rem;
+    }
   }
   .bracket {
     stroke: black;
@@ -760,7 +769,7 @@ export default {
     grid-area: barplot;
     width: 90%;
     justify-self: center;
-    max-height: 70vh;
+    max-height: 55vh;
     @media screen and (max-width: 600px) {
       width: 100%;
     }
