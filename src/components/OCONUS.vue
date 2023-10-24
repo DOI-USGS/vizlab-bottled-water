@@ -498,12 +498,9 @@ export default {
     initChart() {
       const self = this;
 
-      // define histogram dimensions relative to window **and grid** dimensions
-      // Grid is 0.86vw, but maxes out at 1600px
-      const grid_width = window.innerHeight < 770 ? 0.9 : 0.86;
-      const col_width = window.innerHeight < 770 ? 0.4 : 0.49;
-      const width = 0.86*window.innerWidth > 1600 ? 1600*col_width : grid_width*window.innerWidth*col_width; // grid width (1600px or 0.86 * window height) * column width
-      const height = window.innerHeight < 770 ? window.innerHeight*0.4 : window.innerHeight*0.2; // window height * grid row height
+      // define histogram dimensions relative to container dimensions
+      const width = document.getElementById("chart-container").offsetWidth;
+      const height = document.getElementById("chart-container").offsetHeight;
       this.chartDimensions = {
         width,
         height: height,
@@ -523,8 +520,6 @@ export default {
           .attr("viewBox", [0, 0, (this.chartDimensions.width), (this.chartDimensions.height)].join(' '))
           .attr("width", "100%")
           .attr("height", "100%")
-          // .attr("width", this.chartDimensions.width)
-          // .attr("height", this.chartDimensions.height)
           .attr("id", "chart-svg")
 
       // assign role for accessibility
@@ -1585,7 +1580,7 @@ export default {
     }
     @media screen and (max-width: 600px) {
       grid-template-columns: 100%;
-      grid-template-rows: max-content max-content 20vh max-content;
+      grid-template-rows: max-content max-content 18vh max-content;
       grid-template-areas:
         "title"
         "text"
