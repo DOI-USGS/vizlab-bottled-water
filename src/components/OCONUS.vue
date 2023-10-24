@@ -203,21 +203,6 @@ export default {
       // add dropdown
       self.addDropdown(this.stateList)
 
-      // set universal map frame dimensions
-      const map_width = 900
-      this.mapDimensions = {
-        width: map_width,
-        height: map_width * 0.75,
-        margin: {
-          top: 20,
-          right: 5,
-          bottom: 5,
-          left: 5
-        }
-      }
-      this.mapDimensions.boundedWidth = this.mapDimensions.width - this.mapDimensions.margin.left - this.mapDimensions.margin.right
-      this.mapDimensions.boundedHeight = this.mapDimensions.height - this.mapDimensions.margin.top - this.mapDimensions.margin.bottom
-
       // Initialize map
       self.initMap()
 
@@ -328,6 +313,23 @@ export default {
       window.document.body.removeChild(tmpSelect)
     },
     initMap() {
+      const self = this;
+
+      // set universal map frame dimensions
+      const map_width = 900
+      this.mapDimensions = {
+        width: map_width,
+        height: map_width * 0.75,
+        margin: {
+          top: 20,
+          right: 5,
+          bottom: 5,
+          left: 5
+        }
+      }
+      this.mapDimensions.boundedWidth = this.mapDimensions.width - this.mapDimensions.margin.left - this.mapDimensions.margin.right
+      this.mapDimensions.boundedHeight = this.mapDimensions.height - this.mapDimensions.margin.top - this.mapDimensions.margin.bottom
+
       // draw canvas for map
       this.wrapper = this.d3.select("#oconus-container")
         .append("svg")
@@ -1584,8 +1586,8 @@ export default {
       grid-template-areas:
         "title"
         "text"
-        "chart"
-        "map";
+        "map"
+        "chart";
       position: relative;
       padding: 0.5rem 0.5rem 0.5rem 0.5rem;
     }
