@@ -8,14 +8,17 @@
       </div>
       <div id="text">
         <div class="text-container">
-          <p class="viz-comment">
+          <p class="viz-comment" v-if = "!mobileView">
             Click on the dropdown menu, bar chart, or map to explore!
+          </p>
+          <p class="viz-comment" v-if = "mobileView">
+            Use the dropdown menu or tap on the bar chart to explore!
           </p>
         </div>
       </div>
       <div id="oconus-container" />
       <div id="chart-container" />
-      <div id="map-label-container">
+      <div id="map-label-container" v-if="!mobileView">
         <mapLabels
           id="map-inset-svg"
           class="map labels"
@@ -63,6 +66,7 @@ export default {
       countyPolysZoom: null,
       countyPoints: null,
       dataAll: null,
+      dataTypes: null,
       mapDimensions: null,
       chartDimensions: null,
       wrapper: null,
@@ -80,6 +84,7 @@ export default {
       genericPath: null,
       genericProjection: null,
       chartBounds: null,
+      xScale: null,
       focalColor: null,
       defaultColor: null,
       currentType: null,
@@ -89,7 +94,7 @@ export default {
       selectedText: null,
       stateList: null,
       currentState: null,
-      defaultViewName: null,
+      nationalViewName: null,
       currentlyZoomed: false,
       currentScale: null,
     }
@@ -142,6 +147,7 @@ export default {
 
       // State counts, by type
       this.dataAll = data[0];
+      this.dataTypes = [... new Set(this.dataAll.map(d => d.WB_TYPE))]
 
       // High simplification state polgyons, for national view
       // Loaded separately so that CONUS, AK, and HI jsons can be used
@@ -182,9 +188,9 @@ export default {
       // Concatenate low simplification state polygons into single object
       this.statePolys = statePolysCONUS.concat(statePolysAK, statePolysHI, statePolysGUMP, statePolysPRVI, statePolysAS)
 
-      // Set default and current map view
-      this.defaultViewName = 'all states and territories'
-      this.currentState = this.defaultViewName;
+      // Set national and current map view
+      this.nationalViewName = 'all states and territories'
+      this.currentState = this.mobileView ? 'Alabama' : this.nationalViewName;
 
       // Set current scale for view (1 = not zoomed)
       this.currentScale = 1;
@@ -196,46 +202,12 @@ export default {
       // Set up dropdown
       // get list of unique states
       this.stateList = [... new Set(this.dataAll.map(d => d.NAME))]
-      this.stateList.unshift(this.defaultViewName)
+      if (!this.mobileView) this.stateList.unshift(this.nationalViewName)
       // add dropdown
       self.addDropdown(this.stateList)
 
-      // set universal map frame dimensions
-      const map_width = 900
-      this.mapDimensions = {
-        width: map_width,
-        height: map_width * 0.75,
-        margin: {
-          top: 20,
-          right: 5,
-          bottom: 5,
-          left: 5
-        }
-      }
-      this.mapDimensions.boundedWidth = this.mapDimensions.width - this.mapDimensions.margin.left - this.mapDimensions.margin.right
-      this.mapDimensions.boundedHeight = this.mapDimensions.height - this.mapDimensions.margin.top - this.mapDimensions.margin.bottom
-
       // Initialize map
       self.initMap()
-
-      // define histogram dimensions relative to window **and grid** dimensions
-      // Grid is 0.86vw, but maxes out at 1600px
-      const grid_width = window.innerHeight < 770 ? 0.9 : 0.86;
-      const col_width = window.innerHeight < 770 ? 0.4 : 0.49;
-      const width = 0.86*window.innerWidth > 1600 ? 1600*col_width : grid_width*window.innerWidth*col_width; // grid width (1600px or 0.86 * window height) * column width
-      const height = window.innerHeight < 770 ? window.innerHeight*0.4 : window.innerHeight*0.2; // window height * grid row height
-      this.chartDimensions = {
-        width,
-        height: height,
-        margin: {
-          top: 18,
-          right: 5,
-          bottom: 40,
-          left: 15
-        }
-      }
-      this.chartDimensions.boundedWidth = this.chartDimensions.width - this.chartDimensions.margin.left - this.chartDimensions.margin.right
-      this.chartDimensions.boundedHeight = this.chartDimensions.height - this.chartDimensions.margin.top - this.chartDimensions.margin.bottom
 
       // Initialize chart
       self.initChart()
@@ -244,12 +216,25 @@ export default {
       this.focalColor = "#1599CF";
       this.defaultColor = "#B5B5B5";
 
-      // Draw initial view ('all states and territories')
+      // Draw initial view ('all states and territories' on desktop, 'Alabama' on mobile)
+      // For mobile, need to compute initial scale, based on currentState
+      const currentStateData = this.statePolysZoom.filter(d => d.properties.NAME === this.currentState)[0]
+      if (this.mobileView) {
+        const bounds = this.mapPath.bounds(currentStateData),
+              dx = bounds[1][0] - bounds[0][0],
+              dy = bounds[1][1] - bounds[0][1],
+              scale = .9 / Math.max(dx / this.mapDimensions.width, dy / this.mapDimensions.height)
+        this.currentScale = scale
+      }
       self.drawHistogram(this.currentState)
       self.drawCounties(this.currentState, this.currentScale)
       self.drawMap(this.currentState, this.currentScale)
       self.drawCountyPoints(this.currentState, this.currentScale, this.currentType)
-
+      
+      // On mobile, zoom to currentState
+      if (this.mobileView) {
+        self.zoomToState(currentStateData, this.mapPath, 'dropdown')
+      }
     },
     addDropdown(data) {
       const self = this;
@@ -267,7 +252,7 @@ export default {
 
           let selectedArea = this.value
 
-          if (selectedArea === self.defaultViewName) {
+          if (selectedArea === self.nationalViewName) {
             // If dropdown has _changed_ to 'all states and territories' that means we need to reset the map and zoom out
             self.reset()
           } else {
@@ -315,7 +300,7 @@ export default {
         .text(d => d)
 
       // Set default value and width of dropdown
-      self.updateDropdown(this.defaultViewName)
+      self.updateDropdown(this.currentState)
     },
     updateDropdown(text) {
       // Update dropdown text
@@ -344,14 +329,29 @@ export default {
       window.document.body.removeChild(tmpSelect)
     },
     initMap() {
+      const self = this;
+
+      // set universal map frame dimensions
+      const map_width = 900;
+      this.mapDimensions = {
+        width: map_width,
+        height: map_width * 0.75,
+        margin: {
+          top: this.mobileView ? 5 : 20,
+          right: 5,
+          bottom: 5,
+          left: 5
+        }
+      }
+      this.mapDimensions.boundedWidth = this.mapDimensions.width - this.mapDimensions.margin.left - this.mapDimensions.margin.right
+      this.mapDimensions.boundedHeight = this.mapDimensions.height - this.mapDimensions.margin.top - this.mapDimensions.margin.bottom
+
       // draw canvas for map
       this.wrapper = this.d3.select("#oconus-container")
         .append("svg")
           .attr("viewBox", [0, 0, (this.mapDimensions.width), (this.mapDimensions.height)].join(' '))
           .attr("width", "100%")
           .attr("height", "100%")
-          // .attr("width", this.mapDimensions.width)
-          // .attr("height", this.mapDimensions.height)
           .attr("id", "map-svg")
 
       // assign role for accessibility
@@ -402,7 +402,7 @@ export default {
       const akPropWidth = conusPropWidth * akConusWidthRatio
 
       // Set universal map scale
-      const mapScale = 800
+      const mapScale = 800;
 
       // // Locator map projection
       // const mapProjectionLocator = this.d3.geoOrthographic()
@@ -512,14 +512,30 @@ export default {
 
     },
     initChart() {
+      const self = this;
+
+      // define histogram dimensions relative to container dimensions
+      const width = document.getElementById("chart-container").offsetWidth;
+      const height = document.getElementById("chart-container").offsetHeight;
+      this.chartDimensions = {
+        width,
+        height: height,
+        margin: {
+          top: 20,
+          right: 5,
+          bottom: 60,
+          left: 15
+        }
+      }
+      this.chartDimensions.boundedWidth = this.chartDimensions.width - this.chartDimensions.margin.left - this.chartDimensions.margin.right
+      this.chartDimensions.boundedHeight = this.chartDimensions.height - this.chartDimensions.margin.top - this.chartDimensions.margin.bottom
+
       // draw canvas for histogram
       const chartSVG = this.d3.select("#chart-container")
         .append("svg")
           .attr("viewBox", [0, 0, (this.chartDimensions.width), (this.chartDimensions.height)].join(' '))
           .attr("width", "100%")
           .attr("height", "100%")
-          // .attr("width", this.chartDimensions.width)
-          // .attr("height", this.chartDimensions.height)
           .attr("id", "chart-svg")
 
       // assign role for accessibility
@@ -542,26 +558,49 @@ export default {
           .attr("tabindex", 0)
           .attr("contenteditable", "true")
           .attr("aria-label", "bar chart bars")
-      this.chartBounds.append("g")
+
+      // X axis
+
+      // scale for the x-axis
+      this.xScale = this.d3.scaleBand()
+        .domain(this.dataTypes)
+        .range([0, this.chartDimensions.boundedWidth])
+        .padding(0.1);
+
+      const xAxis = this.chartBounds.append("g")
           .attr("class", "x-axis")
           .style("transform", `translateY(${
             this.chartDimensions.boundedHeight
           }px)`)
           .attr("role", "presentation")
           .attr("aria-hidden", true)
-          .append("text")
-            .attr("class", "x-axis axis-title")
-            .attr("x", this.chartDimensions.boundedWidth / 2)
-            .attr("y", this.chartDimensions.margin.bottom - 5)
-            .style("text-anchor", "middle")
-            .attr("role", "presentation")
-            .attr("aria-hidden", true)
+
+      xAxis
+        .call(this.d3.axisBottom(this.xScale).tickSize(0).tickPadding(10))
+        .select(".domain").remove()
+
+      xAxis
+        .selectAll("text")
+        .attr("class", "axis-label chart-text")
+        .style("text-anchor", "middle")
+        // Wrap x-axis labels
+        .call(d => self.wrapHorizontalLabels(d, 7));
+
+      xAxis
+        .append("text")
+          .attr("class", "x-axis axis-title chart-text")
+          .attr("x", this.chartDimensions.boundedWidth / 2)
+          .attr("y", this.chartDimensions.margin.bottom - 5)
+          .style("text-anchor", "middle")
+          .attr("role", "presentation")
+          .attr("aria-hidden", true)
+
       this.chartBounds.append("g")
         .attr("class", "y-axis")
         .attr("role", "presentation")
         .attr("aria-hidden", true)
         .append("text")
-          .attr("class", "y-axis axis-title")
+          .attr("class", "y-axis axis-title chart-text")
           .attr("x", -this.chartDimensions.boundedHeight / 2)
           .attr("y", 0)
           .attr("transform", "rotate(-90)")
@@ -569,16 +608,51 @@ export default {
           .attr("role", "presentation")
           .attr("aria-hidden", true)
     },
+    // function to wrap text added with d3 modified from
+    // https://stackoverflow.com/questions/24784302/wrapping-text-in-d3
+    // which is adapted from https://bl.ocks.org/mbostock/7555321
+    wrapHorizontalLabels(text, width) {
+      const self = this;
+      text.each(function () {
+          var text = self.d3.select(this),
+              words = text.text().split(/\s+/).reverse(),
+              word,
+              line = [],
+              lineNumber = 0,
+              lineHeight = 0.6,
+              x = 0,
+              y = text.attr("x"), // Use x b/c wrapping horizontal labels
+              dy = 0, //parseFloat(text.attr("dy")),
+              tspan = text.text(null)
+                          .append("tspan")
+                          .attr("x", x)
+                          .attr("y", y)
+                          .attr("dy", dy + "rem");
+          while (word = words.pop()) {
+              line.push(word);
+              tspan.text(line.join(" "));
+              if (tspan.node().getComputedTextLength() > width) {
+                  line.pop();
+                  tspan.text(line.join(" "));
+                  line = [word];
+                  tspan = text.append("tspan")
+                              .attr("x", x)
+                              .attr("y", y)
+                              .attr("dy", ++lineNumber * lineHeight + dy + "em")
+                              .text(word);
+              }
+          }
+      });
+    },
     drawHistogram(state) {
       const self = this;
 
       const rawData = this.dataAll
 
       let data;
-      let dataTypes = [... new Set(this.dataAll.map(d => d.WB_TYPE))]
-      if (state === this.defaultViewName) {
+      if (state === this.nationalViewName) {
         let dataArray = []
-        dataTypes.forEach(function(type) {
+        this.dataTypes.forEach(function(type) {
           let totalCount = rawData
             .filter(d => d.WB_TYPE === type)
             .map(d => parseInt(d.site_count))
@@ -586,7 +660,7 @@ export default {
               return acc + value
             })
           let dataObj = {
-            NAME: self.defaultViewName,
+            NAME: self.nationalViewName,
             state_abbr: null,
             WB_TYPE: type,
             site_count: totalCount
@@ -609,12 +683,7 @@ export default {
       this.d3.select("#chart-container").select("Title")
         .text(`Bar chart of distribution of facility types for ${state}`)
 
-      // create scales
-      const xScale = this.d3.scaleBand()
-        .rangeRound([0, this.chartDimensions.boundedWidth])
-        .domain(dataTypes) // if want to only include types in each state: data.map(d => d.WB_TYPE)
-        .padding(0.1) //0.05
-
+      // create y scale
       const yScale = this.d3.scaleLinear()
         .domain([0, this.d3.max(data, yAccessor)]) // use y accessor w/ raw data
         .range([this.chartDimensions.boundedHeight, 0])
@@ -658,15 +727,15 @@ export default {
 
       // append rects and set default y and height, so that when appear, come up from bottom
       newRectGroups.append("rect")
-        .attr("x", d => xScale(xAccessor(d)))
+        .attr("x", d => this.xScale(xAccessor(d)))
         .attr("y", this.chartDimensions.boundedHeight)
-        .attr("width", xScale.bandwidth())
+        .attr("width", this.xScale.bandwidth())
         .attr("height", 0)
         .style("fill", d => d.WB_TYPE === this.currentType ? this.focalColor : this.defaultColor) //colorScale(colorAccessor(d)))
 
       // append text and set default position
       newRectGroups.append("text")
-        .attr("x", d => xScale(xAccessor(d)) + xScale.bandwidth()/2)
+        .attr("x", d => this.xScale(xAccessor(d)) + this.xScale.bandwidth()/2)
         .attr("y", this.chartDimensions.boundedHeight)
 
       // update rectGroups to include new points
@@ -676,9 +745,9 @@ export default {
 
       barRects.transition(self.getUpdateTransition())
           .attr("id", d => 'rect-' + identifierAccessor(d))
-          .attr("x", d => xScale(xAccessor(d)))
+          .attr("x", d => this.xScale(xAccessor(d)))
           .attr("y", d => yScale(yAccessor(d)))
-          .attr("width", xScale.bandwidth()) // if negative, bump up to 0
+          .attr("width", this.xScale.bandwidth()) // if negative, bump up to 0
           .attr("height", d => this.chartDimensions.boundedHeight - yScale(yAccessor(d)))
           .style("fill", d => d.WB_TYPE === this.currentType ? this.focalColor : this.defaultColor) // colorScale(colorAccessor(d)))
           .attr("class", d => 'bar ' + identifierAccessor(d))
@@ -755,32 +824,17 @@ export default {
 
       const barText = rectGroups.select("text")
         .transition(self.getUpdateTransition())
-          .attr("class", "bar-label")
-          .attr("x", d => xScale(xAccessor(d)) + xScale.bandwidth()/2)
+          .attr("class", "bar-label chart-text")
+          .attr("x", d => this.xScale(xAccessor(d)) + this.xScale.bandwidth()/2)
           .attr("y", d => yScale(yAccessor(d)) - 5)
           .style("text-anchor", "middle")
           .text(d => this.d3.format(',')(yAccessor(d)))
 
-      const xAxisGenerator = this.d3.axisBottom()
-        .scale(xScale)
+      const xAxisLabel = this.chartBounds.select(".x-axis.axis-title")
 
-      const xAxis = this.chartBounds.select(".x-axis")
-
-      xAxis
-        .transition(self.getUpdateTransition())
-        .call(xAxisGenerator)
-        .select(".domain").remove()
-
-      xAxis.selectAll(".tick line").attr("stroke", "None")
-
-      const xAxisText = xAxis.selectAll(".tick text")
-        .attr("class", "x-axis axis-label")
-
-      const xAxisLabel = xAxis.select(".x-axis.axis-title")
-
-      if (state === this.defaultViewName) {
+      if (state === this.nationalViewName) {
         xAxisLabel
-        .text('Distribution of facility types nationally')
+          .text('Distribution of facility types nationally')
       } else {
         xAxisLabel
           .text(`Distribution of facility types in ${
@@ -816,7 +870,7 @@ export default {
       // let selectedMapPath;
       // let featureBounds;
 
-      if (state === this.defaultViewName) {
+      if (state === this.nationalViewName) {
         data = this.statePolys
         // selectedMapPath = this.mapPath
         // featureBounds = null;
@@ -884,8 +938,8 @@ export default {
         .attr("role", "listitem")
         .attr("aria-label", d => d.properties.NAME)
 
-      let stateStrokeWidth = state === this.defaultViewName ? 0.5 : 1 * 1/scale
-      let stateStrokeColor = state === this.defaultViewName ? "#949494" : "#757575"
+      let stateStrokeWidth = state === this.nationalViewName ? 0.5 : 1 * 1/scale
+      let stateStrokeColor = state === this.nationalViewName ? "#949494" : "#757575"
       newStateGroups.append("path")
         .attr("class", "state-paths")
         .attr("id", d => "state-" + d.properties.GEOID)
@@ -924,32 +978,35 @@ export default {
         .style("fill", "#ffffff") // "None"
         .style("fill-opacity", 0)
         .on("click", (e, d) => {
-          let zoomPath;
-          // let zoomPath = d.properties.NAME === 'Alaska' ? this.mapPathAK : selectedMapPath
-          switch(d.properties.NAME) {
-            case 'Alaska':
-              zoomPath = this.mapPathAK;
-              break;
-            case 'Hawaii':
-              zoomPath = this.mapPathHI;
-              break;
-            case 'Puerto Rico':
-              zoomPath = this.mapPathPRVI;
-              break;
-            case 'United States Virgin Islands':
-              zoomPath = this.mapPathPRVI;
-              break;
-            case 'Guam':
-              zoomPath = this.mapPathGUMP;
-              break;
-            case 'Commonwealth of the Northern Mariana Islands':
-              zoomPath = this.mapPathGUMP;
-              break;
-            case 'American Samoa':
-              zoomPath = self.mapPathAS;
-              break;
-            default:
-              zoomPath = this.mapPath;
+          if (!this.mobileView) {
+            let zoomPath;
+            // let zoomPath = d.properties.NAME === 'Alaska' ? this.mapPathAK : selectedMapPath
+            switch(d.properties.NAME) {
+              case 'Alaska':
+                zoomPath = this.mapPathAK;
+                break;
+              case 'Hawaii':
+                zoomPath = this.mapPathHI;
+                break;
+              case 'Puerto Rico':
+                zoomPath = this.mapPathPRVI;
+                break;
+              case 'United States Virgin Islands':
+                zoomPath = this.mapPathPRVI;
+                break;
+              case 'Guam':
+                zoomPath = this.mapPathGUMP;
+                break;
+              case 'Commonwealth of the Northern Mariana Islands':
+                zoomPath = this.mapPathGUMP;
+                break;
+              case 'American Samoa':
+                zoomPath = self.mapPathAS;
+                break;
+              default:
+                zoomPath = this.mapPath;
+            }
+            self.zoomToState(d, zoomPath, 'click')
           }
           if (!(d.properties.NAME == 'Commonwealth of the Northern Mariana Islands') && !(d.properties.NAME == 'American Samoa')) {
             self.zoomToState(d, zoomPath, 'click')
@@ -960,7 +1017,7 @@ export default {
 
       const stateShapes = this.stateGroups.select("path")
 
-      if (!(state === this.defaultViewName)) {
+      if (!(state === this.nationalViewName)) {
         let selectedStateId = data[0].properties.GEOID
         this.d3.selectAll('#state-group-'+ selectedStateId)
           .raise()
@@ -975,7 +1032,7 @@ export default {
 
 
       // const allStates = d3.selectAll(".state-paths")
-      // if (currentState === this.defaultViewName) {
+      // if (currentState === this.nationalViewName) {
       //   allStates
       //     .style("stroke", "#949494") //#636363
       //     .style("stroke-width", 0.5)
@@ -996,7 +1053,7 @@ export default {
       //   .style("stroke-opacity", 1)
 
       // // If a single state is selected, highlight that state
-      // if (!(state === this.defaultViewName)) {
+      // if (!(state === this.nationalViewName)) {
       //   const selectedStateData = data.filter(d => d.properties.NAME === state)
       //   console.log(selectedStateData)
       //   const selectedStateId = selectedStateData[0].properties.GEOID
@@ -1021,7 +1078,7 @@ export default {
       // // would need to add separate group w/ states on TOP of counties and county
       // // points just to trigger interaction on THIS group of states
       // // ideally would use <use>
-      if (state === this.defaultViewName) {
+      if (state === this.nationalViewName) {
         stateShapes
           .on("mouseover", (event, d) => {
             this.d3.selectAll("#state-" + d.properties.GEOID)
@@ -1040,7 +1097,7 @@ export default {
 
       let data;
 
-      if (state === this.defaultViewName) {
+      if (state === this.nationalViewName) {
         data = this.countyPolysZoom
       } else {
         data = this.countyPolysZoom.filter(d =>
@@ -1067,8 +1124,8 @@ export default {
           .attr("role", "listitem")
           .attr("aria-label", d => d.properties.NAMELSAD + ', ' + d.properties.STATE_NAME)
 
-      let countyStrokeWidth = state === this.defaultViewName ? 0.1 : 0.5 * 1/scale
-      let countyStrokeColor = state === this.defaultViewName ? "#E3E3E3" : "#939393"
+      let countyStrokeWidth = state === this.nationalViewName ? 0.1 : 0.5 * 1/scale
+      let countyStrokeColor = state === this.nationalViewName ? "#E3E3E3" : "#939393"
       newCountyGroups.append("path")
           .attr("id", d => "county-" + d.properties.GEOID)
           .attr("d", d => {
@@ -1105,7 +1162,7 @@ export default {
         .style("stroke", countyStrokeColor)
         .style("stroke-width", countyStrokeWidth)
 
-      // if (!(state === this.defaultViewName)) {
+      // if (!(state === this.nationalViewName)) {
       //   let scaleFactor = 2/scale
       //   countyShapes.transition(self.getUpdateTransition())
       //       .style("stroke", "#939393") //D1D1D1
@@ -1119,7 +1176,7 @@ export default {
       // }
 
       // // Add county mouseover if at state level
-      // if (!(state === this.defaultViewName)) {
+      // if (!(state === this.nationalViewName)) {
       //   countyShapes
       //     .on("mouseover", (event, d) => {
       //       this.d3.selectAll("#county-" + d.properties.GEOID)
@@ -1138,7 +1195,7 @@ export default {
 
       let dataPoints;
       let dataMax;
-      if (state === this.defaultViewName) {
+      if (state === this.nationalViewName) {
         dataPoints = this.countyPoints
         if (type === 'All') {
           dataMax = this.d3.max(this.countyPoints, sizeAccessor)
@@ -1266,7 +1323,7 @@ export default {
 
 
       // // Add county mouseover if at state level
-      // if (!(state === this.defaultViewName)) {
+      // if (!(state === this.nationalViewName)) {
       //   countyCentroidPoints
       //     .on("mouseover", (event, d) => {
       //       d3.selectAll("#county-" + d.properties.GEOID)
@@ -1340,8 +1397,9 @@ export default {
 
       // Determine if need to zoom in or out
       let zoomAction = this.currentState === zoomedState ? 'Zoom out' : 'Zoom in'
+      zoomAction = this.mobileView ? 'Zoom in' : zoomAction;
 
-      console.log(`You selected ${d.properties.NAME} by ${callMethod}. Currently shown area is ${this.currentState}. This.currentlyZoomed is ${this.currentlyZoomed}. Planned zoom action is ${zoomAction}`)
+      // console.log(`You selected ${d.properties.NAME} by ${callMethod}. Currently shown area is ${this.currentState}. This.currentlyZoomed is ${this.currentlyZoomed}. Planned zoom action is ${zoomAction}`)
 
       // If need to zoom out, zoom out to all states + territories
       if (zoomAction === 'Zoom out') return self.reset();
@@ -1359,7 +1417,7 @@ export default {
 
       // If not already zoomed in
       if (!this.currentlyZoomed) {
-        console.log(`this.currentlyZoomed is ${this.currentlyZoomed} and planned zoom action is ${zoomAction}, so going to zoom in from full view`)
+        // console.log(`this.currentlyZoomed is ${this.currentlyZoomed} and planned zoom action is ${zoomAction}, so going to zoom in from full view`)
 
         // const [[x0, y0], [x1, y1]] = this.mapPath.bounds(d);
         // event.stopPropagation();
@@ -1418,18 +1476,18 @@ export default {
         // set current state to zoomed state
         this.currentlyZoomed = true;
         this.currentState = zoomedState;
-        console.log(`Zoomed in on ${zoomedState}, so this.currentlyZoomed is ${this.currentlyZoomed}`)
+        // console.log(`Zoomed in on ${zoomedState}, so this.currentlyZoomed is ${this.currentlyZoomed}`)
 
       } else {
         // If already zoomed in,
-        console.log(`this.currentlyZoomed is ${this.currentlyZoomed} and planned zoom action is ${zoomAction}, so going to zoom out and then in to state`)
+        // console.log(`this.currentlyZoomed is ${this.currentlyZoomed} and planned zoom action is ${zoomAction}, so going to zoom out and then in to state`)
 
         // NEED TO REVAMP - THIS IS MESSY
 
         // First draw whole map AND zoom out to whole map
-        self.drawCountyPoints(this.defaultViewName, 1, this.currentType)
-        self.drawCounties(this.defaultViewName, 1)
-        self.drawMap(this.defaultViewName, 1)
+        self.drawCountyPoints(this.nationalViewName, 1, this.currentType)
+        self.drawCounties(this.nationalViewName, 1)
+        self.drawMap(this.nationalViewName, 1)
 
         this.stateGroups
           .attr("transform", "");
@@ -1471,25 +1529,25 @@ export default {
         // set current state to zoomed state
         this.currentlyZoomed = true;
         this.currentState = zoomedState;
-        console.log(`Zoomed in on ${zoomedState}, so this.currentlyZoomed is ${this.currentlyZoomed}`)
+        // console.log(`Zoomed in on ${zoomedState}, so this.currentlyZoomed is ${this.currentlyZoomed}`)
       }
     },
     reset() {
       const self = this;
 
-      this.currentState = this.defaultViewName //this.d3.select(null);
+      this.currentState = this.nationalViewName //this.d3.select(null);
       this.currentScale = 1;
 
       // Update dropdown value and width
-      self.updateDropdown(this.defaultViewName)
+      self.updateDropdown(this.nationalViewName)
 
       this.d3.select("#map-inset-svg")
         .classed("hide", false)
 
-      self.drawHistogram(this.defaultViewName)
-      self.drawCounties(this.defaultViewName, this.currentScale)
-      self.drawMap(this.defaultViewName, this.currentScale)
-      self.drawCountyPoints(this.defaultViewName, this.currentScale, this.currentType)
+      self.drawHistogram(this.nationalViewName)
+      self.drawCounties(this.nationalViewName, this.currentScale)
+      self.drawMap(this.nationalViewName, this.currentScale)
+      self.drawCountyPoints(this.nationalViewName, this.currentScale, this.currentType)
 
       this.stateGroups.transition(self.getExitTransition)
           .attr("transform", "");
@@ -1501,7 +1559,7 @@ export default {
         .attr("transform", "");
 
       this.currentlyZoomed = false;
-      console.log(`Zoomed out, so this.currentlyZoomed is ${this.currentlyZoomed}`)
+      // console.log(`Zoomed out, so this.currentlyZoomed is ${this.currentlyZoomed}`)
     }
   }
 }
@@ -1516,16 +1574,17 @@ export default {
     stroke-width: 0.3;
   }
   .axis-title {
-    font-size: 1.6rem;
     fill: #000000;
     font-weight: 700;
   }
-  .axis-label {
-    font-size: 1.2rem;
-  }
   .bar-label {
-    font-size: 1.6rem;
     fill: #666666;
+  }
+  .chart-text {
+    font-size: 1.6rem;
+    @media screen and (max-width: 600px) {
+      font-size: 1.4rem;
+    }
   }
   #state-dropdown {
     width: 50px;
@@ -1584,12 +1643,12 @@ export default {
     }
     @media screen and (max-width: 600px) {
       grid-template-columns: 100%;
-      grid-template-rows: max-content max-content 20vh max-content;
+      grid-template-rows: max-content max-content max-content 25vh;
       grid-template-areas:
         "title"
         "text"
-        "chart"
-        "map";
+        "map"
+        "chart";
       position: relative;
       padding: 0.5rem 0.5rem 0.5rem 0.5rem;
     }

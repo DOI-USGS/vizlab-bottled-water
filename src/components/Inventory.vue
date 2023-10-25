@@ -96,7 +96,7 @@ export default {
     margin: 1rem 0rem 1.5rem 4rem;
   }
   .pictogram.img-mobile {
-    width: 100%;
+    width: 98%;
     margin: 0rem 0rem 0.5rem 0rem;
   }
 </style>
