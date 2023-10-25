@@ -109,7 +109,7 @@ export default {
     @media screen and (max-width: 600px) {
       width: calc(100vw - 1rem);
       position: relative;
-      padding: 2rem 0.5rem 0.5rem 0.5rem;
+      padding: 2rem 0.5rem 4rem 0.5rem;
     }  
   }
   *:focus {
