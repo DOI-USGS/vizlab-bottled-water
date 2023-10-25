@@ -114,6 +114,17 @@
         <img
           class="infographic-bw"
           src="../assets/images/bottled_water_use_infographic.png"
+          v-if="!mobileView"
+        >
+        <img
+          class="infographic-bw"
+          src="../assets/images/bottled_water_use_infographic_top.png"
+          v-if="mobileView"
+        >
+        <img
+          class="infographic-bw"
+          src="../assets/images/bottled_water_use_infographic_bottom.png"
+          v-if="mobileView"
         >
       </div>
       <div
@@ -230,86 +241,89 @@
     max-width: 1200px;
   }
   #grid-container-source-maps {
-  grid-area: source-maps;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: max-content max-content max-content max-content;
-  grid-template-areas:
-    "title-self title-self"
-    "count-self perc-self"
-    "title-combo title-combo"
-    "count-combo perc-combo"
-    "title-public title-public"
-    "count-public perc-public";
-  justify-content: center;
-  align-content: center;
-  margin: 1rem auto 2rem auto;
-  max-width: 1600px;
-  @media screen and (max-width: 600px) {
-    grid-template-columns: 1fr;
-    grid-template-rows: max-content max-content max-content max-content max-content max-content max-content;
+    grid-area: source-maps;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: max-content max-content max-content max-content;
     grid-template-areas:
-      "title-self"
-      "count-self"
-      "perc-self"
-      "title-combo"
-      "count-combo"
-      "perc-combo"
-      "title-public"
-      "count-public"
-      "perc-public";
-    margin: 0rem auto 3rem auto;
+      "title-self title-self"
+      "count-self perc-self"
+      "title-combo title-combo"
+      "count-combo perc-combo"
+      "title-public title-public"
+      "count-public perc-public";
+    justify-content: center;
+    align-content: center;
+    margin: 1rem auto 2rem auto;
+    max-width: 1400px;
+    @media screen and (max-width: 600px) {
+      grid-template-columns: 1fr;
+      grid-template-rows: max-content max-content max-content max-content max-content max-content max-content;
+      grid-template-areas:
+        "title-self"
+        "count-self"
+        "perc-self"
+        "title-combo"
+        "count-combo"
+        "perc-combo"
+        "title-public"
+        "count-public"
+        "perc-public";
+      margin: 0rem auto 3rem auto;
+    }
   }
-}
-.map-title-container {
-  text-align: center;
-  margin-top: 2rem;
-}
-#source-map-title-self {
-  grid-area: title-self;
-}
-#source-map-title-combo {
-  grid-area: title-combo;
-}
-#source-map-title-public {
-  grid-area: title-public;
-}
-#img-source-self-count {
-  grid-area: count-self;
-}
-#img-source-combo-count {
-  grid-area: count-combo;
-}
-#img-source-public-count {
-  grid-area: count-public;
-}
-#img-source-self-percent {
-  grid-area: perc-self;
-}
-#img-source-combo-percent {
-  grid-area: perc-combo;
-}
-#img-source-public-percent {
-  grid-area: perc-public;
-}
-.source-map {
-  max-width: 90%;
-  @media screen and (max-width: 600px) {
-    max-width: 100%;
+  .map-title-container {
+    text-align: center;
+    margin-top: 2rem;
   }
-}
-#img-infographic-bw {
+  #source-map-title-self {
+    grid-area: title-self;
+  }
+  #source-map-title-combo {
+    grid-area: title-combo;
+  }
+  #source-map-title-public {
+    grid-area: title-public;
+  }
+  #img-source-self-count {
+    grid-area: count-self;
+  }
+  #img-source-combo-count {
+    grid-area: count-combo;
+  }
+  #img-source-public-count {
+    grid-area: count-public;
+  }
+  #img-source-self-percent {
+    grid-area: perc-self;
+  }
+  #img-source-combo-percent {
+    grid-area: perc-combo;
+  }
+  #img-source-public-percent {
+    grid-area: perc-public;
+  }
+  .source-map {
+    max-width: 90%;
+    @media screen and (max-width: 600px) {
+      max-width: 100%;
+    }
+  }
+  #img-infographic-bw {
     text-align: center;
     margin: 4rem 0rem 4rem 0rem;
+    @media screen and (max-width: 600px) {
+      margin: 3rem 0rem 3rem 0rem;
+    }
   }
-.infographic-bw {
-  width: 60%;
-  margin: auto;
-  @media screen and (max-height: 770px) {
-    width: 65%;
+  .infographic-bw {
+    width: 60%;
+    margin: auto;
+    @media screen and (max-height: 770px) {
+      width: 65%;
+    }
+    @media screen and (max-width: 600px) {
+      width: 90%;
+    }
   }
-  @media screen and (max-width: 600px) {
-    width: 100%;
-  }
-}
 </style>
