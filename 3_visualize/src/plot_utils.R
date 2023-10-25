@@ -3058,33 +3058,36 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
                shape = 21,
                size = point_size) +
     scale_color_manual(values = supply_color, guide = 'none') +
+    scale_fill_manual(values = supply_color, name = 'Water source') +
     theme_minimal() +
-    labs(y = axis_title, x = "") +
+    labs(y = "", x = "") +
     theme(
       plot.margin = unit(c(1,0,0,0), "cm"),
-      legend.position = "top",
+      legend.position = "bottom",
       legend.direction = "horizontal",
-      legend.margin = margin(b = 10, r = 50)
+      legend.margin = margin(t = -20)
     ) +
-    scale_x_continuous(expand = scale_x_exp) +
-    guides(fill = guide_legend(direction = "horizontal", label.position = "right",
-                               position = "top", title.position = "left",
-                               override.aes = list(color = supply_color)))
+    scale_x_continuous(expand = scale_x_exp)
 
 
   if (mobile == FALSE) {
 
   water_use_beeswarm <- water_use_beeswarm_baseplot +
-    scale_fill_manual(values = supply_color, name = 'Water source') +
+    labs(title = axis_title) +
     scale_y_continuous(limits = scale_y_lim,
                        expand = scale_y_exp) +
     coord_flip() +
-    guides(fill = guide_legend(nrow = leg_nrow)) +
+    guides(fill = guide_legend(nrow = leg_nrow,
+                               direction = "horizontal", label.position = "right",
+                               position = "top", title.position = "left",
+                               override.aes = list(color = supply_color))) +
     theme(text = element_text(family = font_legend, size = font_size),
           axis.text.y = element_blank(),
           axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
           panel.grid.minor.y = element_blank(),
-          panel.grid.major.y = element_blank()
+          panel.grid.major.y = element_blank(),
+          plot.title = element_text(hjust = 0.5, size = font_size,
+                                    margin = margin(t = -10, b = 20))
           )
 
   plt <- ggdraw(ylim = c(0,1), # 0-1 scale makes it easy to place viz items on canvas
@@ -3110,14 +3113,19 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
                          expand = scale_y_exp,
                          breaks = c(0, 0.5, 1, 1.5, 2),
                          labels = c("0","0.5", "1.0", "1.5", "2.0\nmillion\ngallons\nper day")) +
-      guides(fill = guide_legend(nrow = leg_nrow)) +
+      guides(fill = guide_legend(nrow = leg_nrow,
+                                 direction = "horizontal", label.position = "right",
+                                 position = "top", title.position = "top",
+                                 title.hjust = 0.5,
+                                 keyheight = unit(1.25, "cm"),
+                                 override.aes = list(color = supply_color))) +
       theme(text = element_text(family = font_legend, size = font_size),
             axis.text.x = element_blank(),
             axis.text.y = element_text(hjust = 0, vjust = c(0.5, 0.5, 0.5, 0.5, 0.93), margin = margin(t = 0, r = -55, b = 0, l = 0, unit = "pt")),
             panel.grid.minor.x = element_blank(),
-            panel.grid.major.x = element_blank()
-            ) +
-      scale_fill_manual(values = supply_color, name = " ")
+            panel.grid.major.x = element_blank(),
+            legend.justification = "center",
+            )
 
     plt <- ggdraw(ylim = c(0,1), # 0-1 scale makes it easy to place viz items on canvas
                   xlim = c(0,1)) +
