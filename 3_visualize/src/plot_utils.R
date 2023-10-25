@@ -3011,13 +3011,14 @@ wu_availability_map <- function(conus_sf, conus_outline_col, bw_fill_name,
 #' @param mobile if else statement where if TRUE, create annual water use by bottled water facilities vertical beeswarm for mobile
 #' @param leg_nrow, supply numeric value for nrow call in `guide_legend`
 #' @param font_size, supply numeric value for font size in `theme`
+#' @param point_size, supply size of points used in legend
 #' @return the filepath of the saved plot
 annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
                              width, height, bkgd_color, text_color,
                              outfile_template, dpi,
                              axis_title, supply_color,
                              scale_y_lim, scale_y_exp, scale_x_exp,
-                             mobile, leg_nrow, font_size
+                             mobile, leg_nrow, font_size, point_size
                              ) {
 
   # import font (p3_font_legend doesn't seem to work on Mac)
@@ -3053,6 +3054,9 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
                       shape = 21,
                       layout = 'swarm',
     ) +
+    geom_point(color = NA,
+               shape = 21,
+               size = point_size) +
     scale_color_manual(values = supply_color, guide = 'none') +
     theme_minimal() +
     labs(y = axis_title, x = "") +
@@ -3061,11 +3065,12 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
       legend.position = "top",
       legend.direction = "horizontal",
       legend.margin = margin(b = 10, r = 50)
-      ) +
+    ) +
     scale_x_continuous(expand = scale_x_exp) +
     guides(fill = guide_legend(direction = "horizontal", label.position = "right",
                                position = "top", title.position = "left",
                                override.aes = list(color = supply_color)))
+
 
   if (mobile == FALSE) {
 
