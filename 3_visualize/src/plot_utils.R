@@ -3011,13 +3011,14 @@ wu_availability_map <- function(conus_sf, conus_outline_col, bw_fill_name,
 #' @param mobile if else statement where if TRUE, create annual water use by bottled water facilities vertical beeswarm for mobile
 #' @param leg_nrow, supply numeric value for nrow call in `guide_legend`
 #' @param font_size, supply numeric value for font size in `theme`
+#' @param point_size, supply size of points used in legend
 #' @return the filepath of the saved plot
 annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
                              width, height, bkgd_color, text_color,
                              outfile_template, dpi,
                              axis_title, supply_color,
                              scale_y_lim, scale_y_exp, scale_x_exp,
-                             mobile, leg_nrow, font_size
+                             mobile, leg_nrow, font_size, point_size
                              ) {
 
   # import font (p3_font_legend doesn't seem to work on Mac)
@@ -3030,6 +3031,15 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
   sysfonts::font_add_google(annotate_legend)
   showtext::showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 900)
   showtext::showtext_auto(enable = TRUE)
+
+  # cowplot
+  plot_margin <- 0.005
+
+  canvas <- grid::rectGrob(
+    x = 0, y = 0,
+    width = width, height = height,
+    gp = grid::gpar(fill = bkgd_color, alpha = 1, col = bkgd_color)
+  )
 
   bw_sites_wu_sf <- sites_wu_sf |>
     filter(WB_TYPE == selected_facility_type, has_wu)  |>
@@ -3044,55 +3054,42 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
                       shape = 21,
                       layout = 'swarm',
     ) +
-    scale_fill_manual(values = supply_color, name = 'Water source') +
+    geom_point(color = NA,
+               shape = 21,
+               size = point_size) +
     scale_color_manual(values = supply_color, guide = 'none') +
+    scale_fill_manual(values = supply_color, name = 'Water source') +
     theme_minimal() +
-    labs(y = axis_title, x = "") +
+    labs(y = "", x = "") +
     theme(
-      plot.margin = unit(c(1,1,1,1), "cm"),
-      legend.position = "top",
-      legend.direction = "horizontal",
-      legend.margin = margin(b = 10),
-      ) +
-    scale_y_continuous(limits = scale_y_lim,
-                       expand = scale_y_exp) +
-    scale_x_continuous(expand = scale_x_exp) +
-    guides(fill = guide_legend(direction = "horizontal", label.position = "right",
-                               position = "top", title.position = "left",
-                               override.aes = list(color = supply_color)))
+      legend.position = "bottom",
+      legend.direction = "horizontal"
+    ) +
+    scale_x_continuous(expand = scale_x_exp)
+
 
   if (mobile == FALSE) {
 
   water_use_beeswarm <- water_use_beeswarm_baseplot +
+    labs(title = axis_title) +
+    scale_y_continuous(limits = scale_y_lim,
+                       expand = scale_y_exp,
+                       position = "right") +
     coord_flip() +
-    guides(fill = guide_legend(nrow = leg_nrow)) +
+    guides(fill = guide_legend(nrow = leg_nrow,
+                               direction = "horizontal", label.position = "right",
+                               position = "top", title.position = "left",
+                               override.aes = list(color = supply_color))) +
     theme(text = element_text(family = font_legend, size = font_size),
           axis.text.y = element_blank(),
           axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
           panel.grid.minor.y = element_blank(),
-          panel.grid.major.y = element_blank()
+          panel.grid.major.y = element_blank(),
+          plot.title = element_text(hjust = 0.5, size = font_size,
+                                    margin = margin(t = -10, b = 20)),
+          plot.margin = unit(c(1,0,0,0), "cm"),
+          axis.text.x.top = element_text(margin = margin(-20, 0, 5, 0))
           )
-
-  } else {
-
-    water_use_beeswarm <- water_use_beeswarm_baseplot +
-      guides(fill = guide_legend(nrow = leg_nrow)) +
-      theme(text = element_text(family = font_legend, size = font_size),
-            axis.text.x = element_blank(),
-            axis.title.y = element_text(margin = margin(0, 20, 0, 0)),
-            panel.grid.minor.x = element_blank(),
-            panel.grid.major.x = element_blank()
-            )
-  }
-
-  # cowplot
-  plot_margin <- 0.005
-
-  canvas <- grid::rectGrob(
-    x = 0, y = 0,
-    width = width, height = height,
-    gp = grid::gpar(fill = bkgd_color, alpha = 1, col = bkgd_color)
-  )
 
   plt <- ggdraw(ylim = c(0,1), # 0-1 scale makes it easy to place viz items on canvas
                 xlim = c(0,1)) +
@@ -3109,6 +3106,45 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
               hjust = 1,
               vjust = 0)
 
+  } else {
+
+    water_use_beeswarm <- water_use_beeswarm_baseplot +
+      labs(y = "") +
+      scale_y_continuous(limits = scale_y_lim,
+                         expand = scale_y_exp,
+                         breaks = c(0, 0.5, 1, 1.5, 2),
+                         labels = c("0","0.5", "1.0", "1.5", "2.0\nmillion\ngallons\nper day")) +
+      guides(fill = guide_legend(nrow = leg_nrow,
+                                 direction = "horizontal", label.position = "right",
+                                 position = "top", title.position = "top",
+                                 title.hjust = 0.5,
+                                 keyheight = unit(1.25, "cm"),
+                                 override.aes = list(color = supply_color))) +
+      theme(text = element_text(family = font_legend, size = font_size),
+            axis.text.x = element_blank(),
+            axis.text.y = element_text(hjust = 0, vjust = c(0.5, 0.5, 0.5, 0.5, 0.93), margin = margin(t = 0, r = -55, b = 0, l = 0, unit = "pt")),
+            panel.grid.minor.x = element_blank(),
+            panel.grid.major.x = element_blank(),
+            legend.justification = "center",
+            legend.margin = margin(t = -40),
+            plot.margin = unit(c(0.5,0,0,0), "cm")
+            )
+
+    plt <- ggdraw(ylim = c(0,1), # 0-1 scale makes it easy to place viz items on canvas
+                  xlim = c(0,1)) +
+      # a background
+      draw_grob(canvas,
+                x = 0, y = 1,
+                height = height, width = width,
+                hjust = 0, vjust = 1) +
+      draw_plot(water_use_beeswarm,
+                x = 0.98,
+                y = 0.01,
+                height = 1,
+                width = 1,
+                hjust = 1,
+                vjust = 0)
+  }
 
   ggsave(outfile_template, plt, width = width, height = height, dpi = dpi, bg =  bkgd_color)
 
