@@ -557,7 +557,7 @@ combine_conus_maps <- function(map1, map2, title1, title2, width, height,
 #' @return stacked bar chart indicating percent of sites that have water use data
 #' and percent of sites that do not
 chart_wateruse_availability <- function(sites, has_wu_color, no_wu_color) {
-  
+
   wu_summary <- sites %>%
     mutate(has_wu = ifelse(WU_DATA_FLAG == 'Y', WU_DATA_FLAG, NA)) %>%
     group_by(has_wu, facility_category) %>%
@@ -1717,10 +1717,10 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
         panel.spacing = unit(2, "lines")
       ) +
       facet_wrap(~source_category)
-    
+
     # size legend list
     legend_list_count <- purrr::map2(names(supply_colors), supply_colors, function(source_category_name, supply_colors) {
-      
+
       # for size with custom labels and reversed order
       bivariate_color_scale_count$size_factor <- factor(
         bivariate_color_scale_count$size,
@@ -1729,7 +1729,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
                      max(bivariate_color_scale_count$size),
                      length.out = length(unique(bivariate_color_scale_count$size)))
       )
-      
+
       ggplot() +
         geom_point(
           data = filter(bivariate_color_scale_count, ws_category == source_category_name),
@@ -1747,10 +1747,10 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
           plot.margin = unit(c(0,6,6.5,0), "cm")
         )
     })
-    
+
     # set count legend list names to reorder source category
     legend_list_count <- set_names(legend_list_count, reorder_source_category)
-    
+
     # percent legend list
     legend_list_perc <- purrr::map2(names(supply_colors), supply_colors, function(source_category, supply_colors) {
       ggplot() +
@@ -1771,7 +1771,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
           plot.margin = unit(c(0,6,6.5,0), "cm")
         )
     })
-    
+
     # set percent legend list names to reorder source category
     legend_list_perc <- set_names(legend_list_perc, reorder_source_category)
 
@@ -1948,10 +1948,10 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
 
     # Set perc list names to reorder source category
     map_perc_list <- set_names(map_perc_list, reorder_source_category)
-    
+
     # size legend list
     legend_list_count <- purrr::map2(names(supply_colors), supply_colors, function(source_category_name, supply_colors) {
-      
+
       # for size with custom labels and reversed order
       bivariate_color_scale_count$size_factor <- factor(
         bivariate_color_scale_count$size,
@@ -1960,7 +1960,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
                      max(bivariate_color_scale_count$size),
                      length.out = length(unique(bivariate_color_scale_count$size)))
       )
-      
+
       ggplot() +
         geom_point(
           data = filter(bivariate_color_scale_count, ws_category == source_category_name),
@@ -1972,7 +1972,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
         ) +
         scale_color_identity() +
         scale_size(range = count_size_range, limits = c(1, count_size_limit)) +
-        geom_text(data = filter(bivariate_color_scale_count, 
+        geom_text(data = filter(bivariate_color_scale_count,
                                 ws_category == source_category_name),
                   aes(x = size_factor, y = 0.1, label = size), size = 20/.pt,
                   family = font_legend) +
@@ -1985,7 +1985,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
         ) +
         ggtitle(map_count_legend)
     })
-    
+
     # set count legend list names to reorder source category
     legend_list_count <- set_names(legend_list_count, reorder_source_category)
 
@@ -2003,7 +2003,7 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
         ) +
         scale_fill_identity() +
         scale_alpha(range = perc_alpha_range, limits = perc_alpha_limit, name = '') +
-        geom_text(data = filter(bivariate_color_scale_perc, 
+        geom_text(data = filter(bivariate_color_scale_perc,
                                 ws_category == source_category),
                   aes(x = alpha, y = 0.1, label = ifelse(alpha == 100, paste0(alpha, "%"), alpha)), size = 20/.pt,
                   family = font_legend, hjust = 0, nudge_x = -12.5) +
@@ -2017,10 +2017,10 @@ generate_bw_conus_map <- function(supply_summary_county_bw, width, height,
         ) +
         ggtitle(map_perc_legend)
     })
-    
+
     # set percent legend list names to reorder source category
     legend_list_perc <- set_names(legend_list_perc, reorder_source_category)
-    
+
     # final plts
     ss_cnt_fnl_plt <- plt +
       # Self supply count map
@@ -3011,13 +3011,14 @@ wu_availability_map <- function(conus_sf, conus_outline_col, bw_fill_name,
 #' @param mobile if else statement where if TRUE, create annual water use by bottled water facilities vertical beeswarm for mobile
 #' @param leg_nrow, supply numeric value for nrow call in `guide_legend`
 #' @param font_size, supply numeric value for font size in `theme`
+#' @param point_size, supply size of points used in legend
 #' @return the filepath of the saved plot
 annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
                              width, height, bkgd_color, text_color,
                              outfile_template, dpi,
                              axis_title, supply_color,
                              scale_y_lim, scale_y_exp, scale_x_exp,
-                             mobile, leg_nrow, font_size
+                             mobile, leg_nrow, font_size, point_size
                              ) {
 
   # import font (p3_font_legend doesn't seem to work on Mac)
@@ -3030,6 +3031,15 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
   sysfonts::font_add_google(annotate_legend)
   showtext::showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 900)
   showtext::showtext_auto(enable = TRUE)
+
+  # cowplot
+  plot_margin <- 0.005
+
+  canvas <- grid::rectGrob(
+    x = 0, y = 0,
+    width = width, height = height,
+    gp = grid::gpar(fill = bkgd_color, alpha = 1, col = bkgd_color)
+  )
 
   bw_sites_wu_sf <- sites_wu_sf |>
     filter(WB_TYPE == selected_facility_type, has_wu)  |>
@@ -3044,55 +3054,42 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
                       shape = 21,
                       layout = 'swarm',
     ) +
-    scale_fill_manual(values = supply_color, name = 'Water source') +
+    geom_point(color = NA,
+               shape = 21,
+               size = point_size) +
     scale_color_manual(values = supply_color, guide = 'none') +
+    scale_fill_manual(values = supply_color, name = 'Water source') +
     theme_minimal() +
-    labs(y = axis_title, x = "") +
+    labs(y = "", x = "") +
     theme(
-      plot.margin = unit(c(1,1,1,1), "cm"),
-      legend.position = "top",
-      legend.direction = "horizontal",
-      legend.margin = margin(b = 10),
-      ) +
-    scale_y_continuous(limits = scale_y_lim,
-                       expand = scale_y_exp) +
-    scale_x_continuous(expand = scale_x_exp) +
-    guides(fill = guide_legend(direction = "horizontal", label.position = "right",
-                               position = "top", title.position = "left",
-                               override.aes = list(color = supply_color)))
+      legend.position = "bottom",
+      legend.direction = "horizontal"
+    ) +
+    scale_x_continuous(expand = scale_x_exp)
+
 
   if (mobile == FALSE) {
 
   water_use_beeswarm <- water_use_beeswarm_baseplot +
+    labs(title = axis_title) +
+    scale_y_continuous(limits = scale_y_lim,
+                       expand = scale_y_exp,
+                       position = "right") +
     coord_flip() +
-    guides(fill = guide_legend(nrow = leg_nrow)) +
+    guides(fill = guide_legend(nrow = leg_nrow,
+                               direction = "horizontal", label.position = "right",
+                               position = "top", title.position = "left",
+                               override.aes = list(color = supply_color))) +
     theme(text = element_text(family = font_legend, size = font_size),
           axis.text.y = element_blank(),
           axis.title.x = element_text(margin = margin(20, 0, 0, 0)),
           panel.grid.minor.y = element_blank(),
-          panel.grid.major.y = element_blank()
+          panel.grid.major.y = element_blank(),
+          plot.title = element_text(hjust = 0.5, size = font_size,
+                                    margin = margin(t = -10, b = 20)),
+          plot.margin = unit(c(1,0,0,0), "cm"),
+          axis.text.x.top = element_text(margin = margin(-20, 0, 5, 0))
           )
-
-  } else {
-
-    water_use_beeswarm <- water_use_beeswarm_baseplot +
-      guides(fill = guide_legend(nrow = leg_nrow)) +
-      theme(text = element_text(family = font_legend, size = font_size),
-            axis.text.x = element_blank(),
-            axis.title.y = element_text(margin = margin(0, 20, 0, 0)),
-            panel.grid.minor.x = element_blank(),
-            panel.grid.major.x = element_blank()
-            )
-  }
-
-  # cowplot
-  plot_margin <- 0.005
-
-  canvas <- grid::rectGrob(
-    x = 0, y = 0,
-    width = width, height = height,
-    gp = grid::gpar(fill = bkgd_color, alpha = 1, col = bkgd_color)
-  )
 
   plt <- ggdraw(ylim = c(0,1), # 0-1 scale makes it easy to place viz items on canvas
                 xlim = c(0,1)) +
@@ -3109,9 +3106,60 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
               hjust = 1,
               vjust = 0)
 
+  } else {
+
+    water_use_beeswarm <- water_use_beeswarm_baseplot +
+      labs(y = "") +
+      scale_y_continuous(limits = scale_y_lim,
+                         expand = scale_y_exp,
+                         breaks = c(0, 0.5, 1, 1.5, 2),
+                         labels = c("0","0.5", "1.0", "1.5", "2.0\nmillion\ngallons\nper day")) +
+      guides(fill = guide_legend(nrow = leg_nrow,
+                                 direction = "horizontal", label.position = "right",
+                                 position = "top", title.position = "top",
+                                 title.hjust = 0.5,
+                                 keyheight = unit(1.25, "cm"),
+                                 override.aes = list(color = supply_color))) +
+      theme(text = element_text(family = font_legend, size = font_size),
+            axis.text.x = element_blank(),
+            axis.text.y = element_text(hjust = 0, vjust = c(0.5, 0.5, 0.5, 0.5, 0.93), margin = margin(t = 0, r = -55, b = 0, l = 0, unit = "pt")),
+            panel.grid.minor.x = element_blank(),
+            panel.grid.major.x = element_blank(),
+            legend.justification = "center",
+            legend.margin = margin(t = -40),
+            plot.margin = unit(c(0.5,0,0,0), "cm")
+            )
+
+    plt <- ggdraw(ylim = c(0,1), # 0-1 scale makes it easy to place viz items on canvas
+                  xlim = c(0,1)) +
+      # a background
+      draw_grob(canvas,
+                x = 0, y = 1,
+                height = height, width = width,
+                hjust = 0, vjust = 1) +
+      draw_plot(water_use_beeswarm,
+                x = 0.98,
+                y = 0.01,
+                height = 1,
+                width = 1,
+                hjust = 1,
+                vjust = 0)
+  }
 
   ggsave(outfile_template, plt, width = width, height = height, dpi = dpi, bg =  bkgd_color)
 
+}
+
+# Get percent water use data availability df
+#' @param sites_wu_summary_sf sf object of inventory data summary, with `has_wu` field to indicate if facility has water use data
+perc_wu_avail <- function(sites_wu_summary_sf) {
+  # % data we do have
+  wu_nas_percent_plot <- sites_wu_summary_sf |>
+    group_by(has_wu) |>
+    summarize(count = n()) |>
+    mutate(percent = count/sum(count)*100) |>
+    mutate(type = ifelse(!has_wu, 'No water use data', "Water use data available"),
+           type = factor(type, levels = c("Water use data available", 'No water use data')))
 }
 
 #' @title create cowplotted water use barplots that break down 1) water availability, 2) types of facitlies with water use data and 3) sources of bottled water facilities with water use data
@@ -3147,12 +3195,7 @@ water_use_barplots <- function(sites_wu_summary_sf, focal_color,
   showtext_auto(enable = TRUE)
 
   # % data we do have
-  wu_nas_percent_plot <- sites_wu_summary_sf |>
-    group_by(has_wu) |>
-    summarize(count = n()) |>
-    mutate(percent = count/sum(count)*100) |>
-    mutate(type = ifelse(!has_wu, 'No water use data', "Water use data available"),
-           type = factor(type, levels = c("Water use data available", 'No water use data')))
+  wu_nas_percent_plot <- perc_wu_avail(sites_wu_summary_sf)
 
   # Types among WU data
   wu_types_percent_plot <- sites_wu_summary_sf |>
@@ -3324,3 +3367,52 @@ water_use_barplots <- function(sites_wu_summary_sf, focal_color,
 
 }
 
+
+#' @title create water use barplot displays % water availability data
+#' @param width width for the final plot
+#' @param height height for the final plot
+#' @param bkgd_color background color for the plot
+#' @param text_color color for text
+#' @param outfile_template filepath template for saving the final plot
+#' @param dpi dpi at which to save the final plot
+#' @param sites_wu_summary_sf sf object of inventory data summary, with `has_wu` field to indicate if facility has water use data
+#' @param focal_color, supply color associated with bottled water data
+#' @param text_size size for axis text
+#' @return the filepath of the saved plot
+perc_wu_avail_barplot <- function(sites_wu_summary_sf, focal_color,
+                                  width, height, bkgd_color, text_color,
+                                  text_size, outfile_template, dpi){
+
+  # import font (p3_font_legend doesn't seem to work on Mac)
+  font_legend <- 'Source Sans Pro'
+  font_add_google(font_legend)
+  showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 700)
+  showtext_auto(enable = TRUE)
+
+  # % data we do have
+  wu_nas_percent <- perc_wu_avail(sites_wu_summary_sf)
+
+  # % of data we do have
+  perc_water_use_barplot <- ggplot(wu_nas_percent,
+                                   aes(x = 1, y = percent, fill = factor(type, levels = c('No water use data',
+                                                                                                       "Water use data available")))) +
+    geom_bar(stat="identity") +
+    theme_minimal() +
+    labs(x= NULL, y = NULL, fill="") +
+    theme(axis.title.x=element_blank(),
+          axis.text.x = element_blank(),
+          axis.ticks.x = element_blank(),
+          panel.grid = element_blank(),
+          axis.ticks.y = element_line(color = "lightgrey", size = 0.5),
+          axis.text.y = element_text(size = text_size, family = font_legend),
+          plot.margin = margin(10, 20, 10, 10),
+          legend.position = "none") +
+    scale_fill_manual(values = c("grey80", focal_color)) +
+    scale_y_continuous(breaks = seq(0, 100, by = 25),
+                       labels = c("0%", "25%", "50%", "75%", "100%"),
+                       expand = c(0, 0.1)) +
+    scale_x_discrete(expand = c(0,0))
+
+  ggsave(outfile_template, perc_water_use_barplot, width = width, height = height, dpi = dpi, bg =  bkgd_color)
+
+}
