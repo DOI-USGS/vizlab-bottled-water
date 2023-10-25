@@ -1006,10 +1006,9 @@ export default {
               default:
                 zoomPath = this.mapPath;
             }
-            self.zoomToState(d, zoomPath, 'click')
-          }
-          if (!(d.properties.NAME == 'Commonwealth of the Northern Mariana Islands') && !(d.properties.NAME == 'American Samoa')) {
-            self.zoomToState(d, zoomPath, 'click')
+            if (!(d.properties.NAME == 'Commonwealth of the Northern Mariana Islands') && !(d.properties.NAME == 'American Samoa')) {
+              self.zoomToState(d, zoomPath, 'click')
+            }
           }
         })
 
