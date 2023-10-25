@@ -3109,10 +3109,11 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
       scale_y_continuous(limits = scale_y_lim,
                          expand = scale_y_exp,
                          breaks = c(0, 0.5, 1, 1.5, 2),
-                         labels = c("0","0.5", "1.0", "1.5", " ")) +
+                         labels = c("0","0.5", "1.0", "1.5", "2.0\nmillion\ngallons\nper day")) +
       guides(fill = guide_legend(nrow = leg_nrow)) +
       theme(text = element_text(family = font_legend, size = font_size),
             axis.text.x = element_blank(),
+            axis.text.y = element_text(hjust = 0, vjust = c(0.5, 0.5, 0.5, 0.5, 0.93), margin = margin(t = 0, r = -55, b = 0, l = 0, unit = "pt")),
             panel.grid.minor.x = element_blank(),
             panel.grid.major.x = element_blank()
             ) +
@@ -3131,14 +3132,7 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
                 height = 1,
                 width = 1,
                 hjust = 1,
-                vjust = 0) +
-      draw_label("2.0\nmillion\ngallons\nper day",
-                 x = 0.022, y = 0.888,
-                 size = font_size - 4,
-                 hjust = 0,
-                 vjust = 1,
-                 color = '#4d4d4d',
-                 fontfamily = font_legend)
+                vjust = 0)
   }
 
   ggsave(outfile_template, plt, width = width, height = height, dpi = dpi, bg =  bkgd_color)
