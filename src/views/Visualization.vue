@@ -109,7 +109,7 @@ export default {
     @media screen and (max-width: 600px) {
       width: calc(100vw - 1rem);
       position: relative;
-      padding: 2rem 0.5rem 4rem 0.5rem;
+      padding: 4rem 0.5rem 4rem 0.5rem;
     }  
   }
   *:focus {
@@ -143,7 +143,7 @@ export default {
     top: 5rem; // same as top padding on #visualization
     width: 100%;
     @media screen and (max-width: 600px) {
-      top: 2rem;
+      top: 4rem; // same as top padding on #visualization
     }
   }
   .panel {
