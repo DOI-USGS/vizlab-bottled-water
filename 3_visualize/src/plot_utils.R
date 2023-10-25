@@ -3073,7 +3073,8 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
   water_use_beeswarm <- water_use_beeswarm_baseplot +
     labs(title = axis_title) +
     scale_y_continuous(limits = scale_y_lim,
-                       expand = scale_y_exp) +
+                       expand = scale_y_exp,
+                       position = "right") +
     coord_flip() +
     guides(fill = guide_legend(nrow = leg_nrow,
                                direction = "horizontal", label.position = "right",
@@ -3086,8 +3087,8 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
           panel.grid.major.y = element_blank(),
           plot.title = element_text(hjust = 0.5, size = font_size,
                                     margin = margin(t = -10, b = 20)),
-          legend.margin = margin(t = -20),
-          plot.margin = unit(c(1,0,0,0), "cm")
+          plot.margin = unit(c(1,0,0,0), "cm"),
+          axis.text.x.top = element_text(margin = margin(-20, 0, 5, 0))
           )
 
   plt <- ggdraw(ylim = c(0,1), # 0-1 scale makes it easy to place viz items on canvas
