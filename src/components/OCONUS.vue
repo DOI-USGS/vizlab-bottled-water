@@ -1155,10 +1155,12 @@ export default {
       }
 
       // create scales
-      let scaleFactor = scale === 1 ? 1 : 2/scale
+      const scaleFactor = scale === 1 ? 1 : 2/scale
+      const rangeMin = scale === 1 ? 1.25 : 2
+      const rangeMax = scale === 1 ? 15 : 18
 
       const sizeScale = this.d3.scaleLinear()
-        .range([0.8 * scaleFactor, 11 * scaleFactor])
+        .range([rangeMin * scaleFactor, rangeMax * scaleFactor])
         .domain([1, dataMax])
 
       // county centroids
