@@ -213,15 +213,24 @@ export default {
       this.focalColor = "#1599CF";
       this.defaultColor = "#B5B5B5";
 
-      // Draw initial view ('all states and territories')
+      // Draw initial view ('all states and territories' on desktop, 'Alabama' on mobile)
+      // For mobile, need to compute initial scale, based on currentState
+      const currentStateData = this.statePolysZoom.filter(d => d.properties.NAME === this.currentState)[0]
+      if (this.mobileView) {
+        const bounds = this.mapPath.bounds(currentStateData),
+              dx = bounds[1][0] - bounds[0][0],
+              dy = bounds[1][1] - bounds[0][1],
+              scale = .9 / Math.max(dx / this.mapDimensions.width, dy / this.mapDimensions.height)
+        this.currentScale = scale
+      }
       self.drawHistogram(this.currentState)
       self.drawCounties(this.currentState, this.currentScale)
       self.drawMap(this.currentState, this.currentScale)
       self.drawCountyPoints(this.currentState, this.currentScale, this.currentType)
+      
+      // On mobile, zoom to currentState
       if (this.mobileView) {
-        const currentStateData = this.statePolysZoom.filter(d => d.properties.NAME === this.currentState)[0]
-        console.log(currentStateData)
-        self.zoomToState(currentStateData, this.mapPath, 'click')
+        self.zoomToState(currentStateData, this.mapPath, 'dropdown')
       }
     },
     addDropdown(data) {
