@@ -3062,10 +3062,8 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
     theme_minimal() +
     labs(y = "", x = "") +
     theme(
-      plot.margin = unit(c(1,0,0,0), "cm"),
       legend.position = "bottom",
-      legend.direction = "horizontal",
-      legend.margin = margin(t = -20)
+      legend.direction = "horizontal"
     ) +
     scale_x_continuous(expand = scale_x_exp)
 
@@ -3087,7 +3085,9 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
           panel.grid.minor.y = element_blank(),
           panel.grid.major.y = element_blank(),
           plot.title = element_text(hjust = 0.5, size = font_size,
-                                    margin = margin(t = -10, b = 20))
+                                    margin = margin(t = -10, b = 20)),
+          legend.margin = margin(t = -20),
+          plot.margin = unit(c(1,0,0,0), "cm")
           )
 
   plt <- ggdraw(ylim = c(0,1), # 0-1 scale makes it easy to place viz items on canvas
@@ -3125,6 +3125,8 @@ annual_bw_wu_beeswarm <- function(sites_wu_sf, selected_facility_type,
             panel.grid.minor.x = element_blank(),
             panel.grid.major.x = element_blank(),
             legend.justification = "center",
+            legend.margin = margin(t = -40),
+            plot.margin = unit(c(0.5,0,0,0), "cm")
             )
 
     plt <- ggdraw(ylim = c(0,1), # 0-1 scale makes it easy to place viz items on canvas
