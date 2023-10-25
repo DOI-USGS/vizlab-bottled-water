@@ -66,6 +66,7 @@ export default {
       countyPolysZoom: null,
       countyPoints: null,
       dataAll: null,
+      dataTypes: null,
       mapDimensions: null,
       chartDimensions: null,
       wrapper: null,
@@ -83,6 +84,7 @@ export default {
       genericPath: null,
       genericProjection: null,
       chartBounds: null,
+      xScale: null,
       focalColor: null,
       defaultColor: null,
       currentType: null,
@@ -145,6 +147,7 @@ export default {
 
       // State counts, by type
       this.dataAll = data[0];
+      this.dataTypes = [... new Set(this.dataAll.map(d => d.WB_TYPE))]
 
       // High simplification state polgyons, for national view
       // Loaded separately so that CONUS, AK, and HI jsons can be used
@@ -334,7 +337,7 @@ export default {
         width: map_width,
         height: map_width * 0.75,
         margin: {
-          top: 20,
+          top: this.mobileView ? 5 : 20,
           right: 5,
           bottom: 5,
           left: 5
@@ -518,9 +521,9 @@ export default {
         width,
         height: height,
         margin: {
-          top: 18,
+          top: 20,
           right: 5,
-          bottom: 40,
+          bottom: 60,
           left: 15
         }
       }
@@ -555,26 +558,49 @@ export default {
           .attr("tabindex", 0)
           .attr("contenteditable", "true")
           .attr("aria-label", "bar chart bars")
-      this.chartBounds.append("g")
+
+      // X axis
+
+      // scale for the x-axis
+      this.xScale = this.d3.scaleBand()
+        .domain(this.dataTypes)
+        .range([0, this.chartDimensions.boundedWidth])
+        .padding(0.1);
+
+      const xAxis = this.chartBounds.append("g")
           .attr("class", "x-axis")
           .style("transform", `translateY(${
             this.chartDimensions.boundedHeight
           }px)`)
           .attr("role", "presentation")
           .attr("aria-hidden", true)
-          .append("text")
-            .attr("class", "x-axis axis-title")
-            .attr("x", this.chartDimensions.boundedWidth / 2)
-            .attr("y", this.chartDimensions.margin.bottom - 5)
-            .style("text-anchor", "middle")
-            .attr("role", "presentation")
-            .attr("aria-hidden", true)
+
+      xAxis
+        .call(this.d3.axisBottom(this.xScale).tickSize(0).tickPadding(10))
+        .select(".domain").remove()
+
+      xAxis
+        .selectAll("text")
+        .attr("class", "axis-label chart-text")
+        .style("text-anchor", "middle")
+        // Wrap x-axis labels
+        .call(d => self.wrapHorizontalLabels(d, 7));
+
+      xAxis
+        .append("text")
+          .attr("class", "x-axis axis-title chart-text")
+          .attr("x", this.chartDimensions.boundedWidth / 2)
+          .attr("y", this.chartDimensions.margin.bottom - 5)
+          .style("text-anchor", "middle")
+          .attr("role", "presentation")
+          .attr("aria-hidden", true)
+
       this.chartBounds.append("g")
         .attr("class", "y-axis")
         .attr("role", "presentation")
         .attr("aria-hidden", true)
         .append("text")
-          .attr("class", "y-axis axis-title")
+          .attr("class", "y-axis axis-title chart-text")
           .attr("x", -this.chartDimensions.boundedHeight / 2)
           .attr("y", 0)
           .attr("transform", "rotate(-90)")
@@ -582,16 +608,51 @@ export default {
           .attr("role", "presentation")
           .attr("aria-hidden", true)
     },
+    // function to wrap text added with d3 modified from
+    // https://stackoverflow.com/questions/24784302/wrapping-text-in-d3
+    // which is adapted from https://bl.ocks.org/mbostock/7555321
+    wrapHorizontalLabels(text, width) {
+      const self = this;
+      text.each(function () {
+          var text = self.d3.select(this),
+              words = text.text().split(/\s+/).reverse(),
+              word,
+              line = [],
+              lineNumber = 0,
+              lineHeight = 0.6,
+              x = 0,
+              y = text.attr("x"), // Use x b/c wrapping horizontal labels
+              dy = 0, //parseFloat(text.attr("dy")),
+              tspan = text.text(null)
+                          .append("tspan")
+                          .attr("x", x)
+                          .attr("y", y)
+                          .attr("dy", dy + "rem");
+          while (word = words.pop()) {
+              line.push(word);
+              tspan.text(line.join(" "));
+              if (tspan.node().getComputedTextLength() > width) {
+                  line.pop();
+                  tspan.text(line.join(" "));
+                  line = [word];
+                  tspan = text.append("tspan")
+                              .attr("x", x)
+                              .attr("y", y)
+                              .attr("dy", ++lineNumber * lineHeight + dy + "em")
+                              .text(word);
+              }
+          }
+      });
+    },
     drawHistogram(state) {
       const self = this;
 
       const rawData = this.dataAll
 
       let data;
-      let dataTypes = [... new Set(this.dataAll.map(d => d.WB_TYPE))]
       if (state === this.nationalViewName) {
         let dataArray = []
-        dataTypes.forEach(function(type) {
+        this.dataTypes.forEach(function(type) {
           let totalCount = rawData
             .filter(d => d.WB_TYPE === type)
             .map(d => parseInt(d.site_count))
@@ -622,12 +683,7 @@ export default {
       this.d3.select("#chart-container").select("Title")
         .text(`Bar chart of distribution of facility types for ${state}`)
 
-      // create scales
-      const xScale = this.d3.scaleBand()
-        .rangeRound([0, this.chartDimensions.boundedWidth])
-        .domain(dataTypes) // if want to only include types in each state: data.map(d => d.WB_TYPE)
-        .padding(0.1) //0.05
-
+      // create y scale
       const yScale = this.d3.scaleLinear()
         .domain([0, this.d3.max(data, yAccessor)]) // use y accessor w/ raw data
         .range([this.chartDimensions.boundedHeight, 0])
@@ -671,15 +727,15 @@ export default {
 
       // append rects and set default y and height, so that when appear, come up from bottom
       newRectGroups.append("rect")
-        .attr("x", d => xScale(xAccessor(d)))
+        .attr("x", d => this.xScale(xAccessor(d)))
         .attr("y", this.chartDimensions.boundedHeight)
-        .attr("width", xScale.bandwidth())
+        .attr("width", this.xScale.bandwidth())
         .attr("height", 0)
         .style("fill", d => d.WB_TYPE === this.currentType ? this.focalColor : this.defaultColor) //colorScale(colorAccessor(d)))
 
       // append text and set default position
       newRectGroups.append("text")
-        .attr("x", d => xScale(xAccessor(d)) + xScale.bandwidth()/2)
+        .attr("x", d => this.xScale(xAccessor(d)) + this.xScale.bandwidth()/2)
         .attr("y", this.chartDimensions.boundedHeight)
 
       // update rectGroups to include new points
@@ -689,9 +745,9 @@ export default {
 
       barRects.transition(self.getUpdateTransition())
           .attr("id", d => 'rect-' + identifierAccessor(d))
-          .attr("x", d => xScale(xAccessor(d)))
+          .attr("x", d => this.xScale(xAccessor(d)))
           .attr("y", d => yScale(yAccessor(d)))
-          .attr("width", xScale.bandwidth()) // if negative, bump up to 0
+          .attr("width", this.xScale.bandwidth()) // if negative, bump up to 0
           .attr("height", d => this.chartDimensions.boundedHeight - yScale(yAccessor(d)))
           .style("fill", d => d.WB_TYPE === this.currentType ? this.focalColor : this.defaultColor) // colorScale(colorAccessor(d)))
           .attr("class", d => 'bar ' + identifierAccessor(d))
@@ -768,32 +824,17 @@ export default {
 
       const barText = rectGroups.select("text")
         .transition(self.getUpdateTransition())
-          .attr("class", "bar-label")
-          .attr("x", d => xScale(xAccessor(d)) + xScale.bandwidth()/2)
+          .attr("class", "bar-label chart-text")
+          .attr("x", d => this.xScale(xAccessor(d)) + this.xScale.bandwidth()/2)
           .attr("y", d => yScale(yAccessor(d)) - 5)
           .style("text-anchor", "middle")
           .text(d => this.d3.format(',')(yAccessor(d)))
 
-      const xAxisGenerator = this.d3.axisBottom()
-        .scale(xScale)
-
-      const xAxis = this.chartBounds.select(".x-axis")
-
-      xAxis
-        .transition(self.getUpdateTransition())
-        .call(xAxisGenerator)
-        .select(".domain").remove()
-
-      xAxis.selectAll(".tick line").attr("stroke", "None")
-
-      const xAxisText = xAxis.selectAll(".tick text")
-        .attr("class", "x-axis axis-label")
-
-      const xAxisLabel = xAxis.select(".x-axis.axis-title")
+      const xAxisLabel = this.chartBounds.select(".x-axis.axis-title")
 
       if (state === this.nationalViewName) {
         xAxisLabel
-        .text('Distribution of facility types nationally')
+          .text('Distribution of facility types nationally')
       } else {
         xAxisLabel
           .text(`Distribution of facility types in ${
@@ -1528,16 +1569,17 @@ export default {
     stroke-width: 0.3;
   }
   .axis-title {
-    font-size: 1.6rem;
     fill: #000000;
     font-weight: 700;
   }
-  .axis-label {
-    font-size: 1.2rem;
-  }
   .bar-label {
-    font-size: 1.6rem;
     fill: #666666;
+  }
+  .chart-text {
+    font-size: 1.6rem;
+    @media screen and (max-width: 600px) {
+      font-size: 1.4rem;
+    }
   }
   #state-dropdown {
     width: 50px;
@@ -1596,7 +1638,7 @@ export default {
     }
     @media screen and (max-width: 600px) {
       grid-template-columns: 100%;
-      grid-template-rows: max-content max-content max-content 18vh;
+      grid-template-rows: max-content max-content max-content 25vh;
       grid-template-areas:
         "title"
         "text"
