@@ -118,12 +118,12 @@
         >
         <img
           class="infographic-bw"
-          src="../assets/images/bottled_water_use_infographic_perBW.png"
+          src="../assets/images/bottled_water_use_infographic_top.png"
           v-if="mobileView"
         >
         <img
           class="infographic-bw"
-          src="../assets/images/bottled_water_use_infographic_BWsources.png"
+          src="../assets/images/bottled_water_use_infographic_bottom.png"
           v-if="mobileView"
         >
       </div>
