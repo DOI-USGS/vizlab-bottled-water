@@ -7,11 +7,17 @@
         </h3>
       </div>
       <div id="text">
-        <div class="text-container">
-          <p class="viz-comment" v-if = "!mobileView">
+        <div class="text-container" v-if = "!mobileView">
+          <p class="viz-comment">
             Click on the dropdown menu, bar chart, or map to explore!
           </p>
-          <p class="viz-comment" v-if = "mobileView">
+          <br>
+          <p class="viz-comment" v-if="currentlyZoomed">
+            Click on the zoomed state to return to the national view
+          </p>
+        </div>  
+        <div class="text-container" v-if = "mobileView">
+          <p class="viz-comment">
             Use the dropdown menu or tap on the bar chart to explore!
           </p>
         </div>
