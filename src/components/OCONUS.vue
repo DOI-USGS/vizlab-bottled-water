@@ -13,7 +13,7 @@
           </p>
           <br>
           <p class="viz-comment" v-if="currentlyZoomed">
-            Click on the zoomed state to return to the national view
+            Click on the zoomed map to return to the national view
           </p>
         </div>  
         <div class="text-container" v-if = "mobileView">
