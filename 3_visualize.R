@@ -576,7 +576,7 @@ p3_targets <- list(
              iteration = 'list'),
 
   # Stylized CONUS county level bottled water maps with legends
-  tar_target(p3_source_perc_count_bottled_water_facet_map_png,
+  tar_target(p3_source_perc_count_bottled_water_map_png,
              style_bw_conus_map(count_map = p3_source_count_bottled_water_basemap_list,
                                 perc_map = p3_source_perc_bottled_water_basemap_list,
                                 count_leg = p3_source_bw_count_legend_list,

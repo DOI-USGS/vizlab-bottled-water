@@ -1786,7 +1786,14 @@ style_bw_conus_map <- function(count_map, perc_map, count_leg, perc_leg, reorder
   return(unlist(saved_files, use.names = FALSE))
 }
 
-
+#' @title create legend for conus maps of bottled water facilities by raw count (proportional symbol)
+#' @param supply_colors vector of colors to use for water source categories
+#' @param reorder_source_category list of reorganized source categories to reorder legends by
+#' @param count_size_range numeric values to supply for `scale_size` range used for the count bw map
+#' @param count_size_limit numeric values to supply for `scale_size` limit used for the count map
+#' @param map_count_legend, add legend title for count bw maps
+#' @param font_legend font used for the plot
+#' @return a list of proportional symbol legends for bottled water facilities by raw count
 generate_count_leg <- function(supply_colors, reorder_source_category, count_size_range, count_size_limit, map_count_legend, font_legend){
 
   supply_colors <- pluck(supply_colors, 1)
@@ -1841,6 +1848,14 @@ generate_count_leg <- function(supply_colors, reorder_source_category, count_siz
   return(legend_list_count)
 }
 
+#' @title create legend for conus maps of bottled water facilities by percent (choropleth)
+#' @param supply_colors vector of colors to use for water source categories
+#' @param reorder_source_category list of reorganized source categories to reorder legends by
+#' @param perc_alpha_range numeric values to supply for `scale_size` range used for the percent bw map
+#' @param perc_alpha_limit numeric values to supply for `scale_size` limit used for the percent bw map
+#' @param map_perc_legend, add legend title for percent bw maps
+#' @param font_legend font used for the plot
+#' @return a list of choropleth legends for bottled water facilities by percent
 generate_perc_leg <- function(supply_colors, reorder_source_category, perc_alpha_range, perc_alpha_limit, map_perc_legend, font_legend) {
 
   supply_colors <- pluck(supply_colors, 1)
