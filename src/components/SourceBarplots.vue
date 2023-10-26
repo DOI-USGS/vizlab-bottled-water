@@ -354,7 +354,7 @@ export default {
               .remove();
           }
         )
-      
+
       // Update bars within groups
       rectGroups.selectAll('rect')
         .data(D => D.map(d => (d.key = D.key, d)))
@@ -362,6 +362,8 @@ export default {
             enter => enter
                 .append("rect")
                 .attr("class", d => d.key + ' ' + d.data[0])
+                .attr("tabindex", "0")
+                .attr("role", "listitem")
                 .attr("x", d => this.xScale(d.data[0]))
                 .attr("y", d => this.yScale(0))
                 .attr("width", this.xScale.bandwidth())
@@ -379,6 +381,13 @@ export default {
           )
         .transition(t)
         .delay((d, i) => i * 20)
+        .attr("aria-label", d => {
+          let ariaText = currentSummaryType === 'Count' ? 
+            `There are ${d.data[1].get(d.key)[expressed]} ${d.data[0]} facilities with` :
+            `${Math.round(d.data[1].get(d.key).percent)} percent of ${d.data[0]} facilities have`
+          ariaText = ariaText + ` a water source of ${d.key}`
+          return ariaText
+        })
         .attr("x", d => this.xScale(d.data[0]))
         .attr("y", d => this.yScale(d[1]))
         .attr("width", this.xScale.bandwidth())
