@@ -765,45 +765,46 @@ export default {
           self.drawCountyPoints(state, this.currentScale, this.currentType)
 
           this.d3.selectAll('.bar')
-            .style("opacity", 0.5)
-            .style("fill", this.defaultColor)
-
-          this.d3.selectAll('#rect-' + currentIdentifier)
-            .style("opacity", 1)
-            .style("fill", this.focalColor)
-        })
-        .on("mouseover", (event, d) => {
-          this.currentType = colorAccessor(d)
-          let currentIdentifier = this.currentType.replace(' ', '-')
-          self.drawCountyPoints(state, this.currentScale, this.currentType)
-
-          this.d3.selectAll('.bar')
             .transition(self.getUpdateTransition())
-            .style("opacity", 0.5)
             .style("fill", this.defaultColor)
 
           this.d3.selectAll('#rect-' + currentIdentifier)
             .transition(self.getUpdateTransition())
-            .style("opacity", 1)
             .style("fill", this.focalColor)
         })
+        // .on("mouseover", (event, d) => {
+        //   this.currentType = colorAccessor(d)
+        //   let currentIdentifier = this.currentType.replace(' ', '-')
+        //   self.drawCountyPoints(state, this.currentScale, this.currentType)
 
-      self.chartBounds.selectAll(".rects")
-        .on("mouseleave", (event, d) => {
-          this.currentType = this.defaultType
-          let currentIdentifier = this.currentType.replace(' ', '-')
-          self.drawCountyPoints(state, this.currentScale, this.currentType)
+        //   this.d3.selectAll('.bar')
+        //     .transition(self.getUpdateTransition())
+        //     .style("opacity", 0.5)
+        //     .style("fill", this.defaultColor)
 
-          this.d3.selectAll('.bar')
-            .transition(self.getUpdateTransition())
-            .style("opacity", 1)
-            .style("fill", this.defaultColor)
+        //   this.d3.selectAll('#rect-' + currentIdentifier)
+        //     .transition(self.getUpdateTransition())
+        //     .style("opacity", 1)
+        //     .style("fill", this.focalColor)
+        // })
 
-          this.d3.selectAll('#rect-' + currentIdentifier)
-            .transition(self.getUpdateTransition())
-            .style("opacity", 1)
-            .style("fill", this.focalColor)
-        })
+      // // When mouse leaves chart, change back to default type
+      // self.chartBounds.selectAll(".rects")
+      //   .on("mouseleave", (event, d) => {
+      //     this.currentType = this.defaultType
+      //     let currentIdentifier = this.currentType.replace(' ', '-')
+      //     self.drawCountyPoints(state, this.currentScale, this.currentType)
+
+      //     this.d3.selectAll('.bar')
+      //       .transition(self.getUpdateTransition())
+      //       .style("opacity", 1)
+      //       .style("fill", this.defaultColor)
+
+      //     this.d3.selectAll('#rect-' + currentIdentifier)
+      //       .transition(self.getUpdateTransition())
+      //       .style("opacity", 1)
+      //       .style("fill", this.focalColor)
+      //   })
 
       // Trigger with enter key - BUT - how get back to total?
       rectGroups.each(function() {
