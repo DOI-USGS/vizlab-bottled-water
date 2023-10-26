@@ -245,7 +245,7 @@ export default {
         .append("select")
         .attr("id", "state-dropdown")
         .attr("class", "dropdown")
-        .attr("contenteditable", "true")
+        .attr("tabindex", 0)
         .on("change", function() {
           // Update dropdown text + width
           self.updateDropdown(this.options[this.selectedIndex].text)
@@ -541,7 +541,6 @@ export default {
       // assign role for accessibility
       chartSVG.attr("role", "figure")
         .attr("tabindex", 0)
-        .attr("contenteditable", "true")
         .append("title")
 
       this.chartBounds = chartSVG.append("g")
@@ -556,7 +555,6 @@ export default {
           .attr("class", "rects")
           .attr("role", "list")
           .attr("tabindex", 0)
-          .attr("contenteditable", "true")
           .attr("aria-label", "bar chart bars")
 
       // X axis
@@ -715,7 +713,6 @@ export default {
         .attr("class", d => "rect " + state)
         .attr("id", d => 'rect-group-' + identifierAccessor(d))
         .attr("tabindex", "0")
-        .attr("contenteditable", "true")
         .attr("role", "listitem")
         .attr("aria-label", d => `There are ${
           yAccessor(d)
