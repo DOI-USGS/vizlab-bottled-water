@@ -106,7 +106,7 @@
     -moz-osx-font-smoothing: grayscale;
     width: 100%;
     @media screen and (max-width: 600px) {
-      font-size: 1.6rem;
+      font-size: 1.8rem;
     }
   }
   h1{
@@ -229,11 +229,6 @@
         padding: 0rem; 
     }
   }
-  .legend-text {
-      fill: black;
-      font-family: $SourceSans;
-      font-size: 1.6rem;
-    }
   .viz-comment {
     font-family: $GloriaHallelujah;
     font-size: 1.8rem;

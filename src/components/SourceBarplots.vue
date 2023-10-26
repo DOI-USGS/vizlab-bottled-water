@@ -1,8 +1,12 @@
 <template>
-  <section>
-    <div id="grid-container-barplots">
-      <div id="toggle-container">
-        <p>Explore where different facility types source water. Showing the data summarized by</p>
+    <section>
+      <div id="grid-container-barplots">
+        <div id="intro-container" v-if="mobileView">
+          <p>Explore where different facility types source water.</p>
+        </div>
+        <div id="toggle-container">
+          <p v-if="!mobileView">Explore where different facility types source water. Showing the data summarized by</p>
+          <p v-if="mobileView">Summarize the data by</p>
         <div class="graph-buttons-switch">
           <input
             id="id_Count"
@@ -109,17 +113,55 @@ export default {
       // Draw barplot
       self.drawBarplot(summaryType)
     },
+    // function to wrap text added with d3 modified from
+    // https://stackoverflow.com/questions/24784302/wrapping-text-in-d3
+    // which is adapted from https://bl.ocks.org/mbostock/7555321
+    wrapHorizontalLabels(text, width) {
+      const self = this;
+      text.each(function () {
+          var text = self.d3.select(this),
+              words = text.text().split(/\s+/).reverse(),
+              word,
+              line = [],
+              lineNumber = 0,
+              lineHeight = 0.6,
+              x = 0,
+              y = text.attr("x"), // Use x b/c wrapping horizontal labels
+              dy = 0, //parseFloat(text.attr("dy")),
+              tspan = text.text(null)
+                          .append("tspan")
+                          .attr("x", x)
+                          .attr("y", y)
+                          .attr("dy", dy + "rem");
+          while (word = words.pop()) {
+              line.push(word);
+              tspan.text(line.join(" "));
+              if (tspan.node().getComputedTextLength() > width) {
+                  line.pop();
+                  tspan.text(line.join(" "));
+                  line = [word];
+                  tspan = text.append("tspan")
+                              .attr("x", x)
+                              .attr("y", y)
+                              .attr("dy", ++lineNumber * lineHeight + dy + "em")
+                              .text(word);
+              }
+          }
+      });
+    },
     initBarplot(data) {
-      const  width = window.innerWidth*0.8;
-      const height = window.innerHeight*0.7;
+      const self = this;
+
+      const width = document.getElementById("barplot-container").offsetWidth; // Match #barplot-container settings
+      const height = window.innerHeight*0.55; // Match #barplot-container settings
       this.barplotDimensions = {
         width,
         height,
         margin: {
           top: 15,
-          right: 5,
-          bottom: 40,
-          left: 75
+          right: this.mobileView ? 0 : 5,
+          bottom: 60,
+          left: this.mobileView ? 30 : 85
         }
       }
       this.barplotDimensions.boundedWidth = this.barplotDimensions.width - this.barplotDimensions.margin.left - this.barplotDimensions.margin.right
@@ -152,7 +194,7 @@ export default {
       this.xScale = this.d3.scaleBand()
         .domain(this.d3.union(this.sourceSummary.map(d => d.WB_TYPE).sort(this.d3.ascending)))
         .range([0, this.barplotDimensions.boundedWidth])
-        .padding(0.3);
+        .padding(this.mobileView ? 0.1 : 0.3);
 
       // x-axis
       const xAxis = this.barplotBounds.append("g")
@@ -168,7 +210,9 @@ export default {
       xAxis
         .selectAll("text")
         .attr("class", "axis-text")
-        .style("text-anchor", "middle");
+        .style("text-anchor", "middle")
+        // Wrap x-axis labels on mobile
+        .call(d => this.mobileView ? self.wrapHorizontalLabels(d, 10) : d);
 
       // scale for y-axis
       this.yScale = this.d3.scaleLinear()
@@ -183,6 +227,8 @@ export default {
       // y-axis
       this.barplotBounds.append("g")
         .attr("class", "y-axis")
+        // On mobile, translate y axis in negative x direction by the left margin
+        .attr("transform", this.mobileView ? `translate(-${this.barplotDimensions.margin.left - 4},0)` : "translate(0,0)")
         .attr("role", "presentation")
         .attr("aria-hidden", true)
         .append("text")
@@ -243,7 +289,9 @@ export default {
       this.yAxis.scale(this.yScale)
 
       // Set formatting for y axis
-      this.yAxis = currentSummaryType === 'Count' ? this.yAxis.tickFormat(this.d3.format(",")) : this.yAxis.tickFormat(this.d3.format(".0%"))
+      const countFormat = this.mobileView ? this.d3.format(".2s") : this.d3.format(",")
+      // Integrate axis title into label for 20k on mobile
+      this.yAxis = currentSummaryType === 'Count' ? this.yAxis.tickFormat((d) => d === 20000 && this.mobileView ? '20k facilities' : countFormat(d)) : this.yAxis.tickFormat(this.d3.format(".0%"))
 
       // Select y-axis
       const yAxis = this.barplotBounds.select(".y-axis")
@@ -254,20 +302,31 @@ export default {
         .select(".domain").remove()
       
       // Add class to y-axis labels, for styling
-      yAxis
+      const yAxisText = yAxis
         .selectAll("g")
         .selectAll("text")
+        .attr("id", d => currentSummaryType === 'Count' ? "axis-text-" + d : "axis-text-" + d * 100) // label-specific id
         .attr("class", "axis-text")
+        .attr("text-anchor", this.mobileView ? "start" : "end")
 
       // Add class to y-axis ticks, for styling
-      yAxis.selectAll(".tick line").attr("class", "y-axis-tick")
+      yAxis
+        .selectAll(".tick line")
+        .attr("class", "y-axis-tick")
+        .attr("x1", d => {
+          // On mobile, use width of label to adjust starting x value of tick line
+          const idValue = currentSummaryType === 'Count' ? d : d * 100
+          return this.mobileView ? self.d3.select('#axis-text-' + idValue)._groups[0][0].getBBox().width + 1 : 0;
+        })
+        // On mobile, adjust end value of tick line to account for x transformation of y axis
+        .attr("x2", this.mobileView ? this.barplotDimensions.boundedWidth + this.barplotDimensions.margin.left : this.barplotDimensions.boundedWidth)
 
       // Add title to y-axis
       const axisTitle = currentSummaryType === 'Count' ? 'Number of facilities' : 'Percent of facilities';
-      const axisOffset = currentSummaryType === 'Count' ? 15 : 25
+      const axisOffset = currentSummaryType === 'Count' ? 25 : 35
       yAxis.select(".y-axis.axis-title")
         .attr("y", - this.barplotDimensions.margin.left + axisOffset)
-        .text(axisTitle)
+        .text(this.mobileView ? '' : axisTitle) // Don't add the axis title on mobile
 
       // Set up transition.
       const dur = 1000;
@@ -325,16 +384,16 @@ export default {
     addLegend(data) {
       const self = this;
 
-      const width = this.barplotDimensions.width;
-      const height = 60;
+      const width = document.getElementById("legend-container").offsetWidth; // Match #legend-container settings
+      const height = this.mobileView ? 110 : 60;
       const legendDimensions = {
         width,
         height,
         margin: {
           top: 7,
-          right: 5,
+          right: this.mobileView ? 0 : 5,
           bottom: 5,
-          left: this.barplotDimensions.margin.left
+          left: 0
         }
       }
       legendDimensions.boundedWidth = legendDimensions.width - legendDimensions.margin.left - legendDimensions.margin.right
@@ -349,7 +408,7 @@ export default {
           .attr("id", "legend-svg")
 
       const legendRectSize = 15; // Size of legend color rectangles
-      const interItemSpacing = 25;
+      const interItemSpacing = this.mobileView ? 15 : 25;
       const intraItemSpacing = 6;
 
       // Add group for bounds
@@ -393,23 +452,70 @@ export default {
       // https://stackoverflow.com/questions/20224611/d3-position-text-element-dependent-on-length-of-element-before
       let selfSupplyStart;
       let selfSupplyEnd;
+      const xBuffer = 6; // set xBuffer for use in mobile row x translations
       legendGroup
         .attr("transform", (d, i) => {
           // Compute total width of preceeding legend items, with spacing
-          let cumulativeWidth = this.d3.select('#legend-title')._groups[0][0].getBBox().width + interItemSpacing;
-          for (let j = 0; j < i; j++) {
-            cumulativeWidth = cumulativeWidth + legendGroup._groups[0][j].getBBox().width + interItemSpacing;
+          // Start with width of legend title
+          const titleWidth = this.d3.select('#legend-title')._groups[0][0].getBBox().width + interItemSpacing;
+          
+          // Begin right of legend
+          let cumulativeWidth = titleWidth;
+          if (this.mobileView) {
+            // On mobile, only use preceding items in same row to find cumulative width
+            // row 1: items 0 and 1
+            if (i < 2) {
+              for (let j = 0; j < i; j++) {
+                cumulativeWidth = cumulativeWidth + legendGroup._groups[0][j].getBBox().width + interItemSpacing;
+              }
+            }
+            // row 2: items 2, 3 and 4
+            else if (i < 5) {
+              for (let j = 2; j < i; j++) {
+                cumulativeWidth = cumulativeWidth + legendGroup._groups[0][j].getBBox().width + interItemSpacing;
+              }
+            }
+            // row 3: item 5 
+            else if (i === 5) {
+              for (let j = 2; j < i; j++) {
+                // Actually storing width of row 2 here, to use to set selfSupplyEnd
+                cumulativeWidth = cumulativeWidth + legendGroup._groups[0][j].getBBox().width + interItemSpacing;
+              }
+            }
+          } else {
+            // on desktop, iterate through all preceding items to find cumulative width, since all items in 1 row
+            for (let j = 0; j < i; j++) {
+              cumulativeWidth = cumulativeWidth + legendGroup._groups[0][j].getBBox().width + interItemSpacing;
+            }
           }
+          
           // If first of self-supply items, store cumulative width
-          if (d === 'Surface water intake') {
-            selfSupplyStart = cumulativeWidth;
+          if (i === 2) {
+            selfSupplyStart = this.mobileView ? 0 : cumulativeWidth;
           }
-          // If 'Undetermined', store cumulative width
-          if (d === 'Undetermined') {
-            selfSupplyEnd = cumulativeWidth - interItemSpacing;
+          // If last item, store cumulative width
+          if (i === 5) {
+            selfSupplyEnd = this.mobileView ? cumulativeWidth - interItemSpacing - titleWidth + xBuffer : cumulativeWidth - interItemSpacing;
           }
-          // translate by that width
-          return "translate(" + cumulativeWidth + ",0)"
+
+          let yTranslation = 0;
+          // Determine x and y translation on mobile
+          // set y translation for each row
+          // adjust row starting position for 2nd and third rows by -titleWidth
+          if (this.mobileView) {
+            if (i < 2) {
+              yTranslation = 0;
+            } else if (i < 5) {
+              yTranslation = legendRectSize * 2;
+              cumulativeWidth = cumulativeWidth - titleWidth + xBuffer;
+            } else {
+              yTranslation = legendRectSize * 5.75
+              cumulativeWidth = xBuffer; // for last item just translate by xBuffer
+            } 
+          }
+
+          // translate each group by that width and height
+          return "translate(" + cumulativeWidth + "," + yTranslation + ")"
         })
 
         // Append bracket for self-supply items
@@ -418,15 +524,18 @@ export default {
           .x(d => d.x)
           .y(d => d.y)
 
-        const bracketHeightStart = legendRectSize + intraItemSpacing;
+        const bracketHeightStart = this.mobileView ? legendRectSize * 3 + intraItemSpacing : legendRectSize + intraItemSpacing;
         const bracketHeightEnd = bracketHeightStart + intraItemSpacing;
+        const bracketBuffer = this.mobileView ? xBuffer / 2 : interItemSpacing / 4
+        const bracketStart = this.mobileView ? selfSupplyStart + bracketBuffer : selfSupplyStart - bracketBuffer
+        
         legendBounds
           .append('path') // add a path to the existing svg
           .datum([
-            { x: selfSupplyStart - interItemSpacing / 4,   y: bracketHeightStart },
-            { x: selfSupplyStart - interItemSpacing / 4,  y: bracketHeightEnd},
-            { x: selfSupplyEnd + interItemSpacing / 4,  y: bracketHeightEnd},
-            { x: selfSupplyEnd + interItemSpacing / 4,  y: bracketHeightStart }
+            { x: bracketStart, y: bracketHeightStart},
+            { x: bracketStart, y: bracketHeightEnd},
+            { x: selfSupplyEnd + bracketBuffer, y: bracketHeightEnd},
+            { x: selfSupplyEnd + bracketBuffer, y: bracketHeightStart}
           ])
           .attr('d', line)
           .attr('class', 'bracket')
@@ -438,6 +547,7 @@ export default {
           .attr("x", selfSupplyStart + (selfSupplyEnd - selfSupplyStart) / 2)
           .attr("y", bracketHeightEnd + intraItemSpacing)
           .attr("alignment-baseline", "hanging")
+          .attr("dominant-baseline", "hanging") // required for Firefox
           .attr("text-anchor", "middle")
     },
     addToggle() {
@@ -507,6 +617,9 @@ export default {
   }
   .axis-text {
     font-size: 1.6rem;
+    @media screen and (max-width: 600px) {
+      font-size: 1.4rem;
+    }
   }
   .y-axis-tick {
     stroke: #CCCCCC;
@@ -515,13 +628,22 @@ export default {
   #legend-title {
     font-size: 1.6rem;
     font-weight: 700;
+    @media screen and (max-width: 600px) {
+      font-size: 1.4rem;
+    }
   }
   .legend-text {
     font-size: 1.6rem;
+    @media screen and (max-width: 600px) {
+      font-size: 1.4rem;
+    }
   }
   #legend-group-title {
     font-size: 1.6rem;
     font-style: italic;
+    @media screen and (max-width: 600px) {
+      font-size: 1.4rem;
+    }
   }
   .bracket {
     stroke: black;
@@ -539,16 +661,25 @@ export default {
       "toggle"
       "legend"
       "barplot";
-    row-gap: 1rem;
+    row-gap: 2rem;
     justify-content: center;
-    margin: 1rem auto 1rem auto;
-    width: 90%;
+    margin: 2rem auto 1rem auto;
+    width: 100%;
     @media screen and (max-height: 770px) {
       width: 100%;
     }
     @media screen and (max-width: 600px) {
+      grid-template-rows: max-content max-content max-content max-content;
+      grid-template-areas:
+      "intro"
+      "toggle"
+      "legend"
+      "barplot";
       width: 100%;
     }
+  }
+  #intro-container {
+    grid-area: intro;
   }
   #toggle-container {
     grid-area: toggle;
@@ -572,6 +703,9 @@ export default {
           -ms-user-select: none; /* Internet Explorer/Edge */
               user-select: none; /* Non-prefixed version, currently
                                     supported by Chrome and Opera */
+    @media screen and (max-width: 600px) {
+      height: 2.6rem;
+    }
   }
   .graph-buttons-switch-label {
     position: relative;
@@ -581,6 +715,9 @@ export default {
     line-height: 2.4rem;
     text-align: center;
     cursor: pointer;
+    @media screen and (max-width: 600px) {
+      line-height: 2.2rem;
+    }
   }
   .graph-buttons-switch-label-off {
     padding-left: 0.2rem;
@@ -616,12 +753,25 @@ export default {
     -o-transition: left 0.3s ease-out,background 0.3s;
     transition: left 0.3s ease-out,background 0.3s ;
   /* 	transition: background 0.3s ; */
+    @media screen and (max-width: 600px) {
+      height: 2.2rem;
+    }
   }
   #legend-container {
     grid-area: legend;
+    width: 90%;
+    justify-self: center;
+    @media screen and (max-width: 600px) {
+      width: 100%;
+    }
   }
   #barplot-container {
     grid-area: barplot;
-    max-height: 70vh;
+    width: 90%;
+    justify-self: center;
+    max-height: 55vh;
+    @media screen and (max-width: 600px) {
+      width: 100%;
+    }
   }
 </style>
