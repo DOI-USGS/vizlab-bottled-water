@@ -322,7 +322,7 @@ export default {
       // Update dropdown width based on width of tmp dropdown
       const tmpDropdownWidth = tmpSelect.offsetWidth / 10 // Divide by 10 to get in rem instead of px
       const dropdownElement = document.getElementById("state-dropdown");
-      const bufferForBorder = 1 // in rem, same as border-right in .dropdown class
+      const bufferForBorder = 2 // in rem, same as border-right in .dropdown class PLUS room for arrow background image
       dropdownElement.style.width = tmpDropdownWidth + bufferForBorder + "rem";
 
       // Remove tmp dropdown
@@ -1558,8 +1558,14 @@ export default {
     width: 50px;
   }
   .dropdown {
-    appearance: menulist; // adds arrow to dropdown
-    -webkit-appearance: menulist; // adds arrow to dropdown
+    appearance: none; // removes default dropdown styling
+    -moz-appearance: none; // removes default dropdown styling
+    -webkit-appearance: none; // removes default dropdown styling
+    background-image: url('../assets/images/arrow.png'); // Uses custom image for dropdown arrow
+    background-repeat: no-repeat, repeat;
+    background-position: right 0em top 60%;
+    background-size: .3em auto;
+    background-origin: content-box;
     border-right: 1rem solid transparent; // Add space to right of dropdown arrow
     transition: width 2s, transform 1s;
     background-color: white;
