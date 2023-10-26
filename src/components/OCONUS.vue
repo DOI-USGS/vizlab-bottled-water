@@ -1220,7 +1220,7 @@ export default {
       // create scales
       const scaleNumerator = scale > 15 ? 3: 2
       const scaleFactor = scale === 1 ? 1 : scaleNumerator/scale
-      const rangeMin = scale === 1 ? 1.25 : 2
+      const rangeMin = scale === 1 ? 1.25 : 2.5
       const rangeMax = scale === 1 ? 15 : 18
 
       const sizeScale = this.d3.scaleLinear()
