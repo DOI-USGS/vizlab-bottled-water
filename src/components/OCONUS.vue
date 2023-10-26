@@ -758,7 +758,7 @@ export default {
           .style("fill", d => d.WB_TYPE === this.currentType ? this.focalColor : this.defaultColor) // colorScale(colorAccessor(d)))
           .attr("class", d => 'bar ' + identifierAccessor(d))
 
-      barRects
+      rectGroups
         .on("click", (event, d) => {
           this.currentType = colorAccessor(d)
           let currentIdentifier = this.currentType.replace(' ', '-')
