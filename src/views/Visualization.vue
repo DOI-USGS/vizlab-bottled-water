@@ -116,6 +116,9 @@ export default {
     outline: none;
   }
   [tabindex="0"]:focus {
+      outline: none;
+  }
+  [tabindex="0"]:focus-visible {
       outline: auto;
   }
   a:focus {

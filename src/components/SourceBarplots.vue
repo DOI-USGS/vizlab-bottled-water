@@ -17,7 +17,9 @@
             checked
           >
           <label
+            id="Count"
             for="id_Count"
+            tabindex=0
             class="graph-buttons-switch-label graph-buttons-switch-label-off"
           >count</label>
           <input
@@ -28,7 +30,9 @@
             value="Percent"
           >
           <label
+            id="Percent"
             for="id_Percent"
+            tabindex=0
             class="graph-buttons-switch-label graph-buttons-switch-label-on"
           >percent</label>
           <span class="graph-buttons-switch-selection" />
@@ -555,7 +559,7 @@ export default {
 
       const self = this;
       
-      this.d3.selectAll('.graph-buttons-switch label').on("mousedown touchstart", function(event) {
+      const toggleLabels = this.d3.selectAll('.graph-buttons-switch label').on("mousedown touchstart", function(event) {
         const dragger = self.d3.select(this.parentNode)
         const startx = 0
         //d3.event.preventDefault(); // disable text dragging
@@ -604,6 +608,21 @@ export default {
             self.drawBarplot(chos.node().value)
           });          
       });
+
+      toggleLabels.each(function() {
+        this.addEventListener("keypress", function(event) {
+            if (event.key === 'Enter' | event.keyCode === 13) {
+              let targetId = event.target.id
+
+              // Shift toggle
+              const chos = document.getElementById("id_" + targetId)
+              chos.checked = true;
+
+              // Do action
+              self.drawBarplot(targetId)
+            }
+        })
+      })
     }
   }
 }
