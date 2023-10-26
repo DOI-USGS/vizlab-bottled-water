@@ -356,8 +356,6 @@ export default {
 
       // assign role for accessibility
       this.wrapper.attr("role", "figure")
-        .attr("tabindex", 0)
-        .append("title")
 
       this.mapBounds = this.wrapper.append("g")
         .style("transform", `translate(${
@@ -494,21 +492,12 @@ export default {
 
       this.mapBounds.append("g")
         .attr("class", "counties")
-        .attr("role", "list")
-        .attr("tabindex", 0)
-        .attr("aria-label", "county polygons")
 
       this.mapBounds.append("g")
         .attr("class", "county_centroids")
-        .attr("role", "list")
-        // .attr("tabindex", 0)
-        .attr("aria-label", "county centroids")
 
       this.mapBounds.append("g")
         .attr("class", "states")
-        .attr("role", "list")
-        .attr("tabindex", 0)
-        .attr("aria-label", "state polygons")
 
     },
     initChart() {
@@ -931,9 +920,6 @@ export default {
       const newStateGroups = this.stateGroups.enter().append("g")
         .attr("class", "state")
         .attr("id", d => 'state-group-' + d.properties.GEOID)
-        .attr("tabindex", "0")
-        .attr("role", "listitem")
-        .attr("aria-label", d => d.properties.NAME)
 
       let stateStrokeWidth = state === this.nationalViewName ? 0.5 : 1 * 1/scale
       let stateStrokeColor = state === this.nationalViewName ? "#949494" : "#757575"
@@ -1114,9 +1100,6 @@ export default {
       const newCountyGroups = this.countyGroups.enter().append("g")
           .attr("class", "county")
           .attr("id", d => "county-group-" + d.properties.GEOID)
-          .attr("tabindex", "0")
-          .attr("role", "listitem")
-          .attr("aria-label", d => d.properties.NAMELSAD + ', ' + d.properties.STATE_NAME)
 
       let countyStrokeWidth = state === this.nationalViewName ? 0.1 : 0.5 * 1/scale
       let countyStrokeColor = state === this.nationalViewName ? "#E3E3E3" : "#939393"
@@ -1248,13 +1231,6 @@ export default {
       const newCountyCentroidGroups = this.countyCentroidGroups.enter().append("g")
         .attr("class", "county_centroid")
         .attr("id", d => "county-point-group" + d.properties.GEOID)
-        .attr("tabindex", "0")
-        .attr("role", "listitem")
-        .attr("aria-label", d => `There are ${
-          sizeAccessor(d)
-        } facilities in ${
-          d.properties.NAMELSAD
-        }`)
 
       // append points
       newCountyCentroidGroups.append("path")
