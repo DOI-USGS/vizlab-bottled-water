@@ -8,10 +8,11 @@
           :key="reference.subTitle"
         >
           <p>
-            <span v-html="reference.num" />. <span v-html="reference.authors" /> <a
+            <span v-html="reference.num" />. <span v-html="reference.authors" />, <span v-html="reference.year" />, 
+            <a
               :href="reference.link"
               target="_blank"
-            ><span v-html="reference.title" /></a><span v-html="reference.ref" />
+            ><span v-html="reference.title" /></a>, <span v-html="reference.type" />, <span v-html="reference.ref" />.
           </p>
         </div>
       </div>
@@ -57,11 +58,11 @@
   }
   /*End credited code*/
   /*Reference title CSS*/
+  .usa-accordion {
+    font-size: 2rem; // Override USWDS default sizing to match body font size
+  }
   button:not([disabled]):focus{
     outline: none;
-  }
-  .usa-accordion__heading{
-    font-size: 1.6rem;
   }
   .usa-accordion__button{
     background-image: get-icon("chevronDown", #fff);
@@ -87,23 +88,14 @@
   }
   .target p{
     padding: 0;
-    font-size: 1.6rem;
     line-height: 1.5em; 
-  }
-  p { 
-    font-family: $familyMain;
   }
   .text-content h2 {
     color: $darkGrey;
     font-weight: 600;
     text-align: left;
-    font-family:$familyMain;
-    font-size: 1.6rem;
     margin-top: 5px;
     line-height: 1.2;
-    @media screen and (max-width: 600px) {
-      font-size: 1rem;
-    }
   }
   /*Accordion title CSS*/
   h2.usa-accordion__heading {
