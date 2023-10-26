@@ -2,7 +2,7 @@
   <section id="oconus_map">
     <div id="grid-container-interactive">
       <div id="title">
-        <h3>
+        <h3 class="grid-title">
           Counts of bottling facilities in <span id="state-dropdown-container" /> by county
         </h3>
       </div>
@@ -1548,6 +1548,16 @@ export default {
   }
 </style>
 <style scoped lang="scss">
+  .grid-title {
+    @media screen and (max-height: 770px) {
+      padding-top: 0rem;
+      padding-bottom: 0rem;
+    }
+    @media screen and (max-width: 600px) {
+      padding-top: 0rem;
+      padding-bottom: 0rem;
+    }
+  }
   #grid-container-interactive {
     display: grid;
     grid-template-columns: 49% 49%;

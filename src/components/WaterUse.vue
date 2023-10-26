@@ -81,7 +81,7 @@
   }
   #img-infographic-wu {
     text-align: center;
-    margin: 4rem 0rem 4rem 0rem;
+    margin: 4rem 0rem 0.5rem 0rem;
   }
   .infographic-wu {
     width: 60%;
