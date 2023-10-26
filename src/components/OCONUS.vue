@@ -1272,6 +1272,7 @@ export default {
         }`)
 
       // append points
+      let centroidStrokeWidth = state === this.nationalViewName ? 0.5 : 1 * 1/scale
       newCountyCentroidGroups.append("path")
         .attr("id", d => "county-point-" + d.properties.GEOID)
         // Instantiate w/ 0 radius
@@ -1296,6 +1297,8 @@ export default {
           }
         })
         .style("fill", this.focalColor)
+        .style("stroke", "#ffffff")
+        .style("stroke-width", centroidStrokeWidth)
 
       // update rectGroups to include new points
       this.countyCentroidGroups = newCountyCentroidGroups.merge(this.countyCentroidGroups)
@@ -1327,6 +1330,8 @@ export default {
             }
           })
           .style("fill", this.focalColor)
+          .style("stroke", "#ffffff")
+          .style("stroke-width", centroidStrokeWidth)
 
 
       // // Add county mouseover if at state level
@@ -1496,10 +1501,6 @@ export default {
   .bar {
     stroke: white;
     stroke-width: 0;
-  }
-  .county_centroid {
-    stroke: white;
-    stroke-width: 0.3;
   }
   .axis-title {
     fill: #000000;
