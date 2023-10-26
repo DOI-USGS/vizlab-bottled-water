@@ -60,6 +60,7 @@
   /*Reference title CSS*/
   .usa-accordion {
     font-size: 2rem; // Override USWDS default sizing to match body font size
+    line-height: 1.2; // Override USWDS default to match body css
   }
   button:not([disabled]):focus{
     outline: none;
