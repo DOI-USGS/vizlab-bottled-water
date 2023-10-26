@@ -11,6 +11,7 @@
         <img
           :class="mobileView ? 'pictogram img-mobile' : 'pictogram image-float'"
           src="../assets/images/bottled-water_consumption-pictogram_less-text_20231016.png"
+          alt="Pictogram showing 342 bottles of water with the text, “The average American drank 342 bottles of water in 2020.” Text below the pictogram reads, “Assuming standard, single-use bottles containing 16.9 oz (0.5 liter, or 0.132 gallons) of water. Bottled water consumption: https://bottledwater.org/bottled-water-consumption-shift/”"
         >
         <p v-html="inventoryText.paragraph2" />
         <br>
