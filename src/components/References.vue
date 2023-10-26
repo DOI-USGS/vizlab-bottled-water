@@ -61,6 +61,9 @@
   .usa-accordion {
     font-size: 2rem; // Override USWDS default sizing to match body font size
     line-height: 1.2; // Override USWDS default to match body css
+    @media screen and (max-width: 600px) {
+      font-size: 1.8rem; // Override USWDS default sizing to match body font size
+    }
   }
   button:not([disabled]):focus{
     outline: none;
