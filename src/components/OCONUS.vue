@@ -337,7 +337,7 @@ export default {
         width: map_width,
         height: map_width * 0.75,
         margin: {
-          top: this.mobileView ? 5 : 20,
+          top: 5,
           right: 5,
           bottom: 5,
           left: 5
@@ -1415,181 +1415,43 @@ export default {
       this.d3.select("#map-inset-svg")
         .classed("hide", true)
 
-      // If not already zoomed in
-      if (!this.currentlyZoomed) {
-        // console.log(`this.currentlyZoomed is ${this.currentlyZoomed} and planned zoom action is ${zoomAction}, so going to zoom in from full view`)
+      // Compute zoom and scale parameters
+      const [[x0, y0], [x1, y1]] = path.bounds(d);
+      const cx = (x0 + x1) / 2;
+      const cy = (y0 + y1) / 2;
+      const stateDims = {
+        width: 2 * this.d3.max([ x1 - cx, cx - x0]),
+        height: 2 * this.d3.max([ y1 - cy, cy - y0])
+      };
+      const zoom_scale = 0.92 * this.d3.min([
+        this.mapDimensions.height/stateDims.height,
+        this.mapDimensions.width/stateDims.width]);
+      const translate = [this.mapDimensions.width / 2 - zoom_scale * cx, this.mapDimensions.height / 2 - zoom_scale * cy]
 
-        // const [[x0, y0], [x1, y1]] = this.mapPath.bounds(d);
-        // event.stopPropagation();
+      // set global scale variable
+      this.currentScale = zoom_scale;
 
-        // function zoomed(event) {
-        //   console.log("called zoomed")
-        //   const {transform} = event;
-        //   console.log(transform)
-        //   self.mapBounds.attr("transform", transform);
-        //   self.mapBounds.attr("stroke-width", 1 / transform.k);
-        //   console.log("transformed mapBounds")
-        // }
+      // Draw state, county, points, and bar chart for state
+      self.drawCountyPoints(zoomedState, this.currentScale, this.currentType)
+      self.drawCounties(zoomedState, this.currentScale)
+      self.drawMap(zoomedState, this.currentScale)
+      self.drawHistogram(zoomedState)
 
-        // const zoom = this.d3.zoom()
-        //   // .on('zoom', (event) => {
-        //   //   this.mapBounds.attr("transform", event.transform);
-        //   // })
-        //   .scaleExtent([1, 40])
-        //   .on("zoom", zoomed);
+      // Zoom to state by transitioning map groups
+      this.stateGroups.transition(self.getUpdateTransition)
+        .attr("transform", "translate(" + translate + ") scale(" + zoom_scale + ")");
 
-        // this.wrapper.transition(self.getUpdateTransition()).call(
-        //   zoom.transform,
-        //   self.d3.zoomIdentity
-        //     .translate(this.mapDimensions.width / 2, this.mapDimensions.height / 2)
-        //     .scale(Math.min(8, 0.9 / Math.max((x1 - x0) / this.mapDimensions.width, (y1 - y0) / this.mapDimensions.height)))
-        //     .translate(-(x0 + x1) / 2, -(y0 + y1) / 2),
-        //   this.d3.pointer(event, this.wrapper.node())
-        // );
-        const [cx, cy] = path.centroid(d);
-        console.log(`[cx, cy]: ${[cx, cy]}`)
-        const [[x0, y0], [x1, y1]] = path.bounds(d);
-        console.log(`[x0, y0, x1, y1]: ${[x0, y0, x1, y1]}`)
-        console.log(`y1: ${y1}`)
-        const stateDims = {
-          width: 2 * this.d3.max([ x1 - cx, cx - x0]),
-          height: 2 * this.d3.max([ y1 - cy, cy - y0])
-        };
-        console.log(stateDims)
-        const zoom_scale = 0.95 * this.d3.min([
-          this.mapDimensions.height/stateDims.height,
-          this.mapDimensions.width/stateDims.width]);
-        console.log(zoom_scale)
+      this.countyGroups.transition(self.getUpdateTransition)
+        .attr("transform", "translate(" + translate + ") scale(" + zoom_scale + ")");
+      
+      this.countyCentroidGroups.transition(self.getUpdateTransition)
+        .attr("transform", "translate(" + translate + ") scale(" + zoom_scale + ")");
 
-        const bounds = path.bounds(d),
-            dx = bounds[1][0] - bounds[0][0],
-            dy = bounds[1][1] - bounds[0][1],
-            x = (bounds[0][0] + bounds[1][0]) / 2,
-            y = (bounds[0][1] + bounds[1][1]) / 2,
-            scale = .9 / Math.max(dx / this.mapDimensions.width, dy / this.mapDimensions.height),
-            translate = [this.mapDimensions.width / 2 - scale * x, this.mapDimensions.height / 2 - scale * y];
-        console.log(`x,y: ${x}, ${y}`)
-        console.log(`bounds: ${bounds}`)
-        console.log(`scale: ${scale}`)
-        // set global scale variable
-        this.currentScale = scale;
-
-        self.drawCountyPoints(zoomedState, this.currentScale, this.currentType)
-        self.drawCounties(zoomedState, this.currentScale)
-        self.drawMap(zoomedState, this.currentScale)
-        self.drawHistogram(zoomedState)
-
-        // Transition map groups
-        this.stateGroups.transition(self.getUpdateTransition)
-          .attr("transform",
-            "translate(" + this.mapDimensions.width / 2 + "," + this.mapDimensions.height / 2 +
-            ") scale(" + zoom_scale + ")" +
-            "translate(" + (-cx) + "," + (-cy) + ")");
-
-        this.countyGroups.transition(self.getUpdateTransition)
-          .attr("transform", 
-            "translate(" + this.mapDimensions.width / 2 + "," + this.mapDimensions.height / 2 +
-            ") scale(" + zoom_scale + ")" +
-            "translate(" + (-cx) + "," + (-cy) + ")");
-        this.countyCentroidGroups.transition(self.getUpdateTransition)
-          .attr("transform", 
-            "translate(" + this.mapDimensions.width / 2 + "," + this.mapDimensions.height / 2 +
-            ") scale(" + zoom_scale + ")" +
-            "translate(" + (-cx) + "," + (-cy) + ")");
-        // this.stateGroups.transition(self.getUpdateTransition)
-        //   .attr("transform", "translate(" + translate + ") scale(" + scale + ")");
-
-        // this.countyGroups.transition(self.getUpdateTransition)
-        //   .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
-
-        // this.countyCentroidGroups.transition(self.getUpdateTransition)
-        //   .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
-
-        // set current state to zoomed state
-        this.currentlyZoomed = true;
-        this.currentState = zoomedState;
-        // console.log(`Zoomed in on ${zoomedState}, so this.currentlyZoomed is ${this.currentlyZoomed}`)
-
-      } else {
-        // If already zoomed in,
-        // console.log(`this.currentlyZoomed is ${this.currentlyZoomed} and planned zoom action is ${zoomAction}, so going to zoom out and then in to state`)
-
-        // NEED TO REVAMP - THIS IS MESSY
-
-        // // First draw whole map AND zoom out to whole map
-        // self.drawCountyPoints(this.nationalViewName, 1, this.currentType)
-        // self.drawCounties(this.nationalViewName, 1)
-        // self.drawMap(this.nationalViewName, 1)
-
-        // this.stateGroups
-        //   .attr("transform", "");
-
-        // this.countyGroups
-        //   .attr("transform", "");
-
-        // this.countyCentroidGroups
-        //   .attr("transform", "");
-
-        // Then zoom in to state and draw state
-        const [cx, cy] = path.centroid(d);
-        const [[x0, y0], [x1, y1]] = path.bounds(d);
-        const stateDims = {
-          width: 2 * this.d3.max([ x1 - cx, cx - x0]),
-          height: 2 * this.d3.max([ y1 - cy, cy - y0])
-        };
-        const zoom_scale = 0.95 * this.d3.min([
-          this.mapDimensions.height/stateDims.height,
-          this.mapDimensions.width/stateDims.width]);
-
-        const bounds = path.bounds(d),
-          dx = bounds[1][0] - bounds[0][0],
-          dy = bounds[1][1] - bounds[0][1],
-          x = (bounds[0][0] + bounds[1][0]) / 2,
-          y = (bounds[0][1] + bounds[1][1]) / 2,
-          scale = .9 / Math.max(dx / this.mapDimensions.width, dy / this.mapDimensions.height),
-          translate = [this.mapDimensions.width / 2 - scale * x, this.mapDimensions.height / 2 - scale * y];
-
-        // set global scale variable
-        this.currentScale = scale;
-
-        // redraw map and histogram for state
-        self.drawCountyPoints(zoomedState, this.currentScale, this.currentType)
-        self.drawCounties(zoomedState, this.currentScale)
-        self.drawMap(zoomedState, this.currentScale)
-        self.drawHistogram(zoomedState)
-
-        // Transition map groups
-        this.stateGroups.transition(self.getUpdateTransition)
-          .attr("transform",
-            "translate(" + this.mapDimensions.width / 2 + "," + this.mapDimensions.height / 2 +
-            ") scale(" + zoom_scale + ")" +
-            "translate(" + (-cx) + "," + (-cy) + ")");
-
-        this.countyGroups.transition(self.getUpdateTransition)
-          .attr("transform", 
-            "translate(" + this.mapDimensions.width / 2 + "," + this.mapDimensions.height / 2 +
-            ") scale(" + zoom_scale + ")" +
-            "translate(" + (-cx) + "," + (-cy) + ")");
-        this.countyCentroidGroups.transition(self.getUpdateTransition)
-          .attr("transform", 
-            "translate(" + this.mapDimensions.width / 2 + "," + this.mapDimensions.height / 2 +
-            ") scale(" + zoom_scale + ")" +
-            "translate(" + (-cx) + "," + (-cy) + ")");
-
-        // this.stateGroups.transition(self.getUpdateTransition)
-        //   .attr("transform", "translate(" + translate + ") scale(" + scale + ")");
-
-        // this.countyGroups.transition(self.getUpdateTransition)
-        //   .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
-
-        // this.countyCentroidGroups.transition(self.getUpdateTransition)
-        //   .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
-
-        // set current state to zoomed state
-        this.currentlyZoomed = true;
-        this.currentState = zoomedState;
-        // console.log(`Zoomed in on ${zoomedState}, so this.currentlyZoomed is ${this.currentlyZoomed}`)
-      }
+      // set current state to zoomed state
+      this.currentlyZoomed = true;
+      this.currentState = zoomedState;
+      
+      // console.log(`Zoomed in on ${zoomedState}, so this.currentlyZoomed is ${this.currentlyZoomed}`)
     },
     reset() {
       const self = this;
