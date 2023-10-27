@@ -459,59 +459,37 @@ p3_targets <- list(
                return(supply_colors)
              }),
 
-  # # CONUS county level bottled water percent (choropleth) and count (proportional symbol) facilities maps
-  # tar_target(p3_source_perc_count_bottled_water_facet_map_png,
-  #            generate_bw_conus_map(supply_summary_county_bw = p2_bw_inventory_sites_county_CONUS,
-  #                                  conus_sf = p3_conus_sf,
-  #                                  counties_sf = p3_counties_conus_sf,
-  #                                  reorder_source_category = c("Self-supply", "Combination", "Public supply"),
-  #                                  count_size_range = c(0.25, 8),
-  #                                  count_size_limit = max(p2_bw_inventory_sites_county_CONUS$site_count),
-  #                                  perc_alpha_range = c(0.1,1),
-  #                                  perc_alpha_limit = c(1, 100),
-  #                                  supply_colors = p3_supply_colors_new,
-  #                                  width = 16, height = 9,
-  #                                  bkgd_color = 'white',
-  #                                  text_color = 'black',
-  #                                  conus_outline_col = 'grey50',
-  #                                  counties_outline_col = "grey70",
-  #                                  font_legend = p3_font_legend,
-  #                                  map_count_legend = 'Count of facilities',
-  #                                  map_perc_legend = 'Percent of facilities',
-  #                                  mobile = FALSE,
-  #                                  outfile_template = '3_visualize/out/perc_count_bottled_water_map.png',
-  #                                  dpi = 300),
-  #            format = 'file'),
-  # # CONUS county level bottled water percent (choropleth) and count (proportional symbol) facilities maps - mobile maps
-  # tar_target(p3_source_perc_count_bottled_water_facet_map_mobile_png,
-  #            generate_bw_conus_map(supply_summary_county_bw = p2_bw_inventory_sites_county_CONUS,
-  #                                  conus_sf = p3_conus_sf,
-  #                                  counties_sf = p3_counties_conus_sf,
-  #                                  reorder_source_category = c("Self-supply", "Combination", "Public supply"),
-  #                                  count_size_range = c(0.8, 8),
-  #                                  count_size_limit = max(p2_bw_inventory_sites_county_CONUS$site_count),
-  #                                  perc_alpha_range = c(0.1,1),
-  #                                  perc_alpha_limit = c(1, 100),
-  #                                  supply_colors = p3_supply_colors_new,
-  #                                  width = 8, height = 6,
-  #                                  bkgd_color = 'white',
-  #                                  text_color = 'black',
-  #                                  conus_outline_col = 'grey50',
-  #                                  counties_outline_col = "grey80",
-  #                                  font_legend = p3_font_legend,
-  #                                  map_count_legend = 'Count of facilities',
-  #                                  map_perc_legend = 'Percent of facilities',
-  #                                  mobile = TRUE,
-  #                                  outfile_template = 'src/assets/images/map_bottled_water_',
-  #                                  dpi = 300),
-  #            format = 'file'),
+  # CONUS county level bottled water percent (choropleth) and count (proportional symbol) facilities maps - 16:9 version with all 6 source maps
+  tar_target(p3_source_perc_count_bottled_water_facet_map_png,
+             generate_bw_conus_map(supply_summary_county_bw = p2_bw_inventory_sites_county_CONUS,
+                                   conus_sf = p3_conus_sf,
+                                   counties_sf = p3_counties_conus_sf,
+                                   reorder_source_category = c("Self-supply", "Combination", "Public supply"),
+                                   count_size_range = c(0.8, 8),
+                                   count_size_limit = max(p2_bw_inventory_sites_county_CONUS$site_count),
+                                   perc_alpha_range = c(0.1,1),
+                                   perc_alpha_limit = c(1, 100),
+                                   supply_colors = p3_supply_colors_new,
+                                   width = 16, height = 9,
+                                   bkgd_color = 'white',
+                                   text_color = 'black',
+                                   conus_outline_col = 'grey50',
+                                   counties_outline_col = "grey80",
+                                   font_legend = p3_font_legend,
+                                   map_count_legend = 'Count of facilities',
+                                   map_perc_legend = 'Percent of facilities',
+                                   outfile_template = '3_visualize/out/perc_count_bottled_water_map.png',
+                                   dpi = 300),
+             format = 'file'),
 
   # Create list of county level bottled water facilities by source category
   tar_target(p3_county_bw_list,
              county_bw_list(supply_summary_county_bw = p2_bw_inventory_sites_county_CONUS,
                             counties_sf = p3_counties_conus_sf,
-                            reorder_source_category = c("Self-supply", "Combination", "Public supply"))
-  ),
+                            reorder_source_category = p3_source_category_list),
+             pattern = map(p3_source_category_list),
+             iteration = 'list'),
+
   # CONUS county level bottled water count (proportional symbol) facilities basemaps maps list
   tar_target(p3_source_count_bottled_water_basemap_list,
              generate_bw_conus_count_basemap(conus_sf = p3_conus_sf,
@@ -544,19 +522,18 @@ p3_targets <- list(
              pattern = map(p3_county_bw_list),
              iteration = 'list'),
 
-  # Drop undetermined for bw conus maps
-  tar_target(p3_supply_colors_reduce,
-             p3_supply_colors_new[c("Self-supply", "Combination", "Public supply")]
-             ),
   # Create source category list to `map` by
   tar_target(p3_source_category_list,
-             c("Self-supply", "Combination", "Public supply") |> as.list()
+             list("Self-supply", "Combination", "Public supply")
              ),
-
+  # Drop undetermined for bw conus maps
+  tar_target(p3_supply_colors_reduce,
+             p3_supply_colors_new[unlist(p3_source_category_list)]
+  ),
   # Count bottled water facilities legend for source categories
   tar_target(p3_source_bw_count_legend_list,
              generate_count_leg(supply_colors = p3_supply_colors_reduce,
-                                reorder_source_category = p3_source_category_list,
+                                source_category = p3_source_category_list,
                                 map_count_legend = 'Count of facilities',
                                 count_size_range = c(0.8, 8),
                                 count_size_limit = max(p2_bw_inventory_sites_county_CONUS$site_count),
@@ -567,7 +544,7 @@ p3_targets <- list(
   # Percent bottled water facilities legend for source categories
   tar_target(p3_source_bw_perc_legend_list,
              generate_perc_leg(supply_colors = p3_supply_colors_reduce,
-                               reorder_source_category = p3_source_category_list,
+                               source_category = p3_source_category_list,
                                map_perc_legend = 'Percent of facilities',
                                perc_alpha_range = c(0.1,1),
                                perc_alpha_limit = c(1, 100),
@@ -576,12 +553,12 @@ p3_targets <- list(
              iteration = 'list'),
 
   # Stylized CONUS county level bottled water maps with legends
-  tar_target(p3_source_perc_count_bottled_water_map_png,
+  tar_target(p3_source_perc_count_bottled_water_map_pngs,
              style_bw_conus_map(count_map = p3_source_count_bottled_water_basemap_list,
                                 perc_map = p3_source_perc_bottled_water_basemap_list,
                                 count_leg = p3_source_bw_count_legend_list,
                                 perc_leg = p3_source_bw_perc_legend_list,
-                                reorder_source_category = p3_source_category_list,
+                                source_category = p3_source_category_list,
                                 width = 8, height = 6,
                                 bkgd_color = 'white',
                                 text_color = 'black',
