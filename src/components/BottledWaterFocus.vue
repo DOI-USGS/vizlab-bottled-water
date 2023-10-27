@@ -120,7 +120,7 @@
         <img
           class="infographic-bw"
           src="../assets/images/bottled_water_use_infographic_top.png"
-          alt="Infographic explaining that most beverage-bottling facilities with available water use data are bottled water facilities. A bar chart shows the percentage of facilities with available water use data that are bottled water facilities (blue) and other facilities (gray). Text at the top reads, “Of facilities with available water use data, 61% are bottled water facilities.” The blue bar has an annotation that identifies that 151 bottled water facilities have available water use data."
+          alt="Infographic explaining that most beverage-bottling facilities with available water use data are bottled water facilities. A bar chart shows the percentage of facilities with available water use data that are bottled water facilities (blue) and other facilities (gray). Of facilities with available water use data, 61% (151 facilities) are bottled water facilities."
           v-if="mobileView"
         >
         <img
