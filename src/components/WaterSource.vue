@@ -118,7 +118,7 @@
     grid-template-areas:
       "public-supply self-supply";
     justify-content: center;
-    margin: 3rem auto 3rem auto;
+    margin: 4rem auto 4rem auto;
     max-width: 1400px;
     @media screen and (max-width: 600px) {
       grid-template-columns: 1fr;

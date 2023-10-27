@@ -2,16 +2,22 @@
   <section id="oconus_map">
     <div id="grid-container-interactive">
       <div id="title">
-        <h3>
+        <h3 class="grid-title">
           Counts of bottling facilities in <span id="state-dropdown-container" /> by county
         </h3>
       </div>
       <div id="text">
-        <div class="text-container">
-          <p class="viz-comment" v-if = "!mobileView">
+        <div class="text-container" v-if = "!mobileView">
+          <p class="viz-comment">
             Click on the dropdown menu, bar chart, or map to explore!
           </p>
-          <p class="viz-comment" v-if = "mobileView">
+          <br>
+          <p class="viz-comment" v-if="currentlyZoomed">
+            Click on the zoomed map to return to the national view
+          </p>
+        </div>  
+        <div class="text-container" v-if = "mobileView">
+          <p class="viz-comment">
             Use the dropdown menu or tap on the bar chart to explore!
           </p>
         </div>
@@ -337,7 +343,7 @@ export default {
         width: map_width,
         height: map_width * 0.75,
         margin: {
-          top: this.mobileView ? 5 : 20,
+          top: 5,
           right: 5,
           bottom: 5,
           left: 5
@@ -738,52 +744,53 @@ export default {
           .style("fill", d => d.WB_TYPE === this.currentType ? this.focalColor : this.defaultColor) // colorScale(colorAccessor(d)))
           .attr("class", d => 'bar ' + identifierAccessor(d))
 
-      barRects
+      rectGroups
         .on("click", (event, d) => {
           this.currentType = colorAccessor(d)
           let currentIdentifier = this.currentType.replace(' ', '-')
           self.drawCountyPoints(state, this.currentScale, this.currentType)
 
           this.d3.selectAll('.bar')
-            .style("opacity", 0.5)
-            .style("fill", this.defaultColor)
-
-          this.d3.selectAll('#rect-' + currentIdentifier)
-            .style("opacity", 1)
-            .style("fill", this.focalColor)
-        })
-        .on("mouseover", (event, d) => {
-          this.currentType = colorAccessor(d)
-          let currentIdentifier = this.currentType.replace(' ', '-')
-          self.drawCountyPoints(state, this.currentScale, this.currentType)
-
-          this.d3.selectAll('.bar')
             .transition(self.getUpdateTransition())
-            .style("opacity", 0.5)
             .style("fill", this.defaultColor)
 
           this.d3.selectAll('#rect-' + currentIdentifier)
             .transition(self.getUpdateTransition())
-            .style("opacity", 1)
             .style("fill", this.focalColor)
         })
+        // .on("mouseover", (event, d) => {
+        //   this.currentType = colorAccessor(d)
+        //   let currentIdentifier = this.currentType.replace(' ', '-')
+        //   self.drawCountyPoints(state, this.currentScale, this.currentType)
 
-      self.chartBounds.selectAll(".rects")
-        .on("mouseleave", (event, d) => {
-          this.currentType = this.defaultType
-          let currentIdentifier = this.currentType.replace(' ', '-')
-          self.drawCountyPoints(state, this.currentScale, this.currentType)
+        //   this.d3.selectAll('.bar')
+        //     .transition(self.getUpdateTransition())
+        //     .style("opacity", 0.5)
+        //     .style("fill", this.defaultColor)
 
-          this.d3.selectAll('.bar')
-            .transition(self.getUpdateTransition())
-            .style("opacity", 1)
-            .style("fill", this.defaultColor)
+        //   this.d3.selectAll('#rect-' + currentIdentifier)
+        //     .transition(self.getUpdateTransition())
+        //     .style("opacity", 1)
+        //     .style("fill", this.focalColor)
+        // })
 
-          this.d3.selectAll('#rect-' + currentIdentifier)
-            .transition(self.getUpdateTransition())
-            .style("opacity", 1)
-            .style("fill", this.focalColor)
-        })
+      // // When mouse leaves chart, change back to default type
+      // self.chartBounds.selectAll(".rects")
+      //   .on("mouseleave", (event, d) => {
+      //     this.currentType = this.defaultType
+      //     let currentIdentifier = this.currentType.replace(' ', '-')
+      //     self.drawCountyPoints(state, this.currentScale, this.currentType)
+
+      //     this.d3.selectAll('.bar')
+      //       .transition(self.getUpdateTransition())
+      //       .style("opacity", 1)
+      //       .style("fill", this.defaultColor)
+
+      //     this.d3.selectAll('#rect-' + currentIdentifier)
+      //       .transition(self.getUpdateTransition())
+      //       .style("opacity", 1)
+      //       .style("fill", this.focalColor)
+      //   })
 
       // Trigger with enter key - BUT - how get back to total?
       rectGroups.each(function() {
@@ -989,7 +996,9 @@ export default {
               default:
                 zoomPath = this.mapPath;
             }
-            self.zoomToState(d, zoomPath, 'click')
+            if (!(d.properties.NAME == 'Commonwealth of the Northern Mariana Islands') && !(d.properties.NAME == 'American Samoa')) {
+              self.zoomToState(d, zoomPath, 'click')
+            }
           }
         })
 
@@ -1189,10 +1198,13 @@ export default {
       }
 
       // create scales
-      let scaleFactor = scale === 1 ? 1 : 2/scale
+      const scaleNumerator = scale > 15 ? 3: 2
+      const scaleFactor = scale === 1 ? 1 : scaleNumerator/scale
+      const rangeMin = scale === 1 ? 1.25 : 2.5
+      const rangeMax = scale === 1 ? 15 : 18
 
       const sizeScale = this.d3.scaleLinear()
-        .range([0.8 * scaleFactor, 11 * scaleFactor])
+        .range([rangeMin * scaleFactor, rangeMax * scaleFactor])
         .domain([1, dataMax])
 
       // county centroids
@@ -1203,7 +1215,7 @@ export default {
       const oldCountyCentroidGroups = this.countyCentroidGroups.exit()
 
       oldCountyCentroidGroups.selectAll('path')
-        .transition(self.getExitTransition())
+        // .transition(self.getExitTransition())
         .attr("d", d => {
           switch(d.properties.STATE_NAME) {
             case 'Alaska':
@@ -1233,6 +1245,7 @@ export default {
         .attr("id", d => "county-point-group" + d.properties.GEOID)
 
       // append points
+      let centroidStrokeWidth = state === this.nationalViewName ? 0.5 : 1 * 1/scale
       newCountyCentroidGroups.append("path")
         .attr("id", d => "county-point-" + d.properties.GEOID)
         // Instantiate w/ 0 radius
@@ -1257,6 +1270,8 @@ export default {
           }
         })
         .style("fill", this.focalColor)
+        .style("stroke", "#ffffff")
+        .style("stroke-width", centroidStrokeWidth)
 
       // update rectGroups to include new points
       this.countyCentroidGroups = newCountyCentroidGroups.merge(this.countyCentroidGroups)
@@ -1288,6 +1303,8 @@ export default {
             }
           })
           .style("fill", this.focalColor)
+          .style("stroke", "#ffffff")
+          .style("stroke-width", centroidStrokeWidth)
 
 
       // // Add county mouseover if at state level
@@ -1383,122 +1400,43 @@ export default {
       this.d3.select("#map-inset-svg")
         .classed("hide", true)
 
-      // If not already zoomed in
-      if (!this.currentlyZoomed) {
-        // console.log(`this.currentlyZoomed is ${this.currentlyZoomed} and planned zoom action is ${zoomAction}, so going to zoom in from full view`)
+      // Compute zoom and scale parameters
+      const [[x0, y0], [x1, y1]] = path.bounds(d);
+      const cx = (x0 + x1) / 2;
+      const cy = (y0 + y1) / 2;
+      const stateDims = {
+        width: 2 * this.d3.max([ x1 - cx, cx - x0]),
+        height: 2 * this.d3.max([ y1 - cy, cy - y0])
+      };
+      const zoom_scale = 0.92 * this.d3.min([
+        this.mapDimensions.height/stateDims.height,
+        this.mapDimensions.width/stateDims.width]);
+      const translate = [this.mapDimensions.width / 2 - zoom_scale * cx, this.mapDimensions.height / 2 - zoom_scale * cy]
 
-        // const [[x0, y0], [x1, y1]] = this.mapPath.bounds(d);
-        // event.stopPropagation();
+      // set global scale variable
+      this.currentScale = zoom_scale;
 
-        // function zoomed(event) {
-        //   console.log("called zoomed")
-        //   const {transform} = event;
-        //   console.log(transform)
-        //   self.mapBounds.attr("transform", transform);
-        //   self.mapBounds.attr("stroke-width", 1 / transform.k);
-        //   console.log("transformed mapBounds")
-        // }
+      // Draw state, county, points, and bar chart for state
+      self.drawCountyPoints(zoomedState, this.currentScale, this.currentType)
+      self.drawCounties(zoomedState, this.currentScale)
+      self.drawMap(zoomedState, this.currentScale)
+      self.drawHistogram(zoomedState)
 
-        // const zoom = this.d3.zoom()
-        //   // .on('zoom', (event) => {
-        //   //   this.mapBounds.attr("transform", event.transform);
-        //   // })
-        //   .scaleExtent([1, 40])
-        //   .on("zoom", zoomed);
+      // Zoom to state by transitioning map groups
+      this.stateGroups.transition(self.getUpdateTransition)
+        .attr("transform", "translate(" + translate + ") scale(" + zoom_scale + ")");
 
-        // this.wrapper.transition(self.getUpdateTransition()).call(
-        //   zoom.transform,
-        //   self.d3.zoomIdentity
-        //     .translate(this.mapDimensions.width / 2, this.mapDimensions.height / 2)
-        //     .scale(Math.min(8, 0.9 / Math.max((x1 - x0) / this.mapDimensions.width, (y1 - y0) / this.mapDimensions.height)))
-        //     .translate(-(x0 + x1) / 2, -(y0 + y1) / 2),
-        //   this.d3.pointer(event, this.wrapper.node())
-        // );
+      this.countyGroups.transition(self.getUpdateTransition)
+        .attr("transform", "translate(" + translate + ") scale(" + zoom_scale + ")");
+      
+      this.countyCentroidGroups.transition(self.getUpdateTransition)
+        .attr("transform", "translate(" + translate + ") scale(" + zoom_scale + ")");
 
-        const bounds = path.bounds(d),
-            dx = bounds[1][0] - bounds[0][0],
-            dy = bounds[1][1] - bounds[0][1],
-            x = (bounds[0][0] + bounds[1][0]) / 2,
-            y = (bounds[0][1] + bounds[1][1]) / 2,
-            scale = .9 / Math.max(dx / this.mapDimensions.width, dy / this.mapDimensions.height),
-            translate = [this.mapDimensions.width / 2 - scale * x, this.mapDimensions.height / 2 - scale * y];
-
-        // set global scale variable
-        this.currentScale = scale;
-
-        self.drawCountyPoints(zoomedState, this.currentScale, this.currentType)
-        self.drawCounties(zoomedState, this.currentScale)
-        self.drawMap(zoomedState, this.currentScale)
-        self.drawHistogram(zoomedState)
-
-        // Transition map groups
-        this.stateGroups.transition(self.getUpdateTransition)
-          .attr("transform", "translate(" + translate + ") scale(" + scale + ")");
-
-        this.countyGroups.transition(self.getUpdateTransition)
-          .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
-
-        this.countyCentroidGroups.transition(self.getUpdateTransition)
-          .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
-
-        // set current state to zoomed state
-        this.currentlyZoomed = true;
-        this.currentState = zoomedState;
-        // console.log(`Zoomed in on ${zoomedState}, so this.currentlyZoomed is ${this.currentlyZoomed}`)
-
-      } else {
-        // If already zoomed in,
-        // console.log(`this.currentlyZoomed is ${this.currentlyZoomed} and planned zoom action is ${zoomAction}, so going to zoom out and then in to state`)
-
-        // NEED TO REVAMP - THIS IS MESSY
-
-        // First draw whole map AND zoom out to whole map
-        self.drawCountyPoints(this.nationalViewName, 1, this.currentType)
-        self.drawCounties(this.nationalViewName, 1)
-        self.drawMap(this.nationalViewName, 1)
-
-        this.stateGroups
-          .attr("transform", "");
-
-        this.countyGroups
-          .attr("transform", "");
-
-        this.countyCentroidGroups
-          .attr("transform", "");
-
-        // Then zoom in to state and draw state
-        const bounds = path.bounds(d),
-          dx = bounds[1][0] - bounds[0][0],
-          dy = bounds[1][1] - bounds[0][1],
-          x = (bounds[0][0] + bounds[1][0]) / 2,
-          y = (bounds[0][1] + bounds[1][1]) / 2,
-          scale = .9 / Math.max(dx / this.mapDimensions.width, dy / this.mapDimensions.height),
-          translate = [this.mapDimensions.width / 2 - scale * x, this.mapDimensions.height / 2 - scale * y];
-
-        // set global scale variable
-        this.currentScale = scale;
-
-        // redraw map and histogram for state
-        self.drawCountyPoints(zoomedState, this.currentScale, this.currentType)
-        self.drawCounties(zoomedState, this.currentScale)
-        self.drawMap(zoomedState, this.currentScale)
-        self.drawHistogram(zoomedState)
-
-        // Transition map groups
-        this.stateGroups.transition(self.getUpdateTransition)
-          .attr("transform", "translate(" + translate + ") scale(" + scale + ")");
-
-        this.countyGroups.transition(self.getUpdateTransition)
-          .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
-
-        this.countyCentroidGroups.transition(self.getUpdateTransition)
-          .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
-
-        // set current state to zoomed state
-        this.currentlyZoomed = true;
-        this.currentState = zoomedState;
-        // console.log(`Zoomed in on ${zoomedState}, so this.currentlyZoomed is ${this.currentlyZoomed}`)
-      }
+      // set current state to zoomed state
+      this.currentlyZoomed = true;
+      this.currentState = zoomedState;
+      
+      // console.log(`Zoomed in on ${zoomedState}, so this.currentlyZoomed is ${this.currentlyZoomed}`)
     },
     reset() {
       const self = this;
@@ -1536,10 +1474,6 @@ export default {
   .bar {
     stroke: white;
     stroke-width: 0;
-  }
-  .county_centroid {
-    stroke: white;
-    stroke-width: 0.3;
   }
   .axis-title {
     fill: #000000;
@@ -1593,6 +1527,16 @@ export default {
   }
 </style>
 <style scoped lang="scss">
+  .grid-title {
+    @media screen and (max-height: 770px) {
+      padding-top: 0rem;
+      padding-bottom: 0rem;
+    }
+    @media screen and (max-width: 600px) {
+      padding-top: 0rem;
+      padding-bottom: 0rem;
+    }
+  }
   #grid-container-interactive {
     display: grid;
     grid-template-columns: 49% 49%;

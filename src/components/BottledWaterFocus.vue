@@ -235,6 +235,10 @@
   }
   #img-bw-use-beeswarm {
     grid-area: bw-use-source;
+    margin: 4rem 0rem 4rem 0rem;
+    @media screen and (max-width: 600px) {
+      margin: 3rem 0rem 3rem 0rem;
+    }
   }
   .beeswarm {
     width: 90%;
@@ -254,7 +258,7 @@
       "count-public perc-public";
     justify-content: center;
     align-content: center;
-    margin: 1rem auto 2rem auto;
+    margin: 1rem auto 4rem auto;
     max-width: 1400px;
     @media screen and (max-width: 600px) {
       grid-template-columns: 1fr;

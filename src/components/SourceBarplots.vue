@@ -164,7 +164,7 @@ export default {
         margin: {
           top: 15,
           right: this.mobileView ? 0 : 5,
-          bottom: 60,
+          bottom: this.mobileView ? 50 : 30,
           left: this.mobileView ? 30 : 85
         }
       }
@@ -789,8 +789,10 @@ export default {
     grid-area: legend;
     width: 90%;
     justify-self: center;
+    padding-top: 2rem;
     @media screen and (max-width: 600px) {
       width: 100%;
+      padding-top: 1rem;
     }
   }
   #barplot-container {
@@ -798,6 +800,9 @@ export default {
     width: 90%;
     justify-self: center;
     max-height: 55vh;
+    @media screen and (max-height: 770px) {
+      max-height: 70vh;
+    }
     @media screen and (max-width: 600px) {
       width: 100%;
     }
