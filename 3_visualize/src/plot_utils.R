@@ -1627,12 +1627,7 @@ generate_bw_conus_count_basemap <- function(supply_summary_county_bw, counties_s
                                       label.position = "bottom")) +
           theme_void() +
           theme(
-            legend.position = "none",
-            plot.title = element_text(hjust = 0.5, size = 14, margin = margin(t = 1, b = 40)),
-            plot.margin = unit(c(1,1,1,1), "cm"),
-            strip.text = element_text(margin = margin(b = 10), family = font_legend, size = 16),
-            strip.background = element_blank(),
-            panel.spacing = unit(2, "lines")
+            legend.position = "none"
           )
 
   return(count_bw_basemap_list)
@@ -1678,12 +1673,7 @@ generate_bw_conus_perc_basemap <- function(supply_summary_county_bw, counties_sf
           scale_fill_manual(name = 'Water source',
                             values = supply_colors) +
           theme(
-            legend.position = "none",
-            plot.title = element_text(hjust = 0.5, size = 14, margin = margin(t = 1, b = 40)),
-            plot.margin = unit(c(1,1,1,1), "cm"),
-            strip.text = element_blank(),
-            strip.background = element_blank(),
-            panel.spacing = unit(2, "lines")
+            legend.position = "none"
           )
 
   return(percent_bw_basemap_list)
