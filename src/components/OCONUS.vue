@@ -251,7 +251,7 @@ export default {
         .append("select")
         .attr("id", "state-dropdown")
         .attr("class", "dropdown")
-        .attr("contenteditable", "true")
+        .attr("tabindex", 0)
         .on("change", function() {
           // Update dropdown text + width
           self.updateDropdown(this.options[this.selectedIndex].text)
@@ -328,7 +328,7 @@ export default {
       // Update dropdown width based on width of tmp dropdown
       const tmpDropdownWidth = tmpSelect.offsetWidth / 10 // Divide by 10 to get in rem instead of px
       const dropdownElement = document.getElementById("state-dropdown");
-      const bufferForBorder = 1 // in rem, same as border-right in .dropdown class
+      const bufferForBorder = 2 // in rem, same as border-right in .dropdown class PLUS room for arrow background image
       dropdownElement.style.width = tmpDropdownWidth + bufferForBorder + "rem";
 
       // Remove tmp dropdown
@@ -362,8 +362,6 @@ export default {
 
       // assign role for accessibility
       this.wrapper.attr("role", "figure")
-        .attr("tabindex", 0)
-        .append("title")
 
       this.mapBounds = this.wrapper.append("g")
         .style("transform", `translate(${
@@ -500,21 +498,12 @@ export default {
 
       this.mapBounds.append("g")
         .attr("class", "counties")
-        .attr("role", "list")
-        .attr("tabindex", 0)
-        .attr("aria-label", "county polygons")
 
       this.mapBounds.append("g")
         .attr("class", "county_centroids")
-        .attr("role", "list")
-        // .attr("tabindex", 0)
-        .attr("aria-label", "county centroids")
 
       this.mapBounds.append("g")
         .attr("class", "states")
-        .attr("role", "list")
-        .attr("tabindex", 0)
-        .attr("aria-label", "state polygons")
 
     },
     initChart() {
@@ -547,7 +536,6 @@ export default {
       // assign role for accessibility
       chartSVG.attr("role", "figure")
         .attr("tabindex", 0)
-        .attr("contenteditable", "true")
         .append("title")
 
       this.chartBounds = chartSVG.append("g")
@@ -562,7 +550,6 @@ export default {
           .attr("class", "rects")
           .attr("role", "list")
           .attr("tabindex", 0)
-          .attr("contenteditable", "true")
           .attr("aria-label", "bar chart bars")
 
       // X axis
@@ -721,7 +708,6 @@ export default {
         .attr("class", d => "rect " + state)
         .attr("id", d => 'rect-group-' + identifierAccessor(d))
         .attr("tabindex", "0")
-        .attr("contenteditable", "true")
         .attr("role", "listitem")
         .attr("aria-label", d => `There are ${
           yAccessor(d)
@@ -941,9 +927,6 @@ export default {
       const newStateGroups = this.stateGroups.enter().append("g")
         .attr("class", "state")
         .attr("id", d => 'state-group-' + d.properties.GEOID)
-        .attr("tabindex", "0")
-        .attr("role", "listitem")
-        .attr("aria-label", d => d.properties.NAME)
 
       let stateStrokeWidth = state === this.nationalViewName ? 0.5 : 1 * 1/scale
       let stateStrokeColor = state === this.nationalViewName ? "#949494" : "#757575"
@@ -1126,9 +1109,6 @@ export default {
       const newCountyGroups = this.countyGroups.enter().append("g")
           .attr("class", "county")
           .attr("id", d => "county-group-" + d.properties.GEOID)
-          .attr("tabindex", "0")
-          .attr("role", "listitem")
-          .attr("aria-label", d => d.properties.NAMELSAD + ', ' + d.properties.STATE_NAME)
 
       let countyStrokeWidth = state === this.nationalViewName ? 0.1 : 0.5 * 1/scale
       let countyStrokeColor = state === this.nationalViewName ? "#E3E3E3" : "#939393"
@@ -1263,13 +1243,6 @@ export default {
       const newCountyCentroidGroups = this.countyCentroidGroups.enter().append("g")
         .attr("class", "county_centroid")
         .attr("id", d => "county-point-group" + d.properties.GEOID)
-        .attr("tabindex", "0")
-        .attr("role", "listitem")
-        .attr("aria-label", d => `There are ${
-          sizeAccessor(d)
-        } facilities in ${
-          d.properties.NAMELSAD
-        }`)
 
       // append points
       let centroidStrokeWidth = state === this.nationalViewName ? 0.5 : 1 * 1/scale
@@ -1519,8 +1492,14 @@ export default {
     width: 50px;
   }
   .dropdown {
-    appearance: menulist; // adds arrow to dropdown
-    -webkit-appearance: menulist; // adds arrow to dropdown
+    appearance: none; // removes default dropdown styling
+    -moz-appearance: none; // removes default dropdown styling
+    -webkit-appearance: none; // removes default dropdown styling
+    background-image: url('../assets/images/arrow.png'); // Uses custom image for dropdown arrow
+    background-repeat: no-repeat, repeat;
+    background-position: right 0em top 60%;
+    background-size: .3em auto;
+    background-origin: content-box;
     border-right: 1rem solid transparent; // Add space to right of dropdown arrow
     transition: width 2s, transform 1s;
     background-color: white;

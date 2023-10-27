@@ -115,8 +115,14 @@ export default {
   *:focus {
     outline: none;
   }
-  [contenteditable="true"]:focus {
+  [tabindex="0"]:focus {
+      outline: none;
+  }
+  [tabindex="0"]:focus-visible {
       outline: auto;
+  }
+  a:focus {
+    font-weight: 700;
   }
   img {
     max-width: 100%;
