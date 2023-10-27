@@ -1714,11 +1714,11 @@ style_bw_conus_map <- function(count_map, perc_map, count_leg, perc_leg, reorder
   showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 700)
   showtext_auto(enable = TRUE)
 
-  count_map <-  pluck(count_map, 1)
-  perc_map <- pluck(perc_map, 1)
-  count_leg <- pluck(count_leg, 1)
-  perc_leg <- pluck(perc_leg, 1)
-  reorder_source_category <- pluck(reorder_source_category, 1)
+  count_map <-  pluck(count_map)
+  perc_map <- pluck(perc_map)
+  count_leg <- pluck(count_leg)
+  perc_leg <- pluck(perc_leg)
+  reorder_source_category <- pluck(reorder_source_category)
 
   # cowplot
   plot_margin <- 0.005
