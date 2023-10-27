@@ -12,8 +12,9 @@
             <a
               :href="reference.link"
               target="_blank"
-            ><span v-html="reference.title" /></a>, <span v-html="reference.type" />, <span v-html="reference.ref" />.
+            ><span v-html="reference.title" /></a><span v-if="reference.type != ''">, </span><span v-html="reference.type" /><span v-if="reference.ref != ''">, </span><span v-html="reference.ref" />.
           </p>
+          <br>
         </div>
       </div>
     </div>
