@@ -3233,7 +3233,7 @@ generate_source_summary_bar_chart <- function(supply_summary_state, supply_color
   states <- unique(bottled_water_summary$STATE_ABBV)
 
   supply_ranking <- bottled_water_summary %>%
-    filter(source_category == 'public supply') %>%
+    filter(source_category == 'Public supply') %>%
     arrange(desc(percent)) %>%
     pull(STATE_ABBV)
 
