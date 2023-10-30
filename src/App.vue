@@ -196,6 +196,9 @@
       padding: 0.5rem;
     }  
   }
+  .title-text {
+    width: 100%;  
+  }
   .flex-container {
     display: flex;
     flex-wrap: wrap;
