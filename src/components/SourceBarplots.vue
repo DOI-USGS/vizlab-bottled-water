@@ -438,6 +438,7 @@ export default {
         .attr("id", "legend-title")
         .attr("y", legendRectSize - intraItemSpacing)
         .attr("alignment-baseline", "middle")
+        .attr("dominant-baseline", "middle") // required for Firefox
 
       // Append group for each legend entry
       const legendGroup = legendBounds.selectAll(".legend-item")
@@ -459,6 +460,7 @@ export default {
         .attr("y", legendRectSize - intraItemSpacing)
         .attr("text-anchor", "start") // left-align text
         .attr("alignment-baseline", "middle") // center text
+        .attr("dominant-baseline", "middle") // required for Firefox
         .text(d => d);
 
       // Position legend groups
