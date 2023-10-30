@@ -23,10 +23,6 @@
         <p v-html="inventoryText.paragraph3" />
         <br>
         <p v-html="inventoryText.paragraph4" />
-        <br>
-        <li v-html="inventoryText.bullet1" />
-        <li v-html="inventoryText.bullet2" />
-        <li v-html="inventoryText.bullet3" />
       </div>
     </div>
   </section>
