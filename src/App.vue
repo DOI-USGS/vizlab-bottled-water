@@ -110,36 +110,22 @@
     }
   }
   h1{
-    font-size: 7rem;
+    font-size: 9rem;
     font-weight: 700;
     font-family: $AveriaSansLibre;
-    line-height: 13rem;
-    text-align: left;
+    line-height: 16rem;
     color: $textcolor;
-    // text-shadow: 0.1rem 0.1rem 10rem rgba(0,0,0,.8);
     @media screen and (max-height: 770px) {
-      font-size: 5.5rem;
-      line-height: 10rem;
+      font-size: 7.5rem;
+      line-height: 12rem;
     }
     @media screen and (max-width: 600px) {
-      font-size: 4rem;
-      line-height: 7rem;
+      font-size: 4.5rem;
+      line-height: 8.5rem;
     }
   }
   h2{
-    font-weight: 700;
-    text-align: left;
-    font-family: $SourceSans;
-    font-size: 5rem;
-    color: $textcolor;
-    margin-top: 0.5rem;
-    line-height: 1.2;
-    @media screen and (max-width: 600px) {
-      font-size: 3rem;
-    }
-  }
-  h3{
-    font-size: 3rem;
+    font-size: 3.25rem;
     padding-top: 4rem;
     padding-bottom: 1.5rem;
     font-family: $SourceSans;
@@ -149,7 +135,21 @@
       font-size: 3rem;
     }
     @media screen and (max-width: 600px) {
-        font-size: 2rem;
+        font-size: 2.5rem;
+    } 
+  }
+  h3{
+    font-size: 2rem;
+    padding-top: 4rem;
+    padding-bottom: 1.5rem;
+    font-family: $SourceSans;
+    font-weight: 700;
+    color: $textcolor;
+    @media screen and (max-height: 770px) {
+      font-size: 2rem;
+    }
+    @media screen and (max-width: 600px) {
+        font-size: 1.5rem;
     }  
   }
   h4{
@@ -175,12 +175,20 @@
   input[type=button] {
     font-family: $SourceSans;
   }
-
+  figcaption {
+    font-style: italic;
+    font-size: 1.6rem;
+    margin-bottom: 2rem;
+    @media screen and (max-width: 600px) {
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+    }
+  }
   // General Layout  
   .text-container {
     min-width: 30vw;
-    max-width: 90vw;
-    // margin: 0 auto;
+    max-width: 70rem;
+    margin: 0 auto 0 auto;
     padding: 1rem 1rem 1rem 0rem;   
     left:0;
     @media screen and (max-width: 600px) {
