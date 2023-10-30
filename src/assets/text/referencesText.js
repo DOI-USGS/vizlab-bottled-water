@@ -24,6 +24,18 @@ export default {
         type: "U.S. Geological Survey data release",
         ref: "https://doi.org/10.5066/P90Z125H"
         
+      },
+      {
+        reference:
+          "USGS, 2019",
+        num: "3",
+        authors: "U.S. Geological Survey, Water Resources Mission Area",
+        year: "2019",
+        title: "Water-Use Terminology",
+        link: "https://www.usgs.gov/mission-areas/water-resources/science/water-use-terminology",
+        type: "",
+        ref: ""
+        
       }
     ],
   },
