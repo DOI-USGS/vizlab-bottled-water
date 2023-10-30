@@ -109,13 +109,13 @@
     }
   }
   h1{
-    font-size: 9rem;
+    font-size: 8rem;
     font-weight: 700;
     font-family: $AveriaSansLibre;
-    line-height: 16rem;
+    line-height: 15rem;
     color: $textcolor;
     @media screen and (max-height: 770px) {
-      font-size: 7.5rem;
+      font-size: 7rem;
       line-height: 12rem;
     }
     @media screen and (max-width: 600px) {

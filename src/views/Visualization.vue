@@ -23,10 +23,6 @@
           v-if="!mobileView"
           class="panel glass-under"
         />
-        <div
-          v-if="!mobileView"
-          class="panel glass-under"
-        />
         <div class="panel end end-shadow glass-under" />
         <div class="panel neck end-shadow glass-under" />
         <div class="panel cap end-shadow glass-under" />
@@ -43,10 +39,6 @@
         <div class="panel glass-over" />
         <div class="panel glass-over" />
         <div class="panel glass-over" />
-        <div
-          v-if="!mobileView"
-          class="panel glass-over"
-        />
         <div
           v-if="!mobileView"
           class="panel glass-over"
@@ -163,7 +155,7 @@ export default {
     z-index: 0;
   }
   .later-words {
-    margin-left: 7rem;
+    margin-left: 5.25rem;
     @media screen and (max-width: 790px) {
       margin-left: 0rem;
     }
@@ -185,8 +177,8 @@ export default {
     }
   }
   .panel {
-    width: 3.75rem;
-    height: 18rem;
+    width: 3.5rem;
+    height: 17rem;
     @media screen and (max-height: 770px) {
       width: 3.25rem;
       height: 14rem;
@@ -207,7 +199,7 @@ export default {
     -webkit-backdrop-filter: blur(0.08rem);
   }
   .start {
-    width: 9rem;
+    width: 8.5rem;
     border-top-left-radius: 2.5rem;
     border-bottom-left-radius: 2.5rem;
     @media screen and (max-height: 770px) {
@@ -223,7 +215,7 @@ export default {
     box-shadow: 0 4px 18px 8px rgba(147, 148, 150, 0.3);
   }
   .end {
-    width: 10rem;
+    width: 9.5rem;
     border-top-right-radius: 7rem;
     border-bottom-right-radius: 7rem;
     @media screen and (max-height: 770px) {
