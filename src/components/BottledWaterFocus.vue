@@ -3,9 +3,9 @@
     <div id="grid-container-bw">
       <div
         id="title"
-        class="text-container"
+        class="text-container title-text"
       >
-        <h3 v-html="bottledWaterFocusText.title" />
+        <h2 v-html="bottledWaterFocusText.title" />
       </div>
       <div
         id="text1"

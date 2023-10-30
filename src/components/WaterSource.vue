@@ -3,9 +3,9 @@
     <div id="grid-container-source">
       <div
         id="title"
-        class="text-container"
+        class="text-container title-text"
       >
-        <h3 v-html="sourceText.title" />
+        <h2 v-html="sourceText.title" />
       </div>
       <div
         id="text1"
