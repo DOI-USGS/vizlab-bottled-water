@@ -1,21 +1,21 @@
 <template>
-  <section id="references">       
-    <div class="text-content">
-      <h3>{{ text.title }}</h3>
-      <div class="usa-accordion usa-accordion--bordered">
-        <div
-          v-for="reference in text.references"
-          :key="reference.subTitle"
-        >
-          <p>
-            <span v-html="reference.num" />. <span v-html="reference.authors" />, <span v-html="reference.year" />, 
-            <a
-              :href="reference.link"
-              target="_blank"
-            ><span v-html="reference.title" /></a><span v-if="reference.type != ''">, </span><span v-html="reference.type" /><span v-if="reference.ref != ''">, </span><span v-html="reference.ref" />.
-          </p>
-          <br>
-        </div>
+  <section id="references">    
+    <div class="text-container title-text">
+      <h2>{{ text.title }}</h2>
+    </div>
+    <div class="text-container usa-accordion usa-accordion--bordered">
+      <div 
+        v-for="reference in text.references"
+        :key="reference.subTitle"
+      >
+        <p>
+          <span v-html="reference.num" />. <span v-html="reference.authors" />, <span v-html="reference.year" />, 
+          <a
+            :href="reference.link"
+            target="_blank"
+          ><span v-html="reference.title" /></a><span v-if="reference.type != ''">, </span><span v-html="reference.type" /><span v-if="reference.ref != ''">, </span><span v-html="reference.ref" />.
+        </p>
+        <br>
       </div>
     </div>
   </section>
@@ -62,6 +62,7 @@
   .usa-accordion {
     font-size: 2rem; // Override USWDS default sizing to match body font size
     line-height: 1.2; // Override USWDS default to match body css
+    margin: 0 auto 0 auto; // Override USWDS default to match body css
     @media screen and (max-width: 600px) {
       font-size: 1.8rem; // Override USWDS default sizing to match body font size
     }
@@ -94,13 +95,6 @@
   .target p{
     padding: 0;
     line-height: 1.5em; 
-  }
-  .text-content h2 {
-    color: $darkGrey;
-    font-weight: 600;
-    text-align: left;
-    margin-top: 5px;
-    line-height: 1.2;
   }
   /*Accordion title CSS*/
   h2.usa-accordion__heading {

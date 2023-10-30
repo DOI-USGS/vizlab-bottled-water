@@ -1,11 +1,13 @@
 <template>
   <section id="authorship">
+    <div class="text-container title-text">
+      <h2>Authors</h2>
+    </div>
     <div
       v-if="showAuthors"
       id="author-container"
-      class="text-content"
+      class="text-container"
     >
-      <h3>Authors</h3>
       <p>
         <span id="primary-author-statment">
           The {{ appTitle }} data visualization was made by the USGS VizLab in collaboration with the USGS Water Use program. Development was led by 
