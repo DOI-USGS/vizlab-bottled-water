@@ -9,11 +9,16 @@
         <p v-html="inventoryText.paragraph1" />
         <br>
         <p v-html="inventoryText.paragraph2" />
-        <img
-          :class="mobileView ? 'pictogram img-mobile' : 'pictogram image-float'"
-          src="../assets/images/bottled-water_consumption-pictogram_less-text_20231016.png"
-          alt="Pictogram showing 342 bottles of water with the text, “The average American drank 342 bottles of water in 2020.” Text below the pictogram reads, “Assuming standard, single-use bottles containing 16.9 oz (0.5 liter, or 0.132 gallons) of water. Bottled water consumption: https://bottledwater.org/bottled-water-consumption-shift/”"
-        >
+        <figure>
+          <img
+            class="pictogram"
+            src="../assets/images/bottled-water_consumption-pictogram_less-text_20231016.png"
+            alt="Pictogram showing 342 bottles of water with the text, “The average American drank 342 bottles of water in 2020.” Text below the pictogram reads, “Assuming standard, single-use bottles containing 16.9 oz (0.5 liter, or 0.132 gallons) of water. Bottled water consumption: https://bottledwater.org/bottled-water-consumption-shift/”"
+          >
+          <figcaption>
+            Assuming standard, single-use bottles containing 16.9 oz (0.5 liter, or 0.132 gallons) of water. Bottled water consumption: <a href="https://bottledwater.org/bottled-water-consumption-shift/" target="_blank">https://bottledwater.org/bottled-water-consumption-shift/</a>
+          </figcaption>
+        </figure>
         <br>
         <p v-html="inventoryText.paragraph3" />
         <br>
@@ -92,12 +97,10 @@ export default {
     justify-self: start;
   }
   .pictogram {      
-    width: 35vw;
-    max-width: 1000px;
-    margin: 3rem 0rem 3rem 4rem;
-  }
-  .pictogram.img-mobile {
     width: 98%;
-    margin: 2.5rem 0rem 2.5rem 0rem;
+    margin: 4rem 0rem 1.5rem 0rem;
+    @media screen and (max-width: 600px) {
+      margin: 2.5rem 0rem 1.5rem 0rem;
+    }
   }
 </style>
