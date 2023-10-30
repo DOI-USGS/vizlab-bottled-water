@@ -1,43 +1,43 @@
 <template>
     <section>
       <div id="grid-container-barplots">
-        <div id="intro-container" v-if="mobileView">
+        <div id="intro-container" class="text-container">
           <p>Explore where different facility types source water.</p>
         </div>
-        <div id="toggle-container">
-          <p v-if="!mobileView">Explore where different facility types source water. Showing the data summarized by</p>
+        <div id="toggle-container" class="text-container">
+          <p v-if="!mobileView">Showing the data summarized by</p>
           <p v-if="mobileView">Summarize the data by</p>
-        <div class="graph-buttons-switch">
-          <input
-            id="id_Count"
-            type="radio"
-            class="graph-buttons-switch-input"
-            name="CountPercent"
-            value="Count"
-            checked
-          >
-          <label
-            id="Count"
-            for="id_Count"
-            tabindex=0
-            class="graph-buttons-switch-label graph-buttons-switch-label-off"
-          >count</label>
-          <input
-            id="id_Percent"
-            type="radio"
-            class="graph-buttons-switch-input"
-            name="CountPercent"
-            value="Percent"
-          >
-          <label
-            id="Percent"
-            for="id_Percent"
-            tabindex=0
-            class="graph-buttons-switch-label graph-buttons-switch-label-on"
-          >percent</label>
-          <span class="graph-buttons-switch-selection" />
+          <div class="graph-buttons-switch">
+            <input
+              id="id_Count"
+              type="radio"
+              class="graph-buttons-switch-input"
+              name="CountPercent"
+              value="Count"
+              checked
+            >
+            <label
+              id="Count"
+              for="id_Count"
+              tabindex=0
+              class="graph-buttons-switch-label graph-buttons-switch-label-off"
+            >count</label>
+            <input
+              id="id_Percent"
+              type="radio"
+              class="graph-buttons-switch-input"
+              name="CountPercent"
+              value="Percent"
+            >
+            <label
+              id="Percent"
+              for="id_Percent"
+              tabindex=0
+              class="graph-buttons-switch-label graph-buttons-switch-label-on"
+            >percent</label>
+            <span class="graph-buttons-switch-selection" />
+          </div>
         </div>
-      </div>
       <div id="legend-container" />
       <div id="barplot-container" />
     </div>
@@ -608,7 +608,7 @@ export default {
             const chos = dragger.selectAll('input').filter(function(d, i) { return i == id; })
             chos.node().checked = true;
 
-            console.log(`Current side: ${chos.node().value}, Current side checked: ${chos.node().checked}, Percent checked: ${self.d3.select('#id_Percent').property('checked')}, Count checked: ${self.d3.select('#id_Count').property('checked')}`)
+            // console.log(`Current side: ${chos.node().value}, Current side checked: ${chos.node().checked}, Percent checked: ${self.d3.select('#id_Percent').property('checked')}, Count checked: ${self.d3.select('#id_Count').property('checked')}`)
             
             //remove styling
             dragger.select('.graph-buttons-switch-selection').attr('style','');
@@ -684,8 +684,9 @@ export default {
   #grid-container-barplots {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: max-content max-content max-content;
+    grid-template-rows: max-content max-content max-content max-content;
     grid-template-areas:
+      "intro"
       "toggle"
       "legend"
       "barplot";
@@ -708,10 +709,12 @@ export default {
   }
   #intro-container {
     grid-area: intro;
+    width: 100%;
   }
   #toggle-container {
     grid-area: toggle;
     display: flex;
+    width: 100%;
   }
   .graph-buttons-switch {
     display: flex;
