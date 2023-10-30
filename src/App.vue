@@ -77,7 +77,6 @@
   @import url('https://fonts.googleapis.com/css2?family=Gloria+Hallelujah&display=swap');
   $SourceSans: 'Source Sans Pro', sans-serif;
   $AveriaSansLibre: 'Averia Sans Libre';
-  $GloriaHallelujah: 'Gloria Hallelujah';
   $textcolor: rgb(21, 21, 21);
 
   $pale_blue: #F5FAFC;
@@ -241,7 +240,8 @@
     }
   }
   .viz-comment {
-    font-family: $GloriaHallelujah;
+    font-family: $SourceSans;
+    font-style: italic;
     font-size: 1.8rem;
     @media screen and (max-width: 600px) {
       font-size: 1.6rem;
