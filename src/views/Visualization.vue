@@ -1,6 +1,6 @@
 <template>
   <div id="visualization">
-    <header>
+    <header id="title-container">
       <div class="panel-wrap">
         <div class="panel start start-shadow glass-under" /> 
         <div class="panel glass-under" />        
@@ -19,13 +19,20 @@
           v-if="!mobileView"
           class="panel glass-under"
         />
+        <div
+          v-if="!mobileView"
+          class="panel glass-under"
+        />
+        <div
+          v-if="!mobileView"
+          class="panel glass-under"
+        />
         <div class="panel end end-shadow glass-under" />
         <div class="panel neck end-shadow glass-under" />
         <div class="panel cap end-shadow glass-under" />
+        
       </div>
-      <div class="text-container">
-        <h1><span class="first-words">Water bottling</span> across the U.S.</h1>
-      </div>
+      <h1 id="page-title"><span class="first-words">Water bottling</span><span class="later-words"> across the U.S.</span></h1>
       <div class="panel-wrap">
         <div class="panel start glass-over" /> 
         <div class="panel glass-over" />        
@@ -36,6 +43,14 @@
         <div class="panel glass-over" />
         <div class="panel glass-over" />
         <div class="panel glass-over" />
+        <div
+          v-if="!mobileView"
+          class="panel glass-over"
+        />
+        <div
+          v-if="!mobileView"
+          class="panel glass-over"
+        />
         <div
           v-if="!mobileView"
           class="panel glass-over"
@@ -100,7 +115,7 @@ export default {
   #visualization {
     width: 86vw;
     position: relative;
-    padding: 5rem 0rem 5rem 0rem;
+    padding: 6rem 0rem 5rem 0rem;
     margin: auto;
     max-width: 1600px;
     @media screen and (max-height: 770px) {
@@ -130,38 +145,55 @@ export default {
   .image-float {
     float: right;
   }
-  .first-words {
-    margin: 0rem 5.5rem 0rem 2.25rem;
-    color: #2184B5;
-    z-index: 0;
+  #title-container {
+    width: fit-content;
+    margin: auto;
+  }
+  #page-title {
+    margin: 0rem 0rem 0rem 2.25rem;
     @media screen and (max-height: 770px) {
-      margin: 0rem 5.25rem 0rem 1.75rem;
+      margin: 0rem 0rem 0rem 1.75rem;
     }
     @media screen and (max-width: 600px) {
-      width: 3.5rem;
-      height: 15rem;
+      margin: 0rem 0rem 0rem 1.5rem;
+    }
+  }
+  .first-words {
+    color: #2184B5;
+    z-index: 0;
+  }
+  .later-words {
+    margin-left: 7rem;
+    @media screen and (max-width: 790px) {
+      margin-left: 0rem;
+    }
+    @media screen and (max-height: 770px) {
+      margin-left: 6rem;
+    }
+    @media screen and (max-width: 600px) {
+      margin-left: 0rem;
     }
   }
   .panel-wrap {
     display: flex;
     justify-content: start;
     position: absolute;
-    top: 5rem; // same as top padding on #visualization
-    width: 100%;
+    top: 5.5rem; // same as top padding on #visualization -0.5rem
     @media screen and (max-width: 600px) {
-      top: 4rem; // same as top padding on #visualization
+      top: 3.5rem; // same as top padding on #visualization -0.5rem
+      margin-left: 0.25rem;
     }
   }
   .panel {
-    width: 3.5rem;
-    height: 15rem;
+    width: 3.75rem;
+    height: 18rem;
     @media screen and (max-height: 770px) {
-      width: 2.7rem;
-      height: 12rem;
+      width: 3.25rem;
+      height: 14rem;
     }
     @media screen and (max-width: 600px) {
-      width: 2.5rem;
-      height: 8.5rem;
+      width: 2.7rem;
+      height: 10rem;
     }
   }
   .glass-under {
@@ -175,14 +207,14 @@ export default {
     -webkit-backdrop-filter: blur(0.08rem);
   }
   .start {
-    width: 7rem;
+    width: 9rem;
     border-top-left-radius: 2.5rem;
     border-bottom-left-radius: 2.5rem;
     @media screen and (max-height: 770px) {
-      width: 6rem;
+      width: 7rem;
     }
     @media screen and (max-width: 600px) {
-      width: 5rem;
+      width: 5.1rem;
       border-top-left-radius: 2rem;
       border-bottom-left-radius: 2rem;
     }
@@ -191,18 +223,18 @@ export default {
     box-shadow: 0 4px 18px 8px rgba(147, 148, 150, 0.3);
   }
   .end {
-    width: 8rem;
-    border-top-right-radius: 5rem;
-    border-bottom-right-radius: 5rem;
+    width: 10rem;
+    border-top-right-radius: 7rem;
+    border-bottom-right-radius: 7rem;
     @media screen and (max-height: 770px) {
-      width: 7rem;
-      border-top-right-radius: 4.5rem;
-      border-bottom-right-radius: 4.5rem;
+      width: 7.5rem;
+      border-top-right-radius: 5.5rem;
+      border-bottom-right-radius: 5.5rem;
     }
     @media screen and (max-width: 600px) {
-      width: 5rem;
-      border-top-right-radius: 3rem;
-      border-bottom-right-radius: 3rem;
+      width: 5.1rem;
+      border-top-right-radius: 5rem;
+      border-bottom-right-radius: 5rem;
     }
   }
   .end-shadow {
@@ -210,10 +242,15 @@ export default {
   }
   .neck {
     width: 1rem;
-    height: 4.75rem;
+    height: 5rem;
     align-self: center;
     border-radius: 0rem;
     @media screen and (max-height: 770px) {
+      height: 4.5rem;
+      width: 0.75rem;
+    }
+    @media screen and (max-width: 600px) {
+      height: 3.5rem;
       width: 0.75rem;
     }
   }
@@ -224,7 +261,12 @@ export default {
     border-top-left-radius: 0rem;
     border-bottom-left-radius: 0rem;
     @media screen and (max-height: 770px) {
-      width: 2.5rem;
+      height: 5rem;
+      width: 2.25rem;
+    }
+    @media screen and (max-width: 600px) {
+      height: 4.25rem;
+      width: 2.25rem;
     }
   }
   .img-container {
