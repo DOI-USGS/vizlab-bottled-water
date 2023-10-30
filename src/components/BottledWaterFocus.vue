@@ -273,7 +273,7 @@
   }
   .beeswarm {
     width: 90%;
-    max-width: 1200px;
+    max-width: 1100px;
   }
   #grid-container-source-maps {
     grid-area: source-maps;
