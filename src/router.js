@@ -11,7 +11,7 @@ const routes = [
     },
     {
       path: "/index.html",
-      name: "VisualizationContent",
+      name: "Index",
       component: () => import("@/views/Visualization.vue"),
     },
     {
