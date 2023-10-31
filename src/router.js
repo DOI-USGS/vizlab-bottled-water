@@ -10,6 +10,11 @@ const routes = [
       component: () => import("@/views/Visualization.vue"),
     },
     {
+      path: "/index.html",
+      name: "VisualizationContent",
+      component: () => import("@/views/Visualization.vue"),
+    },
+    {
       path: "/404",
       name: "ErrorPage404",
       component: () => import("@/components/Error404.vue"),
