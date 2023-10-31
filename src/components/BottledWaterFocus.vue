@@ -112,22 +112,22 @@
         class="img-container"
       >
         <img
+          v-if="!mobileView"
           class="infographic-bw"
           src="../assets/images/bottled_water_use_infographic.png"
           alt="Infographic with two bar charts explaining water use data availability and sources of water for bottled water facilities. The bar chart on the left shows the percentage of all beverage-bottling facilities with available water use data that are bottled water facilities (blue) and other facilities (gray). The blue bar has an annotation that identifies that 151 bottled water facilities have available water use data. Text above the first bar chart reads, “Of facilities with available water use data, 61% are bottled water facilities…” The text continues above the bar chart on the right to say, “…and where they source their water varies.” The second bar chart identifies the percentage of facilities using each source: 13% of bottled water facilities with available water use data source their water from public supply; 39% from wells; 26% from springs; 1.3% from surface water intakes; 20% from a combination of sources; and 0.7% from other sources."
-          v-if="!mobileView"
         >
         <img
+          v-if="mobileView"
           class="infographic-bw"
-          src="../assets/images/bottled_water_use_infographic_top.png"
+          src="../assets/images/bottled_water_use_infographic_top.webp"
           alt="Infographic explaining that most beverage-bottling facilities with available water use data are bottled water facilities. A bar chart shows the percentage of facilities with available water use data that are bottled water facilities (blue) and other facilities (gray). Text at the top reads, “Of facilities with available water use data, 61% are bottled water facilities.” The blue bar has an annotation that identifies that 151 bottled water facilities have available water use data."
-          v-if="mobileView"
         >
         <img
-          class="infographic-bw"
-          src="../assets/images/bottled_water_use_infographic_bottom.png"
-          alt="Infographic explaining where the bottled water facilities with available water use data source their water. Text at the top continues from the previous infographic and reads, “…and where they [bottled water facilities with available water use data] source their water varies.” A bar chart identifies the percentage of facilities using each source: 13% of bottled water facilities with available water use data source their water from public supply; 39% from wells; 26% from springs; 1.3% from surface water intakes; 20% from a combination of sources; and 0.7% from other sources."
           v-if="mobileView"
+          class="infographic-bw"
+          src="../assets/images/bottled_water_use_infographic_bottom.webp"
+          alt="Infographic explaining where the bottled water facilities with available water use data source their water. Text at the top continues from the previous infographic and reads, “…and where they [bottled water facilities with available water use data] source their water varies.” A bar chart identifies the percentage of facilities using each source: 13% of bottled water facilities with available water use data source their water from public supply; 39% from wells; 26% from springs; 1.3% from surface water intakes; 20% from a combination of sources; and 0.7% from other sources."
         >
       </div>
       <div
