@@ -18,8 +18,15 @@
         class="img-container"
       >
         <img
+          v-if="!mobileView"  
           class="infographic-wu"
           src="../assets/images/water-use_infographic.webp"
+          alt="Infographic explaining the low availability of water use data for beverage bottling facilities. A map of the conterminous United States shows the locations of bottling facilities with available water use data in blue and bottling facilities without available water use data in gray. A bar chart to the right of the map shows the percentage of facilities for which USGS was able to acquire water use data in blue, and percentage of facilities without available water use data in gray. Text at the bottom points to the bar chart and reads, “USGS acquired water use data for 0.6% of beverage bottling facilities.”"
+        >
+        <img
+          v-if="mobileView"  
+          class="infographic-wu"
+          src="../assets/images/water-use_infographic_mobile.webp"
           alt="Infographic explaining the low availability of water use data for beverage bottling facilities. A map of the conterminous United States shows the locations of bottling facilities with available water use data in blue and bottling facilities without available water use data in gray. A bar chart to the right of the map shows the percentage of facilities for which USGS was able to acquire water use data in blue, and percentage of facilities without available water use data in gray. Text at the bottom points to the bar chart and reads, “USGS acquired water use data for 0.6% of beverage bottling facilities.”"
         >
       </div>
