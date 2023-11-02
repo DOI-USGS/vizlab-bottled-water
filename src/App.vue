@@ -5,6 +5,7 @@
       ref="headerUSGS"
     />
     <InternetExplorerPage v-if="isInternetExplorer" />
+    <WorkInProgressWarning v-if="checkTypeOfEnv === '-beta build-' & !isInternetExplorer" />
     <!-- an empty string in this case means the 'prod' version of the application   -->
     <router-view
       v-if="!isInternetExplorer"
@@ -18,12 +19,14 @@
 <script>
     import WindowSize from "./components/WindowSize.vue";
     import HeaderUSGS from './components/HeaderUSGS.vue';
+    import WorkInProgressWarning from "./components/WorkInProgressWarning";
     import { isMobile } from 'mobile-device-detect';
     export default {
         name: 'App',
         components: {
             WindowSize,
             HeaderUSGS,
+            WorkInProgressWarning,
             InternetExplorerPage: () => import( "./components/InternetExplorerPage.vue"),
             PreFooterCodeLinks: () => import(  "./components/PreFooterCodeLinks.vue"),
             FooterUSGS: () => import(  "./components/FooterUSGS.vue") 
