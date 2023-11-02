@@ -24,7 +24,9 @@
             checked
           >
           <label
+            id="Count"
             for="id_Count"
+            tabindex=0
             class="graph-buttons-switch-label graph-buttons-switch-label-off"
           >count</label>
           <input
@@ -35,7 +37,9 @@
             value="Percent"
           >
           <label
+            id="Percent"
             for="id_Percent"
+            tabindex=0
             class="graph-buttons-switch-label graph-buttons-switch-label-on"
           >percent</label>
           <span class="graph-buttons-switch-selection" />
@@ -167,7 +171,7 @@ export default {
         margin: {
           top: 15,
           right: this.mobileView ? 0 : 5,
-          bottom: 60,
+          bottom: this.mobileView ? 50 : 30,
           left: this.mobileView ? 30 : 85
         }
       }
@@ -357,7 +361,7 @@ export default {
               .remove();
           }
         )
-      
+
       // Update bars within groups
       rectGroups.selectAll('rect')
         .data(D => D.map(d => (d.key = D.key, d)))
@@ -365,6 +369,8 @@ export default {
             enter => enter
                 .append("rect")
                 .attr("class", d => d.key + ' ' + d.data[0])
+                .attr("tabindex", "0")
+                .attr("role", "listitem")
                 .attr("x", d => this.xScale(d.data[0]))
                 .attr("y", d => this.yScale(0))
                 .attr("width", this.xScale.bandwidth())
@@ -382,6 +388,13 @@ export default {
           )
         .transition(t)
         .delay((d, i) => i * 20)
+        .attr("aria-label", d => {
+          let ariaText = currentSummaryType === 'Count' ? 
+            `There are ${d.data[1].get(d.key)[expressed]} ${d.data[0]} facilities with` :
+            `${Math.round(d.data[1].get(d.key).percent)} percent of ${d.data[0]} facilities have`
+          ariaText = ariaText + ` a water source of ${d.key}`
+          return ariaText
+        })
         .attr("x", d => this.xScale(d.data[0]))
         .attr("y", d => this.yScale(d[1]))
         .attr("width", this.xScale.bandwidth())
@@ -562,7 +575,7 @@ export default {
 
       const self = this;
       
-      this.d3.selectAll('.graph-buttons-switch label').on("mousedown touchstart", function(event) {
+      const toggleLabels = this.d3.selectAll('.graph-buttons-switch label').on("mousedown touchstart", function(event) {
         const dragger = self.d3.select(this.parentNode)
         const startx = 0
         //d3.event.preventDefault(); // disable text dragging
@@ -611,6 +624,21 @@ export default {
             self.drawBarplot(chos.node().value)
           });          
       });
+
+      toggleLabels.each(function() {
+        this.addEventListener("keypress", function(event) {
+            if (event.key === 'Enter' | event.keyCode === 13) {
+              let targetId = event.target.id
+
+              // Shift toggle
+              const chos = document.getElementById("id_" + targetId)
+              chos.checked = true;
+
+              // Do action
+              self.drawBarplot(targetId)
+            }
+        })
+      })
     }
   }
 }
@@ -768,8 +796,10 @@ export default {
     grid-area: legend;
     width: 90%;
     justify-self: center;
+    padding-top: 2rem;
     @media screen and (max-width: 600px) {
       width: 100%;
+      padding-top: 1rem;
     }
   }
   #barplot-container {
@@ -777,6 +807,9 @@ export default {
     width: 90%;
     justify-self: center;
     max-height: 55vh;
+    @media screen and (max-height: 770px) {
+      max-height: 70vh;
+    }
     @media screen and (max-width: 600px) {
       width: 100%;
     }

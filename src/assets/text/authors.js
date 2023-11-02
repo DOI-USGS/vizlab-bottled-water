@@ -31,7 +31,7 @@ export default {
         initials: 'MC',
         profile_link: 'https://www.usgs.gov/staff-profiles/amanda-carr',
         role: 'contributor',
-        contribution: 'wrote the narrative for the site and created the infographics'
+        contribution: 'wrote the narrative for the site and created the illustrations and infographics'
       },
       {
         firstName: 'Alisha',
@@ -40,16 +40,7 @@ export default {
         initials: 'AC',
         profile_link: 'https://www.usgs.gov/staff-profiles/alisha-yee-chan',
         role: 'contributor',
-        contribution: 'created data visualizations of water use data'
-      },
-      {
-        firstName: 'Cee',
-        lastName: 'Nell',
-        fullName: 'Cee Nell',
-        initials: 'CN',
-        profile_link: 'https://www.usgs.gov/staff-profiles/cee-nell',
-        role: 'team lead',
-        contribution: 'contributed to site design and development'
+        contribution: 'contributed to data visualizations of water use data'
       },
       {
         firstName: 'Cheryl Dieter',
@@ -68,6 +59,15 @@ export default {
         profile_link: 'https://www.usgs.gov/staff-profiles/cheryl-a-buchwald',
         role: 'SME',
         contribution: 'advised on site content as a subject matter expert'
+      },
+      {
+        firstName: 'Cee',
+        lastName: 'Nell',
+        fullName: 'Cee Nell',
+        initials: 'CN',
+        profile_link: 'https://www.usgs.gov/staff-profiles/cee-nell',
+        role: 'team lead',
+        contribution: 'provided review and contributed to site design and development'
       }
       ]
 };

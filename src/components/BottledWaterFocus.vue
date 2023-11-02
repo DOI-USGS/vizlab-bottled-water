@@ -37,6 +37,7 @@
           <img
             class="source-map"
             src="../assets/images/map_bottled_water_Self-supply_count.png"
+            alt="CONUS, county level proportional symbols map, binned into five categories: 25, 50, 100, 300, and 600, show counts of bottled water facilities that source water from self-supply. Generally, many counties across Texas, Florida, California, and Colorado display the greatest count of bottled water facilities sourcing water from self-supply. The top three counties with the greatest number of bottled water facilities using self-supply include Harris County, Texas (33), Palm Beach County (14) and Lee County, Florida (14)."
           >
         </div>
         <div
@@ -46,6 +47,7 @@
           <img
             class="source-map"
             src="../assets/images/map_bottled_water_Self-supply_perc.png"
+            alt="CONUS, county level choropleth map, binned into five categories: 1, 25, 50, 75, and 100%, show percents of bottled water facilities that source water from self-supply. Generally, many counties across the Eastern, South Central, and Western United States have a high proportion of bottled water facilities that source water from self-supply."
           >
         </div>
         <div
@@ -63,6 +65,7 @@
           <img
             class="source-map"
             src="../assets/images/map_bottled_water_combination_count.png"
+            alt="CONUS, county level proportional symbols map, binned into five categories: 25, 50, 100, 300, and 600, show counts of bottled water facilities that source water from a combination of sources. Massachusetts, California, New York, and Illinois lead in the number of bottled water facilities that use a combination of sources. The top three counties with the greatest number of bottled water facilities using a combination of sources include Middlesex County, Massachusetts (21), Los Angeles County, California (20), and San Diego County, California (18)."
           >
         </div>
         <div
@@ -72,6 +75,7 @@
           <img
             class="source-map"
             src="../assets/images/map_bottled_water_combination_perc.png"
+            alt="CONUS, county level choropleth map, binned into five categories: 1, 25, 50, 75, and 100%, show percents of bottled water facilities that source water from a combination of sources. A large portion of counties in the Midwest and Eastern United States have the highest percentage of bottled water facilities utilizing a combination of sources for their water supply."
           >
         </div>
         <div
@@ -89,6 +93,7 @@
           <img
             class="source-map"
             src="../assets/images/map_bottled_water_public_supply_count.png"
+            alt="CONUS, county level proportional symbols map, binned into five categories: 25, 50, 100, 300, and 600, show counts of bottled water facilities that source water from public supply. Largely, California, Texas, and Florida lead in the number of bottled water facilities that source from public supply. The top three counties with the greatest number of bottled water facilities that use public supply water include Los Angeles County, California (679), Orange County, California (259), and San Diego County, California (165)."
           >
         </div>
         <div
@@ -98,6 +103,7 @@
           <img
             class="source-map"
             src="../assets/images/map_bottled_water_public_supply_perc.png"
+            alt="CONUS, county level choropleth map, binned into five categories: 1, 25, 50, 75, and 100%, show percents of bottled water facilities that source water from public supply. Many counties in the Western and Southwestern United States have high percentages of bottled water facilities that obtain their water from public supply sources"
           >
         </div>
       </div>
@@ -115,15 +121,20 @@
           v-if="!mobileView"
           class="infographic-bw"
           src="../assets/images/bottled_water_use_infographic.png"
-          alt="Infographic with two bar charts explaining water use data availability and sources of water for bottled water facilities. The bar chart on the left shows the percentage of all beverage-bottling facilities with available water use data that are bottled water facilities (blue) and other facilities (gray). The blue bar has an annotation that identifies that 151 bottled water facilities have available water use data. Text above the first bar chart reads, “Of facilities with available water use data, 61% are bottled water facilities…” The text continues above the bar chart on the right to say, “…and where they source their water varies.” The second bar chart identifies the percentage of facilities using each source: 13% of bottled water facilities with available water use data source their water from public supply; 39% from wells; 26% from springs; 1.3% from surface water intakes; 20% from a combination of sources; and 0.7% from other sources."
+          alt="Infographic with two bar charts explaining water use data availability and sources of water for bottled water facilities. The bar chart on the left shows the percentage of all beverage-bottling facilities with available water use data that are bottled water facilities (blue) and other facilities (gray). 151 bottled water facilities have available water use data, representing 61% of facilities with available water use data. The bar chart on the right shows where those 151 bottled water facilities source their water. 13% of bottled water facilities with available water use data source their water from public supply; 39% from wells; 26% from springs; 1.3% from surface water intakes; 20% from a combination of sources; and 0.7% from other sources."
+          v-if="!mobileView"
         >
         <img
           v-if="mobileView"
           class="infographic-bw"
-          src="../assets/images/bottled_water_use_infographic_top.webp"
-          alt="Infographic explaining that most beverage-bottling facilities with available water use data are bottled water facilities. A bar chart shows the percentage of facilities with available water use data that are bottled water facilities (blue) and other facilities (gray). Text at the top reads, “Of facilities with available water use data, 61% are bottled water facilities.” The blue bar has an annotation that identifies that 151 bottled water facilities have available water use data."
+          src="../assets/images/bottled_water_use_infographic_top.png"
+          alt="Infographic explaining that most beverage-bottling facilities with available water use data are bottled water facilities. A bar chart shows the percentage of facilities with available water use data that are bottled water facilities (blue) and other facilities (gray). Of facilities with available water use data, 61% (151 facilities) are bottled water facilities."
+          v-if="mobileView"
         >
         <img
+          class="infographic-bw"
+          src="../assets/images/bottled_water_use_infographic_bottom.png"
+          alt="Infographic explaining where the bottled water facilities with available water use data source their water. A bar chart identifies the percentage of facilities using each source: 13% of bottled water facilities with available water use data source their water from public supply; 39% from wells; 26% from springs; 1.3% from surface water intakes; 20% from a combination of sources; and 0.7% from other sources."
           v-if="mobileView"
           class="infographic-bw"
           src="../assets/images/bottled_water_use_infographic_bottom.webp"
@@ -144,11 +155,13 @@
           v-if="!mobileView"
           class="beeswarm"
           src="../assets/images/annual_bottled_water_use_beeswarm.png"
+          alt="Beeswarm plot displays average annual water use, in million gallons per day (MGD), by bottled water facilities for which water use data was available, across water sources. Generally, the available data on average annual water use fall below 0.25 MGD, though some bottled water facilities that use well water or a combination of sources have average annual water use above 0.5 MGD, up to about 1.75 MGD."
         >
         <img
           v-if="mobileView"
           class="beeswarm"
           src="../assets/images/annual_bottled_water_use_beeswarm_mobile.png"
+          alt="Beeswarm plot displays average annual water use, in million gallons per day (MGD), by bottled water facilities for which water use data was available, across water sources. Generally, the available data on average annual water use fall below 0.25 MGD, though some bottled water facilities that use well water or a combination of sources have average annual water use above 0.5 MGD, up to about 1.75 MGD."
         >
       </div>
       <div
@@ -176,11 +189,11 @@
 
         publicPath: import.meta.env.BASE_URL, // find the files when on different deployment roots
         mobileView: isMobile, // test for mobile
-        
+
         bottledWaterFocusText: bottledWaterFocusText.bottledWaterFocusText
       }
     },
-    mounted(){      
+    mounted(){
       const self = this;
     },
     methods:{
@@ -238,6 +251,10 @@
   }
   #img-bw-use-beeswarm {
     grid-area: bw-use-source;
+    margin: 4rem 0rem 4rem 0rem;
+    @media screen and (max-width: 600px) {
+      margin: 3rem 0rem 3rem 0rem;
+    }
   }
   .beeswarm {
     width: 90%;
@@ -257,7 +274,7 @@
       "count-public perc-public";
     justify-content: center;
     align-content: center;
-    margin: 1rem auto 2rem auto;
+    margin: 1rem auto 4rem auto;
     max-width: 1400px;
     @media screen and (max-width: 600px) {
       grid-template-columns: 1fr;
