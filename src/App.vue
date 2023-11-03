@@ -1,6 +1,7 @@
 <template>
   <div id="app">
-    <WindowSize v-if="checkTypeOfEnv === '-test build-'" />
+    <!--WindowSize v-if="checkTypeOfEnv === '-test build-'" /-->
+    <HeaderUSWDSBanner v-if="checkTypeOfEnv === '-test build-'" />
     <HeaderUSGS
       ref="headerUSGS"
     />
@@ -17,15 +18,17 @@
 </template>
 
 <script>
-    import WindowSize from "./components/WindowSize.vue";
+    // import WindowSize from "./components/WindowSize.vue";
     import HeaderUSGS from './components/HeaderUSGS.vue';
+    import HeaderUSWDSBanner from "./components/HeaderUSWDSBanner";
     import WorkInProgressWarning from "./components/WorkInProgressWarning";
     import { isMobile } from 'mobile-device-detect';
     export default {
         name: 'App',
         components: {
-            WindowSize,
+            // WindowSize,
             HeaderUSGS,
+            HeaderUSWDSBanner,
             WorkInProgressWarning,
             InternetExplorerPage: () => import( "./components/InternetExplorerPage.vue"),
             PreFooterCodeLinks: () => import(  "./components/PreFooterCodeLinks.vue"),
