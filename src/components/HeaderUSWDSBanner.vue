@@ -100,9 +100,6 @@
         components: {
         },
         mounted() {
-            // // This is a fix for the weird USWDS glitch that causes the official united states banner pop and then close as the page loads
-            // const bannerElement = document.querySelector('#gov-banner');
-            // bannerElement.setAttribute('hidden', '""');
         }
     }
 </script>
