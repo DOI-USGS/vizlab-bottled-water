@@ -24,7 +24,10 @@
       </div>
       <div id="oconus-container" />
       <div id="chart-container" />
-      <div id="map-label-container" v-if="!mobileView">
+      <div
+        v-if="!mobileView"
+        id="map-label-container"
+      >
         <mapLabels
           id="map-inset-svg"
           class="map labels"

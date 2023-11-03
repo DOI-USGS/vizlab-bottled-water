@@ -1,12 +1,19 @@
 <template>
-    <section>
-      <div id="grid-container-barplots">
-        <div id="intro-container" v-if="mobileView">
-          <p>Explore where different facility types source water.</p>
-        </div>
-        <div id="toggle-container">
-          <p v-if="!mobileView">Explore where different facility types source water. Showing the data summarized by</p>
-          <p v-if="mobileView">Summarize the data by</p>
+  <section>
+    <div id="grid-container-barplots">
+      <div
+        v-if="mobileView"
+        id="intro-container"
+      >
+        <p>Explore where different facility types source water.</p>
+      </div>
+      <div id="toggle-container">
+        <p v-if="!mobileView">
+          Explore where different facility types source water. Showing the data summarized by
+        </p>
+        <p v-if="mobileView">
+          Summarize the data by
+        </p>
         <div class="graph-buttons-switch">
           <input
             id="id_Count"

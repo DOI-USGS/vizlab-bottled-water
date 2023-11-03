@@ -20,7 +20,7 @@
         >
           <img
             class="illustration"
-            src="../assets/images/public-supply.png"
+            src="../assets/images/public-supply.webp"
             alt="Illustration showing examples of two public supply systems, one using surface water intakes and one using groundwater intake wells. The surface-water system withdraws water from a reservoir, treats it at a water treatment plant, and then distributes it to buildings throughout a city. The groundwater system withdraws groundwater using a well and distributes it to residents of a town, a hospital, and an industrial building."
           >
         </div>
@@ -30,7 +30,7 @@
         >
           <img
             class="illustration"
-            src="../assets/images/self-supply.png"
+            src="../assets/images/self-supply.webp"
             alt="Illustration showing examples of self-supply systems, where private users extract water from a private source. Examples include a building using water from springs; a thermoelectric power plant, industrial building, livestock pasture, and crop irrigation fields using surface water intakes; and a commercial building, residential building, livestock troughs, and crop irrigation systems using groundwater intake wells."
           >
         </div>
