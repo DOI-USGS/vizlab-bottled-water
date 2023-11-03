@@ -105,4 +105,32 @@
 </script>
 <style scoped lang="scss">
   @import '../../node_modules/@uswds/uswds/dist/css/uswds.css';
+  .usa-banner__inner {
+    margin-left: 1rem;
+    padding-left: 0.5rem;
+  }
+  .usa-banner__header--expanded .usa-banner__inner {
+    margin-left: 1rem;
+    padding-left: 0.5rem;
+  }
+  .usa-banner__header-flag[data-v-e71764b8] {
+    width: 1.6rem;
+  }
+  .usa-banner__header-text {
+    font-size: 1.3rem;
+  }
+  .usa-banner__button {
+    font-size: 1.3rem;
+  }
+  .usa-banner .grid-row.grid-gap-lg > *[data-v-e71764b8] {
+      padding-left: 2rem;
+      padding-right: 2rem;
+  }
+  .usa-banner__content {
+    font-size: 2rem;
+    max-width: 105rem;
+  }
+  .usa-banner__icon[data-v-e71764b8] {
+    width: 6rem;
+  }
 </style>
