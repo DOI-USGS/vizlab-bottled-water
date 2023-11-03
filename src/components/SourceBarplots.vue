@@ -1,19 +1,12 @@
 <template>
   <section>
     <div id="grid-container-barplots">
-      <div
-        v-if="mobileView"
-        id="intro-container"
-      >
+      <div id="intro-container" class="text-container">
         <p>Explore where different facility types source water.</p>
       </div>
-      <div id="toggle-container">
-        <p v-if="!mobileView">
-          Explore where different facility types source water. Showing the data summarized by
-        </p>
-        <p v-if="mobileView">
-          Summarize the data by
-        </p>
+      <div id="toggle-container" class="text-container">
+        <p v-if="!mobileView">Showing the data summarized by</p>
+        <p v-if="mobileView">Summarize the data by</p>
         <div class="graph-buttons-switch">
           <input
             id="id_Count"
@@ -445,6 +438,7 @@ export default {
         .attr("id", "legend-title")
         .attr("y", legendRectSize - intraItemSpacing)
         .attr("alignment-baseline", "middle")
+        .attr("dominant-baseline", "middle") // required for Firefox
 
       // Append group for each legend entry
       const legendGroup = legendBounds.selectAll(".legend-item")
@@ -466,6 +460,7 @@ export default {
         .attr("y", legendRectSize - intraItemSpacing)
         .attr("text-anchor", "start") // left-align text
         .attr("alignment-baseline", "middle") // center text
+        .attr("dominant-baseline", "middle") // required for Firefox
         .text(d => d);
 
       // Position legend groups
@@ -615,7 +610,7 @@ export default {
             const chos = dragger.selectAll('input').filter(function(d, i) { return i == id; })
             chos.node().checked = true;
 
-            console.log(`Current side: ${chos.node().value}, Current side checked: ${chos.node().checked}, Percent checked: ${self.d3.select('#id_Percent').property('checked')}, Count checked: ${self.d3.select('#id_Count').property('checked')}`)
+            // console.log(`Current side: ${chos.node().value}, Current side checked: ${chos.node().checked}, Percent checked: ${self.d3.select('#id_Percent').property('checked')}, Count checked: ${self.d3.select('#id_Count').property('checked')}`)
             
             //remove styling
             dragger.select('.graph-buttons-switch-selection').attr('style','');
@@ -691,8 +686,9 @@ export default {
   #grid-container-barplots {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: max-content max-content max-content;
+    grid-template-rows: max-content max-content max-content max-content;
     grid-template-areas:
+      "intro"
       "toggle"
       "legend"
       "barplot";
@@ -715,10 +711,12 @@ export default {
   }
   #intro-container {
     grid-area: intro;
+    width: 100%;
   }
   #toggle-container {
     grid-area: toggle;
     display: flex;
+    width: 100%;
   }
   .graph-buttons-switch {
     display: flex;

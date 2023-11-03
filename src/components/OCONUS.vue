@@ -2,9 +2,9 @@
   <section id="oconus_map">
     <div id="grid-container-interactive">
       <div id="title">
-        <h3 class="grid-title">
+        <h2 class="grid-title">
           Counts of bottling facilities in <span id="state-dropdown-container" /> by county
-        </h3>
+        </h2>
       </div>
       <div id="text">
         <div class="text-container" v-if = "!mobileView">
@@ -1517,15 +1517,15 @@ export default {
     rgba(0, 0, 0, 0.2) 0rem 0rem 0rem 0.1rem;
   }
   .tmp-dropdown {
-    font-size: 3rem; // style same as h3 in App.vue
+    font-size: 3.25rem; // style same as h2 in App.vue
     padding-top: 1rem;
     padding-bottom: 1rem;
     font-weight: 700;
     @media screen and (max-height: 770px) {
-      font-size: 3rem;
+      font-size: 3rem; // style same as h2 in App.vue
     }
     @media screen and (max-width: 600px) {
-        font-size: 2rem;
+        font-size: 2.5rem; // style same as h2 in App.vue
     }
   }
 </style>

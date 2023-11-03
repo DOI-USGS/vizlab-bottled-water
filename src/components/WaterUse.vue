@@ -3,9 +3,9 @@
     <div id="grid-container-use">
       <div
         id="title"
-        class="text-container"
+        class="text-container title-text"
       >
-        <h3 v-html="useText.title" />
+        <h2 v-html="useText.title" />
       </div>
       <div
         id="text1"
