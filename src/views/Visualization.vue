@@ -2,15 +2,15 @@
   <div id="visualization">
     <header id="title-container">
       <div class="panel-wrap">
-        <div class="panel start start-shadow glass-under" /> 
-        <div class="panel glass-under" />        
-        <div class="panel glass-under" />
-        <div class="panel glass-under" />
-        <div class="panel glass-under" />
-        <div class="panel glass-under" />
-        <div class="panel glass-under" />
-        <div class="panel glass-under" />
-        <div class="panel glass-under" />
+        <div class="panel start start-shadow glass-under"/> 
+        <div class="panel glass-under" :class="{ mobile: mobileView}" />        
+        <div class="panel glass-under" :class="{ mobile: mobileView}" />
+        <div class="panel glass-under" :class="{ mobile: mobileView}" />
+        <div class="panel glass-under" :class="{ mobile: mobileView}" />
+        <div class="panel glass-under" :class="{ mobile: mobileView}" />
+        <div class="panel glass-under" :class="{ mobile: mobileView}" />
+        <div class="panel glass-under" :class="{ mobile: mobileView}" />
+        <div class="panel glass-under" :class="{ mobile: mobileView}" />
         <div
           v-if="!mobileView"
           class="panel glass-under"
@@ -31,14 +31,14 @@
       <h1 id="page-title"><span class="first-words">Water bottling</span><span class="later-words"> across the U.S.</span></h1>
       <div class="panel-wrap">
         <div class="panel start glass-over" /> 
-        <div class="panel glass-over" />        
-        <div class="panel glass-over" />
-        <div class="panel glass-over" />
-        <div class="panel glass-over" />
-        <div class="panel glass-over" />
-        <div class="panel glass-over" />
-        <div class="panel glass-over" />
-        <div class="panel glass-over" />
+        <div class="panel glass-over" :class="{ mobile: mobileView}" />        
+        <div class="panel glass-over" :class="{ mobile: mobileView}" />
+        <div class="panel glass-over" :class="{ mobile: mobileView}" />
+        <div class="panel glass-over" :class="{ mobile: mobileView}" />
+        <div class="panel glass-over" :class="{ mobile: mobileView}" />
+        <div class="panel glass-over" :class="{ mobile: mobileView}" />
+        <div class="panel glass-over" :class="{ mobile: mobileView}" />
+        <div class="panel glass-over" :class="{ mobile: mobileView}" />
         <div
           v-if="!mobileView"
           class="panel glass-over"
@@ -179,19 +179,29 @@ export default {
   .panel {
     width: 3.5rem;
     height: 17rem;
+    border-radius: 1rem;
     @media screen and (max-height: 770px) {
       width: 3.25rem;
       height: 14rem;
     }
     @media screen and (max-width: 600px) {
       width: 2.7rem;
+      border-radius: 0.9rem;
+      height: 10rem;
+    }
+  }
+  .panel.mobile {
+    width: 5rem;
+    border-radius: 1.5rem;
+    @media screen and (max-width: 600px) {
+      width: 2.7rem;
+      border-radius: 0.9rem;
       height: 10rem;
     }
   }
   .glass-under {
     z-index: -1;
     background: rgba(255, 255, 255, 1);
-    border-radius: 1rem;
     box-shadow: 8px 4px 18px 10px rgba(147, 148, 150, 0.25);
   }
   .glass-over {
