@@ -1474,8 +1474,12 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
 
 #' @title generate sankey diagram of water sources and facility types
 #' @param supply_summary dataframe with count of facilities by water source
+#' @param type_colors, vector of colors for assigning grey to non bw facility and blue to bw facility
+#' @param reorder_facilities_category, character vector of reorganized facilities to reorder sankey by
+#' @param label_size, numeric value to assign `geom_sankey_label` size
+#' @param source_label, character vector of doi link
+#' @param logo_path, character path for USGS logo
 #' @param supply_colors vector of colors to use for water source categories
-#' @param reorder_source_category  character vector of reorganized source categories to reorder sankey by
 #' @param font_legend font used for the plot
 #' @param width width for the final plot
 #' @param height height for the final plot
@@ -1483,41 +1487,77 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
 #' @param text_color color for text
 #' @param outfile_template filepath template for saving the final plot
 #' @param dpi dpi at which to save the final plot
+#' @param square_instagram, if else statement where if TRUE, create Instagram version of sankey in 1:1 format
+#' if FALSE, return Twitter version of sankey in 16:9 format.
 #' @return the filepath of the saved plot
-generate_national_sankey <- function(supply_summary, supply_colors, reorder_source_category,
-                                     font_legend, width, height,
-                                     bkgd_color, text_color, outfile_template, dpi) {
+generate_national_sankey <- function(supply_summary, supply_colors, type_colors,
+                                     reorder_facilities_category, label_size, source_label,
+                                     font_legend, width, height, square_instagram,
+                                     bkgd_color, text_color, outfile_template, logo_path, dpi) {
 
-  supply_summary <- supply_summary |>
-    mutate(source_category = factor(source_category, levels = reorder_source_category))
+  # import font (p3_font_legend doesn't seem to work on Mac)
+  font_legend <- 'Source Sans Pro'
+  font_add_google(font_legend)
+  showtext_opts(dpi = 300, regular.wt = 200, bold.wt = 700)
+  showtext_auto(enable = TRUE)
 
-  # Create the ggplot
-  sankey <- ggplot(data = supply_summary,
-                  aes(axis1 = source_category, axis2 = WB_TYPE, y = site_count)) +
-    geom_alluvium(aes(fill = source_category),
-                  curve_type = "arctan", width = 0.1, alpha = 0.8) +
-    geom_stratum(alpha = 0, width = 0.1, size = 0.5, color = text_color) +
-    ggfx::with_shadow(
-      colour = bkgd_color, x_offset = 3, y_offset = 2, sigma = 3,
-      geom_text(stat = "stratum",
-                aes(label = after_stat(stratum)),
-                family = font_legend, fontface = "bold", size = 3.5)
-    ) +
-    scale_x_discrete(limits = c("source_category", "WB_TYPE"),
-                     expand = c(0.15, 0.05)) +
+  subset <- supply_summary %>%
+    ungroup() %>%
+    mutate(WB_TYPE = factor(WB_TYPE, levels = reorder_facilities_category)) %>%
+    dplyr::select(-percent) %>%
+    arrange(WB_TYPE)
+
+  subset_categories <- unique(subset$source_category)
+  subset_types <- unique(subset$WB_TYPE)
+
+  # Get dataframe for x = 1 -> x = 2
+  subset_node_1 <- subset %>%
+    mutate(node = source_category, next_node = WB_TYPE, next_x = 2) %>%
+    dplyr::select(node, next_node, next_x, site_count)
+
+  # Get dataframe for x = 2 -> x = 3
+  subset_node_2 <- subset_node_1 %>%
+    mutate(node = next_node, next_x = 3)
+
+  # Join dataframes for plotting
+  subset_plot <- bind_rows(subset_node_1, subset_node_2) %>%
+    mutate(x = ifelse(node %in% subset_categories, 1, 2)) %>%
+    dplyr::select(x, node, next_x, next_node, site_count) %>%
+    mutate(nudge_x = ifelse(x == 1, -0.06, 0.06), # adjust spacing between plot and labels
+           h_just = ifelse(x == 1, 1, 0),
+           h_just_ig = ifelse(x == 1, 0.75, 0.25)) %>% # adjust label justification
+    uncount(site_count) # Get row for every facility, for each node
+
+  # Put together vector of colors
+  names(type_colors) <- subset_types
+  all_colors <- c(supply_colors, type_colors)
+
+  # Create the sankey
+  sankey <- ggplot(subset_plot, aes(x = x,
+                                    next_x = next_x,
+                                    node = node,
+                                    next_node = next_node,
+                                    fill = factor(node),
+                                    label = node)) +
+    scale_fill_manual(values = all_colors) +
     theme_void() +
-    scale_fill_manual(name = 'source_category', values = supply_colors) +
-    #scale_alpha_manual(values = c(0.9, 0.7, 0.5, 0.3)) +
-    theme(legend.position = "none")
+    theme(legend.position = 'None')
 
   plot_margin <- 0.005
+
+  # Load in USGS logo (also a black logo available)
+  usgs_logo <- magick::image_read(logo_path)|>
+    magick::image_colorize(100, text_color) |>
+    magick::image_scale('250x')
 
   # background
   canvas <- grid::rectGrob(
     x = 0, y = 0,
-    width = width, height = height,
+    width = 16, height = 9,
     gp = grid::gpar(fill = bkgd_color, alpha = 1, col = bkgd_color)
   )
+
+  if (square_instagram == FALSE) {
 
   # compose final plot
   sankey_plot <- ggdraw(ylim = c(0,1),
@@ -1528,11 +1568,14 @@ generate_national_sankey <- function(supply_summary, supply_colors, reorder_sour
               height = height, width = width,
               hjust = 0, vjust = 1) +
     # plot sankey
-    draw_plot(sankey,
-              x = 0.992,
-              y = 0.06,
+    draw_plot(sankey +
+                geom_sankey() +
+                geom_sankey_label(aes(x = x + nudge_x, hjust = h_just), size = label_size, color = "black", fill = "white",
+                                  label.size = NA),
+              x = 0.986,
+              y = 0.078,
               height = 0.8,
-              width = 1 - (0.01 + plot_margin * 2),
+              width = 1 - (0.01 + plot_margin * 4),
               hjust = 1,
               vjust = 0) +
     # add title
@@ -1544,13 +1587,82 @@ generate_national_sankey <- function(supply_summary, supply_colors, reorder_sour
                color = text_color,
                lineheight = 1,
                fontfamily = font_legend,
-               fontface = "bold")
+               fontface = "bold") +
+    # explainer text
+    draw_label(source_label,
+               fontfamily = font_legend,
+               x = 0.978,
+               y = 0.029,
+               size = 12,
+               hjust = 1,
+               vjust = 0,
+               color = text_color) +
+    # Add logo
+    draw_image(usgs_logo,
+               x = 0.025,
+               y = 0.024,
+               width = 0.1,
+               hjust = 0, vjust = 0,
+               halign = 0, valign = 0)
 
   ggsave(outfile_template, sankey_plot, width = width, height = height, dpi = dpi, bg = bkgd_color)
+
+  } else {
+    plot_margin <- 0.025
+
+    # compose final plot
+    sankey_plot <- ggdraw(ylim = c(0,1),
+           xlim = c(0,1)) +
+      # White background
+      draw_grob(canvas,
+                x = 0, y = 1,
+                height = 0.37, width = 0.37,
+                hjust = 0, vjust = 1) +
+      # Add main plot
+      draw_plot(sankey +
+                  geom_sankey(width = 0.02) +
+                  geom_sankey_label(aes(x = x + nudge_x, hjust = h_just_ig), size = label_size, color = "black", fill = "white",
+                                    label.size = NA),
+                x = (1-plot_margin)*0.02,
+                y = 0.08,
+                height = 0.8,
+                width = (1-plot_margin)) +
+      # Add gage location title
+      draw_label("Distribution of water sources\n by facility types",
+                 x = plot_margin*2.8,
+                 y = 1-plot_margin*0.9,
+                 size = 14.5,
+                 hjust = 0,
+                 vjust = 1,
+                 fontfamily = font_legend,
+                 color = text_color,
+                 lineheight = 1,
+                 fontface = "bold") +
+      # Explainer text
+      draw_label(source_label,
+                 fontfamily = font_legend,
+                 x = 1-plot_margin,
+                 y = plot_margin,
+                 size = 5,
+                 hjust = 1, vjust = 0,
+                 color = text_color,
+                 lineheight = 1.1) +
+      # Add logo
+      draw_image(usgs_logo,
+                 x = plot_margin,
+                 y = plot_margin,
+                 width = 0.125,
+                 hjust = 0,
+                 vjust = 0,
+                 halign = 0,
+                 valign = 0)
+
+    # Save and convert file
+    ggsave(outfile_template, sankey_plot, width = width, height = height, dpi = dpi, bg = bkgd_color, units = c("px"))
+
+  }
   return(outfile_template)
-
 }
-
 
 #' @title create a list of sf objects of conus bw facilitites by source categories
 #' @param supply_summary_county_bw CONUS county-level summary with the count and percent of bottled water facilities in each county using each source_category (Public supply, self-supply, combination)
