@@ -29,7 +29,7 @@ tar_option_set(packages = c("tidyverse",
                             'treemapify',
                             'waffle',
                             'ggfx',
-                            'ggalluvial',
+                            'ggsankey',
                             'ggdist',
                             'FedData')) # need development version
 
