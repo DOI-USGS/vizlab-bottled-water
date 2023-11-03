@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <!--WindowSize v-if="checkTypeOfEnv === '-test build-'" /-->
-    <HeaderUSWDSBanner v-if="checkTypeOfEnv === '-test build-'" />
+    <HeaderUSWDSBanner v-if="checkTypeOfEnv !== '-test build-'" />
     <HeaderUSGS
       ref="headerUSGS"
     />
