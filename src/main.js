@@ -4,7 +4,7 @@ import router from "./router";
 import { store } from "./store/store";
 import App from "./App.vue";
 import browserDetect from "vue-browser-detect-plugin";
-import uswds from "@uswds/uswds";
+// import { uswds } from "@uswds/uswds";
 import Vuetify from "vuetify";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -31,7 +31,7 @@ library.add(faTwitterSquare, faFacebookSquare, faGithub, faFlickr, faYoutubeSqua
 
 Vue.config.productionTip = false;
 Vue.use(browserDetect);
-Vue.use(uswds);
+// Vue.use(uswds);
 Vue.use(Vuetify);
 Vue.use(VueImg, vueImgConfig);
 
