@@ -572,45 +572,63 @@ export default {
       
       const toggleLabels = this.d3.selectAll('.graph-buttons-switch label').on("mousedown touchstart", function(event) {
         const dragger = self.d3.select(this.parentNode)
-        const startx = 0
-        //d3.event.preventDefault(); // disable text dragging
+        let startx = 0;
+        let touchEndX = 0;
+        
         dragger
-          // Not sure if this is needed? Maybe on mobile? Commenting out for now
-          //
-          // .on("mousedown touchstart", function(event) {
-          //   startx = self.d3.pointer(event)[0]
-          //   // If start on right, correct
-          //   startx = (startx<dragger.node().getBoundingClientRect().width /2)? startx:startx-(dragger.node().getBoundingClientRect().width /2)
+          // The touchstart and touchmove events allow the white box to be dragged within the toggle on mobile
+          .on("touchstart", function(event) {
+            // only triggered on mobile
+            startx = self.d3.pointer(event.touches[0])[0]
+            // If start on right, correct
+            startx = (startx < dragger.select('label').node().getBoundingClientRect().width)? startx : startx - (dragger.select('label').node().getBoundingClientRect().width)
+          })
+          .on("touchmove", function(event) {
+            // only triggered on mobile
+            let xcoord = self.d3.pointer(event.touches[0])[0] - startx
 
-          // })
-          // .on("mousemove touchmove", function(event) {
-          //   const xcoord = self.d3.pointer(event)[0]-startx
-
-          //   xcoord = ( xcoord > dragger.node().getBoundingClientRect().width /2) ? dragger.node().getBoundingClientRect().width /2 : xcoord
-          //   xcoord = ( xcoord < 0) ? 2 : xcoord
-          //   dragger.select('.graph-buttons-switch-selection').attr('style','left:'+xcoord+'px;');
+            xcoord = ( xcoord > dragger.select('label').node().getBoundingClientRect().width) ? dragger.select('label').node().getBoundingClientRect().width : xcoord
+            xcoord = ( xcoord < 0) ? 2 : xcoord
+            dragger.select('.graph-buttons-switch-selection').attr('style','left:' + xcoord + 'px;');
+            touchEndX = xcoord
+          })
+          .on("touchend", function (event) {
+            // only triggered on mobile
+            dragger.on("mousedown touchstart", null)
+            dragger.on("touchmove mousemove", null) 
+            dragger.on("mouseup touchend", null)
             
-          // })
-          .on("mouseup touchend", function (event) {
+            // Get x coordinate of pointer event
+            const xcoord = touchEndX
+
+            //  coordinate over width of first label? 0 left | 1 right
+            const id = (xcoord < dragger.select('label').node().getBoundingClientRect().width) ? 0 : 1;
+            const altID = id === 0 ? 1 : 0
+
+            const chos = dragger.selectAll('input').filter(function(d, i) { return i == id; })
+            chos.node().checked = true;
+            
+            //remove styling
+            dragger.select('.graph-buttons-switch-selection').attr('style','');
+            
+            // Do action
+            self.drawBarplot(chos.node().value)
+          })
+          .on("mouseup", function (event) {
+            // triggered on desktop and mobile
             dragger.on("mousedown touchstart", null)
             dragger.on("touchmove mousemove", null) 
             dragger.on("mouseup touchend", null)
 
             // Get x coordinate of pointer event
             const xcoord = self.d3.pointer(event)[0]
-            
+
             //  coordinate over width of first label? 0 left | 1 right
             const id = (xcoord < dragger.select('label').node().getBoundingClientRect().width) ? 0 : 1;
             const altID = id === 0 ? 1 : 0
-            // const test = dragger
-            //   .selectAll('input')
-            //   .filter(function(d, i) { return i == id; }).node().checked;
-            // console.log(test)
 
             const chos = dragger.selectAll('input').filter(function(d, i) { return i == id; })
             chos.node().checked = true;
-
-            // console.log(`Current side: ${chos.node().value}, Current side checked: ${chos.node().checked}, Percent checked: ${self.d3.select('#id_Percent').property('checked')}, Count checked: ${self.d3.select('#id_Count').property('checked')}`)
             
             //remove styling
             dragger.select('.graph-buttons-switch-selection').attr('style','');
@@ -682,7 +700,7 @@ export default {
   }
 </style>
 <style scoped lang="scss">
-  $switchWidth: 7.8rem;
+  $switchWidth: 7.9rem;
   #grid-container-barplots {
     display: grid;
     grid-template-columns: 1fr;
