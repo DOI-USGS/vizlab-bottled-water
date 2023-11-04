@@ -151,7 +151,7 @@
         >
         <img
           v-if="mobileView"
-          class="beeswarm"
+          class="beeswarm beeswarm-mobile"
           src="../assets/images/annual_bottled_water_use_beeswarm_mobile.png"
           alt="Beeswarm plot displays average annual water use, in million gallons per day (MGD), by bottled water facilities for which water use data was available, across water sources. Generally, the available data on average annual water use fall below 0.25 MGD, though some bottled water facilities that use well water or a combination of sources have average annual water use above 0.5 MGD, up to about 1.75 MGD."
         >
@@ -275,6 +275,9 @@
   .beeswarm {
     width: 90%;
     max-width: 1100px;
+  }
+  .beeswarm-mobile {
+    max-width: 400px;
   }
   #grid-container-source-maps {
     grid-area: source-maps;
