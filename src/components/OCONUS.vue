@@ -1,6 +1,6 @@
 <template>
   <section id="oconus_map">
-    <div id="grid-container-interactive">
+    <div id="grid-container-interactive" :class="{ mobile: mobileView}">
       <div id="title">
         <h2 class="grid-title">
           Counts of bottling facilities in <span id="state-dropdown-container" /> by county
@@ -23,7 +23,7 @@
         </div>
       </div>
       <div id="oconus-container" />
-      <div id="chart-container" />
+      <div id="chart-container"/>
       <div
         v-if="!mobileView"
         id="map-label-container"
@@ -1562,8 +1562,9 @@ export default {
         "text map"
         "chart map";
     }
-    @media screen and (max-width: 600px) {
-      grid-template-columns: 100%;
+  }
+  #grid-container-interactive.mobile {
+    grid-template-columns: 100%;
       grid-template-rows: max-content max-content max-content 25vh;
       grid-template-areas:
         "title"
@@ -1572,7 +1573,6 @@ export default {
         "chart";
       position: relative;
       padding: 0.5rem 0.5rem 0.5rem 0.5rem;
-    }
   }
   #title {
     grid-area: title;
