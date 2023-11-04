@@ -1511,6 +1511,7 @@ export default {
     box-shadow:  rgba(0, 0, 0, 0.2) 0rem 0.6rem 1rem 0rem,
     rgba(0, 0, 0, 0.1) 0rem 0rem 0rem 0.1rem;
     border-radius: 0.5rem;
+    color: rgb(21, 21, 21);
   }
   .dropdown:hover {
     box-shadow:  rgba(0, 0, 0, 0.3) 0rem 0.6rem 1rem 0rem,
