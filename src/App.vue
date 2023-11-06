@@ -173,6 +173,9 @@
     font-family: $SourceSans;
     color: $textcolor;
   }
+  a:-webkit-any-link {
+    color: #4365A8;
+  }
   li {
     margin-left: 1rem;
     padding-bottom: 0.5rem;
