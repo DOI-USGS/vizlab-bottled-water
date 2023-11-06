@@ -1,12 +1,7 @@
 <template>
   <section>
     <div id="grid-container-barplots">
-      <div id="intro-container" class="text-container">
-        <p>Explore where different facility types source water.</p>
-      </div>
       <div id="toggle-container" class="text-container">
-        <p v-if="!mobileView">Showing the data summarized by</p>
-        <p v-if="mobileView">Summarize the data by</p>
         <div class="graph-buttons-switch">
           <input
             id="id_Count"
@@ -21,7 +16,7 @@
             for="id_Count"
             tabindex=0
             class="graph-buttons-switch-label graph-buttons-switch-label-off"
-          >count</label>
+          >Count</label>
           <input
             id="id_Percent"
             type="radio"
@@ -34,9 +29,11 @@
             for="id_Percent"
             tabindex=0
             class="graph-buttons-switch-label graph-buttons-switch-label-on"
-          >percent</label>
+          >Percent</label>
           <span class="graph-buttons-switch-selection" />
         </div>
+        <p v-if="!mobileView">of facilities by water source</p>
+        <p v-if="mobileView">of facilities by water source</p>
       </div>
       <div id="legend-container" />
       <div id="barplot-container" />
