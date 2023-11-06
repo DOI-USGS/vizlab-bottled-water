@@ -255,11 +255,11 @@ export default {
       const self = this;
 
       const categoryColors = {
-        'Public supply': '#E2A625',
-        'Surface water intake': '#213958',
-        'Spring': '#3f6ca6',
-        'Well': '#90aed5',
-        'Combination': '#787979',
+        'Public supply': '#AB9230',
+        'Surface water intake': '#283A70',
+        'Spring': '#4365A8',
+        'Well': '#8E9CBE',
+        'Combination': '#6F927C',
         'Undetermined': '#D4D4D4'
       };
 

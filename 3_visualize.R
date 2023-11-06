@@ -421,7 +421,7 @@ p3_targets <- list(
              format = 'file'),
   tar_target(p3_supply_colors_new,
              {
-               supply_colors <- c('#D4D4D4', '#787979', '#213958', '#E2A625')
+               supply_colors <- c('#D4D4D4', '#6F927C', '#4365A8', '#AB9230')
                names(supply_colors) <- p2_source_category_order
                return(supply_colors)
              }),
@@ -452,7 +452,7 @@ p3_targets <- list(
   tar_target(p3_supply_ext_ss_colors,
              {
                supply_colors <- c(p3_supply_colors_new[['Undetermined']],
-                                  '#90aed5', '#3f6ca6', '#213958',
+                                  '#8E9CBE', '#4365A8', '#283A70',
                                   p3_supply_colors_new[['Combination']],
                                   p3_supply_colors_new[['Public supply']])
                names(supply_colors) <- rev(p2_source_order)
@@ -616,8 +616,7 @@ p3_targets <- list(
   # Water use source colors
   tar_target(p3_wu_availability_facilities_colors,
              {
-               source_colors <- c("#E2A625", "#90aed5", "#3f6ca6", "#213958", "#787979", "black")
-               names(source_colors) <- c("Public supply", "Well", "Spring", "Surface water intake", "Combination", "Other")
+               source_colors <- c(p3_supply_ext_ss_colors[c("Public supply", "Well", "Spring", "Surface water intake", "Combination")] , c('Other' = "black"))
                return(source_colors)
              }),
   # Map displaying all bottling facilities and bottling facilities with water use data

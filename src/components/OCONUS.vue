@@ -222,7 +222,7 @@ export default {
       self.initChart()
 
       // set primary colors
-      this.focalColor = "#1599CF";
+      this.focalColor = "#4365A8";
       this.defaultColor = "#B5B5B5";
 
       // Draw initial view ('all states and territories' on desktop, 'Alabama' on mobile)

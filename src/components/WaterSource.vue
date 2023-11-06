@@ -13,7 +13,7 @@
       >
         <p v-html="sourceText.paragraph1" />
       </div>
-      <div id="grid-container-illustration">
+      <!---div id="grid-container-illustration">
         <div
           id="img-illustration-public-supply"
           class="img-container"
@@ -34,7 +34,7 @@
             alt="Illustration showing examples of self-supply systems, where private users extract water from a private source. Examples include a building using water from springs; a thermoelectric power plant, industrial building, livestock pasture, and crop irrigation fields using surface water intakes; and a commercial building, residential building, livestock troughs, and crop irrigation systems using groundwater intake wells."
           >
         </div>
-      </div>
+      </div-->
       <div
         id="text2"
         class="text-container"

@@ -151,7 +151,7 @@ export default {
     }
   }
   .first-words {
-    color: #2184B5;
+    color: #4365A8; 
     z-index: 0;
   }
   .later-words {
