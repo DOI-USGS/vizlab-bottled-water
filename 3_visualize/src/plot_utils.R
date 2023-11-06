@@ -1557,6 +1557,7 @@ generate_national_sankey <- function(supply_summary, supply_colors, type_colors,
     gp = grid::gpar(fill = bkgd_color, alpha = 1, col = bkgd_color)
   )
 
+  # Twitter version (16:9)
   if (square_instagram == FALSE) {
 
   # compose final plot
@@ -1571,7 +1572,7 @@ generate_national_sankey <- function(supply_summary, supply_colors, type_colors,
     draw_plot(sankey +
                 geom_sankey() +
                 geom_sankey_label(aes(x = x + nudge_x, hjust = h_just), size = label_size, color = "black", fill = "white",
-                                  label.size = NA),
+                                  label.size = NA, family = font_legend),
               x = 0.986,
               y = 0.078,
               height = 0.8,
@@ -1607,6 +1608,7 @@ generate_national_sankey <- function(supply_summary, supply_colors, type_colors,
 
   ggsave(outfile_template, sankey_plot, width = width, height = height, dpi = dpi, bg = bkgd_color)
 
+  # Instagram version (1:1)
   } else {
     plot_margin <- 0.025
 
@@ -1622,14 +1624,15 @@ generate_national_sankey <- function(supply_summary, supply_colors, type_colors,
       draw_plot(sankey +
                   geom_sankey(width = 0.02) +
                   geom_sankey_label(aes(x = x + nudge_x, hjust = h_just_ig), size = label_size, color = "black", fill = "white",
-                                    label.size = NA),
+                                    label.size = NA, family = font_legend) +
+                  theme(plot.margin = unit(c(0, 0.25, 0, 0.25), "cm")),
                 x = (1-plot_margin)*0.02,
                 y = 0.08,
                 height = 0.8,
                 width = (1-plot_margin)) +
       # Add gage location title
       draw_label("Distribution of water sources\n by facility types",
-                 x = plot_margin*2.8,
+                 x = plot_margin*1.8,
                  y = 1-plot_margin*0.9,
                  size = 14.5,
                  hjust = 0,
