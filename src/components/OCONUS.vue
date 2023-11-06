@@ -7,7 +7,7 @@
         </h2>
       </div>
       <div id="text">
-        <div class="text-container" v-if = "!mobileView">
+        <div v-if = "!mobileView">
           <p class="viz-comment">
             Click on the dropdown menu, bar chart, or map to explore!
           </p>
@@ -93,7 +93,7 @@ export default {
       genericPath: null,
       genericProjection: null,
       chartBounds: null,
-      xScale: null,
+      yScale: null,
       focalColor: null,
       defaultColor: null,
       currentType: null,
@@ -519,10 +519,10 @@ export default {
         width,
         height: height,
         margin: {
-          top: 20,
-          right: 5,
-          bottom: 60,
-          left: 15
+          top: 5,
+          right: 45,
+          bottom: 5,
+          left: 100
         }
       }
       this.chartDimensions.boundedWidth = this.chartDimensions.width - this.chartDimensions.margin.left - this.chartDimensions.margin.right
@@ -555,51 +555,51 @@ export default {
           .attr("tabindex", 0)
           .attr("aria-label", "bar chart bars")
 
-      // X axis
+      // Y axis
 
       // scale for the x-axis
-      this.xScale = this.d3.scaleBand()
+      this.yScale = this.d3.scaleBand()
         .domain(this.dataTypes)
-        .range([0, this.chartDimensions.boundedWidth])
+        .range([0, this.chartDimensions.boundedHeight])
         .padding(0.1);
 
-      const xAxis = this.chartBounds.append("g")
-          .attr("class", "x-axis")
-          .style("transform", `translateY(${
-            this.chartDimensions.boundedHeight
-          }px)`)
+      const yAxis = this.chartBounds.append("g")
+          .attr("class", "y-axis")
+          // .style("transform", `translateY(${
+          //   this.chartDimensions.boundedHeight
+          // }px)`)
           .attr("role", "presentation")
           .attr("aria-hidden", true)
 
-      xAxis
-        .call(this.d3.axisBottom(this.xScale).tickSize(0).tickPadding(10))
+      yAxis
+        .call(this.d3.axisLeft(this.yScale).tickSize(0).tickPadding(10))
         .select(".domain").remove()
 
-      xAxis
+      yAxis
         .selectAll("text")
         .attr("class", "axis-label chart-text")
-        .style("text-anchor", "middle")
+        .style("text-anchor", "end")
         // Wrap x-axis labels
-        .call(d => self.wrapHorizontalLabels(d, 7));
+        // .call(d => self.wrapHorizontalLabels(d, 7));
 
-      xAxis
+      yAxis
         .append("text")
-          .attr("class", "x-axis axis-title chart-text")
-          .attr("x", this.chartDimensions.boundedWidth / 2)
-          .attr("y", this.chartDimensions.margin.bottom - 5)
+          .attr("class", "y-axis axis-title chart-text")
+          .attr("x", -this.chartDimensions.margin.left + 5)
+          .attr("y", -this.chartDimensions.margin.left + 5)
+          .attr("transform", "rotate(-90)")
           .style("text-anchor", "middle")
           .attr("role", "presentation")
           .attr("aria-hidden", true)
 
       this.chartBounds.append("g")
-        .attr("class", "y-axis")
+        .attr("class", "x-axis")
         .attr("role", "presentation")
         .attr("aria-hidden", true)
         .append("text")
-          .attr("class", "y-axis axis-title chart-text")
-          .attr("x", -this.chartDimensions.boundedHeight / 2)
-          .attr("y", 0)
-          .attr("transform", "rotate(-90)")
+          .attr("class", "x-axis axis-title chart-text")
+          .attr("x", this.chartDimensions.boundedWidth / 2)
+          .attr("y", this.chartDimensions.boundedHeight)
           .style("text-anchor", "middle")
           .attr("role", "presentation")
           .attr("aria-hidden", true)
@@ -670,8 +670,8 @@ export default {
       }
 
       // accessor functions
-      const xAccessor = d => d.WB_TYPE
-      const yAccessor = d => parseInt(d.site_count) // # values in each bin
+      const yAccessor = d => d.WB_TYPE
+      const xAccessor = d => parseInt(d.site_count) // # values in each bin
       const colorAccessor = d => d.WB_TYPE
       const identifierAccessor = d => d.WB_TYPE.replace(' ', '-')
 
@@ -679,15 +679,15 @@ export default {
       this.d3.select("#chart-container").select("Title")
         .text(`Bar chart of distribution of facility types for ${state}`)
 
-      // create y scale
-      const yScale = this.d3.scaleLinear()
-        .domain([0, this.d3.max(data, yAccessor)]) // use y accessor w/ raw data
-        .range([this.chartDimensions.boundedHeight, 0])
+      // create x scale
+      const xScale = this.d3.scaleLinear()
+        .domain([0, this.d3.max(data, xAccessor)]) // use y accessor w/ raw data
+        .range([this.chartDimensions.boundedWidth, 0])
         .nice()
 
-      const colorScale = this.d3.scaleOrdinal()
-        .domain([... new Set(data.map(d => colorAccessor(d)))].sort())
-        .range(["darkmagenta","teal","gold","indianred","steelblue","pink"])
+      // const colorScale = this.d3.scaleOrdinal()
+      //   .domain([... new Set(data.map(d => colorAccessor(d)))].sort())
+      //   .range(["darkmagenta","teal","gold","indianred","steelblue","pink"])
 
       // draw data
       let rectGroups = self.chartBounds.selectAll(".rects")
@@ -698,12 +698,12 @@ export default {
 
       oldRectGroups.selectAll('rect')
         .transition(self.getExitTransition())
-        .attr("y", d => this.chartDimensions.boundedHeight)
-        .attr("height", 0)
+        .attr("x", d => this.chartDimensions.boundedWidth)
+        .attr("width", 0)
 
       oldRectGroups.selectAll('text')
         .transition(self.getExitTransition())
-        .attr("y", d => this.chartDimensions.boundedHeight)
+        .attr("x", d => this.chartDimensions.boundedWidth)
 
       oldRectGroups.transition(self.getExitTransition()).remove()
 
@@ -713,25 +713,25 @@ export default {
         .attr("tabindex", "0")
         .attr("role", "listitem")
         .attr("aria-label", d => `There are ${
-          yAccessor(d)
-        } ${
           xAccessor(d)
+        } ${
+          yAccessor(d)
         } facilities in ${
           state
         }`)
 
-      // append rects and set default y and height, so that when appear, come up from bottom
+      // append rects and set default x and width, so that when appear, come out from left
       newRectGroups.append("rect")
-        .attr("x", d => this.xScale(xAccessor(d)))
-        .attr("y", this.chartDimensions.boundedHeight)
-        .attr("width", this.xScale.bandwidth())
-        .attr("height", 0)
-        .style("fill", d => d.WB_TYPE === this.currentType ? this.focalColor : this.defaultColor) //colorScale(colorAccessor(d)))
+        .attr("y", d => this.yScale(yAccessor(d)))
+        .attr("x", 0)
+        .attr("height", this.yScale.bandwidth())
+        .attr("width", 0)
+        .style("fill", d => d.WB_TYPE === this.currentType ? this.focalColor : this.defaultColor)
 
       // append text and set default position
       newRectGroups.append("text")
-        .attr("x", d => this.xScale(xAccessor(d)) + this.xScale.bandwidth()/2)
-        .attr("y", this.chartDimensions.boundedHeight)
+        .attr("y", d => this.yScale(yAccessor(d)) + this.yScale.bandwidth()/2)
+        .attr("x", 0)
 
       // update rectGroups to include new points
       rectGroups = newRectGroups.merge(rectGroups)
@@ -740,11 +740,11 @@ export default {
 
       barRects.transition(self.getUpdateTransition())
           .attr("id", d => 'rect-' + identifierAccessor(d))
-          .attr("x", d => this.xScale(xAccessor(d)))
-          .attr("y", d => yScale(yAccessor(d)))
-          .attr("width", this.xScale.bandwidth()) // if negative, bump up to 0
-          .attr("height", d => this.chartDimensions.boundedHeight - yScale(yAccessor(d)))
-          .style("fill", d => d.WB_TYPE === this.currentType ? this.focalColor : this.defaultColor) // colorScale(colorAccessor(d)))
+          .attr("y", d => this.yScale(yAccessor(d)))
+          .attr("x", d => 0)
+          .attr("height", this.yScale.bandwidth()) // if negative, bump up to 0
+          .attr("width", d => this.chartDimensions.boundedWidth - xScale(xAccessor(d)))
+          .style("fill", d => d.WB_TYPE === this.currentType ? this.focalColor : this.defaultColor)
           .attr("class", d => 'bar ' + identifierAccessor(d))
 
       rectGroups
@@ -821,41 +821,43 @@ export default {
       const barText = rectGroups.select("text")
         .transition(self.getUpdateTransition())
           .attr("class", "bar-label chart-text")
-          .attr("x", d => this.xScale(xAccessor(d)) + this.xScale.bandwidth()/2)
-          .attr("y", d => yScale(yAccessor(d)) - 5)
-          .style("text-anchor", "middle")
-          .text(d => this.d3.format(',')(yAccessor(d)))
+          .attr("y", d => this.yScale(yAccessor(d)) + this.yScale.bandwidth()/2)
+          .attr("x", d => this.chartDimensions.boundedWidth - xScale(xAccessor(d)) + 5)
+          .style("text-anchor", "start")
+          .attr("alignment-baseline", "middle") // center text
+          .attr("dominant-baseline", "middle") // required for Firefox
+          .text(d => this.d3.format(',')(xAccessor(d)))
 
-      const xAxisLabel = this.chartBounds.select(".x-axis.axis-title")
+      const yAxisLabel = this.chartBounds.select(".y-axis.axis-title")
 
       if (state === this.nationalViewName) {
-        xAxisLabel
+        yAxisLabel
           .text('Distribution of facility types nationally')
       } else {
-        xAxisLabel
+        yAxisLabel
           .text(`Distribution of facility types in ${
             state
           }`)
       }
 
-      const yAxisGenerator = this.d3.axisLeft()
-        .scale(yScale)
+      const xAxisGenerator = this.d3.axisBottom()
+        .scale(xScale)
         .tickValues([]);
 
-      const yAxis = this.chartBounds.select(".y-axis")
+      const xAxis = this.chartBounds.select(".x-axis")
 
-      yAxis
+      xAxis
         .transition(self.getUpdateTransition())
-        .call(yAxisGenerator)
+        .call(xAxisGenerator)
         .select(".domain").remove()
         // .attr("role", "presentation")
         // .attr("aria-hidden", true)
 
-      yAxis.selectAll(".tick line").attr("stroke", "None")
+      xAxis.selectAll(".tick line").attr("stroke", "None")
 
-      const yAxisLabel = yAxis.select(".y-axis.axis-title")
+      const xAxisLabel = xAxis.select(".x-axis.axis-title")
 
-      yAxisLabel
+      xAxisLabel
         .text('Number of facilities')
 
     },
@@ -1543,26 +1545,26 @@ export default {
   }
   #grid-container-interactive {
     display: grid;
-    grid-template-columns: 49% 49%;
+    grid-template-columns: 40% 60%;
     column-gap: 2%;
     grid-template-rows: max-content 18vh max-content;
     row-gap: 2vh;
     grid-template-areas:
       "title title"
-      "text chart"
-      "map map";
+      "chart map"
+      "text map";
     justify-content: center;
     margin: 1rem 0rem 3rem 0rem;
     // height: 95vh;
-    @media screen and (max-height: 770px) {
-      grid-template-columns: 40% 60%;
-      column-gap: 2%;
-      grid-template-rows: max-content max-content 40vh;
-      grid-template-areas:
-        "title map"
-        "text map"
-        "chart map";
-    }
+    // @media screen and (max-height: 770px) {
+    //   grid-template-columns: 20% 80%;
+    //   column-gap: 2%;
+    //   grid-template-rows: max-content max-content 40vh;
+    //   grid-template-areas:
+    //     "title title"
+    //     "chart map"
+    //     "text map";
+    // }
   }
   #grid-container-interactive.mobile {
     grid-template-columns: 100%;
