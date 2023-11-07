@@ -1465,6 +1465,7 @@ export default {
   }
   .chart-text {
     font-size: 1.6rem;
+    user-select: none;
     @media screen and (max-width: 600px) {
       font-size: 1.4rem;
     }
