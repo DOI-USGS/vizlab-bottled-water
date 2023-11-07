@@ -5,112 +5,30 @@
     xmlns:xlink="http://www.w3.org/1999/xlink"
     width="100%"
     height="100%"
-    viewBox="0 0 900 675"
+    viewBox="0 0 900 405"
     preserveAspectRatio="xMidYMid meet"
   >
-    <g id="map-borders">
-      <g id="vertical-ak-border">
-        <line
-          class="borders"
-          x1="515"
-          y1="266.5"
-          x2="515"
-          y2="2"
-        />
-      </g>
-      <g id="horizontal-ak-border">
-        <line
-          class="borders"
-          x1="0"
-          y1="270"
-          x2="515"
-          y2="270"
-        />
-      </g>
-      <g id="pr-vi-borders">
-        <line
-          class="borders"
-          x1="740"
-          y1="671.6"
-          x2="740"
-          y2="567"
-        />
-        <line
-          class="borders"
-          x1="743.5"
-          y1="565"
-          x2="898"
-          y2="565"
-        />
-      </g>
-      <g id="vertical-island-border">
-        <line
-          class="borders"
-          x1="150"
-          y1="273.5"
-          x2="150"
-          y2="673"
-        />
-      </g>
-      <g id="horizontal-hi-border">
-        <line
-          class="borders"
-          x1="0"
-          y1="425"
-          x2="148"
-          y2="425"
-        />
-      </g>
-      <g id="horizontal-as-border">
-        <line
-          class="borders"
-          x1="0"
-          y1="595"
-          x2="148"
-          y2="595"
-        />
-      </g>
+    <g id="scale_place_labels">
+      <text class="scale-labels labels" transform="translate(4.5 183.5)">x2 <tspan class="place-labels labels" x="14">Northern<tspan x="14" y="9.6">Mariana Islands</tspan></tspan></text>
+      <text class="scale-labels labels" transform="translate(101.5 183.5)">x2 <tspan class="place-labels labels" x="14">Hawaii</tspan></text>
+      <text class="scale-labels labels" transform="translate(258.5 11.6)">x1 <tspan class="place-labels labels" x="14">Contiguous United States</tspan></text>
+      <text class="place-labels labels" transform="translate(198 168.8)">Alaska<tspan class="scale-labels labels" x="32"> x0.5</tspan></text>
+      <text class="scale-labels labels" transform="translate(101.5 330)">x2 <tspan class="place-labels labels" x="14">American Samoa</tspan></text>
+      <text class="scale-labels labels" transform="translate(101.5 374)">x2 <tspan class="place-labels labels" x="14">Puerto Rico & the U.S. Virgin Islands</tspan></text>
+      <text class="place-labels labels" transform="translate(25 405)">Guam</text>
     </g>
-    <g id="map-labels">
-      <text
-        class="labels"
-        transform="translate(180 35.2)"
-      >Alaska</text>
-      <text
-        class="labels"
-        transform="translate(53.4 301.5)"
-      >Hawaii</text>
-      <text
-        class="labels"
-        transform="translate(18.2 447.4)"
-      >Northern Mariana<tspan
-        x="35.1"
-        y="19.2"
-      >Islands</tspan></text>
-      <text
-        class="labels"
-        transform="translate(368.6 297.4)"
-      >Contiguous United States</text>
-      <text
-        class="labels"
-        transform="translate(755.1 587.5)"
-      >Puerto Rico and the<tspan
-        x="5.8"
-        y="19.2"
-      >U.S. Virgin Islands</tspan></text>
-      <text
-        class="labels"
-        transform="translate(56.9 587.9)"
-      >Guam</text>
-      <text
-        class="labels"
-        transform="translate(21.3 615.7)"
-      >American Samoa</text>
+    <g id="corners">
+      <polyline id="line-Hawaii" class="corner-lines" points="98 205 98 173 130 173"/>
+      <polyline id="line-NortherMarianaIslands" class="corner-lines" points="1 205 1 173 33 173"/>
+      <polyline id="line-AmericanSamoa" class="corner-lines" points="98 351 98 319 130 319"/>
+      <polyline id="line-PuertoRicoVirginIslands" class="corner-lines" points="98 398 98 363 130 363"/>
+      <polyline id="line-CONUS" class="corner-lines" points="255 17 255 1 271 1"/>
+      <polyline id="line-Alaska" class="corner-lines" points="255 165 255 173 247 173"/>
     </g>
     <image
       width="750"
       height="750"
-      transform="translate(5 5) scale(.18)"
+      transform="translate(1 1) scale(0.12)"
       xlink:href="../assets/images/locator_map.png"
     />
   </svg>
@@ -122,18 +40,21 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-  .borders {
-      stroke-dasharray: 0 0 0.5 4;
-      fill: none;
-      stroke: #606161;
-      stroke-miterlimit: 10;
-      stroke-width: .75px;
-  }
-
   .labels {
-      fill: #231f20;
-      font-family: SourceSansPro-It, 'Source Sans Pro';
-      font-size: 1.6rem;
-      font-style: italic;
+    font-size: 1.1rem;
+    fill: #6E6E6E;
+    font-style: italic;
+  }
+  .corner-lines {
+    fill: none;
+    stroke: #949494;
+    stroke-miterlimit: 10;
+    stroke-width: .02rem;
+  }
+  .place-labels {
+    font-weight: 400;
+  }
+  .scale-labels {
+    font-weight: 300;
   }
 </style>
