@@ -1532,14 +1532,13 @@ export default {
       "text map";
     justify-content: center;
     margin: 1rem 0rem 3rem 0rem;
-    height: 95vh;
     @media screen and (max-height: 770px) {
       grid-template-rows: max-content 30vh max-content;
     }
   }
   #grid-container-interactive.mobile {
     grid-template-columns: 100%;
-      grid-template-rows: max-content max-content max-content 25vh;
+      grid-template-rows: max-content max-content max-content 30vh;
       grid-template-areas:
         "title"
         "text"
@@ -1562,20 +1561,14 @@ export default {
     grid-area: map;
     align-self: start;
     height: 100%;
-    max-height: 68vh;
-    @media screen and (max-height: 770px) {
-      max-height: 90vh;
-    }
+    max-height: 70vh;
   }
   #map-label-container {
     pointer-events: none;
     grid-area: map;
     align-self: start;
     height: 100%;
-    max-height: 68vh;
-    @media screen and (max-height: 770px) {
-      max-height: 90vh;
-    }
+    max-height: 70vh;
   }
   #text {
     grid-area: text;
