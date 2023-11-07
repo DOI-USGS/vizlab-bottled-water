@@ -520,14 +520,14 @@ export default {
         height: height,
         margin: {
           top: 5,
-          right: 45,
+          right: 5,
           bottom: 5,
-          left: 100
+          left: 5
         }
       }
       this.chartDimensions.boundedWidth = this.chartDimensions.width - this.chartDimensions.margin.left - this.chartDimensions.margin.right
       this.chartDimensions.boundedHeight = this.chartDimensions.height - this.chartDimensions.margin.top - this.chartDimensions.margin.bottom
-
+      
       // draw canvas for histogram
       const chartSVG = this.d3.select("#chart-container")
         .append("svg")
@@ -561,48 +561,48 @@ export default {
       this.yScale = this.d3.scaleBand()
         .domain(this.dataTypes)
         .range([0, this.chartDimensions.boundedHeight])
-        .padding(0.1);
+        .padding(0);
 
-      const yAxis = this.chartBounds.append("g")
-          .attr("class", "y-axis")
-          // .style("transform", `translateY(${
-          //   this.chartDimensions.boundedHeight
-          // }px)`)
-          .attr("role", "presentation")
-          .attr("aria-hidden", true)
+      // const yAxis = this.chartBounds.append("g")
+      //     .attr("class", "y-axis")
+      //     // .style("transform", `translateY(${
+      //     //   this.chartDimensions.boundedHeight
+      //     // }px)`)
+      //     .attr("role", "presentation")
+      //     .attr("aria-hidden", true)
 
-      yAxis
-        .call(this.d3.axisLeft(this.yScale).tickSize(0).tickPadding(10))
-        .select(".domain").remove()
+      // yAxis
+      //   .call(this.d3.axisLeft(this.yScale).tickSize(0).tickPadding(10))
+      //   .select(".domain").remove()
 
-      yAxis
-        .selectAll("text")
-        .attr("class", "axis-label chart-text")
-        .style("text-anchor", "end")
+      // yAxis
+      //   .selectAll("text")
+      //   .attr("class", "axis-label chart-text")
+      //   .style("text-anchor", "end")
         // Wrap x-axis labels
         // .call(d => self.wrapHorizontalLabels(d, 7));
 
-      yAxis
-        .append("text")
-          .attr("class", "y-axis axis-title chart-text")
-          .attr("x", -this.chartDimensions.margin.left + 5)
-          .attr("y", -this.chartDimensions.margin.left + 5)
-          .attr("transform", "rotate(-90)")
-          .style("text-anchor", "middle")
-          .attr("role", "presentation")
-          .attr("aria-hidden", true)
+      // yAxis
+      //   .append("text")
+      //     .attr("class", "y-axis axis-title chart-text")
+      //     .attr("x", -this.chartDimensions.margin.left + 5)
+      //     .attr("y", -this.chartDimensions.margin.left + 5)
+      //     .attr("transform", "rotate(-90)")
+      //     .style("text-anchor", "middle")
+      //     .attr("role", "presentation")
+      //     .attr("aria-hidden", true)
 
-      this.chartBounds.append("g")
-        .attr("class", "x-axis")
-        .attr("role", "presentation")
-        .attr("aria-hidden", true)
-        .append("text")
-          .attr("class", "x-axis axis-title chart-text")
-          .attr("x", this.chartDimensions.boundedWidth / 2)
-          .attr("y", this.chartDimensions.boundedHeight)
-          .style("text-anchor", "middle")
-          .attr("role", "presentation")
-          .attr("aria-hidden", true)
+      // this.chartBounds.append("g")
+      //   .attr("class", "x-axis")
+      //   .attr("role", "presentation")
+      //   .attr("aria-hidden", true)
+        // .append("text")
+        //   .attr("class", "x-axis axis-title chart-text")
+        //   .attr("x", this.chartDimensions.boundedWidth / 2)
+        //   .attr("y", this.chartDimensions.boundedHeight)
+        //   .style("text-anchor", "middle")
+        //   .attr("role", "presentation")
+        //   .attr("aria-hidden", true)
     },
     // function to wrap text added with d3 modified from
     // https://stackoverflow.com/questions/24784302/wrapping-text-in-d3
@@ -698,12 +698,12 @@ export default {
 
       oldRectGroups.selectAll('rect')
         .transition(self.getExitTransition())
-        .attr("x", d => this.chartDimensions.boundedWidth)
+        .attr("x", 0)
         .attr("width", 0)
 
       oldRectGroups.selectAll('text')
         .transition(self.getExitTransition())
-        .attr("x", d => this.chartDimensions.boundedWidth)
+        .attr("x", 0)
 
       oldRectGroups.transition(self.getExitTransition()).remove()
 
@@ -728,10 +728,7 @@ export default {
         .attr("width", 0)
         .style("fill", d => d.WB_TYPE === this.currentType ? this.focalColor : this.defaultColor)
 
-      // append text and set default position
-      newRectGroups.append("text")
-        .attr("y", d => this.yScale(yAccessor(d)) + this.yScale.bandwidth()/2)
-        .attr("x", 0)
+
 
       // update rectGroups to include new points
       rectGroups = newRectGroups.merge(rectGroups)
@@ -740,12 +737,25 @@ export default {
 
       barRects.transition(self.getUpdateTransition())
           .attr("id", d => 'rect-' + identifierAccessor(d))
-          .attr("y", d => this.yScale(yAccessor(d)))
+          .attr("y", d => this.yScale(yAccessor(d)) + this.yScale.bandwidth() - this.yScale.bandwidth() / 6)
           .attr("x", d => 0)
-          .attr("height", this.yScale.bandwidth()) // if negative, bump up to 0
+          .attr("height", this.yScale.bandwidth() / 6) // if negative, bump up to 0
           .attr("width", d => this.chartDimensions.boundedWidth - xScale(xAccessor(d)))
           .style("fill", d => d.WB_TYPE === this.currentType ? this.focalColor : this.defaultColor)
           .attr("class", d => 'bar ' + identifierAccessor(d))
+
+      newRectGroups.append("rect")
+        .attr("y", d => this.yScale(yAccessor(d)))
+        .attr("x", 0)
+        .attr("height", this.yScale.bandwidth())
+        .attr("width", this.chartDimensions.boundedWidth)
+        .style("fill", 'white')
+        .style("fill-opacity", 0)
+
+      // append text and set default position
+      newRectGroups.append("text")
+        .attr("y", d => this.yScale(yAccessor(d)) + this.yScale.bandwidth()/2)
+        .attr("x", 0)
 
       rectGroups
         .on("click", (event, d) => {
@@ -821,12 +831,34 @@ export default {
       const barText = rectGroups.select("text")
         .transition(self.getUpdateTransition())
           .attr("class", "bar-label chart-text")
-          .attr("y", d => this.yScale(yAccessor(d)) + this.yScale.bandwidth()/2)
-          .attr("x", d => this.chartDimensions.boundedWidth - xScale(xAccessor(d)) + 5)
+          // .attr("y", d => this.yScale(yAccessor(d)) - this.yScale.bandwidth() * 2)
+          .attr("y", d => this.yScale(yAccessor(d)) + this.yScale.bandwidth() / 2)
+          .attr("x", 0)
           .style("text-anchor", "start")
           .attr("alignment-baseline", "middle") // center text
           .attr("dominant-baseline", "middle") // required for Firefox
-          .text(d => this.d3.format(',')(xAccessor(d)))
+          .text(d => {
+            const count = xAccessor(d); 
+            let suffix;
+            switch(yAccessor(d)) {
+            case 'Brewery':
+              suffix = count > 1 ? 'Breweries' : yAccessor(d);
+              break;
+            case 'Distillery':
+              suffix = count > 1 ? 'Distilleries' : yAccessor(d);
+              break;
+            case 'Winery':
+              suffix = count > 1 ? 'Wineries' : yAccessor(d);
+              break;
+            case 'Soft drinks':
+              suffix = count > 1 ? 'Soft drink facilities' : 'Soft drink facility';
+              break;
+            default:
+              suffix =  count > 1 ? yAccessor(d) + ' facilities' : yAccessor(d) + ' facility';
+            }
+
+            return this.d3.format(',')(xAccessor(d)) + " " + suffix;
+          })
 
       const yAxisLabel = this.chartBounds.select(".y-axis.axis-title")
 
@@ -855,10 +887,10 @@ export default {
 
       xAxis.selectAll(".tick line").attr("stroke", "None")
 
-      const xAxisLabel = xAxis.select(".x-axis.axis-title")
+      // const xAxisLabel = xAxis.select(".x-axis.axis-title")
 
-      xAxisLabel
-        .text('Number of facilities')
+      // xAxisLabel
+      //   .text('Number of facilities')
 
     },
     drawMap(state, scale) {
@@ -1545,9 +1577,9 @@ export default {
   }
   #grid-container-interactive {
     display: grid;
-    grid-template-columns: 40% 60%;
+    grid-template-columns: 20% 80%;
     column-gap: 2%;
-    grid-template-rows: max-content 18vh max-content;
+    grid-template-rows: max-content 20vh max-content;
     row-gap: 2vh;
     grid-template-areas:
       "title title"
@@ -1555,16 +1587,10 @@ export default {
       "text map";
     justify-content: center;
     margin: 1rem 0rem 3rem 0rem;
-    // height: 95vh;
-    // @media screen and (max-height: 770px) {
-    //   grid-template-columns: 20% 80%;
-    //   column-gap: 2%;
-    //   grid-template-rows: max-content max-content 40vh;
-    //   grid-template-areas:
-    //     "title title"
-    //     "chart map"
-    //     "text map";
-    // }
+    height: 95vh;
+    @media screen and (max-height: 770px) {
+      grid-template-rows: max-content 30vh max-content;
+    }
   }
   #grid-container-interactive.mobile {
     grid-template-columns: 100%;
