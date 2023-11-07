@@ -238,7 +238,7 @@ export default {
         const bounds = this.mapPath.bounds(currentStateData),
               dx = bounds[1][0] - bounds[0][0],
               dy = bounds[1][1] - bounds[0][1],
-              scale = .9 / Math.max(dx / this.mapDimensions.width, dy / this.mapDimensions.height)
+              scale = .95 / Math.max(dx / this.mapDimensions.width, dy / this.mapDimensions.height)
         this.currentScale = scale
       }
       self.drawHistogram(this.currentState)
@@ -1387,10 +1387,12 @@ export default {
         width: 2 * this.d3.max([ x1 - cx, cx - x0]),
         height: 2 * this.d3.max([ y1 - cy, cy - y0])
       };
-      const zoom_scale = 0.92 * this.d3.min([
+      // Use full mapDims height so that zoomed area fills map area
+      // Have to account for margins in translation b/c margins are applied in national view
+      const zoom_scale = 0.95 * this.d3.min([
         this.mapDimensions.height/stateDims.height,
         this.mapDimensions.width/stateDims.width]);
-      const translate = [this.mapDimensions.width / 2 - zoom_scale * cx, this.mapDimensions.height / 2 - zoom_scale * cy]
+      const translate = [this.mapDimensions.width / 2 - zoom_scale * cx - this.mapDimensions.margin.left, this.mapDimensions.height / 2 - zoom_scale * cy - this.mapDimensions.margin.top]
 
       // set global scale variable
       this.currentScale = zoom_scale;
