@@ -69,7 +69,10 @@ export default {
       mobileView: isMobile, // test for mobile
       statePolysCONUSJSON: null,
       statePolysAKJSON: null,
+      statePolysASJSON: null,
+      statePolysGUMPJSON: null,
       statePolysHIJSON: null,
+      statePolysPRVIJSON: null,
       statePolysZoom: null,
       statePolys: null,
       countyPolysZoom: null,
@@ -170,17 +173,20 @@ export default {
       const statePolysAK = this.statePolysAKJSON.features;
 
       const statePolysAStopoJSON = data[3];
-      const statePolysAS = topojson.feature(statePolysAStopoJSON, statePolysAStopoJSON.objects.states_polys_AS).features;
+      this.statePolysASJSON = topojson.feature(statePolysAStopoJSON, statePolysAStopoJSON.objects.states_polys_AS)
+      const statePolysAS = this.statePolysASJSON.features;
 
       const statePolysGUMPtopoJSON = data[4];
-      const statePolysGUMP = topojson.feature(statePolysGUMPtopoJSON, statePolysGUMPtopoJSON.objects.states_polys_GU_MP).features;
+      this.statePolysGUMPJSON = topojson.feature(statePolysGUMPtopoJSON, statePolysGUMPtopoJSON.objects.states_polys_GU_MP);
+      const statePolysGUMP = this.statePolysGUMPJSON.features;
 
       const statePolysHItopoJSON = data[5];
       this.statePolysHIJSON = topojson.feature(statePolysHItopoJSON, statePolysHItopoJSON.objects.states_polys_HI);
       const statePolysHI = this.statePolysHIJSON.features;
 
       const statePolysPRVItopoJSON = data[6];
-      const statePolysPRVI = topojson.feature(statePolysPRVItopoJSON, statePolysPRVItopoJSON.objects.states_polys_PR_VI).features;
+      this.statePolysPRVIJSON = topojson.feature(statePolysPRVItopoJSON, statePolysPRVItopoJSON.objects.states_polys_PR_VI)
+      const statePolysPRVI = this.statePolysPRVIJSON.features;
 
       // Low simplification state polygons, for zoom view
       const statePolysZoomTopoJSON = data[7];
