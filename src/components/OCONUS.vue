@@ -337,19 +337,55 @@ export default {
       // Remove tmp dropdown
       window.document.body.removeChild(tmpSelect)
     },
+    getGeometryInfo(json, area_name) {
+      const self = this;
+
+      const bounds = this.d3.geoBounds(json),
+            minX = bounds[0][0],
+            maxX = bounds[1][0],
+            minY = bounds[0][1],
+            maxY = bounds[1][1],
+            width = area_name === 'AK' ? (180 - Math.abs(maxX)) + (180 - minX) : maxX - minX,
+            height = maxY - minY
+      
+      let center;
+      switch(area_name) {
+        case 'AK':
+          center = [Math.abs(maxX - width / 2), minY + height / 2];
+          break;
+        case 'GU_MP':
+          center = [-1 * (maxX - width / 2), minY + height / 2];
+          break;
+        default:
+          center =  [Math.abs(maxX - width / 2), minY + height / 2];
+      }
+
+      const geometryInfo = {
+        bounds,
+        minX,
+        maxX,
+        minY,
+        maxY,
+        width,
+        height,
+        center,
+        parallels: [minY + height * 1/3, minY + height * 2/3]
+      }
+      return geometryInfo
+    },
     initMap() {
       const self = this;
 
-      // set universal map frame dimensions
-      const map_width = 900;
+      // set universal map frame dimensions - height= width * 0.45
+      const width = 900;
       this.mapDimensions = {
-        width: map_width,
-        height: map_width * 0.75,
+        width,
+        height: width * 0.45,
         margin: {
-          top: 5,
-          right: 5,
-          bottom: 5,
-          left: 5
+          top: 60,
+          right: 0,
+          bottom: 0,
+          left: -15
         }
       }
       this.mapDimensions.boundedWidth = this.mapDimensions.width - this.mapDimensions.margin.left - this.mapDimensions.margin.right
