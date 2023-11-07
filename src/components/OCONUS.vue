@@ -921,55 +921,12 @@ export default {
       const self = this;
 
       let data;
-      // let selectedMapPath;
-      // let featureBounds;
 
       if (state === this.nationalViewName) {
         data = this.statePolys
-        // selectedMapPath = this.mapPath
-        // featureBounds = null;
-      // } else if (state === 'Alaska') {
-      //   data = this.statePolysAK
-      //   selectedMapPath = this.mapPathAK
-      //   featureBounds = self.calculateScaleTranslation(data[0], selectedMapPath)
-      // } else if (state === 'Puerto Rico' | state === 'United States Virgin Islands') {
-      //   data = this.statePolysPRVI
-      //   selectedMapPath = this.mapPath
-      //   featureBounds = self.calculateScaleTranslation(data, selectedMapPath)
       } else {
         data = this.statePolysZoom.filter(d =>
           d.properties.NAME === state)
-
-        // Could set path for area here
-        // let stateMapPath;
-        // switch(state) {
-        //     case 'Alaska':
-        //       stateMapPath =  this.mapPathAK;
-        //       break;
-        //     case 'Hawaii':
-        //       stateMapPath = this.mapPathHI;
-        //       break;
-        //     case 'Puerto Rico':
-        //       stateMapPath = this.mapPathPRVI;
-        //       break;
-        //     case 'United States Virgin Islands':
-        //       stateMapPath = this.mapPathPRVI;
-        //       break;
-        //     case 'Guam':
-        //       stateMapPath = self.mapPathGUMP;
-        //       break;
-        //     case 'Commonwealth of the Northern Mariana Islands':
-        //       stateMapPath = self.mapPathGUMP;
-        //       break;
-        //     case 'American Samoa':
-        //       stateMapPath = self.mapPathAS;
-        //       break;
-        //     default:
-        //       stateMapPath = this.mapPath;
-        //   }
-
-        // selectedMapPath = this.mapPath
-        // featureBounds = self.calculateScaleTranslation(data, selectedMapPath)
       }
 
       this.stateGroups = this.mapBounds.selectAll(".states")
@@ -995,16 +952,6 @@ export default {
         .attr("class", "state-paths")
         .attr("id", d => "state-" + d.properties.GEOID)
         .attr("d", d => {
-          // let computedBounds = self.calculateScaleTranslation(d, selectedMapPath)
-          // // console.log(d.properties.NAME)
-          // // console.log(computedBounds)
-          // // console.log(this.genericProjection)
-          // this.genericProjection
-          //   .scale(computedBounds.scale)
-          //   .translate(computedBounds.translation)
-          // // console.log(this.genericProjection)
-          // return this.genericPath(d)
-          // return d.properties.NAME === 'Alaska' ? this.mapPathAK(d) : this.mapPath(d)
           switch(d.properties.NAME) {
             case 'Alaska':
               return this.mapPathAK(d);
@@ -1399,41 +1346,6 @@ export default {
     },
     drawBars() {
 
-    },
-    calculateScaleTranslation(feature, path) {
-      const b = path.bounds(feature)
-
-      const s = .95 / Math.max((b[1][0] - b[0][0]) / this.mapDimensions.width, (b[1][1] - b[0][1]) / this.mapDimensions.height)
-      const t = [(this.mapDimensions.width - s * (b[1][0] + b[0][0])) / 2, (this.mapDimensions.height - s * (b[1][1] + b[0][1])) / 2];
-
-      return {
-        'scale': s,
-        'translation': t
-      };
-    },
-    calculateScaleCenter(features, path, width, height) {
-      const self = this;
-
-      // Get the bounding box of the paths (in pixels!) and calculate a
-      // scale factor based on the size of the bounding box and the map
-      // size.
-      var bbox_path = path.bounds(features),
-          scale = 0.95 / Math.max(
-            (bbox_path[1][0] - bbox_path[0][0]) / width,
-            (bbox_path[1][1] - bbox_path[0][1]) / height
-          );
-
-      // Get the bounding box of the features (in map units!) and use it
-      // to calculate the center of the features.
-      var bbox_feature = this.d3.geoBounds(features),
-          center = [
-            (bbox_feature[1][0] + bbox_feature[0][0]) / 2,
-            (bbox_feature[1][1] + bbox_feature[0][1]) / 2];
-
-      return {
-        'scale': scale,
-        'center': center
-      };
     },
     zoomToState(d, path, callMethod) {
       const self = this;
