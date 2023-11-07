@@ -1464,8 +1464,11 @@ export default {
     fill: #666666;
   }
   .chart-text {
-    font-size: 1.6rem;
+    // font-size: 1.6rem;
     user-select: none;
+    @media screen and (max-height: 770px) {
+      font-size: 1.7rem;
+    }
     @media screen and (max-width: 600px) {
       font-size: 1.4rem;
     }

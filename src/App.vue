@@ -248,7 +248,7 @@
   .viz-comment {
     font-family: $SourceSans;
     font-style: italic;
-    font-size: 1.8rem;
+    font-size: 1.7rem;
     @media screen and (max-width: 600px) {
       font-size: 1.6rem;
     }
