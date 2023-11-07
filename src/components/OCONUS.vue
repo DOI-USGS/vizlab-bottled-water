@@ -410,131 +410,119 @@ export default {
         }px)`)
         .attr("id", "map-bounds")
 
-      // If pre-project, would use generic projection
-      // this.genericProjection = this.d3.geoAlbers()
-      //   .scale(1)
-      //   .translate([0, 0]);
+      // Get geometry info for each area
+      const conusGeometry = self.getGeometryInfo(this.statePolysCONUSJSON, 'CONUS')
+      
+      const akGeometry = self.getGeometryInfo(this.statePolysAKJSON, 'AK')
+      const akScale = 0.5
+      const akConusHeightRatio = (akGeometry.height * akScale)/conusGeometry.height
+      const akConusWidthRatio = (akGeometry.width * akScale)/conusGeometry.width
 
-      // this.genericPath = this.d3.geoPath()
-      //   .projection(this.genericProjection);
+      const islandScale = 2
 
-      // Use relative widths and heights to determine placement
-      // [[left, bottom], [right, top]]
-      const boundsStatePolysCONUS = this.d3.geoBounds(this.statePolysCONUSJSON)
-      const conusWidth = boundsStatePolysCONUS[1][0] - boundsStatePolysCONUS[0][0]
-      const conusHeight = boundsStatePolysCONUS[1][1] - boundsStatePolysCONUS[0][1]
+      const asGeometry = self.getGeometryInfo(this.statePolysASJSON, 'AS')
+      const asConusHeightRatio = (asGeometry.height * islandScale)/conusGeometry.height
 
-      const boundsStatePolysAK = this.d3.geoBounds(this.statePolysAKJSON)
-      const akWidth = (180 - Math.abs(boundsStatePolysAK[1][0])) + (180 - boundsStatePolysAK[0][0])
-      const akHeight = boundsStatePolysAK[1][1] - boundsStatePolysAK[0][1]
-      const akConusHeightRatio = akHeight/conusHeight
-      const akConusWidthRatio = akWidth/conusWidth
+      const gumpGeometry = self.getGeometryInfo(this.statePolysGUMPJSON, 'GU_MP')
+      const gumpConusWidthRatio = (gumpGeometry.width * islandScale)/conusGeometry.width
+      const gumpConusHeightRatio = (gumpGeometry.height * islandScale)/conusGeometry.height
 
-      const boundsStatePolysHI = this.d3.geoBounds(this.statePolysHIJSON)
-      const hiWidth = boundsStatePolysHI[1][0] - boundsStatePolysHI[0][0]
-      const hiConusWidthRatio = hiWidth/conusWidth
+      const hiGeometry = self.getGeometryInfo(this.statePolysHIJSON, 'HI')
+      const hiConusWidthRatio = (hiGeometry.width * islandScale)/conusGeometry.width
+      const hiConusHeightRatio = (hiGeometry.height * islandScale)/conusGeometry.height
+
+      const prviGeometry = self.getGeometryInfo(this.statePolysPRVIJSON, 'PR_VI')
+      const prviConusHeightRatio = (prviGeometry.height * islandScale)/conusGeometry.height
 
       // Get height vars
-
-      const heightX = this.mapDimensions.height / (1 + akConusHeightRatio)
-      const conusPropHeight = heightX
+      const conusPropHeight = this.mapDimensions.boundedHeight
       const akPropHeight = conusPropHeight * akConusHeightRatio
-      const widthX = this.mapDimensions.width / (1 + hiConusWidthRatio)
-      const conusPropWidth = widthX
-      const hiPropWidth = conusPropWidth * hiConusWidthRatio
+      const asPropHeight = conusPropHeight * asConusHeightRatio
+      const gumpPropHeight = conusPropHeight * gumpConusHeightRatio
+      const hiPropHeight = conusPropHeight * hiConusHeightRatio
+      const prviPropHeight = conusPropHeight * prviConusHeightRatio
+      const conusPropWidth = this.mapDimensions.boundedWidth / (1 + akConusWidthRatio)
       const akPropWidth = conusPropWidth * akConusWidthRatio
-
+      const gumpPropWidth = conusPropWidth * gumpConusWidthRatio
+      const hiPropWidth = conusPropWidth * hiConusWidthRatio
+      
+      const totalPropHeight = akPropHeight + gumpPropHeight
+      const remainingHeight = this.mapDimensions.height - totalPropHeight
+      const verticalMargin = remainingHeight / 3
+      const totalPropWidth = hiPropWidth + gumpPropWidth
+      const remainingWidth = akPropWidth - totalPropWidth
+      const horizontalMargin = remainingWidth / 3
+      
       // Set universal map scale
-      const mapScale = 800;
-
-      // // Locator map projection
-      // const mapProjectionLocator = this.d3.geoOrthographic()
-      //   .rotate([139.984, -17.437, 0])
-      //   .scale(100)
-      //   .translate([this.mapDimensions.width * 0.8, akPropHeight / 3]);
-
-      // const mapPathLocator = this.d3.geoPath()
-      //   .projection(mapProjectionLocator);
+      const mapScale = 850;
 
       // CONUS map projection
       this.mapProjection = this.d3.geoConicEqualArea()
-        .center([0, 38])
-        .rotate([96, 0, 0])
-        .parallels([29.5, 45.5])
-        .scale(mapScale) // alabama : 3500 1200
-        .translate([hiPropWidth + conusPropWidth / 2, akPropHeight + conusPropHeight / 2.2]); // alabama : [-this.mapDimensions.width / 4, 20]
+        .center([0, conusGeometry.center[1]])
+        .rotate([conusGeometry.center[0], 0, 0])
+        .parallels(conusGeometry.parallels)
+        .scale(mapScale)
+        .translate([akPropWidth + conusPropWidth / 2, conusPropHeight / 2]);
 
       this.mapPath = this.d3.geoPath()
         .projection(this.mapProjection);
 
       // Alaska map projection
       this.mapProjectionAK = this.d3.geoConicEqualArea()
-        .center([0, 64])
-        .rotate([151, 0, 0])
-        .parallels([58.5, 65])
-        .scale(mapScale)
-        .translate([akPropWidth / 2.5, akPropHeight / 3]); // alabama : [-this.mapDimensions.width / 4, 20]
+        .center([0, akGeometry.center[1] - 4]) // 64
+        .rotate([akGeometry.center[0], 0, 0])
+        .parallels(akGeometry.parallels)
+        .scale(mapScale * akScale)
+        .translate([akPropWidth / 2, akPropHeight / 2]);
 
       this.mapPathAK = this.d3.geoPath()
         .projection(this.mapProjectionAK);
 
+      // American Samoa map projection
+      this.mapProjectionAS = this.d3.geoConicEqualArea()
+        .center([0, asGeometry.center[1]])
+        .rotate([asGeometry.center[0], 0, 0])
+        .parallels(asGeometry.parallels)
+        .scale(mapScale * islandScale)
+        .translate([horizontalMargin * 2 + gumpPropWidth + hiPropWidth / 2, akPropHeight + hiPropHeight + verticalMargin * 1.75 + asPropHeight / 2]);
+
+      this.mapPathAS = this.d3.geoPath()
+        .projection(this.mapProjectionAS);
+
+      // Guam and Northern Mariana Islands map projection
+      this.mapProjectionGUMP = this.d3.geoConicEqualArea()
+        .center([0, gumpGeometry.center[1] - 0.7]) //15.4
+        .rotate([gumpGeometry.center[0], 0, 0])
+        .parallels(gumpGeometry.parallels)
+        .scale(mapScale * islandScale)
+        .translate([horizontalMargin + gumpPropWidth / 2, akPropHeight + verticalMargin + gumpPropHeight / 2]);
+
+      this.mapPathGUMP = this.d3.geoPath()
+        .projection(this.mapProjectionGUMP);
+
       // Hawaii map projection
       this.mapProjectionHI = this.d3.geoConicEqualArea()
-        .center([0, 20.25])
-        .rotate([157, 0, 0])
-        .parallels([19.5, 21])
-        .scale(mapScale)
-        .translate([hiPropWidth, this.mapDimensions.height / 2]); // alabama : [-this.mapDimensions.width / 4, 20]
+        .center([0, hiGeometry.center[1]])
+        .rotate([hiGeometry.center[0], 0, 0])
+        .parallels(hiGeometry.parallels)
+        .scale(mapScale * islandScale)
+        .translate([horizontalMargin * 2 + gumpPropWidth + hiPropWidth / 2, akPropHeight + verticalMargin / 3 + hiPropHeight / 2]);
 
       this.mapPathHI = this.d3.geoPath()
         .projection(this.mapProjectionHI);
 
       // Puerto Rico and U.S. Virgin Islands map projection
       this.mapProjectionPRVI = this.d3.geoConicEqualArea()
-        .center([0, 18.1])
-        .rotate([65.9, 0, 0])
-        .parallels([17.9, 18.2])
-        .scale(mapScale)
-        .translate([this.mapDimensions.width - hiPropWidth, this.mapDimensions.height * 0.92]); // alabama : [-this.mapDimensions.width / 4, 20]
+        .center([0, prviGeometry.center[1]])
+        .rotate([prviGeometry.center[0], 0, 0])
+        .parallels(prviGeometry.parallels)
+        .scale(mapScale * islandScale)
+        .translate([horizontalMargin * 2 + gumpPropWidth + hiPropWidth / 2, akPropHeight + hiPropHeight + asPropHeight + verticalMargin * 3 + prviPropHeight / 2]);
 
       this.mapPathPRVI = this.d3.geoPath()
         .projection(this.mapProjectionPRVI);
 
-      // Guam and Northern Mariana Islands map projection
-      this.mapProjectionGUMP = this.d3.geoConicEqualArea()
-        .center([0, 13.9])
-        .rotate([-144.75, 0, 0])
-        .parallels([13.2, 13.6])
-        .scale(mapScale)
-        .translate([hiPropWidth, this.mapDimensions.height * 0.8]);
-
-      this.mapPathGUMP = this.d3.geoPath()
-        .projection(this.mapProjectionGUMP);
-
-      // American Samoa map projection
-      this.mapProjectionAS= this.d3.geoConicEqualArea()
-        .center([0, -14.2])
-        .rotate([170.1, 0, 0])
-        .parallels([-14.3, -14.1])
-        .scale(mapScale)
-        .translate([hiPropWidth, this.mapDimensions.height * 0.92]);
-
-      this.mapPathAS = this.d3.geoPath()
-        .projection(this.mapProjectionAS);
-
       // Add map groups to svg
-      // const locatorMapGroup = this.mapBounds.append("g")
-      //   .attr("class", "locator-map")
-      //   .attr("role", "figure")
-
-      // locatorMapGroup.selectAll("path")
-      //   .data(this.statePolys)
-      //   .enter()
-      //   .append("path")
-      //   .attr("class", "locator-paths")
-      //   .attr("id", d => "state-" + d.properties.GEOID)
-      //   .attr("d", mapPathLocator)
-
       this.mapBounds.append("g")
         .attr("class", "counties")
 
