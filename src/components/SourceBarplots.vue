@@ -1,9 +1,6 @@
 <template>
   <section>
     <div id="grid-container-barplots">
-      <div id="intro-container" class="text-container">
-        <p>Explore where different facility types source water.</p>
-      </div>
       <div id="toggle-container" class="text-container">
         <p v-if="!mobileView">Show the data summarized by</p>
         <p v-if="mobileView">Summarize the data by</p>
@@ -704,9 +701,8 @@ export default {
   #grid-container-barplots {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: max-content max-content max-content max-content;
+    grid-template-rows: max-content max-content max-content;
     grid-template-areas:
-      "intro"
       "toggle"
       "legend"
       "barplot";
@@ -718,18 +714,13 @@ export default {
       width: 100%;
     }
     @media screen and (max-width: 600px) {
-      grid-template-rows: max-content max-content max-content max-content;
+      grid-template-rows: max-content max-content max-content;
       grid-template-areas:
-      "intro"
       "toggle"
       "legend"
       "barplot";
       width: 100%;
     }
-  }
-  #intro-container {
-    grid-area: intro;
-    width: 100%;
   }
   #toggle-container {
     grid-area: toggle;

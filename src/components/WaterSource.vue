@@ -41,6 +41,12 @@
       >
         <p v-html="sourceText.paragraph2" />
       </div>
+      <div
+        id="text3"
+        class="text-container"
+      >
+        <p v-html="sourceText.paragraph3" />
+      </div>
       <sourceBarplots id="source-barplots" />
     </div>
   </section>
@@ -94,6 +100,7 @@
       "text1"
       "illustration"
       "text2"
+      "text3"
       "source-bars";
     justify-content: center;
   }
@@ -107,6 +114,10 @@
   }
   #text2 {
     grid-area: text2;
+    justify-self: start;
+  }
+  #text3 {
+    grid-area: text3;
     justify-self: start;
   }
   #source-barplots {
