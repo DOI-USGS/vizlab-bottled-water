@@ -1531,6 +1531,7 @@ export default {
         "chart";
       position: relative;
       padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+      row-gap: 2vh;
   }
   #title {
     grid-area: title;
