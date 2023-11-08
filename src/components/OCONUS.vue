@@ -22,7 +22,7 @@
           </p>
         </div>
       </div>
-      <div id="oconus-container" />
+      <div id="oconus-container" :class="{ mobile: mobileView}"/>
       <div id="chart-container"/>
       <div
         v-if="!mobileView"
@@ -235,10 +235,18 @@ export default {
       // For mobile, need to compute initial scale, based on currentState
       const currentStateData = this.statePolysZoom.filter(d => d.properties.NAME === this.currentState)[0]
       if (this.mobileView) {
-        const bounds = this.mapPath.bounds(currentStateData),
-              dx = bounds[1][0] - bounds[0][0],
-              dy = bounds[1][1] - bounds[0][1],
-              scale = .95 / Math.max(dx / this.mapDimensions.width, dy / this.mapDimensions.height)
+        const [[x0, y0], [x1, y1]] = this.mapPath.bounds(currentStateData);
+        const cx = (x0 + x1) / 2;
+        const cy = (y0 + y1) / 2;
+        const stateDims = {
+          width: 2 * this.d3.max([ x1 - cx, cx - x0]),
+          height: 2 * this.d3.max([ y1 - cy, cy - y0])
+        };
+        // Use full mapDims height so that zoomed area fills map area
+        const scale = 0.95 * this.d3.min([
+          this.mapDimensions.height/stateDims.height,
+          this.mapDimensions.width/stateDims.width]);
+        
         this.currentScale = scale
       }
       self.drawHistogram(this.currentState)
@@ -386,12 +394,12 @@ export default {
       const width = 900;
       this.mapDimensions = {
         width,
-        height: width * 0.45,
+        height: this.mobileView ? width * 0.9 : width * 0.45,
         margin: {
-          top: 60,
+          top: this.mobileView ? 5 : 60,
           right: 0,
           bottom: 0,
-          left: -15
+          left: this.mobileView ? 5 : -15
         }
       }
       this.mapDimensions.boundedWidth = this.mapDimensions.width - this.mapDimensions.margin.left - this.mapDimensions.margin.right
@@ -1214,11 +1222,12 @@ export default {
       // create scales
       const scaleNumerator = scale > 15 ? 3: 1.3
       const scaleFactor = scale === 1 ? 1 : scaleNumerator/scale
+      const scaleFactorMobile = this.mobileView ? 2 : 1;
       const rangeMin = scale === 1 ? 1.25 : 2.5
       const rangeMax = scale === 1 ? 15 : 18
 
       const sizeScale = this.d3.scaleLinear()
-        .range([rangeMin * scaleFactor, rangeMax * scaleFactor])
+        .range([rangeMin * scaleFactor * scaleFactorMobile, rangeMax * scaleFactor * scaleFactorMobile])
         .domain([1, dataMax])
 
       // county centroids
@@ -1537,7 +1546,7 @@ export default {
   }
   #grid-container-interactive.mobile {
     grid-template-columns: 100%;
-      grid-template-rows: max-content max-content max-content 30vh;
+      grid-template-rows: max-content max-content max-content 28vh;
       grid-template-areas:
         "title"
         "text"
@@ -1561,6 +1570,9 @@ export default {
     align-self: start;
     height: 100%;
     max-height: 70vh;
+  }
+  #oconus-container.mobile {
+    height: 40vh;
   }
   #map-label-container {
     pointer-events: none;
