@@ -568,55 +568,6 @@ export default {
           .attr("role", "list")
           .attr("tabindex", 0)
           .attr("aria-label", "bar chart bars")
-
-      // Y axis
-
-      // scale for the x-axis
-      this.yScale = this.d3.scaleBand()
-        .domain(this.dataTypes)
-        .range([0, this.chartDimensions.boundedHeight])
-        .padding(0);
-
-      // const yAxis = this.chartBounds.append("g")
-      //     .attr("class", "y-axis")
-      //     // .style("transform", `translateY(${
-      //     //   this.chartDimensions.boundedHeight
-      //     // }px)`)
-      //     .attr("role", "presentation")
-      //     .attr("aria-hidden", true)
-
-      // yAxis
-      //   .call(this.d3.axisLeft(this.yScale).tickSize(0).tickPadding(10))
-      //   .select(".domain").remove()
-
-      // yAxis
-      //   .selectAll("text")
-      //   .attr("class", "axis-label chart-text")
-      //   .style("text-anchor", "end")
-        // Wrap x-axis labels
-        // .call(d => self.wrapHorizontalLabels(d, 7));
-
-      // yAxis
-      //   .append("text")
-      //     .attr("class", "y-axis axis-title chart-text")
-      //     .attr("x", -this.chartDimensions.margin.left + 5)
-      //     .attr("y", -this.chartDimensions.margin.left + 5)
-      //     .attr("transform", "rotate(-90)")
-      //     .style("text-anchor", "middle")
-      //     .attr("role", "presentation")
-      //     .attr("aria-hidden", true)
-
-      // this.chartBounds.append("g")
-      //   .attr("class", "x-axis")
-      //   .attr("role", "presentation")
-      //   .attr("aria-hidden", true)
-        // .append("text")
-        //   .attr("class", "x-axis axis-title chart-text")
-        //   .attr("x", this.chartDimensions.boundedWidth / 2)
-        //   .attr("y", this.chartDimensions.boundedHeight)
-        //   .style("text-anchor", "middle")
-        //   .attr("role", "presentation")
-        //   .attr("aria-hidden", true)
     },
     // function to wrap text added with d3 modified from
     // https://stackoverflow.com/questions/24784302/wrapping-text-in-d3
