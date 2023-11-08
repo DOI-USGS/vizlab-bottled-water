@@ -5,7 +5,7 @@
         <p>Explore where different facility types source water.</p>
       </div>
       <div id="toggle-container" class="text-container">
-        <p v-if="!mobileView">Showing the data summarized by</p>
+        <p v-if="!mobileView">Show the data summarized by</p>
         <p v-if="mobileView">Summarize the data by</p>
         <div class="graph-buttons-switch">
           <input
