@@ -614,10 +614,6 @@ export default {
         .range([this.chartDimensions.boundedWidth, 0])
         .nice()
 
-      // const colorScale = this.d3.scaleOrdinal()
-      //   .domain([... new Set(data.map(d => colorAccessor(d)))].sort())
-      //   .range(["darkmagenta","teal","gold","indianred","steelblue","pink"])
-
       // draw data
       let rectGroups = self.chartBounds.selectAll(".rects")
         .selectAll(".rect")
@@ -779,16 +775,8 @@ export default {
         .transition(self.getUpdateTransition())
         .call(xAxisGenerator)
         .select(".domain").remove()
-        // .attr("role", "presentation")
-        // .attr("aria-hidden", true)
 
       xAxis.selectAll(".tick line").attr("stroke", "None")
-
-      // const xAxisLabel = xAxis.select(".x-axis.axis-title")
-
-      // xAxisLabel
-      //   .text('Number of facilities')
-
     },
     drawMap(state, scale) {
       const self = this;
