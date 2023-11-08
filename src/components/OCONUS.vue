@@ -569,42 +569,6 @@ export default {
           .attr("tabindex", 0)
           .attr("aria-label", "bar chart bars")
     },
-    // function to wrap text added with d3 modified from
-    // https://stackoverflow.com/questions/24784302/wrapping-text-in-d3
-    // which is adapted from https://bl.ocks.org/mbostock/7555321
-    wrapHorizontalLabels(text, width) {
-      const self = this;
-      text.each(function () {
-          var text = self.d3.select(this),
-              words = text.text().split(/\s+/).reverse(),
-              word,
-              line = [],
-              lineNumber = 0,
-              lineHeight = 0.6,
-              x = 0,
-              y = text.attr("x"), // Use x b/c wrapping horizontal labels
-              dy = 0, //parseFloat(text.attr("dy")),
-              tspan = text.text(null)
-                          .append("tspan")
-                          .attr("x", x)
-                          .attr("y", y)
-                          .attr("dy", dy + "rem");
-          while (word = words.pop()) {
-              line.push(word);
-              tspan.text(line.join(" "));
-              if (tspan.node().getComputedTextLength() > width) {
-                  line.pop();
-                  tspan.text(line.join(" "));
-                  line = [word];
-                  tspan = text.append("tspan")
-                              .attr("x", x)
-                              .attr("y", y)
-                              .attr("dy", ++lineNumber * lineHeight + dy + "em")
-                              .text(word);
-              }
-          }
-      });
-    },
     drawHistogram(state) {
       const self = this;
 
