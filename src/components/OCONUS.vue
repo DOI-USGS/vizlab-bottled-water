@@ -1515,7 +1515,7 @@ export default {
       "chart map"
       "text map";
     justify-content: center;
-    margin: 1rem 0rem 3rem 0rem;
+    margin: 3rem 0rem 5rem 0rem;
     @media screen and (max-height: 770px) {
       grid-template-rows: max-content 30vh max-content;
     }
