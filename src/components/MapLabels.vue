@@ -78,7 +78,7 @@
       <polyline
         id="line-PuertoRicoVirginIslands"
         class="corner-lines"
-        points="98 398 98 363 130 363"
+        points="98 395 98 363 130 363"
       />
       <polyline
         id="line-CONUS"
