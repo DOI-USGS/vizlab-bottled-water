@@ -9,7 +9,7 @@
     preserveAspectRatio="xMidYMid meet"
   >
     <g id="scale_place_labels">
-      <text class="scale-labels labels" transform="translate(4.5 183.5)">x2 <tspan class="place-labels labels" x="14">Northern<tspan x="14" y="9.6">Mariana Islands</tspan></tspan></text>
+      <text class="scale-labels labels" transform="translate(4.5 183.5)">x2 <tspan class="place-labels labels" x="14">Northern<tspan x="14" y="11">Mariana Islands</tspan></tspan></text>
       <text class="scale-labels labels" transform="translate(101.5 183.5)">x2 <tspan class="place-labels labels" x="14">Hawaii</tspan></text>
       <text class="scale-labels labels" transform="translate(258.5 11.6)">x1 <tspan class="place-labels labels" x="14">Contiguous United States</tspan></text>
       <text class="place-labels labels" transform="translate(198 168.8)">Alaska<tspan class="scale-labels labels" x="32"> x0.5</tspan></text>
