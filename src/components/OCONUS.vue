@@ -568,6 +568,14 @@ export default {
           .attr("role", "list")
           .attr("tabindex", 0)
           .attr("aria-label", "bar chart bars")
+
+      // Y axis
+      // scale for the x-axis
+      this.yScale = this.d3.scaleBand()
+        .domain(this.dataTypes)
+        .range([0, this.chartDimensions.boundedHeight])
+        .padding(0);
+
     },
     drawHistogram(state) {
       const self = this;
