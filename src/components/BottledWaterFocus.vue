@@ -2,10 +2,10 @@
   <section id="bottled_water_focus">
     <div id="grid-container-bw">
       <div
-        id="title"
+        id="title1"
         class="text-container title-text"
       >
-        <h2 v-html="bottledWaterFocusText.title" />
+        <h2 v-html="bottledWaterFocusText.title1" />
       </div>
       <div
         id="text1"
@@ -157,6 +157,12 @@
         >
       </div>
       <div
+        id="title2"
+        class="text-container title-text"
+      >
+        <h2 v-html="bottledWaterFocusText.title2" />
+      </div>
+      <div
         id="text5"
         class="text-container"
       >
@@ -206,7 +212,7 @@
     grid-template-columns: 1fr;
     grid-template-rows: 0.5fr max-content max-content max-content;
     grid-template-areas:
-      "title"
+      "title1"
       "text1"
       "text2"
       "source-maps"
@@ -215,11 +221,12 @@
       "infographic-bw-bottom"
       "text4"
       "bw-use-source"
+      "title2"
       "text5";
     justify-content: center;
   }
-  #title {
-    grid-area: title;
+  #title1 {
+    grid-area: title1;
     justify-self: start;
   }
   #text1 {
@@ -236,6 +243,10 @@
   }
   #text4 {
     grid-area: text4;
+    justify-self: start;
+  }
+  #title2 {
+    grid-area: title2;
     justify-self: start;
   }
   #text5 {
