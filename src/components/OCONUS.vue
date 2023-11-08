@@ -742,22 +742,23 @@ export default {
         .attr("width", 0)
         .style("fill", d => d.WB_TYPE === this.currentType ? this.focalColor : this.defaultColor)
 
-
-
       // update rectGroups to include new points
       rectGroups = newRectGroups.merge(rectGroups)
 
       const barRects = rectGroups.select("rect")
 
+      // Update bars based on data values
+      const barHeight = this.yScale.bandwidth() / 6
       barRects.transition(self.getUpdateTransition())
           .attr("id", d => 'rect-' + identifierAccessor(d))
-          .attr("y", d => this.yScale(yAccessor(d)) + this.yScale.bandwidth() - this.yScale.bandwidth() / 6)
-          .attr("x", d => 0)
-          .attr("height", this.yScale.bandwidth() / 6) // if negative, bump up to 0
+          .attr("y", d => this.yScale(yAccessor(d)) + this.yScale.bandwidth() - barHeight)
+          .attr("x", 0)
+          .attr("height", barHeight)
           .attr("width", d => this.chartDimensions.boundedWidth - xScale(xAccessor(d)))
           .style("fill", d => d.WB_TYPE === this.currentType ? this.focalColor : this.defaultColor)
           .attr("class", d => 'bar ' + identifierAccessor(d))
 
+      // Append full-width recangles to aid interaction
       newRectGroups.append("rect")
         .attr("y", d => this.yScale(yAccessor(d)))
         .attr("x", 0)
@@ -766,11 +767,12 @@ export default {
         .style("fill", 'white')
         .style("fill-opacity", 0)
 
-      // append text and set default position
+      // Append text and set default position
       newRectGroups.append("text")
         .attr("y", d => this.yScale(yAccessor(d)) + this.yScale.bandwidth()/2)
         .attr("x", 0)
 
+      // Set up interaction
       rectGroups
         .on("click", (event, d) => {
           this.currentType = colorAccessor(d)
@@ -785,41 +787,8 @@ export default {
             .transition(self.getUpdateTransition())
             .style("fill", this.focalColor)
         })
-        // .on("mouseover", (event, d) => {
-        //   this.currentType = colorAccessor(d)
-        //   let currentIdentifier = this.currentType.replace(' ', '-')
-        //   self.drawCountyPoints(state, this.currentScale, this.currentType)
 
-        //   this.d3.selectAll('.bar')
-        //     .transition(self.getUpdateTransition())
-        //     .style("opacity", 0.5)
-        //     .style("fill", this.defaultColor)
-
-        //   this.d3.selectAll('#rect-' + currentIdentifier)
-        //     .transition(self.getUpdateTransition())
-        //     .style("opacity", 1)
-        //     .style("fill", this.focalColor)
-        // })
-
-      // // When mouse leaves chart, change back to default type
-      // self.chartBounds.selectAll(".rects")
-      //   .on("mouseleave", (event, d) => {
-      //     this.currentType = this.defaultType
-      //     let currentIdentifier = this.currentType.replace(' ', '-')
-      //     self.drawCountyPoints(state, this.currentScale, this.currentType)
-
-      //     this.d3.selectAll('.bar')
-      //       .transition(self.getUpdateTransition())
-      //       .style("opacity", 1)
-      //       .style("fill", this.defaultColor)
-
-      //     this.d3.selectAll('#rect-' + currentIdentifier)
-      //       .transition(self.getUpdateTransition())
-      //       .style("opacity", 1)
-      //       .style("fill", this.focalColor)
-      //   })
-
-      // Trigger with enter key - BUT - how get back to total?
+      // Trigger with enter key
       rectGroups.each(function() {
         this.addEventListener("keypress", function(event) {
             if (event.key === 'Enter' | event.keyCode === 13) {
@@ -845,7 +814,6 @@ export default {
       const barText = rectGroups.select("text")
         .transition(self.getUpdateTransition())
           .attr("class", "bar-label chart-text")
-          // .attr("y", d => this.yScale(yAccessor(d)) - this.yScale.bandwidth() * 2)
           .attr("y", d => this.yScale(yAccessor(d)) + this.yScale.bandwidth() / 2)
           .attr("x", 0)
           .style("text-anchor", "start")
