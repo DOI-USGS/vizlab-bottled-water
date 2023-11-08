@@ -219,7 +219,7 @@ export default {
           height: 2 * this.d3.max([ y1 - cy, cy - y0])
         };
         // Use full mapDims height so that zoomed area fills map area
-        const scale = 0.95 * this.d3.min([
+        const scale = 0.9 * this.d3.min([
           this.mapDimensions.height/stateDims.height,
           this.mapDimensions.width/stateDims.width]);
         
@@ -372,7 +372,7 @@ export default {
         width,
         height: this.mobileView ? width * 0.9 : width * 0.45,
         margin: {
-          top: this.mobileView ? 5 : 60,
+          top: this.mobileView ? 5 : 58,
           right: 0,
           bottom: 0,
           left: this.mobileView ? 5 : -15
@@ -1374,7 +1374,7 @@ export default {
       };
       // Use full mapDims height so that zoomed area fills map area
       // Have to account for margins in translation b/c margins are applied in national view
-      const zoom_scale = 0.95 * this.d3.min([
+      const zoom_scale = 0.9 * this.d3.min([
         this.mapDimensions.height/stateDims.height,
         this.mapDimensions.width/stateDims.width]);
       const translate = [this.mapDimensions.width / 2 - zoom_scale * cx - this.mapDimensions.margin.left, this.mapDimensions.height / 2 - zoom_scale * cy - this.mapDimensions.margin.top]
