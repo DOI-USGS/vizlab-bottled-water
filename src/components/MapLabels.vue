@@ -26,10 +26,10 @@
       <polyline id="line-Alaska" class="corner-lines" points="255 165 255 173 247 173"/>
     </g>
     <image
-      width="750"
-      height="750"
-      transform="translate(1 1) scale(0.12)"
-      xlink:href="../assets/images/locator_map.png"
+      width="95"
+      height="95"
+      transform="translate(1 1) scale(1)"
+      xlink:href="../assets/images/locator_map.webp"
     />
   </svg>
 </template>
