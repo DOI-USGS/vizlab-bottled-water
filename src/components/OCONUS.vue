@@ -27,7 +27,7 @@
           class="text-container"
         >
           <p class="viz-comment">
-            Use the dropdown menu or tap on the bar chart to explore!
+            Tap on the dropdown or bar chart to explore!
           </p>
         </div>
       </div>
@@ -539,16 +539,18 @@ export default {
       const self = this;
 
       // define histogram dimensions relative to container dimensions
-      const width = document.getElementById("chart-container").offsetWidth;
-      const height = document.getElementById("chart-container").offsetHeight;
+      const desktopWidth = window.innerHeight < 770 ? 220 : 270;
+      const mobileWidth = 320;
+      const desktopHeight = window.innerHeight < 770 ? window.innerHeight * .35 : window.innerHeight * .25;
+      const mobileHeight = window.innerHeight * .24;
       this.chartDimensions = {
-        width,
-        height: height,
+        width: this.mobileView ? mobileWidth : desktopWidth,
+        height: this.mobileView ? mobileHeight : desktopHeight,
         margin: {
-          top: 5,
-          right: 5,
-          bottom: 5,
-          left: 5
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0
         }
       }
       this.chartDimensions.boundedWidth = this.chartDimensions.width - this.chartDimensions.margin.left - this.chartDimensions.margin.right
@@ -1250,6 +1252,9 @@ export default {
     @media screen and (max-height: 770px) {
       font-size: 1.7rem;
     }
+    @media screen and (max-width: 600px) {
+      font-size: 1.6rem;
+    }
   }
   #state-dropdown {
     width: 50px;
@@ -1303,32 +1308,31 @@ export default {
   }
   #grid-container-interactive {
     display: grid;
-    grid-template-columns: 20% 80%;
+    grid-template-columns: 20% 78%;
     column-gap: 2%;
-    grid-template-rows: max-content 20vh max-content;
+    grid-template-rows: max-content max-content max-content;
     row-gap: 2vh;
     grid-template-areas:
       "title title"
       "chart map"
       "text map";
-    justify-content: center;
+    align-items: start;
     margin: 3rem 0rem 5rem 0rem;
     @media screen and (max-height: 770px) {
-      grid-template-rows: max-content 30vh max-content;
       row-gap: 4vh;
     }
   }
   #grid-container-interactive.mobile {
     grid-template-columns: 100%;
-      grid-template-rows: max-content max-content max-content 28vh;
-      grid-template-areas:
-        "title"
-        "text"
-        "map"
-        "chart";
-      position: relative;
-      padding: 0.5rem 0.5rem 0.5rem 0.5rem;
-      row-gap: 2vh;
+    grid-template-rows: max-content max-content max-content max-content;
+    grid-template-areas:
+      "title"
+      "text"
+      "map"
+      "chart";
+    position: relative;
+    padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+    row-gap: 2vh;
   }
   #title {
     grid-area: title;
@@ -1342,7 +1346,6 @@ export default {
   }
   #oconus-container {
     grid-area: map;
-    align-self: start;
     height: 100%;
     max-height: 70vh;
   }
@@ -1352,13 +1355,11 @@ export default {
   #map-label-container {
     pointer-events: none;
     grid-area: map;
-    align-self: start;
     height: 100%;
     max-height: 70vh;
   }
   #text {
     grid-area: text;
-    justify-self: start;
   }
   .hide {
     display: none;
