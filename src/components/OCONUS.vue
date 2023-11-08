@@ -1518,6 +1518,7 @@ export default {
     margin: 3rem 0rem 5rem 0rem;
     @media screen and (max-height: 770px) {
       grid-template-rows: max-content 30vh max-content;
+      row-gap: 4vh;
     }
   }
   #grid-container-interactive.mobile {
