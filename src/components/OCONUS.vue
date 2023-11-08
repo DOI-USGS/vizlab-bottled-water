@@ -809,7 +809,7 @@ export default {
         .style("stroke", "#ffffff")
         .style("fill", "#ffffff")
 
-      oldStateGroups.remove() //.transition(self.getExitTransition())
+      oldStateGroups.remove()
 
       const newStateGroups = this.stateGroups.enter().append("g")
         .attr("class", "state")
@@ -842,12 +842,11 @@ export default {
         })
         .style("stroke", stateStrokeColor)
         .style("stroke-width", stateStrokeWidth)
-        .style("fill", "#ffffff") // "None"
+        .style("fill", "#ffffff")
         .style("fill-opacity", 0)
         .on("click", (e, d) => {
           if (!this.mobileView) {
             let zoomPath;
-            // let zoomPath = d.properties.NAME === 'Alaska' ? this.mapPathAK : selectedMapPath
             switch(d.properties.NAME) {
               case 'Alaska':
                 zoomPath = this.mapPathAK;
@@ -891,59 +890,14 @@ export default {
 
       stateShapes
           .transition(self.getUpdateTransition())
-          .style("stroke", stateStrokeColor) //#636363
+          .style("stroke", stateStrokeColor)
           .style("stroke-width", stateStrokeWidth)
-          .style("fill", "#ffffff") // "None"
+          .style("fill", "#ffffff")
           .style("fill-opacity", 0)
 
-
-      // const allStates = d3.selectAll(".state-paths")
-      // if (currentState === this.nationalViewName) {
-      //   allStates
-      //     .style("stroke", "#949494") //#636363
-      //     .style("stroke-width", 0.5)
-      //     .style("fill", "#ffffff")
-      // } else {
-      //   allStates
-      //     .style("stroke", "#949494") //#636363
-      //     .style("stroke-width", 0.5)
-      //     .style("fill", "#ffffff")
-      // }
-
-      // // style ALL state paths identically
-      // const allStates = d3.selectAll(".state-paths")
-      //   .style("stroke", "#949494") //#636363
-      //   .style("stroke-width", 0.5)
-      //   .style("fill", "#ffffff") // set to none or white to not show other states
-      //   .style("opacity", 0)
-      //   .style("stroke-opacity", 1)
-
-      // // If a single state is selected, highlight that state
-      // if (!(state === this.nationalViewName)) {
-      //   const selectedStateData = data.filter(d => d.properties.NAME === state)
-      //   console.log(selectedStateData)
-      //   const selectedStateId = selectedStateData[0].properties.GEOID
-
-      //   const selectedStateGroup = d3.selectAll('#state-group-'+ selectedStateId)
-      //     .raise()
-
-      //   stateShapes
-      //     .transition(self.getUpdateTransition())
-      //     .style("fill", "#ffffff")
-      //     .style("stroke", "#ffffff")
-
-      //   const selectedState = d3.selectAll('#state-'+ selectedStateId)
-      //     .transition(self.getUpdateTransition())
-      //     .style("fill", "None")
-      //     .style("stroke", "#636363")
-      //     .style("stroke-width", 1)
-
-      //   currentState = state
-      // }
-
-      // // would need to add separate group w/ states on TOP of counties and county
-      // // points just to trigger interaction on THIS group of states
-      // // ideally would use <use>
+      // would need to add separate group w/ states on TOP of counties and county
+      // points just to trigger interaction on THIS group of states
+      // ideally would use <use>
       if (state === this.nationalViewName) {
         stateShapes
           .on("mouseover", (event, d) => {
@@ -992,7 +946,6 @@ export default {
       newCountyGroups.append("path")
           .attr("id", d => "county-" + d.properties.GEOID)
           .attr("d", d => {
-            // return d.properties.STATE_NAME === 'Alaska' ? this.mapPathAK(d) : this.mapPath(d)
             switch(d.properties.STATE_NAME) {
               case 'Alaska':
                 return this.mapPathAK(d);
@@ -1012,7 +965,6 @@ export default {
                 return this.mapPath(d);
           }
           })
-          // .attr("d", this.mapPath)
           .style("stroke", countyStrokeColor)
           .style("stroke-width", countyStrokeWidth)
           .style("fill", "None")
@@ -1024,32 +976,6 @@ export default {
       countyShapes.transition(self.getUpdateTransition())
         .style("stroke", countyStrokeColor)
         .style("stroke-width", countyStrokeWidth)
-
-      // if (!(state === this.nationalViewName)) {
-      //   let scaleFactor = 2/scale
-      //   countyShapes.transition(self.getUpdateTransition())
-      //       .style("stroke", "#939393") //D1D1D1
-      //       .style("stroke-width", 0.5 * scaleFactor)
-      //       .style("fill", "#ffffff")
-      // } else {
-      //   countyShapes.transition(self.getUpdateTransition())
-      //       .style("stroke", "#D1D1D1") //D1D1D1
-      //       .style("stroke-width", 0.1)
-      //       .style("fill", "#ffffff")
-      // }
-
-      // // Add county mouseover if at state level
-      // if (!(state === this.nationalViewName)) {
-      //   countyShapes
-      //     .on("mouseover", (event, d) => {
-      //       this.d3.selectAll("#county-" + d.properties.GEOID)
-      //         .style("fill", "#D1D1D1")
-      //     })
-      //     .on("mouseout", (event, d) => {
-      //       this.d3.selectAll("#county-" + d.properties.GEOID)
-      //         .style("fill", "#ffffff")
-      //     })
-      // }
     },
     drawCountyPoints(state, scale, type) {
       const self = this;
@@ -1093,7 +1019,6 @@ export default {
       const oldCountyCentroidGroups = this.countyCentroidGroups.exit()
 
       oldCountyCentroidGroups.selectAll('path')
-        // .transition(self.getExitTransition())
         .attr("d", d => {
           switch(d.properties.STATE_NAME) {
             case 'Alaska':
@@ -1183,30 +1108,11 @@ export default {
           .style("fill", this.focalColor)
           .style("stroke", "#ffffff")
           .style("stroke-width", centroidStrokeWidth)
-
-
-      // // Add county mouseover if at state level
-      // if (!(state === this.nationalViewName)) {
-      //   countyCentroidPoints
-      //     .on("mouseover", (event, d) => {
-      //       d3.selectAll("#county-" + d.properties.GEOID)
-      //         .style("fill", "#D1D1D1")
-      //       d3.selectAll("#county-point-" + d.properties.GEOID)
-      //         .style("fill", "#000000")
-      //     })
-      //     .on("mouseout", (event, d) => {
-      //       d3.selectAll("#county-" + d.properties.GEOID)
-      //         .style("fill", "#ffffff")
-      //       d3.selectAll("#county-point-" + d.properties.GEOID)
-      //         .style("fill", this.focalColor)
-      //     })
-      // }
     },
     // define transitions
     getUpdateTransition() {
       return this.d3.transition()
         .duration(500)
-        //.delay(500)
         .ease(this.d3.easeCubicInOut)
     },
     getExitTransition() {
@@ -1286,7 +1192,7 @@ export default {
     reset() {
       const self = this;
 
-      this.currentState = this.nationalViewName //this.d3.select(null);
+      this.currentState = this.nationalViewName;
       this.currentScale = 1;
 
       // Update dropdown value and width
