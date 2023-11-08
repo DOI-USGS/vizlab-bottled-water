@@ -67,12 +67,6 @@ export default {
       d3: null,
       publicPath: import.meta.env.BASE_URL, // find the files when on different deployment roots
       mobileView: isMobile, // test for mobile
-      statePolysCONUSJSON: null,
-      statePolysAKJSON: null,
-      statePolysASJSON: null,
-      statePolysGUMPJSON: null,
-      statePolysHIJSON: null,
-      statePolysPRVIJSON: null,
       statePolysZoom: null,
       statePolys: null,
       countyPolysZoom: null,
@@ -83,18 +77,11 @@ export default {
       chartDimensions: null,
       wrapper: null,
       mapBounds: null,
-      mapProjection: null,
       mapPath: null,
-      mapProjectionAK: null,
       mapPathAK: null,
-      mapProjectionHI: null,
       mapPathHI: null,
-      mapProjectionPRVI: null,
       mapPathPRVI: null,
-      mapProjectionGUMP: null,
       mapPathGUMP: null,
-      genericPath: null,
-      genericProjection: null,
       chartBounds: null,
       yScale: null,
       focalColor: null,
@@ -103,8 +90,6 @@ export default {
       stateGroups: null,
       countyGroups: null,
       countyCentroidGroups: null,
-      selectedText: null,
-      stateList: null,
       currentState: null,
       nationalViewName: null,
       currentlyZoomed: false,
@@ -118,15 +103,6 @@ export default {
     this.loadData() // read in data
 
   },
-  /* computed: {
-    computedDropdownOptions() {
-      const dataAll = this.dataRaw
-
-      // get list of unique states
-      const stateList = [... new Set(dataAll.map(d => d.NAME))]
-      return stateList.map(data => `Option: ${data}`)
-    }
-  }, */
   methods:{
     isMobile() {
             if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
@@ -165,28 +141,28 @@ export default {
       // Loaded separately so that CONUS, AK, and HI jsons can be used
       // to arrange national map view in `initMap()`
       const statePolysCONUStopoJSON = data[1];
-      this.statePolysCONUSJSON = topojson.feature(statePolysCONUStopoJSON, statePolysCONUStopoJSON.objects.states_polys_CONUS)
-      const statePolysCONUS = this.statePolysCONUSJSON.features;
+      const statePolysCONUSJSON = topojson.feature(statePolysCONUStopoJSON, statePolysCONUStopoJSON.objects.states_polys_CONUS)
+      const statePolysCONUS = statePolysCONUSJSON.features;
 
       const statePolysAKtopoJSON = data[2];
-      this.statePolysAKJSON = topojson.feature(statePolysAKtopoJSON, statePolysAKtopoJSON.objects.states_polys_AK);
-      const statePolysAK = this.statePolysAKJSON.features;
+      const statePolysAKJSON = topojson.feature(statePolysAKtopoJSON, statePolysAKtopoJSON.objects.states_polys_AK);
+      const statePolysAK = statePolysAKJSON.features;
 
       const statePolysAStopoJSON = data[3];
-      this.statePolysASJSON = topojson.feature(statePolysAStopoJSON, statePolysAStopoJSON.objects.states_polys_AS)
-      const statePolysAS = this.statePolysASJSON.features;
+      const statePolysASJSON = topojson.feature(statePolysAStopoJSON, statePolysAStopoJSON.objects.states_polys_AS)
+      const statePolysAS = statePolysASJSON.features;
 
       const statePolysGUMPtopoJSON = data[4];
-      this.statePolysGUMPJSON = topojson.feature(statePolysGUMPtopoJSON, statePolysGUMPtopoJSON.objects.states_polys_GU_MP);
-      const statePolysGUMP = this.statePolysGUMPJSON.features;
+      const statePolysGUMPJSON = topojson.feature(statePolysGUMPtopoJSON, statePolysGUMPtopoJSON.objects.states_polys_GU_MP);
+      const statePolysGUMP = statePolysGUMPJSON.features;
 
       const statePolysHItopoJSON = data[5];
-      this.statePolysHIJSON = topojson.feature(statePolysHItopoJSON, statePolysHItopoJSON.objects.states_polys_HI);
-      const statePolysHI = this.statePolysHIJSON.features;
+      const statePolysHIJSON = topojson.feature(statePolysHItopoJSON, statePolysHItopoJSON.objects.states_polys_HI);
+      const statePolysHI = statePolysHIJSON.features;
 
       const statePolysPRVItopoJSON = data[6];
-      this.statePolysPRVIJSON = topojson.feature(statePolysPRVItopoJSON, statePolysPRVItopoJSON.objects.states_polys_PR_VI)
-      const statePolysPRVI = this.statePolysPRVIJSON.features;
+      const statePolysPRVIJSON = topojson.feature(statePolysPRVItopoJSON, statePolysPRVItopoJSON.objects.states_polys_PR_VI)
+      const statePolysPRVI = statePolysPRVIJSON.features;
 
       // Low simplification state polygons, for zoom view
       const statePolysZoomTopoJSON = data[7];
@@ -216,14 +192,14 @@ export default {
 
       // Set up dropdown
       // get list of unique states
-      this.stateList = [... new Set(this.dataAll.map(d => d.NAME))]
-      if (!this.mobileView) this.stateList.unshift(this.nationalViewName)
+      const stateList = [... new Set(this.dataAll.map(d => d.NAME))]
+      if (!this.mobileView) stateList.unshift(this.nationalViewName)
       // add dropdown
-      self.addDropdown(this.stateList)
+      self.addDropdown(stateList)
 
       // Initialize map
-      self.initMap()
-
+      self.initMap(statePolysCONUSJSON, statePolysAKJSON, statePolysASJSON, statePolysGUMPJSON, statePolysHIJSON, statePolysPRVIJSON)
+      
       // Initialize chart
       self.initChart()
 
@@ -387,7 +363,7 @@ export default {
       }
       return geometryInfo
     },
-    initMap() {
+    initMap(conusJSON, akJSON, asJSON, gumpJSON, hiJSON, prviJSON) {
       const self = this;
 
       // set universal map frame dimensions - height= width * 0.45
@@ -425,27 +401,27 @@ export default {
         .attr("id", "map-bounds")
 
       // Get geometry info for each area
-      const conusGeometry = self.getGeometryInfo(this.statePolysCONUSJSON, 'CONUS')
+      const conusGeometry = self.getGeometryInfo(conusJSON, 'CONUS')
       
-      const akGeometry = self.getGeometryInfo(this.statePolysAKJSON, 'AK')
+      const akGeometry = self.getGeometryInfo(akJSON, 'AK')
       const akScale = 0.5
       const akConusHeightRatio = (akGeometry.height * akScale)/conusGeometry.height
       const akConusWidthRatio = (akGeometry.width * akScale)/conusGeometry.width
 
       const islandScale = 2
 
-      const asGeometry = self.getGeometryInfo(this.statePolysASJSON, 'AS')
+      const asGeometry = self.getGeometryInfo(asJSON, 'AS')
       const asConusHeightRatio = (asGeometry.height * islandScale)/conusGeometry.height
 
-      const gumpGeometry = self.getGeometryInfo(this.statePolysGUMPJSON, 'GU_MP')
+      const gumpGeometry = self.getGeometryInfo(gumpJSON, 'GU_MP')
       const gumpConusWidthRatio = (gumpGeometry.width * islandScale)/conusGeometry.width
       const gumpConusHeightRatio = (gumpGeometry.height * islandScale)/conusGeometry.height
 
-      const hiGeometry = self.getGeometryInfo(this.statePolysHIJSON, 'HI')
+      const hiGeometry = self.getGeometryInfo(hiJSON, 'HI')
       const hiConusWidthRatio = (hiGeometry.width * islandScale)/conusGeometry.width
       const hiConusHeightRatio = (hiGeometry.height * islandScale)/conusGeometry.height
 
-      const prviGeometry = self.getGeometryInfo(this.statePolysPRVIJSON, 'PR_VI')
+      const prviGeometry = self.getGeometryInfo(prviJSON, 'PR_VI')
       const prviConusHeightRatio = (prviGeometry.height * islandScale)/conusGeometry.height
 
       // Get height vars
@@ -471,7 +447,7 @@ export default {
       const mapScale = 850;
 
       // CONUS map projection
-      this.mapProjection = this.d3.geoConicEqualArea()
+      const mapProjection = this.d3.geoConicEqualArea()
         .center([0, conusGeometry.center[1]])
         .rotate([conusGeometry.center[0], 0, 0])
         .parallels(conusGeometry.parallels)
@@ -479,10 +455,10 @@ export default {
         .translate([akPropWidth + conusPropWidth / 2, conusPropHeight / 2]);
 
       this.mapPath = this.d3.geoPath()
-        .projection(this.mapProjection);
+        .projection(mapProjection);
 
       // Alaska map projection
-      this.mapProjectionAK = this.d3.geoConicEqualArea()
+      const mapProjectionAK = this.d3.geoConicEqualArea()
         .center([0, akGeometry.center[1] - 4]) // 64
         .rotate([akGeometry.center[0], 0, 0])
         .parallels(akGeometry.parallels)
@@ -490,10 +466,10 @@ export default {
         .translate([akPropWidth / 2, akPropHeight / 2]);
 
       this.mapPathAK = this.d3.geoPath()
-        .projection(this.mapProjectionAK);
+        .projection(mapProjectionAK);
 
       // American Samoa map projection
-      this.mapProjectionAS = this.d3.geoConicEqualArea()
+      const mapProjectionAS = this.d3.geoConicEqualArea()
         .center([0, asGeometry.center[1]])
         .rotate([asGeometry.center[0], 0, 0])
         .parallels(asGeometry.parallels)
@@ -501,10 +477,10 @@ export default {
         .translate([horizontalMargin * 2 + gumpPropWidth + hiPropWidth / 2, akPropHeight + hiPropHeight + verticalMargin * 1.75 + asPropHeight / 2]);
 
       this.mapPathAS = this.d3.geoPath()
-        .projection(this.mapProjectionAS);
+        .projection(mapProjectionAS);
 
       // Guam and Northern Mariana Islands map projection
-      this.mapProjectionGUMP = this.d3.geoConicEqualArea()
+      const mapProjectionGUMP = this.d3.geoConicEqualArea()
         .center([0, gumpGeometry.center[1] - 0.7]) //15.4
         .rotate([gumpGeometry.center[0], 0, 0])
         .parallels(gumpGeometry.parallels)
@@ -512,10 +488,10 @@ export default {
         .translate([horizontalMargin + gumpPropWidth / 2, akPropHeight + verticalMargin + gumpPropHeight / 2]);
 
       this.mapPathGUMP = this.d3.geoPath()
-        .projection(this.mapProjectionGUMP);
+        .projection(mapProjectionGUMP);
 
       // Hawaii map projection
-      this.mapProjectionHI = this.d3.geoConicEqualArea()
+      const mapProjectionHI = this.d3.geoConicEqualArea()
         .center([0, hiGeometry.center[1]])
         .rotate([hiGeometry.center[0], 0, 0])
         .parallels(hiGeometry.parallels)
@@ -523,10 +499,10 @@ export default {
         .translate([horizontalMargin * 2 + gumpPropWidth + hiPropWidth / 2, akPropHeight + verticalMargin / 3 + hiPropHeight / 2]);
 
       this.mapPathHI = this.d3.geoPath()
-        .projection(this.mapProjectionHI);
+        .projection(mapProjectionHI);
 
       // Puerto Rico and U.S. Virgin Islands map projection
-      this.mapProjectionPRVI = this.d3.geoConicEqualArea()
+      const mapProjectionPRVI = this.d3.geoConicEqualArea()
         .center([0, prviGeometry.center[1]])
         .rotate([prviGeometry.center[0], 0, 0])
         .parallels(prviGeometry.parallels)
@@ -534,7 +510,7 @@ export default {
         .translate([horizontalMargin * 2 + gumpPropWidth + hiPropWidth / 2, akPropHeight + hiPropHeight + asPropHeight + verticalMargin * 3 + prviPropHeight / 2]);
 
       this.mapPathPRVI = this.d3.geoPath()
-        .projection(this.mapProjectionPRVI);
+        .projection(mapProjectionPRVI);
 
       // Add map groups to svg
       this.mapBounds.append("g")
