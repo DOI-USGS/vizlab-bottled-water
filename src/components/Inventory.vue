@@ -16,7 +16,10 @@
             alt="Pictogram showing 342 bottles of water with the text, 'The average American drank 342 bottles of water in 2020.'"
           >
           <figcaption>
-            Assuming standard, single-use bottles containing 16.9 oz (0.5 liter, or 0.132 gallons) of water. Bottled water consumption: <a href="https://bottledwater.org/bottled-water-consumption-shift/" target="_blank">https://bottledwater.org/bottled-water-consumption-shift/</a>
+            Assuming standard, single-use bottles containing 16.9 oz (0.5 liter, or 0.132 gallons) of water. Bottled water consumption: <a
+              href="https://bottledwater.org/bottled-water-consumption-shift/"
+              target="_blank"
+            >https://bottledwater.org/bottled-water-consumption-shift/</a>
           </figcaption>
         </figure>
         <br>

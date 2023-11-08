@@ -1,12 +1,22 @@
 <template>
   <section>
     <div id="grid-container-barplots">
-      <div id="intro-container" class="text-container">
+      <div
+        id="intro-container"
+        class="text-container"
+      >
         <p>Explore where different facility types source water.</p>
       </div>
-      <div id="toggle-container" class="text-container">
-        <p v-if="!mobileView">Showing the data summarized by</p>
-        <p v-if="mobileView">Summarize the data by</p>
+      <div
+        id="toggle-container"
+        class="text-container"
+      >
+        <p v-if="!mobileView">
+          Showing the data summarized by
+        </p>
+        <p v-if="mobileView">
+          Summarize the data by
+        </p>
         <div class="graph-buttons-switch">
           <input
             id="id_Count"
@@ -19,7 +29,7 @@
           <label
             id="Count"
             for="id_Count"
-            tabindex=0
+            tabindex="0"
             class="graph-buttons-switch-label graph-buttons-switch-label-off"
           >count</label>
           <input
@@ -32,7 +42,7 @@
           <label
             id="Percent"
             for="id_Percent"
-            tabindex=0
+            tabindex="0"
             class="graph-buttons-switch-label graph-buttons-switch-label-on"
           >percent</label>
           <span class="graph-buttons-switch-selection" />

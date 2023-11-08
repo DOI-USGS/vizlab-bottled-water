@@ -1,29 +1,41 @@
 <template>
   <section id="oconus_map">
-    <div id="grid-container-interactive" :class="{ mobile: mobileView}">
+    <div
+      id="grid-container-interactive"
+      :class="{ mobile: mobileView}"
+    >
       <div id="title">
         <h2 class="grid-title">
           Counts of bottling facilities in <span id="state-dropdown-container" /> by county
         </h2>
       </div>
       <div id="text">
-        <div v-if = "!mobileView">
+        <div v-if="!mobileView">
           <p class="viz-comment">
             Click on the dropdown menu, bar chart, or map to explore!
           </p>
           <br>
-          <p class="viz-comment" v-if="currentlyZoomed">
+          <p
+            v-if="currentlyZoomed"
+            class="viz-comment"
+          >
             Click on the zoomed map to return to the national view
           </p>
         </div>  
-        <div class="text-container" v-if = "mobileView">
+        <div
+          v-if="mobileView"
+          class="text-container"
+        >
           <p class="viz-comment">
             Use the dropdown menu or tap on the bar chart to explore!
           </p>
         </div>
       </div>
-      <div id="oconus-container" :class="{ mobile: mobileView}"/>
-      <div id="chart-container"/>
+      <div
+        id="oconus-container"
+        :class="{ mobile: mobileView}"
+      />
+      <div id="chart-container" />
       <div
         v-if="!mobileView"
         id="map-label-container"

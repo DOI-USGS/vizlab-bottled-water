@@ -9,21 +9,87 @@
     preserveAspectRatio="xMidYMid meet"
   >
     <g id="scale_place_labels">
-      <text class="scale-labels labels" transform="translate(4.5 183.5)">x2 <tspan class="place-labels labels" x="14">Northern<tspan x="14" y="11">Mariana Islands</tspan></tspan></text>
-      <text class="scale-labels labels" transform="translate(101.5 183.5)">x2 <tspan class="place-labels labels" x="14">Hawaii</tspan></text>
-      <text class="scale-labels labels" transform="translate(258.5 11.6)">x1 <tspan class="place-labels labels" x="14">Contiguous United States</tspan></text>
-      <text class="place-labels labels" transform="translate(198 168.8)">Alaska<tspan class="scale-labels labels" x="32"> x0.5</tspan></text>
-      <text class="scale-labels labels" transform="translate(101.5 330)">x2 <tspan class="place-labels labels" x="14">American Samoa</tspan></text>
-      <text class="scale-labels labels" transform="translate(101.5 374)">x2 <tspan class="place-labels labels" x="14">Puerto Rico & the U.S. Virgin Islands</tspan></text>
-      <text class="place-labels labels" transform="translate(25 405)">Guam</text>
+      <text
+        class="scale-labels labels"
+        transform="translate(4.5 183.5)"
+      >x2 <tspan
+        class="place-labels labels"
+        x="14"
+      >Northern<tspan
+        x="14"
+        y="11"
+      >Mariana Islands</tspan></tspan></text>
+      <text
+        class="scale-labels labels"
+        transform="translate(101.5 183.5)"
+      >x2 <tspan
+        class="place-labels labels"
+        x="14"
+      >Hawaii</tspan></text>
+      <text
+        class="scale-labels labels"
+        transform="translate(258.5 11.6)"
+      >x1 <tspan
+        class="place-labels labels"
+        x="14"
+      >Contiguous United States</tspan></text>
+      <text
+        class="place-labels labels"
+        transform="translate(198 168.8)"
+      >Alaska<tspan
+        class="scale-labels labels"
+        x="32"
+      > x0.5</tspan></text>
+      <text
+        class="scale-labels labels"
+        transform="translate(101.5 330)"
+      >x2 <tspan
+        class="place-labels labels"
+        x="14"
+      >American Samoa</tspan></text>
+      <text
+        class="scale-labels labels"
+        transform="translate(101.5 374)"
+      >x2 <tspan
+        class="place-labels labels"
+        x="14"
+      >Puerto Rico & the U.S. Virgin Islands</tspan></text>
+      <text
+        class="place-labels labels"
+        transform="translate(25 405)"
+      >Guam</text>
     </g>
     <g id="corners">
-      <polyline id="line-Hawaii" class="corner-lines" points="98 205 98 173 130 173"/>
-      <polyline id="line-NortherMarianaIslands" class="corner-lines" points="1 205 1 173 33 173"/>
-      <polyline id="line-AmericanSamoa" class="corner-lines" points="98 351 98 319 130 319"/>
-      <polyline id="line-PuertoRicoVirginIslands" class="corner-lines" points="98 398 98 363 130 363"/>
-      <polyline id="line-CONUS" class="corner-lines" points="255 17 255 1 271 1"/>
-      <polyline id="line-Alaska" class="corner-lines" points="255 165 255 173 247 173"/>
+      <polyline
+        id="line-Hawaii"
+        class="corner-lines"
+        points="98 205 98 173 130 173"
+      />
+      <polyline
+        id="line-NortherMarianaIslands"
+        class="corner-lines"
+        points="1 205 1 173 33 173"
+      />
+      <polyline
+        id="line-AmericanSamoa"
+        class="corner-lines"
+        points="98 351 98 319 130 319"
+      />
+      <polyline
+        id="line-PuertoRicoVirginIslands"
+        class="corner-lines"
+        points="98 398 98 363 130 363"
+      />
+      <polyline
+        id="line-CONUS"
+        class="corner-lines"
+        points="255 17 255 1 271 1"
+      />
+      <polyline
+        id="line-Alaska"
+        class="corner-lines"
+        points="255 165 255 173 247 173"
+      />
     </g>
     <image
       width="95"
