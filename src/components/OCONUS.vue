@@ -12,7 +12,7 @@
       <div id="text">
         <div v-if="!mobileView">
           <p class="viz-comment">
-            Click on the dropdown menu, bar chart, or map to explore!
+            Click on the dropdown menu, bar chart, or map to explore
           </p>
           <br>
           <p
@@ -27,7 +27,7 @@
           class="text-container"
         >
           <p class="viz-comment">
-            Tap on the dropdown or bar chart to explore!
+            Tap on the dropdown or bar chart to explore
           </p>
         </div>
       </div>
@@ -549,12 +549,12 @@ export default {
       const mobileWidth = 320;
       this.legendDimensions = {
         width: this.mobileView ? mobileWidth : desktopWidth,
-        height: this.mobileView ? 70 : 90,
+        height: this.mobileView ? 70 : 108,
         margin: {
           top: this.mobileView ? 40: 60,
-          right: this.mobileView ? 55 : 15,
+          right: this.mobileView ? 15 : 15,
           bottom: 5,
-          left: this.mobileView ? 55 : 15
+          left: this.mobileView ? 5 : 15
         }
       }
       this.legendDimensions.boundedWidth = this.legendDimensions.width - this.legendDimensions.margin.left - this.legendDimensions.margin.right
@@ -641,12 +641,15 @@ export default {
     drawLegend(state, scale, dataMax, sizeScale) {
       const self = this;
 
+      // Determine how many legend values there should be
       const numLegendValues = dataMax > 4 ? 5 : dataMax;
 
+      // Build scale and function to get evenly spaced legend values, based on data max
       const numberScale = this.d3.scaleLinear()
         .domain([0, numLegendValues - 1])
         .range([1, dataMax])
 
+      // function to round legend values, based on dataMax
       function roundScale(dataVal) { 
         let roundInterval;
         if (dataMax < 10) {
@@ -662,11 +665,13 @@ export default {
         return roundedValue === 0 ? 1 : roundedValue;
       }
 
+      // Function to compute the radii for the legend point, based on sizeScale, the scale, and a multiplier
       function adjustedSizeScale(dataVal) {
-        const radiusMultiplier = self.mobileView ? 0.305 : 1.085; // Not sure why this multiplier is necessary... might change if legendDims change
+        const radiusMultiplier = self.mobileView ? 0.305 : 1.085; // Not totally sure why this multiplier is necessary... might change if legendDims or height of oconus-container change
         return sizeScale(dataVal) * scale * radiusMultiplier; 
       }
 
+      // Build data array from legend values
       const legendValues = Array(numLegendValues).fill().map((element, index) => index).map(d => roundScale(d))
       let legendData = [];
       legendValues.map((element, index) => {
@@ -677,11 +682,15 @@ export default {
         legendData.push(dataDict)
       })
 
+      // Compute horizontal parameters for legend
       const totalDiameter = legendData.reduce((accumulator, legendItem) => accumulator + adjustedSizeScale(legendItem.value)* 2, 0);
-      const reducedWidth = this.mobileView ? this.legendDimensions.boundedWidth / 3 : this.legendDimensions.boundedWidth / 2
-      const totalWidth = dataMax > 2 ? this.legendDimensions.boundedWidth : reducedWidth;
+      const regularWidth = this.mobileView ? this.legendDimensions.boundedWidth / 2 : this.legendDimensions.boundedWidth
+      const reducedWidth = this.mobileView ? this.legendDimensions.boundedWidth / 3.5 : this.legendDimensions.boundedWidth / 2
+      const totalWidth = dataMax > 2 ? regularWidth : reducedWidth;
       const horizontalGap = (totalWidth - totalDiameter) / (numLegendValues - 1)
 
+      // function to get horizontal x position for legend point, 
+      // based on horizontal gap and cumulative diameters of previous legend items
       function getHorizontalPosition(dataValue, dataIndex) {
         const cumulativeDiameter = legendData.reduce(function (accumulator, legendItem) {
           return legendItem.index > (dataIndex - 1) ? accumulator + 0 : accumulator + adjustedSizeScale(legendItem.value)* 2;
@@ -689,10 +698,12 @@ export default {
         return cumulativeDiameter + horizontalGap * dataIndex + adjustedSizeScale(dataValue);
       }
 
+      // Add groups for legend items
       let circleGroups = this.legendBounds.selectAll(".circles")
         .selectAll(".legend-circle")
         .data(legendData, d => d.id)
 
+      // Edit and remove exit groups
       const oldCircleGroups = circleGroups.exit()
 
       oldCircleGroups.selectAll('circle')
@@ -704,12 +715,13 @@ export default {
 
       oldCircleGroups.transition(self.getExitTransition()).remove()
 
+      // Append new groups
       const newCircleGroups = circleGroups.enter()
         .append("g")
         .attr("class", "legend-circle")
         .attr("id", d => 'legend-circle-' + d.value)
 
-      // append circles and set default cx and r
+      // Append circles and set default cx and r
       newCircleGroups.append("circle")
         .attr('cx', function(d, i) {
           return getHorizontalPosition(d.value, i);
@@ -720,7 +732,7 @@ export default {
         .attr('r', 0)
         .style("fill", this.focalColor)
 
-      // update rectGroups to include new points
+      // update circleGroups to include new points
       circleGroups = newCircleGroups.merge(circleGroups)
 
       const legendCircles = circleGroups.select("circle")
@@ -745,16 +757,41 @@ export default {
         })
         .attr("dy", 15)
 
+      // Update text
+      // Build legend title into final text label on mobile
       const circleText = circleGroups.select("text")
         .transition(self.getUpdateTransition())
-        .attr("class", "legend-text")
-        .attr("x", function(d, i) {
-          return getHorizontalPosition(d.value, i);
+        .attr("class", "point-legend-text")
+        .attr("x", (d, i) => {
+          const horizontalPosition = getHorizontalPosition(d.value, i);
+          const mobilePosition = i === (numLegendValues - 1) ? (horizontalPosition - 7) : horizontalPosition;
+          return this.mobileView ? mobilePosition : horizontalPosition;
         })
-        .style("text-anchor", "middle")
+        .style("text-anchor", (d, i) => {
+          const mobileAnchor = i === (numLegendValues - 1) ? "start" : "middle";
+          return this.mobileView ? mobileAnchor : "middle";
+        })
         .attr("alignment-baseline", "middle") // center text
         .attr("dominant-baseline", "middle") // required for Firefox
-        .text(d => d.value)
+        .text((d, i) => {
+          const mobileLabel = i === (numLegendValues - 1) ? d.value + ' facilities' : d.value
+          return this.mobileView? mobileLabel : d.value;
+        })
+
+      // Append legend title on desktop
+      if (!this.mobileView) {
+        this.legendBounds
+          .append("text")
+          .attr("id", "point-legend-title")
+          .attr("class", "point-legend-text")
+          .attr("x", this.legendDimensions.boundedWidth / 2)
+          .attr("y", this.legendDimensions.boundedHeight)
+          .style("text-anchor", "middle")
+          .attr("alignment-baseline", "middle") // center text
+          .attr("dominant-baseline", "middle") // required for Firefox
+          .text("Number of facilities")
+      }
+        
     },
     drawHistogram(state) {
       const self = this;
@@ -1381,12 +1418,14 @@ export default {
     stroke: white;
     stroke-width: 0;
   }
-  .axis-title {
-    fill: #000000;
-    font-weight: 700;
+  #point-legend-title {
+    font-weight: 600;
   }
-  .bar-label {
-    fill: #666666;
+  .point-legend-text {
+    font-size: 1.7rem;
+    @media screen and (max-width: 600px) {
+      font-size: 1.6rem;
+    }
   }
   .chart-text {
     user-select: none;
@@ -1432,7 +1471,7 @@ export default {
       font-size: 3rem; // style same as h2 in App.vue
     }
     @media screen and (max-width: 600px) {
-        font-size: 2.5rem; // style same as h2 in App.vue
+        font-size: 2rem; // style same as h2 in App.vue
     }
   }
 </style>
@@ -1475,7 +1514,7 @@ export default {
       "chart";
     position: relative;
     padding: 0.5rem 0.5rem 0.5rem 0.5rem;
-    row-gap: 2vh;
+    row-gap: 1.5vh;
   }
   #title {
     grid-area: title;
