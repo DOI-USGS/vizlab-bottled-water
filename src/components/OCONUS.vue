@@ -97,7 +97,6 @@ export default {
       mapPathPRVI: null,
       mapPathGUMP: null,
       legendBounds: null,
-      xScaleLegend: null,
       chartBounds: null,
       yScale: null,
       focalColor: null,
@@ -581,11 +580,6 @@ export default {
       this.legendBounds.append("g")
           .attr("class", "circles")
           .attr("role", "figure")
-
-      // // X axis
-      // // scale for the x-axis if using to place points horizontally
-      // this.xScaleLegend = this.d3.scaleLinear()
-      //   .range([0, this.legendDimensions.boundedWidth]);
       
     },
     initChart() {
@@ -648,17 +642,6 @@ export default {
       const self = this;
 
       const numLegendValues = dataMax > 4 ? 5 : dataMax;
-
-      // // If using xScale to place points
-      // this.xScaleLegend.domain([0, numLegendValues - 1])
-
-      // if (dataMax < 4) {
-      //   this.xScaleLegend
-      //     .range([this.legendDimensions.boundedWidth * 1/3, this.legendDimensions.boundedWidth * 2/3])
-      // } else {
-      //   this.xScaleLegend
-      //     .range([0, this.legendDimensions.boundedWidth])
-      // }
 
       const numberScale = this.d3.scaleLinear()
         .domain([0, numLegendValues - 1])
@@ -729,7 +712,6 @@ export default {
       // append circles and set default cx and r
       newCircleGroups.append("circle")
         .attr('cx', function(d, i) {
-          // return self.xScaleLegend(i);
           return getHorizontalPosition(d.value, i);
         })
         .attr('cy', function(d, i) {
@@ -746,7 +728,6 @@ export default {
       // Update circles based on data values
       legendCircles.transition(self.getUpdateTransition())
         .attr('cx', function(d, i) {
-          // return self.xScaleLegend(i);
           return getHorizontalPosition(d.value, i);
         })
         .attr('cy', function(d, i) {
@@ -760,7 +741,6 @@ export default {
       // Append text and set default position
       newCircleGroups.append("text")
         .attr("x", function(d, i) {
-          // return self.xScaleLegend(i);
           return getHorizontalPosition(d.value, i);
         })
         .attr("dy", 15)
@@ -769,7 +749,6 @@ export default {
         .transition(self.getUpdateTransition())
         .attr("class", "legend-text")
         .attr("x", function(d, i) {
-          // return self.xScaleLegend(i);
           return getHorizontalPosition(d.value, i);
         })
         .style("text-anchor", "middle")
