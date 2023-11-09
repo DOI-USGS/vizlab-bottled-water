@@ -680,7 +680,8 @@ export default {
       }
 
       function adjustedSizeScale(dataVal) {
-        return sizeScale(dataVal) * scale * 1.085 // Not sure why this second multiplier is necessary... might change if legendDims change
+        const radiusMultiplier = self.mobileView ? 0.305 : 1.085; // Not sure why this multiplier is necessary... might change if legendDims change
+        return sizeScale(dataVal) * scale * radiusMultiplier; 
       }
 
       const legendValues = Array(numLegendValues).fill().map((element, index) => index).map(d => roundScale(d))
