@@ -764,7 +764,7 @@ export default {
         .attr("class", "point-legend-text")
         .attr("x", (d, i) => {
           const horizontalPosition = getHorizontalPosition(d.value, i);
-          const mobilePosition = i === (numLegendValues - 1) ? (horizontalPosition - 7) : horizontalPosition;
+          const mobilePosition = i === (numLegendValues - 1) ? (horizontalPosition - 8) : horizontalPosition;
           return this.mobileView ? mobilePosition : horizontalPosition;
         })
         .style("text-anchor", (d, i) => {
