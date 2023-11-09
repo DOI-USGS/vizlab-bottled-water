@@ -960,31 +960,6 @@ export default {
 
             return this.d3.format(',')(xAccessor(d)) + " " + suffix;
           })
-
-      const yAxisLabel = this.chartBounds.select(".y-axis.axis-title")
-
-      if (state === this.nationalViewName) {
-        yAxisLabel
-          .text('Distribution of facility types nationally')
-      } else {
-        yAxisLabel
-          .text(`Distribution of facility types in ${
-            state
-          }`)
-      }
-
-      const xAxisGenerator = this.d3.axisBottom()
-        .scale(xScale)
-        .tickValues([]);
-
-      const xAxis = this.chartBounds.select(".x-axis")
-
-      xAxis
-        .transition(self.getUpdateTransition())
-        .call(xAxisGenerator)
-        .select(".domain").remove()
-
-      xAxis.selectAll(".tick line").attr("stroke", "None")
     },
     drawMap(state, scale) {
       const self = this;
