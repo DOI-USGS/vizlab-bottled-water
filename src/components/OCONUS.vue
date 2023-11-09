@@ -36,6 +36,7 @@
         :class="{ mobile: mobileView}"
       />
       <div id="chart-container" />
+      <div id="point-legend-container" />
       <div
         v-if="!mobileView"
         id="map-label-container"
@@ -86,6 +87,7 @@ export default {
       dataAll: null,
       dataTypes: null,
       mapDimensions: null,
+      legendDimensions: null,
       chartDimensions: null,
       wrapper: null,
       mapBounds: null,
@@ -94,6 +96,8 @@ export default {
       mapPathHI: null,
       mapPathPRVI: null,
       mapPathGUMP: null,
+      legendBounds: null,
+      xScaleLegend: null,
       chartBounds: null,
       yScale: null,
       focalColor: null,
@@ -212,6 +216,9 @@ export default {
       // Initialize map
       self.initMap(statePolysCONUSJSON, statePolysAKJSON, statePolysASJSON, statePolysGUMPJSON, statePolysHIJSON, statePolysPRVIJSON)
       
+      // Initialize legend
+      self.initLegend()
+
       // Initialize chart
       self.initChart()
 
@@ -535,6 +542,52 @@ export default {
         .attr("class", "states")
 
     },
+    initLegend() {
+      const self = this;
+
+      // width same as chart
+      const desktopWidth = 250; window.innerHeight < 770 ? 220 : 270;
+      const mobileWidth = 320;
+      this.legendDimensions = {
+        width: this.mobileView ? mobileWidth : desktopWidth,
+        height: 90,
+        margin: {
+          top: 60,
+          right: 15,
+          bottom: 5,
+          left: 15
+        }
+      }
+      this.legendDimensions.boundedWidth = this.legendDimensions.width - this.legendDimensions.margin.left - this.legendDimensions.margin.right
+      this.legendDimensions.boundedHeight = this.legendDimensions.height - this.legendDimensions.margin.top - this.legendDimensions.margin.bottom
+
+      // draw canvas for legend
+      const legendSVG = this.d3.select("#point-legend-container")
+        .append("svg")
+          .attr("viewBox", [0, 0, (this.legendDimensions.width), (this.legendDimensions.height)].join(' '))
+          .attr("width", "100%")
+          .attr("height", "100%")
+          .attr("id", "point-legend-svg")
+          .attr("role", "figure")
+
+      this.legendBounds = legendSVG.append("g")
+        .style("transform", `translate(${
+          this.legendDimensions.margin.left
+        }px, ${
+          this.legendDimensions.margin.top
+        }px)`)
+
+      // init static elements for legend
+      this.legendBounds.append("g")
+          .attr("class", "circles")
+          .attr("role", "figure")
+
+      // // X axis
+      // // scale for the x-axis if using to place points horizontally
+      // this.xScaleLegend = this.d3.scaleLinear()
+      //   .range([0, this.legendDimensions.boundedWidth]);
+      
+    },
     initChart() {
       const self = this;
 
@@ -584,12 +637,143 @@ export default {
           .attr("aria-label", "bar chart bars")
 
       // Y axis
-      // scale for the x-axis
+      // scale for the y-axis
       this.yScale = this.d3.scaleBand()
         .domain(this.dataTypes)
         .range([0, this.chartDimensions.boundedHeight])
         .padding(0);
 
+    },
+    drawLegend(state, scale, dataMax, sizeScale) {
+      const self = this;
+
+      const numLegendValues = dataMax > 4 ? 5 : dataMax;
+
+      // // If using xScale to place points
+      // this.xScaleLegend.domain([0, numLegendValues - 1])
+
+      // if (dataMax < 4) {
+      //   this.xScaleLegend
+      //     .range([this.legendDimensions.boundedWidth * 1/3, this.legendDimensions.boundedWidth * 2/3])
+      // } else {
+      //   this.xScaleLegend
+      //     .range([0, this.legendDimensions.boundedWidth])
+      // }
+
+      const numberScale = this.d3.scaleLinear()
+        .domain([0, numLegendValues - 1])
+        .range([1, dataMax]) //Round
+
+      function roundScale(dataVal) { 
+        let roundInterval;
+        if (dataMax < 10) {
+          roundInterval = 1
+        } else if (dataMax < 50) {
+          roundInterval = 5
+        } else if (dataMax < 100) {
+          roundInterval = 10
+        } else {
+          roundInterval = 25
+        }
+        const roundedValue = Math.round(numberScale(dataVal)/roundInterval) * roundInterval
+        return roundedValue === 0 ? 1 : roundedValue;
+      }
+
+      function adjustedSizeScale(dataVal) {
+        return sizeScale(dataVal) * scale * 1.085 // Not sure why this second multiplier is necessary... might change if legendDims change
+      }
+
+      const legendValues = Array(numLegendValues).fill().map((element, index) => index).map(d => roundScale(d))
+      let legendData = [];
+      legendValues.map((element, index) => {
+        let dataDict = {};
+        dataDict.index = index
+        dataDict.value = element
+        dataDict.id = state + '-' + index
+        legendData.push(dataDict)
+      })
+
+      const totalDiameter = legendData.reduce((accumulator, legendItem) => accumulator + adjustedSizeScale(legendItem.value)* 2, 0);
+      const totalWidth = dataMax > 2 ? this.legendDimensions.boundedWidth : this.legendDimensions.boundedWidth / 2;
+      const horizontalGap = (totalWidth - totalDiameter) / (numLegendValues - 1)
+
+      function getHorizontalPosition(dataValue, dataIndex) {
+        const cumulativeDiameter = legendData.reduce(function (accumulator, legendItem) {
+          return legendItem.index > (dataIndex - 1) ? accumulator + 0 : accumulator + adjustedSizeScale(legendItem.value)* 2;
+        }, 0);
+        return cumulativeDiameter + horizontalGap * dataIndex + adjustedSizeScale(dataValue);
+      }
+
+      let circleGroups = this.legendBounds.selectAll(".circles")
+        .selectAll(".legend-circle")
+        .data(legendData, d => d.id)
+
+      const oldCircleGroups = circleGroups.exit()
+
+      oldCircleGroups.selectAll('circle')
+        .attr("r", 0)
+
+      oldCircleGroups.selectAll('text')
+        .transition(self.getExitTransition())
+        .text('')
+
+      oldCircleGroups.transition(self.getExitTransition()).remove()
+
+      const newCircleGroups = circleGroups.enter()
+        .append("g")
+        .attr("class", "legend-circle")
+        .attr("id", d => 'legend-circle-' + d.value)
+
+      // append circles and set default cx and r
+      newCircleGroups.append("circle")
+        .attr('cx', function(d, i) {
+          // return self.xScaleLegend(i);
+          return getHorizontalPosition(d.value, i);
+        })
+        .attr('cy', function(d, i) {
+          return -1 * adjustedSizeScale(d.value)
+        })
+        .attr('r', 0)
+        .style("fill", this.focalColor)
+
+      // update rectGroups to include new points
+      circleGroups = newCircleGroups.merge(circleGroups)
+
+      const legendCircles = circleGroups.select("circle")
+
+      // Update circles based on data values
+      legendCircles.transition(self.getUpdateTransition())
+        .attr('cx', function(d, i) {
+          // return self.xScaleLegend(i);
+          return getHorizontalPosition(d.value, i);
+        })
+        .attr('cy', function(d, i) {
+          return -1 * adjustedSizeScale(d.value)
+        })
+        .attr('r', function(d) {
+          return adjustedSizeScale(d.value);
+        })
+        .style("fill", this.focalColor);
+
+      // Append text and set default position
+      newCircleGroups.append("text")
+        .attr("x", function(d, i) {
+          // return self.xScaleLegend(i);
+          return getHorizontalPosition(d.value, i);
+        })
+        .attr("dy", 15)
+
+      const circleText = circleGroups.select("text")
+        .transition(self.getUpdateTransition())
+        .attr("class", "legend-text")
+        .attr("x", function(d, i) {
+          // return self.xScaleLegend(i);
+          return getHorizontalPosition(d.value, i);
+        })
+        .style("text-anchor", "middle")
+        .attr("alignment-baseline", "middle") // center text
+        .attr("dominant-baseline", "middle") // required for Firefox
+        .text(d => d.value)
     },
     drawHistogram(state) {
       const self = this;
@@ -1008,14 +1192,13 @@ export default {
         }
 
       } else {
-
         dataPoints = this.countyPoints.filter(d => d.properties.STATE_NAME === state)
         // Get max value for state, in any category except 'All'
         dataMax = this.d3.max(dataPoints, d => parseInt(d.properties.max_count))
       }
 
       // create scales
-      const scaleNumerator = scale > 15 ? 3: 1.3
+      const scaleNumerator = scale > 15 ? 1.5 : 1.3
       const scaleFactor = scale === 1 ? 1 : scaleNumerator/scale
       const scaleFactorMobile = this.mobileView ? 2 : 1;
       const rangeMin = scale === 1 ? 1.25 : 2.5
@@ -1122,6 +1305,8 @@ export default {
           .style("fill", this.focalColor)
           .style("stroke", "#ffffff")
           .style("stroke-width", centroidStrokeWidth)
+
+      self.drawLegend(state, scale, dataMax, sizeScale)
     },
     // define transitions
     getUpdateTransition() {
@@ -1310,11 +1495,12 @@ export default {
     display: grid;
     grid-template-columns: 20% 78%;
     column-gap: 2%;
-    grid-template-rows: max-content max-content max-content;
+    grid-template-rows: max-content max-content max-content max-content;
     row-gap: 2vh;
     grid-template-areas:
       "title title"
       "chart map"
+      "legend map"
       "text map";
     align-items: start;
     margin: 3rem 0rem 5rem 0rem;
@@ -1324,11 +1510,12 @@ export default {
   }
   #grid-container-interactive.mobile {
     grid-template-columns: 100%;
-    grid-template-rows: max-content max-content max-content max-content;
+    grid-template-rows: max-content max-content max-content max-content max-content;
     grid-template-areas:
       "title"
       "text"
       "map"
+      "legend"
       "chart";
     position: relative;
     padding: 0.5rem 0.5rem 0.5rem 0.5rem;
@@ -1343,6 +1530,9 @@ export default {
   }
   #chart-container {
     grid-area: chart;
+  }
+  #point-legend-container {
+    grid-area: legend;
   }
   #oconus-container {
     grid-area: map;
