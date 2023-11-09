@@ -550,12 +550,12 @@ export default {
       const mobileWidth = 320;
       this.legendDimensions = {
         width: this.mobileView ? mobileWidth : desktopWidth,
-        height: 90,
+        height: this.mobileView ? 70 : 90,
         margin: {
-          top: 60,
-          right: 15,
+          top: this.mobileView ? 40: 60,
+          right: this.mobileView ? 55 : 15,
           bottom: 5,
-          left: 15
+          left: this.mobileView ? 55 : 15
         }
       }
       this.legendDimensions.boundedWidth = this.legendDimensions.width - this.legendDimensions.margin.left - this.legendDimensions.margin.right
@@ -662,7 +662,7 @@ export default {
 
       const numberScale = this.d3.scaleLinear()
         .domain([0, numLegendValues - 1])
-        .range([1, dataMax]) //Round
+        .range([1, dataMax])
 
       function roundScale(dataVal) { 
         let roundInterval;
@@ -695,7 +695,8 @@ export default {
       })
 
       const totalDiameter = legendData.reduce((accumulator, legendItem) => accumulator + adjustedSizeScale(legendItem.value)* 2, 0);
-      const totalWidth = dataMax > 2 ? this.legendDimensions.boundedWidth : this.legendDimensions.boundedWidth / 2;
+      const reducedWidth = this.mobileView ? this.legendDimensions.boundedWidth / 3 : this.legendDimensions.boundedWidth / 2
+      const totalWidth = dataMax > 2 ? this.legendDimensions.boundedWidth : reducedWidth;
       const horizontalGap = (totalWidth - totalDiameter) / (numLegendValues - 1)
 
       function getHorizontalPosition(dataValue, dataIndex) {
