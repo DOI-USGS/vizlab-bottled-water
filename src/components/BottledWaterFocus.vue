@@ -23,23 +23,6 @@
         id="grid-container-source-maps"
       >
         <div
-          id="img-source-explainer"
-          class="img-container"
-        >
-          <img
-            v-if="!mobileView"
-            class="source-explainer"
-            src="../assets/images/source_map_explainer.png"
-            alt=""
-          >
-          <img
-            v-if="mobileView"
-            class="source-explainer"
-            src="../assets/images/source_map_explainer_mobile.png"
-            alt=""
-          >
-        </div>
-        <div
           id="source-map-title-self"
           class="text-container map-title-container"
         >
@@ -311,9 +294,8 @@
     grid-area: source-maps;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: max-content max-content max-content max-content max-content;
+    grid-template-rows: max-content max-content max-content max-content;
     grid-template-areas:
-      "explainer explainer"
       "title-self title-self"
       "count-self perc-self"
       "title-combo title-combo"
@@ -326,9 +308,8 @@
     max-width: 1400px;
     @media screen and (max-width: 600px) {
       grid-template-columns: 1fr;
-      grid-template-rows: max-content max-content max-content max-content max-content max-content max-content max-content;
+      grid-template-rows: max-content max-content max-content max-content max-content max-content max-content;
       grid-template-areas:
-        "explainer"
         "title-self"
         "count-self"
         "perc-self"
@@ -340,9 +321,6 @@
         "perc-public";
       margin: 0rem auto 3rem auto;
     }
-  }
-  #img-source-explainer {
-    grid-area: explainer;
   }
   .map-title-container {
     text-align: center;
@@ -374,13 +352,6 @@
   }
   #img-source-public-percent {
     grid-area: perc-public;
-  }
-  .source-explainer {
-    max-width: 90%;
-    margin: 3rem 0rem 1rem 0rem;
-    @media screen and (max-width: 600px) {
-      max-width: 80%;
-    }
   }
   .source-map {
     max-width: 90%;
