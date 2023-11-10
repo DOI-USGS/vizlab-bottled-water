@@ -14,7 +14,7 @@
           <label
             id="Count"
             for="id_Count"
-            tabindex=0
+            tabindex="0"
             class="graph-buttons-switch-label graph-buttons-switch-label-off"
           >Count</label>
           <input
@@ -27,13 +27,13 @@
           <label
             id="Percent"
             for="id_Percent"
-            tabindex=0
+            tabindex="0"
             class="graph-buttons-switch-label graph-buttons-switch-label-on"
           >Percent</label>
           <span class="graph-buttons-switch-selection" />
         </div>
         <p v-if="!mobileView">of facilities by water source</p>
-        <p v-if="mobileView">of facilities by water source</p>
+        <p v-if="mobileView">of facilities</p>
       </div>
       <div id="legend-container" />
       <div id="barplot-container" />
@@ -765,6 +765,7 @@ export default {
     cursor: pointer;
     @media screen and (max-width: 600px) {
       line-height: 2.2rem;
+      width: $switchWidth * 1.02;
     }
   }
   .graph-buttons-switch-label-off {
