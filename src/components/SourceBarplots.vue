@@ -14,7 +14,7 @@
           <label
             id="Count"
             for="id_Count"
-            tabindex=0
+            tabindex="0"
             class="graph-buttons-switch-label graph-buttons-switch-label-off"
           >Count</label>
           <input
@@ -27,7 +27,7 @@
           <label
             id="Percent"
             for="id_Percent"
-            tabindex=0
+            tabindex="0"
             class="graph-buttons-switch-label graph-buttons-switch-label-on"
           >Percent</label>
           <span class="graph-buttons-switch-selection" />
