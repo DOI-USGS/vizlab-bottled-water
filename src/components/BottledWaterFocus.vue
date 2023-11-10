@@ -18,6 +18,8 @@
         class="text-container"
       >
         <p v-html="bottledWaterFocusText.paragraph2" />
+        <br>
+        <p v-html="bottledWaterFocusText.paragraph3" />
       </div>
       <div
         id="grid-container-source-maps"
@@ -120,7 +122,7 @@
         id="text3"
         class="text-container"
       >
-        <p v-html="bottledWaterFocusText.paragraph3" />
+        <p v-html="bottledWaterFocusText.paragraph4" />
       </div>
       <div
         id="img-infographic-bw-top"
@@ -146,7 +148,7 @@
         id="text4"
         class="text-container"
       >
-        <p v-html="bottledWaterFocusText.paragraph4" />
+        <p v-html="bottledWaterFocusText.paragraph5" />
       </div>
       <div
         id="img-bw-use-beeswarm"
@@ -175,7 +177,7 @@
         id="text5"
         class="text-container"
       >
-        <p v-html="bottledWaterFocusText.paragraph5" />
+        <p v-html="bottledWaterFocusText.paragraph6" />
       </div>
     </div>
   </section>
