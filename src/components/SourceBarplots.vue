@@ -701,9 +701,8 @@ export default {
   #grid-container-barplots {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: max-content max-content max-content max-content;
+    grid-template-rows: max-content max-content max-content;
     grid-template-areas:
-      "intro"
       "toggle"
       "legend"
       "barplot";
@@ -715,18 +714,13 @@ export default {
       width: 100%;
     }
     @media screen and (max-width: 600px) {
-      grid-template-rows: max-content max-content max-content max-content;
+      grid-template-rows: max-content max-content max-content;
       grid-template-areas:
-      "intro"
       "toggle"
       "legend"
       "barplot";
       width: 100%;
     }
-  }
-  #intro-container {
-    grid-area: intro;
-    width: 100%;
   }
   #toggle-container {
     grid-area: toggle;
