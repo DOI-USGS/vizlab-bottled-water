@@ -1,12 +1,7 @@
 <template>
   <section>
     <div id="grid-container-barplots">
-      <div id="intro-container" class="text-container">
-        <p>Explore where different facility types source water.</p>
-      </div>
       <div id="toggle-container" class="text-container">
-        <p v-if="!mobileView">Showing the data summarized by</p>
-        <p v-if="mobileView">Summarize the data by</p>
         <div class="graph-buttons-switch">
           <input
             id="id_Count"
@@ -19,9 +14,9 @@
           <label
             id="Count"
             for="id_Count"
-            tabindex=0
+            tabindex="0"
             class="graph-buttons-switch-label graph-buttons-switch-label-off"
-          >count</label>
+          >Count</label>
           <input
             id="id_Percent"
             type="radio"
@@ -32,11 +27,13 @@
           <label
             id="Percent"
             for="id_Percent"
-            tabindex=0
+            tabindex="0"
             class="graph-buttons-switch-label graph-buttons-switch-label-on"
-          >percent</label>
+          >Percent</label>
           <span class="graph-buttons-switch-selection" />
         </div>
+        <p v-if="!mobileView">of facilities by water source</p>
+        <p v-if="mobileView">of facilities</p>
       </div>
       <div id="legend-container" />
       <div id="barplot-container" />
@@ -704,9 +701,8 @@ export default {
   #grid-container-barplots {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: max-content max-content max-content max-content;
+    grid-template-rows: max-content max-content max-content;
     grid-template-areas:
-      "intro"
       "toggle"
       "legend"
       "barplot";
@@ -718,18 +714,13 @@ export default {
       width: 100%;
     }
     @media screen and (max-width: 600px) {
-      grid-template-rows: max-content max-content max-content max-content;
+      grid-template-rows: max-content max-content max-content;
       grid-template-areas:
-      "intro"
       "toggle"
       "legend"
       "barplot";
       width: 100%;
     }
-  }
-  #intro-container {
-    grid-area: intro;
-    width: 100%;
   }
   #toggle-container {
     grid-area: toggle;
@@ -768,6 +759,7 @@ export default {
     cursor: pointer;
     @media screen and (max-width: 600px) {
       line-height: 2.2rem;
+      width: $switchWidth * 1.02;
     }
   }
   .graph-buttons-switch-label-off {

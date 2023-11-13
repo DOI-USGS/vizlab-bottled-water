@@ -12,6 +12,8 @@
         class="text-container"
       >
         <p v-html="sourceText.paragraph1" />
+        <br>
+        <p v-html="sourceText.paragraph2" />
       </div>
       <!---div id="grid-container-illustration">
         <div
@@ -39,7 +41,13 @@
         id="text2"
         class="text-container"
       >
-        <p v-html="sourceText.paragraph2" />
+        <p v-html="sourceText.paragraph3" />
+      </div>
+      <div
+        id="text3"
+        class="text-container"
+      >
+        <p v-html="sourceText.paragraph4" />
       </div>
       <sourceBarplots id="source-barplots" />
     </div>
@@ -94,6 +102,7 @@
       "text1"
       "illustration"
       "text2"
+      "text3"
       "source-bars";
     justify-content: center;
   }
@@ -107,6 +116,10 @@
   }
   #text2 {
     grid-area: text2;
+    justify-self: start;
+  }
+  #text3 {
+    grid-area: text3;
     justify-self: start;
   }
   #source-barplots {

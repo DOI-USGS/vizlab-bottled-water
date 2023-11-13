@@ -140,7 +140,7 @@
       font-size: 3rem;
     }
     @media screen and (max-width: 600px) {
-        font-size: 2.5rem;
+        font-size: 2rem;
     } 
   }
   h3{
@@ -251,7 +251,7 @@
   .viz-comment {
     font-family: $SourceSans;
     font-style: italic;
-    font-size: 1.8rem;
+    font-size: 1.7rem;
     @media screen and (max-width: 600px) {
       font-size: 1.6rem;
     }

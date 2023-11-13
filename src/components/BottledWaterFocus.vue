@@ -2,10 +2,10 @@
   <section id="bottled_water_focus">
     <div id="grid-container-bw">
       <div
-        id="title"
+        id="title1"
         class="text-container title-text"
       >
-        <h2 v-html="bottledWaterFocusText.title" />
+        <h2 v-html="bottledWaterFocusText.title1" />
       </div>
       <div
         id="text1"
@@ -18,6 +18,8 @@
         class="text-container"
       >
         <p v-html="bottledWaterFocusText.paragraph2" />
+        <br>
+        <p v-html="bottledWaterFocusText.paragraph3" />
       </div>
       <div
         id="grid-container-source-maps"
@@ -34,21 +36,30 @@
           id="img-source-self-count"
           class="img-container"
         >
-          <img
+        <picture>
+          <source srcset="../assets/images/map_bottled_water_Self-supply_count.webp" media="(max-width: 2000px)" type="image/webp">
+          <img 
+            src="../assets/images/map_bottled_water_Self-supply_count.png" 
+            loading="lazy" decoding="async"
             class="source-map"
-            src="../assets/images/map_bottled_water_Self-supply_count.png"
             alt="CONUS, county level proportional symbols map, binned into five categories: 25, 50, 100, 300, and 600, show counts of bottled water facilities that source water from self-supply. Generally, many counties across Texas, Florida, California, and Colorado display the greatest count of bottled water facilities sourcing water from self-supply. The top three counties with the greatest number of bottled water facilities using self-supply include Harris County, Texas (33), Palm Beach County (14) and Lee County, Florida (14)."
-          >
+           >
+        </picture>
         </div>
         <div
           id="img-source-self-percent"
           class="img-container"
         >
-          <img
+        <picture>
+          <source srcset="../assets/images/map_bottled_water_Self-supply_perc.webp"  media="(max-width: 2000px)" type="image/webp">
+          <img 
+            src="../assets/images/map_bottled_water_Self-supply_perc.png" 
+            loading="lazy" decoding="async"
             class="source-map"
-            src="../assets/images/map_bottled_water_Self-supply_perc.png"
             alt="CONUS, county level choropleth map, binned into five categories: 1, 25, 50, 75, and 100%, show percents of bottled water facilities that source water from self-supply. Generally, many counties across the Eastern, South Central, and Western United States have a high proportion of bottled water facilities that source water from self-supply."
-          >
+           >
+           </picture>
+
         </div>
         <div
           id="source-map-title-combo"
@@ -64,7 +75,7 @@
         >
           <img
             class="source-map"
-            src="../assets/images/map_bottled_water_combination_count.png"
+            src="../assets/images/map_bottled_water_combination_count.webp"
             alt="CONUS, county level proportional symbols map, binned into five categories: 25, 50, 100, 300, and 600, show counts of bottled water facilities that source water from a combination of sources. Massachusetts, California, New York, and Illinois lead in the number of bottled water facilities that use a combination of sources. The top three counties with the greatest number of bottled water facilities using a combination of sources include Middlesex County, Massachusetts (21), Los Angeles County, California (20), and San Diego County, California (18)."
           >
         </div>
@@ -74,7 +85,7 @@
         >
           <img
             class="source-map"
-            src="../assets/images/map_bottled_water_combination_perc.png"
+            src="../assets/images/map_bottled_water_combination_perc.webp"
             alt="CONUS, county level choropleth map, binned into five categories: 1, 25, 50, 75, and 100%, show percents of bottled water facilities that source water from a combination of sources. A large portion of counties in the Midwest and Eastern United States have the highest percentage of bottled water facilities utilizing a combination of sources for their water supply."
           >
         </div>
@@ -92,7 +103,7 @@
         >
           <img
             class="source-map"
-            src="../assets/images/map_bottled_water_public_supply_count.png"
+            src="../assets/images/map_bottled_water_public_supply_count.webp"
             alt="CONUS, county level proportional symbols map, binned into five categories: 25, 50, 100, 300, and 600, show counts of bottled water facilities that source water from public supply. Largely, California, Texas, and Florida lead in the number of bottled water facilities that source from public supply. The top three counties with the greatest number of bottled water facilities that use public supply water include Los Angeles County, California (679), Orange County, California (259), and San Diego County, California (165)."
           >
         </div>
@@ -102,7 +113,7 @@
         >
           <img
             class="source-map"
-            src="../assets/images/map_bottled_water_public_supply_perc.png"
+            src="../assets/images/map_bottled_water_public_supply_perc.webp"
             alt="CONUS, county level choropleth map, binned into five categories: 1, 25, 50, 75, and 100%, show percents of bottled water facilities that source water from public supply. Many counties in the Western and Southwestern United States have high percentages of bottled water facilities that obtain their water from public supply sources"
           >
         </div>
@@ -111,7 +122,7 @@
         id="text3"
         class="text-container"
       >
-        <p v-html="bottledWaterFocusText.paragraph3" />
+        <p v-html="bottledWaterFocusText.paragraph4" />
       </div>
       <div
         id="img-infographic-bw-top"
@@ -137,7 +148,7 @@
         id="text4"
         class="text-container"
       >
-        <p v-html="bottledWaterFocusText.paragraph4" />
+        <p v-html="bottledWaterFocusText.paragraph5" />
       </div>
       <div
         id="img-bw-use-beeswarm"
@@ -146,21 +157,27 @@
         <img
           v-if="!mobileView"
           class="beeswarm"
-          src="../assets/images/annual_bottled_water_use_beeswarm.png"
+          src="../assets/images/annual_bottled_water_use_beeswarm.webp"
           alt="Beeswarm plot displays average annual water use, in million gallons per day (MGD), by bottled water facilities for which water use data was available, across water sources. Generally, the available data on average annual water use fall below 0.25 MGD, though some bottled water facilities that use well water or a combination of sources have average annual water use above 0.5 MGD, up to about 1.75 MGD."
         >
         <img
           v-if="mobileView"
           class="beeswarm beeswarm-mobile"
-          src="../assets/images/annual_bottled_water_use_beeswarm_mobile.png"
+          src="../assets/images/annual_bottled_water_use_beeswarm_mobile.webp"
           alt="Beeswarm plot displays average annual water use, in million gallons per day (MGD), by bottled water facilities for which water use data was available, across water sources. Generally, the available data on average annual water use fall below 0.25 MGD, though some bottled water facilities that use well water or a combination of sources have average annual water use above 0.5 MGD, up to about 1.75 MGD."
         >
+      </div>
+      <div
+        id="title2"
+        class="text-container title-text"
+      >
+        <h2 v-html="bottledWaterFocusText.title2" />
       </div>
       <div
         id="text5"
         class="text-container"
       >
-        <p v-html="bottledWaterFocusText.paragraph5" />
+        <p v-html="bottledWaterFocusText.paragraph6" />
       </div>
     </div>
   </section>
@@ -206,7 +223,7 @@
     grid-template-columns: 1fr;
     grid-template-rows: 0.5fr max-content max-content max-content;
     grid-template-areas:
-      "title"
+      "title1"
       "text1"
       "text2"
       "source-maps"
@@ -215,11 +232,12 @@
       "infographic-bw-bottom"
       "text4"
       "bw-use-source"
+      "title2"
       "text5";
     justify-content: center;
   }
-  #title {
-    grid-area: title;
+  #title1 {
+    grid-area: title1;
     justify-self: start;
   }
   #text1 {
@@ -236,6 +254,10 @@
   }
   #text4 {
     grid-area: text4;
+    justify-self: start;
+  }
+  #title2 {
+    grid-area: title2;
     justify-self: start;
   }
   #text5 {

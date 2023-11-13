@@ -2,15 +2,39 @@
   <div id="visualization">
     <header id="title-container">
       <div class="panel-wrap">
-        <div class="panel start start-shadow glass-under"/> 
-        <div class="panel glass-under" :class="{ mobile: mobileView}" />        
-        <div class="panel glass-under" :class="{ mobile: mobileView}" />
-        <div class="panel glass-under" :class="{ mobile: mobileView}" />
-        <div class="panel glass-under" :class="{ mobile: mobileView}" />
-        <div class="panel glass-under" :class="{ mobile: mobileView}" />
-        <div class="panel glass-under" :class="{ mobile: mobileView}" />
-        <div class="panel glass-under" :class="{ mobile: mobileView}" />
-        <div class="panel glass-under" :class="{ mobile: mobileView}" />
+        <div class="panel start start-shadow glass-under" /> 
+        <div
+          class="panel glass-under"
+          :class="{ mobile: mobileView}"
+        />        
+        <div
+          class="panel glass-under"
+          :class="{ mobile: mobileView}"
+        />
+        <div
+          class="panel glass-under"
+          :class="{ mobile: mobileView}"
+        />
+        <div
+          class="panel glass-under"
+          :class="{ mobile: mobileView}"
+        />
+        <div
+          class="panel glass-under"
+          :class="{ mobile: mobileView}"
+        />
+        <div
+          class="panel glass-under"
+          :class="{ mobile: mobileView}"
+        />
+        <div
+          class="panel glass-under"
+          :class="{ mobile: mobileView}"
+        />
+        <div
+          class="panel glass-under"
+          :class="{ mobile: mobileView}"
+        />
         <div
           v-if="!mobileView"
           class="panel glass-under"
@@ -26,19 +50,44 @@
         <div class="panel end end-shadow glass-under" />
         <div class="panel neck end-shadow glass-under" />
         <div class="panel cap end-shadow glass-under" />
-        
       </div>
-      <h1 id="page-title"><span class="first-words">Where does </span><span class="highlight-words">bottled water</span><span class="later-words"> come from?</span></h1>
+      <h1 id="page-title">
+        <span class="first-words">Where does </span><span class="highlight-words">bottled water</span><span class="later-words"> come from?</span>
+      </h1>
       <div class="panel-wrap">
         <div class="panel start glass-over" /> 
-        <div class="panel glass-over" :class="{ mobile: mobileView}" />        
-        <div class="panel glass-over" :class="{ mobile: mobileView}" />
-        <div class="panel glass-over" :class="{ mobile: mobileView}" />
-        <div class="panel glass-over" :class="{ mobile: mobileView}" />
-        <div class="panel glass-over" :class="{ mobile: mobileView}" />
-        <div class="panel glass-over" :class="{ mobile: mobileView}" />
-        <div class="panel glass-over" :class="{ mobile: mobileView}" />
-        <div class="panel glass-over" :class="{ mobile: mobileView}" />
+        <div
+          class="panel glass-over"
+          :class="{ mobile: mobileView}"
+        />        
+        <div
+          class="panel glass-over"
+          :class="{ mobile: mobileView}"
+        />
+        <div
+          class="panel glass-over"
+          :class="{ mobile: mobileView}"
+        />
+        <div
+          class="panel glass-over"
+          :class="{ mobile: mobileView}"
+        />
+        <div
+          class="panel glass-over"
+          :class="{ mobile: mobileView}"
+        />
+        <div
+          class="panel glass-over"
+          :class="{ mobile: mobileView}"
+        />
+        <div
+          class="panel glass-over"
+          :class="{ mobile: mobileView}"
+        />
+        <div
+          class="panel glass-over"
+          :class="{ mobile: mobileView}"
+        />
         <div
           v-if="!mobileView"
           class="panel glass-over"
