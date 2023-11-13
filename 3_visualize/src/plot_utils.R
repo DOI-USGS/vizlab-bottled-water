@@ -1523,9 +1523,10 @@ generate_national_sankey <- function(supply_summary, supply_colors, type_colors,
   subset_plot <- bind_rows(subset_node_1, subset_node_2) %>%
     mutate(x = ifelse(node %in% subset_categories, 1, 2)) %>%
     dplyr::select(x, node, next_x, next_node, site_count) %>%
-    mutate(nudge_x = ifelse(x == 1, -0.06, 0.06), # adjust spacing between plot and labels
-           h_just = ifelse(x == 1, 1, 0),
-           h_just_ig = ifelse(x == 1, 0.75, 0.25)) %>% # adjust label justification
+    mutate(nudge_x = ifelse(x == 1, -0.08, 0.08),
+           nudge_x_ig = ifelse(x == 1, -0.07, 0.07), # adjust spacing between plot and labels
+           h_just = ifelse(x == 1, 0.85, 0.15),
+           h_just_ig = ifelse(x == 1, 0.68, 0.31)) %>% # adjust label justification
     uncount(site_count) # Get row for every facility, for each node
 
   # Put together vector of colors
@@ -1573,10 +1574,10 @@ generate_national_sankey <- function(supply_summary, supply_colors, type_colors,
                 geom_sankey() +
                 geom_sankey_label(aes(x = x + nudge_x, hjust = h_just), size = label_size, color = "black", fill = "white",
                                   label.size = NA, family = font_legend),
-              x = 0.986,
+              x = 0.978,
               y = 0.078,
               height = 0.8,
-              width = 1 - (0.01 + plot_margin * 4),
+              width = 1 - (0.03 + plot_margin * 4),
               hjust = 1,
               vjust = 0) +
     # add title
@@ -1623,7 +1624,7 @@ generate_national_sankey <- function(supply_summary, supply_colors, type_colors,
       # Add main plot
       draw_plot(sankey +
                   geom_sankey(width = 0.02) +
-                  geom_sankey_label(aes(x = x + nudge_x, hjust = h_just_ig), size = label_size, color = "black", fill = "white",
+                  geom_sankey_label(aes(x = x + nudge_x_ig, hjust = h_just_ig), size = label_size, color = "black", fill = "white",
                                     label.size = NA, family = font_legend) +
                   theme(plot.margin = unit(c(0, 0.25, 0, 0.25), "cm")),
                 x = (1-plot_margin)*0.02,
