@@ -28,7 +28,7 @@
         <div class="panel cap end-shadow glass-under" />
         
       </div>
-      <h1 id="page-title"><span class="first-words">Water bottling</span><span class="later-words"> across the U.S.</span></h1>
+      <h1 id="page-title"><span class="first-words">Where does </span><span class="highlight-words">bottled water</span><span class="later-words"> come from?</span></h1>
       <div class="panel-wrap">
         <div class="panel start glass-over" /> 
         <div class="panel glass-over" :class="{ mobile: mobileView}" />        
@@ -151,6 +151,18 @@ export default {
     }
   }
   .first-words {
+    margin-right: 5.25rem;
+    @media screen and (max-width: 790px) {
+      margin-right: 0rem;
+    }
+    @media screen and (max-height: 770px) {
+      margin-right: 6rem;
+    }
+    @media screen and (max-width: 600px) {
+      margin-right: 0rem;
+    }
+  }
+  .highlight-words {
     color: #4365A8; 
     z-index: 0;
   }
@@ -168,7 +180,7 @@ export default {
   }
   .panel-wrap {
     display: flex;
-    justify-content: start;
+    justify-content: flex-start;
     position: absolute;
     top: 5.5rem; // same as top padding on #visualization -0.5rem
     @media screen and (max-width: 600px) {
