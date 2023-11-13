@@ -247,6 +247,72 @@ export default {
         .attr("tabindex", 0)
         .attr("contenteditable", "true")
         .attr("aria-label", "bar plot bars")
+
+      // add def for pattern fill
+      const defs = barplotSVG.append("defs")
+        
+      const patternBarplot = defs
+        .append("pattern")
+        .attr("id", `green-pattern`)
+        .attr("height", "100%")
+        .attr("width", "5%")
+        .attr("patternContentUnits", "objectBoundingBox");
+
+      patternBarplot
+        .append("rect")
+        .attr("height", "100%")
+        .attr("width", "100%")
+        .attr("fill", '#6F927C');
+      
+      patternBarplot
+        .append("rect")
+        .attr("x", 0.01)
+        .attr("y", 0)
+        .attr("height", "100%")
+        .attr("width", 0.01)
+        .attr("fill", "white");
+
+      const patternBarplotMobile = defs
+        .append("pattern")
+        .attr("id", `green-pattern-mobile`)
+        .attr("height", "100%")
+        .attr("width", "10%")
+        .attr("patternContentUnits", "objectBoundingBox");
+
+      patternBarplotMobile
+        .append("rect")
+        .attr("height", "100%")
+        .attr("width", "100%")
+        .attr("fill", '#6F927C');
+      
+      patternBarplotMobile
+        .append("rect")
+        .attr("x", 0.01)
+        .attr("y", 0)
+        .attr("height", "100%")
+        .attr("width", 0.015)
+        .attr("fill", "white");
+
+      const patternLegend = defs
+        .append("pattern")
+        .attr("id", `green-pattern-legend`)
+        .attr("height", "100%")
+        .attr("width", "25%")
+        .attr("patternContentUnits", "objectBoundingBox");
+
+      patternLegend
+        .append("rect")
+        .attr("height", "100%")
+        .attr("width", "100%")
+        .attr("fill", '#6F927C');
+      
+      patternLegend
+        .append("rect")
+        .attr("x", 0.01)
+        .attr("y", 0)
+        .attr("height", "100%")
+        .attr("width", 0.05)
+        .attr("fill", "white");
     },
     makeColorScale(data) {
       const self = this;
@@ -365,7 +431,15 @@ export default {
                 .attr("y", d => this.yScale(0))
                 .attr("width", this.xScale.bandwidth())
                 .attr("height", this.barplotDimensions.boundedHeight - this.yScale(0))
-                .style("fill", d => this.colorScale(d.key))
+                .style("fill", d => {
+                  if (d.key === 'Combination' && !this.mobileView) {
+                    return "url(#green-pattern)"
+                  } else if (d.key === 'Combination' && this.mobileView) {
+                    return "url(#green-pattern-mobile)"
+                  } else {
+                    return this.colorScale(d.key)
+                  }
+                })
             ,
             null,
             exit => {
@@ -389,7 +463,15 @@ export default {
         .attr("y", d => this.yScale(d[1]))
         .attr("width", this.xScale.bandwidth())
         .attr("height", d => this.yScale(d[0]) - this.yScale(d[1]))
-        .style("fill", d => this.colorScale(d.key))
+        .style("fill", d => {
+          if (d.key === 'Combination' && !this.mobileView) {
+            return "url(#green-pattern)"
+          } else if (d.key === 'Combination' && this.mobileView) {
+            return "url(#green-pattern-mobile)"
+          } else {
+            return this.colorScale(d.key)
+          }
+        })
     },
     addLegend(data) {
       const self = this;
@@ -448,7 +530,13 @@ export default {
       legendGroup.append("rect")
         .attr("width", legendRectSize)
         .attr("height", legendRectSize)
-        .attr("fill", d => this.colorScale(d));
+        .style("fill", d => {
+          if (d === 'Combination') {
+            return "url(#green-pattern-legend)"
+          } else {
+            return this.colorScale(d)
+          }
+        })
 
       // Add text for each group
       legendGroup.append("text")
