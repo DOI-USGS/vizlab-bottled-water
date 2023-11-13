@@ -693,7 +693,7 @@ p3_targets <- list(
   tar_target(p3_perc_wu_availablity_barplot_png,
              perc_wu_avail_barplot(sites_wu_summary_sf = p2_inventory_sites_wu_conus_summary_sf,
                                 width = 2, height = 6,
-                                focal_color = "#1599CF",
+                                focal_color = "#4365A8",
                                 text_size = 14,
                                 bkgd_color = 'white',
                                 text_color = 'black',
