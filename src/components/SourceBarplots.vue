@@ -42,6 +42,7 @@
 </template>
 <script>
 import * as d3Base from 'd3';
+import texturesBase from 'textures';
 import { isMobile } from 'mobile-device-detect';
 
 export default {
@@ -52,6 +53,8 @@ export default {
     return {
 
       d3: null,
+      textures: null,
+      textureCombination: null,
       publicPath: import.meta.env.BASE_URL, // find the files when on different deployment roots
       mobileView: isMobile, // test for mobile
       sourceSummary: null,
@@ -66,6 +69,7 @@ export default {
   },
   mounted(){      
     this.d3 = Object.assign(d3Base);
+    this.textures = Object.assign(texturesBase);
 
     const self = this;
     this.loadData() // read in data 
@@ -248,71 +252,9 @@ export default {
         .attr("contenteditable", "true")
         .attr("aria-label", "bar plot bars")
 
-      // add def for pattern fill
-      const defs = barplotSVG.append("defs")
-        
-      const patternBarplot = defs
-        .append("pattern")
-        .attr("id", `green-pattern`)
-        .attr("height", "100%")
-        .attr("width", "5%")
-        .attr("patternContentUnits", "objectBoundingBox");
-
-      patternBarplot
-        .append("rect")
-        .attr("height", "100%")
-        .attr("width", "100%")
-        .attr("fill", '#6F927C');
-      
-      patternBarplot
-        .append("rect")
-        .attr("x", 0.01)
-        .attr("y", 0)
-        .attr("height", "100%")
-        .attr("width", 0.01)
-        .attr("fill", "white");
-
-      const patternBarplotMobile = defs
-        .append("pattern")
-        .attr("id", `green-pattern-mobile`)
-        .attr("height", "100%")
-        .attr("width", "10%")
-        .attr("patternContentUnits", "objectBoundingBox");
-
-      patternBarplotMobile
-        .append("rect")
-        .attr("height", "100%")
-        .attr("width", "100%")
-        .attr("fill", '#6F927C');
-      
-      patternBarplotMobile
-        .append("rect")
-        .attr("x", 0.01)
-        .attr("y", 0)
-        .attr("height", "100%")
-        .attr("width", 0.015)
-        .attr("fill", "white");
-
-      const patternLegend = defs
-        .append("pattern")
-        .attr("id", `green-pattern-legend`)
-        .attr("height", "100%")
-        .attr("width", "25%")
-        .attr("patternContentUnits", "objectBoundingBox");
-
-      patternLegend
-        .append("rect")
-        .attr("height", "100%")
-        .attr("width", "100%")
-        .attr("fill", '#6F927C');
-      
-      patternLegend
-        .append("rect")
-        .attr("x", 0.01)
-        .attr("y", 0)
-        .attr("height", "100%")
-        .attr("width", 0.05)
-        .attr("fill", "white");
+      // Add textures - https://riccardoscalco.it/textures/
+      this.textureCombination = this.textures.lines().stroke('#6F927C').strokeWidth(5).size(9).orientation("2/8").background("white");;
+      barplotSVG.call(this.textureCombination);
     },
     makeColorScale(data) {
       const self = this;
@@ -322,9 +264,9 @@ export default {
         'Surface water intake': '#283A70',
         'Spring': '#4365A8',
         'Well': '#8E9CBE',
-        'Combination': '#6F927C',
+        'Combination': this.textureCombination.url(),
         'Undetermined': '#D4D4D4'
-      };
+      }; //Combination base color: '#6F927C'
 
       const colorScale = this.d3.scaleOrdinal()
         .domain(data)
@@ -431,15 +373,7 @@ export default {
                 .attr("y", d => this.yScale(0))
                 .attr("width", this.xScale.bandwidth())
                 .attr("height", this.barplotDimensions.boundedHeight - this.yScale(0))
-                .style("fill", d => {
-                  if (d.key === 'Combination' && !this.mobileView) {
-                    return "url(#green-pattern)"
-                  } else if (d.key === 'Combination' && this.mobileView) {
-                    return "url(#green-pattern-mobile)"
-                  } else {
-                    return this.colorScale(d.key)
-                  }
-                })
+                .style("fill", d => this.colorScale(d.key))
             ,
             null,
             exit => {
@@ -463,15 +397,7 @@ export default {
         .attr("y", d => this.yScale(d[1]))
         .attr("width", this.xScale.bandwidth())
         .attr("height", d => this.yScale(d[0]) - this.yScale(d[1]))
-        .style("fill", d => {
-          if (d.key === 'Combination' && !this.mobileView) {
-            return "url(#green-pattern)"
-          } else if (d.key === 'Combination' && this.mobileView) {
-            return "url(#green-pattern-mobile)"
-          } else {
-            return this.colorScale(d.key)
-          }
-        })
+        .style("fill", d => this.colorScale(d.key))
     },
     addLegend(data) {
       const self = this;
@@ -530,13 +456,7 @@ export default {
       legendGroup.append("rect")
         .attr("width", legendRectSize)
         .attr("height", legendRectSize)
-        .style("fill", d => {
-          if (d === 'Combination') {
-            return "url(#green-pattern-legend)"
-          } else {
-            return this.colorScale(d)
-          }
-        })
+        .style("fill", d => this.colorScale(d))
 
       // Add text for each group
       legendGroup.append("text")
