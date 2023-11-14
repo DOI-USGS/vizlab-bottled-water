@@ -1,4 +1,4 @@
-# Impacts of Bottled Water
+# Water bottling across the U.S.
 
 This project
 1) calculates statistics (e.g., area, total population, mean precipitation) for a series of focal regions
