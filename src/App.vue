@@ -115,18 +115,18 @@
     }
   }
   h1{
-    font-size: 8rem;
+    font-size: 6rem;
     font-weight: 700;
     font-family: $AveriaSansLibre;
-    line-height: 15rem;
+    line-height: 7rem;
     color: $textcolor;
     @media screen and (max-height: 770px) {
-      font-size: 7rem;
-      line-height: 12rem;
+      font-size: 5rem;
+      line-height: 5.75rem;
     }
     @media screen and (max-width: 600px) {
-      font-size: 4.5rem;
-      line-height: 8.5rem;
+      font-size: 3rem;
+      line-height: 3.5rem;
     }
   }
   h2{

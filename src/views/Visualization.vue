@@ -51,10 +51,14 @@
         <div class="panel neck end-shadow glass-under"/>
         <div class="panel cap end-shadow glass-under" />
       </div>
-      <h1 id="page-title">
-        <span class="highlight-words">Water bottling</span>
-      </h1>
-      <div class="panel-wrap">
+      <div id="page-title">
+        <h1>
+          <span>Sites and sources of</span>
+          <br>
+          <span class="highlight-words">water bottling</span>
+        </h1>
+      </div>
+      <!--div class="panel-wrap">
         <div class="panel start glass-over" /> 
         <div
           class="panel glass-over"
@@ -103,7 +107,7 @@
         <div class="panel end glass-over" />
         <div class="panel neck glass-over"/>
         <div class="panel cap glass-over" />
-      </div>
+      </div-->
     </header>
     <InventorySection />
     <WaterSourceSection />
@@ -188,9 +192,10 @@ export default {
   }
   #title-container {
     width: fit-content;
-    margin: auto;
+    margin: 0rem auto 3rem auto;
   }
   #page-title {
+    text-align: center;
     margin: 0rem 0rem 0rem 2.25rem;
     @media screen and (max-height: 770px) {
       margin: 0rem 0rem 0rem 1.75rem;
@@ -214,6 +219,8 @@ export default {
   .highlight-words {
     color: #4365A8; 
     z-index: 0;
+    filter: blur(0.08rem);
+    -webkit-filter: blur(0.08rem);
   }
   .later-words {
     margin-left: 5.25rem;
@@ -231,14 +238,14 @@ export default {
     display: flex;
     justify-content: flex-start;
     position: absolute;
-    top: 5.5rem; // same as top padding on #visualization -0.5rem
+    top: 4rem; // same as top padding on #visualization -0.5rem
     @media screen and (max-width: 600px) {
       top: 3.5rem; // same as top padding on #visualization -0.5rem
       margin-left: 0.25rem;
     }
   }
   .panel {
-    width: 3.5rem;
+    width: 4rem;
     height: 17rem;
     border-radius: 1rem;
     @media screen and (max-height: 770px) {
@@ -314,9 +321,6 @@ export default {
       width: 0.75rem;
     }
   }
-  .glass-over.neck {
-    z-index: -1;
-  }
   .cap {
     width: 2.75rem;
     height: 5.5rem;
@@ -334,12 +338,15 @@ export default {
       width: 2.25rem;
     }
   }
-  .glass-over.cap {
-    z-index: -1;
-  }
   .glass-over {
     backdrop-filter: blur(0.08rem);
     -webkit-backdrop-filter: blur(0.08rem);
+  }
+  .glass-over.cap {
+    z-index: -1;
+  }
+  .glass-over.neck {
+    z-index: -1;
   }
   .img-container {
     max-width: 100vw;
