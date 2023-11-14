@@ -231,12 +231,12 @@ export default {
   #overlay-panel.mobile {
     width: 5rem;
     @media screen and (max-width: 600px) {
-      width: 4.5*2 + 10*9rem;
+      width: 4.5*2rem + 2.55*9rem;
       border-top-left-radius: 0rem;
       border-top-right-radius: 0rem;
       border-bottom-left-radius: 2rem;
       border-bottom-right-radius: 4rem;
-      height: 10*($water-fill-percentage+0.01);
+      height: 10rem*($water-fill-percentage+0.01);
     }
   }
   .glass-under {
