@@ -262,6 +262,7 @@ export default {
         .append("select")
         .attr("id", "state-dropdown")
         .attr("class", "dropdown")
+        .attr("aria-label", "state dropdown")
         .attr("tabindex", 0)
         .on("change", function() {
           // Update dropdown text + width
