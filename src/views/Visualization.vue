@@ -48,11 +48,11 @@
           class="panel glass-under"
         />
         <div class="panel end end-shadow glass-under" />
-        <div class="panel neck end-shadow glass-under" />
+        <div class="panel neck end-shadow glass-under"/>
         <div class="panel cap end-shadow glass-under" />
       </div>
       <h1 id="page-title">
-        <span class="first-words">Where does </span><span class="highlight-words">bottled water</span><span class="later-words"> come from?</span>
+        <span class="highlight-words">Water bottling</span>
       </h1>
       <div class="panel-wrap">
         <div class="panel start glass-over" /> 
@@ -101,7 +101,7 @@
           class="panel glass-over"
         />
         <div class="panel end glass-over" />
-        <div class="panel neck glass-over" />
+        <div class="panel neck glass-over"/>
         <div class="panel cap glass-over" />
       </div>
     </header>
@@ -152,7 +152,7 @@ export default {
 </script>
 
 <style lang="scss">
-
+  $shadow-color: rgba(87, 103, 130);
   #visualization {
     width: 86vw;
     position: relative;
@@ -261,13 +261,9 @@ export default {
     }
   }
   .glass-under {
+    background: linear-gradient(0deg, #DAE6EF, #DAE6EF 45%, white 46%);
     z-index: -1;
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 8px 4px 18px 10px rgba(147, 148, 150, 0.25);
-  }
-  .glass-over {
-    backdrop-filter: blur(0.08rem);
-    -webkit-backdrop-filter: blur(0.08rem);
+    box-shadow: 8px 4px 18px 10px rgba($shadow-color, 0.25);
   }
   .start {
     width: 8.5rem;
@@ -283,12 +279,12 @@ export default {
     }
   }
   .start-shadow {
-    box-shadow: 0 4px 18px 8px rgba(147, 148, 150, 0.3);
+    box-shadow: 0 4px 18px 8px rgba($shadow-color, 0.3);
   }
   .end {
     width: 9.5rem;
-    border-top-right-radius: 7rem;
-    border-bottom-right-radius: 7rem;
+    border-top-right-radius: 6.5rem;
+    border-bottom-right-radius: 6.5rem;
     @media screen and (max-height: 770px) {
       width: 7.5rem;
       border-top-right-radius: 5.5rem;
@@ -301,21 +297,25 @@ export default {
     }
   }
   .end-shadow {
-    box-shadow: 6px 4px 18px 8px rgba(147, 148, 150, 0.25);
+    box-shadow: 6px 4px 18px 8px rgba($shadow-color, 0.25);
   }
   .neck {
     width: 1rem;
     height: 5rem;
     align-self: center;
     border-radius: 0rem;
+    background: linear-gradient(0deg, #DAE6EF, #DAE6EF 34.5%, white 35%);
     @media screen and (max-height: 770px) {
-      height: 4.5rem;
+      height: 4.12rem;
       width: 0.75rem;
     }
     @media screen and (max-width: 600px) {
-      height: 3.5rem;
+      height: 2.94rem;
       width: 0.75rem;
     }
+  }
+  .glass-over.neck {
+    z-index: -1;
   }
   .cap {
     width: 2.75rem;
@@ -323,6 +323,8 @@ export default {
     align-self: center;
     border-top-left-radius: 0rem;
     border-bottom-left-radius: 0rem;
+    background: white;
+    box-shadow: 4px 2px 14px 4px rgba($shadow-color, 0.2);
     @media screen and (max-height: 770px) {
       height: 5rem;
       width: 2.25rem;
@@ -331,6 +333,13 @@ export default {
       height: 4.25rem;
       width: 2.25rem;
     }
+  }
+  .glass-over.cap {
+    z-index: -1;
+  }
+  .glass-over {
+    backdrop-filter: blur(0.08rem);
+    -webkit-backdrop-filter: blur(0.08rem);
   }
   .img-container {
     max-width: 100vw;
