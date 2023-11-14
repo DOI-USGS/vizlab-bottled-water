@@ -1,14 +1,12 @@
 # Impacts of Bottled Water
 
-This draft project currently
+This project
 1) calculates statistics (e.g., area, total population, mean precipitation) for a series of focal regions
-2) Has an in-development javascript website using data visualizaiton to communicate the impacts of bottled water in the United States
-* Explore location and type of bottling facilities nationally
-* Exploration of water sources for those facilities
-* Exploration of water use data, where available
+2) Pulls, processes, and visualizes data from the USGS [Inventory of water bottling facilities in the United States, 2023, and select water-use data, 1955-2022](https://www.sciencebase.gov/catalog/item/649d8a39d34ef77fcb03f8a6)
+2) Builds a javascript website using data visualization to communicate the motivation for the USGS [Water Mission Area's Bottled Water Assessment project](https://www.usgs.gov/mission-areas/water-resources/science/withdrawals-bottled-water), the distribution of bottling facilities across the United States, where bottling facilities source water, and the available water use data for bottled water facilities.
 
 ## To run the R pipeline
-This repo contains an R pipeline that uses the [`targets` package](https://books.ropensci.org/targets/) to process the National Bottled Water Inventory and generate static charts and maps. To run this pipeline, clone the repo, install `targets`, and run the following from the directory:
+This repo contains an R pipeline that uses the [`targets` package](https://books.ropensci.org/targets/) to process the national inventory of water bottling facilities and generate static charts and maps. To run this pipeline, clone the repo, install `targets`, and run the following from the directory:
 ```
 library(targets)
 tar_make()
