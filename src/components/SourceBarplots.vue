@@ -1,7 +1,10 @@
 <template>
   <section>
     <div id="grid-container-barplots">
-      <div id="toggle-container" class="text-container">
+      <div
+        id="toggle-container"
+        class="text-container"
+      >
         <div class="graph-buttons-switch">
           <input
             id="id_Count"
@@ -32,8 +35,12 @@
           >Percent</label>
           <span class="graph-buttons-switch-selection" />
         </div>
-        <p v-if="!mobileView">of facilities by water source</p>
-        <p v-if="mobileView">of facilities</p>
+        <p v-if="!mobileView">
+          of facilities by water source
+        </p>
+        <p v-if="mobileView">
+          of facilities
+        </p>
       </div>
       <div id="legend-container" />
       <div id="barplot-container" />

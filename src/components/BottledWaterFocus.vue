@@ -36,30 +36,39 @@
           id="img-source-self-count"
           class="img-container"
         >
-        <picture>
-          <source srcset="../assets/images/map_bottled_water_Self-supply_count.webp" media="(max-width: 2000px)" type="image/webp">
-          <img 
-            src="../assets/images/map_bottled_water_Self-supply_count.png" 
-            loading="lazy" decoding="async"
-            class="source-map"
-            alt="CONUS, county level proportional symbols map, binned into five categories: 25, 50, 100, 300, and 600, show counts of bottled water facilities that source water from self-supply. Generally, many counties across Texas, Florida, California, and Colorado display the greatest count of bottled water facilities sourcing water from self-supply. The top three counties with the greatest number of bottled water facilities using self-supply include Harris County, Texas (33), Palm Beach County (14) and Lee County, Florida (14)."
-           >
-        </picture>
+          <picture>
+            <source
+              srcset="../assets/images/map_bottled_water_Self-supply_count.webp"
+              media="(max-width: 2000px)"
+              type="image/webp"
+            >
+            <img 
+              src="../assets/images/map_bottled_water_Self-supply_count.png" 
+              loading="lazy"
+              decoding="async"
+              class="source-map"
+              alt="CONUS, county level proportional symbols map, binned into five categories: 25, 50, 100, 300, and 600, show counts of bottled water facilities that source water from self-supply. Generally, many counties across Texas, Florida, California, and Colorado display the greatest count of bottled water facilities sourcing water from self-supply. The top three counties with the greatest number of bottled water facilities using self-supply include Harris County, Texas (33), Palm Beach County (14) and Lee County, Florida (14)."
+            >
+          </picture>
         </div>
         <div
           id="img-source-self-percent"
           class="img-container"
         >
-        <picture>
-          <source srcset="../assets/images/map_bottled_water_Self-supply_perc.webp"  media="(max-width: 2000px)" type="image/webp">
-          <img 
-            src="../assets/images/map_bottled_water_Self-supply_perc.png" 
-            loading="lazy" decoding="async"
-            class="source-map"
-            alt="CONUS, county level choropleth map, binned into five categories: 1, 25, 50, 75, and 100%, show percents of bottled water facilities that source water from self-supply. Generally, many counties across the Eastern, South Central, and Western United States have a high proportion of bottled water facilities that source water from self-supply."
-           >
-           </picture>
-
+          <picture>
+            <source
+              srcset="../assets/images/map_bottled_water_Self-supply_perc.webp"
+              media="(max-width: 2000px)"
+              type="image/webp"
+            >
+            <img 
+              src="../assets/images/map_bottled_water_Self-supply_perc.png" 
+              loading="lazy"
+              decoding="async"
+              class="source-map"
+              alt="CONUS, county level choropleth map, binned into five categories: 1, 25, 50, 75, and 100%, show percents of bottled water facilities that source water from self-supply. Generally, many counties across the Eastern, South Central, and Western United States have a high proportion of bottled water facilities that source water from self-supply."
+            >
+          </picture>
         </div>
         <div
           id="source-map-title-combo"
