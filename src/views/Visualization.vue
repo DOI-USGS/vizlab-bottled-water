@@ -36,6 +36,15 @@
           :class="{ mobile: mobileView}"
         />
         <div
+          class="panel glass-under"
+          :class="{ mobile: mobileView}"
+        />
+        <div
+          v-if="!mobileView"
+          class="panel glass-under"
+          :class="{ mobile: mobileView}"
+        />
+        <div
           v-if="!mobileView"
           class="panel glass-under"
         />
@@ -53,61 +62,12 @@
       </div>
       <div id="page-title">
         <h1>
-          <span>Sites and sources of</span>
-          <br>
-          <span class="highlight-words">water bottling</span>
+          <span class="highlight-words">Water bottling</span><span class="later-words"> across the U.S.</span>
         </h1>
       </div>
-      <!--div class="panel-wrap">
-        <div class="panel start glass-over" /> 
-        <div
-          class="panel glass-over"
-          :class="{ mobile: mobileView}"
-        />        
-        <div
-          class="panel glass-over"
-          :class="{ mobile: mobileView}"
-        />
-        <div
-          class="panel glass-over"
-          :class="{ mobile: mobileView}"
-        />
-        <div
-          class="panel glass-over"
-          :class="{ mobile: mobileView}"
-        />
-        <div
-          class="panel glass-over"
-          :class="{ mobile: mobileView}"
-        />
-        <div
-          class="panel glass-over"
-          :class="{ mobile: mobileView}"
-        />
-        <div
-          class="panel glass-over"
-          :class="{ mobile: mobileView}"
-        />
-        <div
-          class="panel glass-over"
-          :class="{ mobile: mobileView}"
-        />
-        <div
-          v-if="!mobileView"
-          class="panel glass-over"
-        />
-        <div
-          v-if="!mobileView"
-          class="panel glass-over"
-        />
-        <div
-          v-if="!mobileView"
-          class="panel glass-over"
-        />
-        <div class="panel end glass-over" />
-        <div class="panel neck glass-over"/>
-        <div class="panel cap glass-over" />
-      </div-->
+      <div class="panel-wrap overlay">
+        <div id="overlay-panel" class="glass-over" :class="{ mobile: mobileView}"></div>
+      </div>
     </header>
     <InventorySection />
     <WaterSourceSection />
@@ -157,6 +117,9 @@ export default {
 
 <style lang="scss">
   $shadow-color: rgba(87, 103, 130);
+  $panel-height-monitor: 25rem;
+  $panel-height-laptop: 17rem;
+  $water-fill-percentage: 0.45;
   #visualization {
     width: 86vw;
     position: relative;
@@ -192,69 +155,53 @@ export default {
   }
   #title-container {
     width: fit-content;
-    margin: 0rem auto 3rem auto;
+    margin: 0rem auto 0rem auto;
   }
   #page-title {
-    text-align: center;
-    margin: 0rem 0rem 0rem 2.25rem;
+    margin: 0rem 0rem 0rem 2.5rem;
     @media screen and (max-height: 770px) {
-      margin: 0rem 0rem 0rem 1.75rem;
+      margin: 0rem 0rem 0rem 2rem;
     }
     @media screen and (max-width: 600px) {
       margin: 0rem 0rem 0rem 1.5rem;
     }
   }
-  .first-words {
-    margin-right: 5.25rem;
-    @media screen and (max-width: 790px) {
-      margin-right: 0rem;
-    }
-    @media screen and (max-height: 770px) {
-      margin-right: 6rem;
-    }
-    @media screen and (max-width: 600px) {
-      margin-right: 0rem;
-    }
-  }
   .highlight-words {
     color: #4365A8; 
     z-index: 0;
-    filter: blur(0.08rem);
-    -webkit-filter: blur(0.08rem);
-  }
-  .later-words {
-    margin-left: 5.25rem;
-    @media screen and (max-width: 790px) {
-      margin-left: 0rem;
-    }
-    @media screen and (max-height: 770px) {
-      margin-left: 6rem;
-    }
-    @media screen and (max-width: 600px) {
-      margin-left: 0rem;
-    }
   }
   .panel-wrap {
     display: flex;
     justify-content: flex-start;
     position: absolute;
-    top: 4rem; // same as top padding on #visualization -0.5rem
+    top: 5.5rem; // same as top padding on #visualization -0.5rem
     @media screen and (max-width: 600px) {
       top: 3.5rem; // same as top padding on #visualization -0.5rem
       margin-left: 0.25rem;
     }
   }
-  .panel {
-    width: 4rem;
-    height: 17rem;
-    border-radius: 1rem;
+  .panel-wrap.overlay {
+    top: 5.5rem + (1 - $water-fill-percentage)*$panel-height-monitor; // same as top padding on #visualization -0.5rem
     @media screen and (max-height: 770px) {
-      width: 3.25rem;
-      height: 14rem;
+      top: 5.5rem + (1 - $water-fill-percentage)*$panel-height-laptop;
     }
     @media screen and (max-width: 600px) {
-      width: 2.7rem;
-      border-radius: 0.9rem;
+      top: 3.5rem + (1 - $water-fill-percentage)*10; // same as top padding on #visualization -0.5rem
+      margin-left: 0.25rem;
+    }
+  }
+  .panel {
+    width: 0.23*$panel-height-monitor;
+    height: $panel-height-monitor;
+    border-radius: 0.08*$panel-height-monitor;
+    @media screen and (max-height: 770px) {
+      width: 0.23*$panel-height-laptop;
+      height: $panel-height-laptop;
+      border-radius: 0.08*$panel-height-laptop;
+    }
+    @media screen and (max-width: 600px) {
+      width: 2.55rem;
+      border-radius: 0.8rem;
       height: 10rem;
     }
   }
@@ -262,25 +209,52 @@ export default {
     width: 5rem;
     border-radius: 1.5rem;
     @media screen and (max-width: 600px) {
-      width: 2.7rem;
-      border-radius: 0.9rem;
+      width: 2.55rem;
+      border-radius: 0.8rem;
       height: 10rem;
     }
   }
+  #overlay-panel {
+    width: 0.64*$panel-height-monitor + 13*0.23*$panel-height-monitor + 0.64*$panel-height-monitor;
+    height: $panel-height-monitor*($water-fill-percentage+0.01);
+    border-top-left-radius: 0rem;
+    border-top-right-radius: 0rem;
+    border-bottom-left-radius: 0.16*$panel-height-monitor;
+    border-bottom-right-radius: 0.44*$panel-height-monitor;
+    @media screen and (max-height: 770px) {
+      width: 0.64*$panel-height-laptop + 13*0.23*$panel-height-laptop + 0.64*$panel-height-laptop;
+      height: $panel-height-laptop*($water-fill-percentage+0.01);
+      border-bottom-left-radius: 0.16*$panel-height-laptop;
+      border-bottom-right-radius: 0.44*$panel-height-laptop;
+    }
+  }
+  #overlay-panel.mobile {
+    width: 5rem;
+    @media screen and (max-width: 600px) {
+      width: 4.5*2 + 10*9rem;
+      border-top-left-radius: 0rem;
+      border-top-right-radius: 0rem;
+      border-bottom-left-radius: 2rem;
+      border-bottom-right-radius: 4rem;
+      height: 10*($water-fill-percentage+0.01);
+    }
+  }
   .glass-under {
-    background: linear-gradient(0deg, #DAE6EF, #DAE6EF 45%, white 46%);
+    background: linear-gradient(0deg, #DAE6EF, #DAE6EF $water-fill-percentage*100%, white ($water-fill-percentage+0.01)*100%);
     z-index: -1;
     box-shadow: 8px 4px 18px 10px rgba($shadow-color, 0.25);
   }
   .start {
-    width: 8.5rem;
-    border-top-left-radius: 2.5rem;
-    border-bottom-left-radius: 2.5rem;
+    width: 0.64*$panel-height-monitor;
+    border-top-left-radius: 0.16*$panel-height-monitor;
+    border-bottom-left-radius: 0.16*$panel-height-monitor;
     @media screen and (max-height: 770px) {
-      width: 7rem;
+      width: 0.64*$panel-height-laptop;
+      border-top-left-radius: 0.16*$panel-height-laptop;
+      border-bottom-left-radius: 0.16*$panel-height-laptop;
     }
     @media screen and (max-width: 600px) {
-      width: 5.1rem;
+      width: 4.5rem;
       border-top-left-radius: 2rem;
       border-bottom-left-radius: 2rem;
     }
@@ -289,16 +263,16 @@ export default {
     box-shadow: 0 4px 18px 8px rgba($shadow-color, 0.3);
   }
   .end {
-    width: 9.5rem;
-    border-top-right-radius: 6.5rem;
-    border-bottom-right-radius: 6.5rem;
+    width: 0.64*$panel-height-monitor;
+    border-top-right-radius: 0.44*$panel-height-monitor;
+    border-bottom-right-radius: 0.44*$panel-height-monitor;
     @media screen and (max-height: 770px) {
-      width: 7.5rem;
-      border-top-right-radius: 5.5rem;
-      border-bottom-right-radius: 5.5rem;
+      width: 0.64*$panel-height-laptop;
+      border-top-right-radius: 0.44*$panel-height-laptop;
+      border-bottom-right-radius: 0.44*$panel-height-laptop;
     }
     @media screen and (max-width: 600px) {
-      width: 5.1rem;
+      width: 4.5rem;
       border-top-right-radius: 5rem;
       border-bottom-right-radius: 5rem;
     }
@@ -307,35 +281,42 @@ export default {
     box-shadow: 6px 4px 18px 8px rgba($shadow-color, 0.25);
   }
   .neck {
-    width: 1rem;
-    height: 5rem;
+    width: 0.06*$panel-height-monitor;
+    height: 0.23*$panel-height-monitor;
     align-self: center;
     border-radius: 0rem;
-    background: linear-gradient(0deg, #DAE6EF, #DAE6EF 34.5%, white 35%);
+    background: linear-gradient(0deg, #DAE6EF, #DAE6EF 31%, white 31.5%);
     @media screen and (max-height: 770px) {
-      height: 4.12rem;
-      width: 0.75rem;
+      width: 0.06*$panel-height-laptop;
+      height: 0.23*$panel-height-laptop;
     }
     @media screen and (max-width: 600px) {
       height: 2.94rem;
       width: 0.75rem;
+      background: linear-gradient(0deg, #DAE6EF, #DAE6EF 34.5%, white 35%);
     }
   }
   .cap {
-    width: 2.75rem;
-    height: 5.5rem;
+    width: 0.12*$panel-height-monitor;
+    height: 0.27*$panel-height-monitor;
     align-self: center;
     border-top-left-radius: 0rem;
     border-bottom-left-radius: 0rem;
+    border-top-right-radius: 0.04*$panel-height-monitor;
+    border-bottom-right-radius: 0.04*$panel-height-monitor;
     background: white;
     box-shadow: 4px 2px 14px 4px rgba($shadow-color, 0.2);
     @media screen and (max-height: 770px) {
-      height: 5rem;
-      width: 2.25rem;
+      width: 0.12*$panel-height-laptop;
+      height: 0.27*$panel-height-laptop;
+      border-top-right-radius: 0.04*$panel-height-laptop;
+      border-bottom-right-radius: 0.04*$panel-height-laptop;
     }
     @media screen and (max-width: 600px) {
-      height: 4.25rem;
+      height: 3.5rem;
       width: 2.25rem;
+      border-top-right-radius: 0.6rem;
+      border-bottom-right-radius: 0.6rem;
     }
   }
   .glass-over {
