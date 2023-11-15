@@ -123,6 +123,15 @@ download_from_sb <- function(sb_id, filename, dest_dir) {
   return(filepath)
 }
 
+#' @title Resize and export an image
+#' @description Resize and export an image, using the passed settings
+#' @param image_file the path to the image to resize and export
+#' @param base_path the base path for exporting the file
+#' @param file_extension file extension for exporting the file
+#' @param width output width for resized image
+#' @param density output density for exported image
+#' @param compression_option compression setting for exported image
+#' @return the filepath of the saved file
 resize_and_export_image <- function(image_file, base_path, file_extension, width, density, compression_option) {
   out_file <- sprintf('%s/%s.%s', base_path, tools::file_path_sans_ext(basename(image_file)), file_extension)
   image_read(image_file) |>
