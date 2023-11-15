@@ -1,7 +1,6 @@
 <template>
   <section id="inventory_intro">
     <div id="grid-container-inventory">
-      <OCONUS id="oconus" />
       <div
         id="text"
         class="text-container"
@@ -37,17 +36,12 @@ import inventoryText from "./../assets/text/inventoryText.js";
 export default {
   name: "InventorySection",
   components: {
-    OCONUS: () => import("./../components/OCONUS.vue"),
   },
   props: {
     data: Object
   },
   data() {
     return {
-      selectedOption: 'all states and territories',
-      dropdownOptions: [],
-
-      d3: null,
       publicPath: import.meta.env.BASE_URL, // find the files when on different deployment roots
       mobileView: isMobile, // test for mobile
       
@@ -82,14 +76,10 @@ export default {
   #grid-container-inventory {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 0.5fr max-content max-content;
+    grid-template-rows: max-content;
     grid-template-areas:
-        "oconus"
         "text";
     justify-content: center;
-  }
-  #oconus {
-    grid-area: oconus;
   }
   #text {
     grid-area: text;

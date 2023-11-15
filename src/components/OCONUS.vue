@@ -1499,10 +1499,10 @@ export default {
       "legend map"
       "text map";
     align-items: start;
-    margin: 1rem 0rem 5rem 0rem;
+    margin: 3rem 0rem 5rem 0rem;
     @media screen and (max-height: 770px) {
       row-gap: 4vh;
-      margin: 2rem 0rem 5rem 0rem;
+      margin: 4rem 0rem 5rem 0rem;
     }
   }
   #grid-container-interactive.mobile {
