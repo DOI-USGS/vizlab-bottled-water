@@ -1,7 +1,10 @@
 <template>
   <div id="visualization">
     <header id="grid-container-title">
-      <div id="panel-container" :class="{ mobile: mobileView}">
+      <div
+        id="panel-container"
+        :class="{ mobile: mobileView}"
+      >
         <div class="panel-wrap">
           <div class="panel start start-shadow glass-under" /> 
           <div
@@ -67,7 +70,10 @@
           <span class="highlight-words">Water bottling</span><br v-if="mobileView"><span class="later-words"> across the U.S.</span>
         </h1>
       </div>
-      <div id="overlay-container" class="panel-wrap overlay">
+      <div
+        id="overlay-container"
+        class="panel-wrap overlay"
+      >
         <div
           id="overlay-panel"
           class="glass-over"
