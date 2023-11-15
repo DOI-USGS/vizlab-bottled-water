@@ -112,6 +112,10 @@ export default {
     }
   },
   mounted(){
+    this.$nextTick(() => {
+      this.$store.commit('changeBooleanStateOnMapRender');
+    });
+
     this.d3 = Object.assign(d3Base);
 
     const self = this;
