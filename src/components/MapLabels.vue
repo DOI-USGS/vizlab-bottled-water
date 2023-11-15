@@ -18,7 +18,8 @@
       >Northern<tspan
         x="14"
         y="11"
-      >Mariana Islands</tspan></tspan></text>
+      >Mariana Islands</tspan></tspan><tspan x="14"
+        y="26" class="scale-labels labels">(no data)</tspan></text>
       <text
         class="scale-labels labels"
         transform="translate(101.5 183.5)"
@@ -46,7 +47,10 @@
       >x2 <tspan
         class="place-labels labels"
         x="14"
-      >American Samoa</tspan></text>
+      >American Samoa</tspan>
+      <tspan 
+        class="scale-labels labels"> (no data)</tspan>
+    </text>  
       <text
         class="scale-labels labels"
         transform="translate(101.5 374)"
