@@ -40,14 +40,11 @@ export default {
     },
     computed: {
       checkIfMapIsRendered() {
-          console.log('CHECKNG IF MAP RENDERED')
-          console.log(`map rendered? ${this.$store.state.mapRenderedOnInitialLoad}`)
-          return this.$store.state.mapRenderedOnInitialLoad;
+        return this.$store.state.mapRenderedOnInitialLoad;
       }
     },
     mounted(){
       console.log("App loaded");
-
     },
     methods:{
 
