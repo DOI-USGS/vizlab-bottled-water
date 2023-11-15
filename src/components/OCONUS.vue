@@ -1515,7 +1515,7 @@ export default {
       "legend"
       "chart";
     position: relative;
-    margin: 1rem 0rem 4rem 0rem;
+    margin: 3rem 0rem 4rem 0rem;
     padding: 0.5rem 0.5rem 0.5rem 0.5rem;
     row-gap: 1.5vh;
   }
