@@ -118,11 +118,11 @@
     font-size: 7.5rem;
     font-weight: 700;
     font-family: $AveriaSansLibre;
-    line-height: 24rem;
+    line-height: 8rem;
     color: $textcolor;
     @media screen and (max-height: 770px) {
       font-size: 5rem;
-      line-height: 16rem;
+      line-height: 6rem;
     }
     @media screen and (max-width: 600px) {
       font-size: 4.5rem;

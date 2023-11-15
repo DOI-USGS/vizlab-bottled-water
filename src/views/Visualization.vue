@@ -1,77 +1,79 @@
 <template>
   <div id="visualization">
-    <header id="title-container">
-      <div class="panel-wrap">
-        <div class="panel start start-shadow glass-under" /> 
-        <div
-          class="panel glass-under"
-          :class="{ mobile: mobileView}"
-        />        
-        <div
-          class="panel glass-under"
-          :class="{ mobile: mobileView}"
-        />
-        <div
-          class="panel glass-under"
-          :class="{ mobile: mobileView}"
-        />
-        <div
-          class="panel glass-under"
-          :class="{ mobile: mobileView}"
-        />
-        <div
-          class="panel glass-under"
-          :class="{ mobile: mobileView}"
-        />
-        <div
-          class="panel glass-under"
-          :class="{ mobile: mobileView}"
-        />
-        <div
-          class="panel glass-under"
-          :class="{ mobile: mobileView}"
-        />
-        <div
-          class="panel glass-under"
-          :class="{ mobile: mobileView}"
-        />
-        <div
-          class="panel glass-under"
-          :class="{ mobile: mobileView}"
-        />
-        <div
-          v-if="!mobileView"
-          class="panel glass-under"
-          :class="{ mobile: mobileView}"
-        />
-        <div
-          v-if="!mobileView"
-          class="panel glass-under"
-        />
-        <div
-          v-if="!mobileView"
-          class="panel glass-under"
-        />
-        <div
-          v-if="!mobileView"
-          class="panel glass-under"
-        />
-        <div class="panel end end-shadow glass-under" />
-        <div class="panel neck end-shadow glass-under" />
-        <div class="panel cap end-shadow glass-under" />
+    <header id="grid-container-title">
+      <div id="panel-container">
+        <div class="panel-wrap">
+          <div class="panel start start-shadow glass-under" /> 
+          <div
+            class="panel glass-under"
+            :class="{ mobile: mobileView}"
+          />        
+          <div
+            class="panel glass-under"
+            :class="{ mobile: mobileView}"
+          />
+          <div
+            class="panel glass-under"
+            :class="{ mobile: mobileView}"
+          />
+          <div
+            class="panel glass-under"
+            :class="{ mobile: mobileView}"
+          />
+          <div
+            class="panel glass-under"
+            :class="{ mobile: mobileView}"
+          />
+          <div
+            class="panel glass-under"
+            :class="{ mobile: mobileView}"
+          />
+          <div
+            class="panel glass-under"
+            :class="{ mobile: mobileView}"
+          />
+          <div
+            class="panel glass-under"
+            :class="{ mobile: mobileView}"
+          />
+          <div
+            class="panel glass-under"
+            :class="{ mobile: mobileView}"
+          />
+          <div
+            v-if="!mobileView"
+            class="panel glass-under"
+            :class="{ mobile: mobileView}"
+          />
+          <div
+            v-if="!mobileView"
+            class="panel glass-under"
+          />
+          <div
+            v-if="!mobileView"
+            class="panel glass-under"
+          />
+          <div
+            v-if="!mobileView"
+            class="panel glass-under"
+          />
+          <div class="panel end end-shadow glass-under" />
+          <div class="panel neck end-shadow glass-under" />
+          <div class="panel cap end-shadow glass-under" />
+        </div>
       </div>
       <div id="page-title">
         <h1>
-          <span class="highlight-words">Water bottling</span><span class="later-words"> across the U.S.</span>
+          <span class="highlight-words">Water bottling</span><br v-if="mobileView"><span class="later-words"> across the U.S.</span>
         </h1>
       </div>
-      <div class="panel-wrap overlay">
-        <div
-          id="overlay-panel"
-          class="glass-over"
-          :class="{ mobile: mobileView}"
-        />
-      </div>
+      <div id="overlay-container" class="panel-wrap overlay">
+          <div
+            id="overlay-panel"
+            class="glass-over"
+            :class="{ mobile: mobileView}"
+          />
+        </div>
     </header>
     <InventorySection />
     <WaterSourceSection />
@@ -124,6 +126,11 @@ export default {
   $panel-height-monitor: 25rem;
   $panel-height-laptop: 17rem;
   $water-fill-percentage: 0.45;
+  $start-end-percentage: 0.64;
+  $neck-percentage: 0.06;
+  $cap-percentage: 0.12;
+  $full-width-monitor: $start-end-percentage*$panel-height-monitor*2 + 13*0.23*$panel-height-monitor + $neck-percentage*$panel-height-monitor + $cap-percentage*$panel-height-monitor;
+  $full-width-laptop: $start-end-percentage*$panel-height-laptop*2 + 13*0.23*$panel-height-laptop + $neck-percentage*$panel-height-laptop + $cap-percentage*$panel-height-laptop;
   #visualization {
     width: 86vw;
     position: relative;
@@ -131,6 +138,7 @@ export default {
     margin: auto;
     max-width: 1600px;
     @media screen and (max-height: 770px) {
+      padding: 4rem 0rem 5rem 0rem;
       width: 90vw;
     }
     @media screen and (max-width: 600px) {
@@ -157,15 +165,19 @@ export default {
   .image-float {
     float: right;
   }
-  #title-container {
-    width: fit-content;
-    margin: 0rem auto 0rem auto;
+  #grid-container-title {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: max-content;
+    grid-template-areas:
+      "title";
+    justify-content: center;
+    align-content: center;
+    text-align: center;
   }
   #page-title {
-    margin: 0rem 0rem 0rem 2.5rem;
-    @media screen and (max-height: 770px) {
-      margin: 0rem 0rem 0rem 2rem;
-    }
+    grid-area: title;
+    align-self: center;
     @media screen and (max-width: 600px) {
       margin: 0rem 0rem 0rem 1.5rem;
     }
@@ -174,23 +186,32 @@ export default {
     color: #4365A8; 
     z-index: 0;
   }
+  #panel-container {
+    grid-area: title;
+    position: relative;
+    justify-self: center;
+    height: $panel-height-monitor;
+    width: $full-width-monitor;
+    @media screen and (max-height: 770px) {
+      height: $panel-height-laptop;
+      width: $full-width-laptop;
+    }
+  }
   .panel-wrap {
+    align-self: center;
+    justify-self: center;
     display: flex;
-    justify-content: flex-start;
+    flex-wrap: nowrap;
+    margin-left: 0.08*$panel-height-monitor;
     position: absolute;
-    top: 5.5rem; // same as top padding on #visualization -0.5rem
     @media screen and (max-width: 600px) {
       top: 3.5rem; // same as top padding on #visualization -0.5rem
       margin-left: 0.25rem;
     }
   }
   .panel-wrap.overlay {
-    top: 5.5rem + (1 - $water-fill-percentage)*$panel-height-monitor; // same as top padding on #visualization -0.5rem
-    @media screen and (max-height: 770px) {
-      top: 5.5rem + (1 - $water-fill-percentage)*$panel-height-laptop;
-    }
     @media screen and (max-width: 600px) {
-      top: 3.5rem + (1 - $water-fill-percentage)*10; // same as top padding on #visualization -0.5rem
+      top: (1 - $water-fill-percentage)*10; // same as top padding on #visualization -0.5rem
       margin-left: 0.25rem;
     }
   }
@@ -218,15 +239,19 @@ export default {
       height: 10rem;
     }
   }
+  #overlay-container {
+    grid-area: title;
+    align-self: end;
+  }
   #overlay-panel {
-    width: 0.64*$panel-height-monitor + 13*0.23*$panel-height-monitor + 0.64*$panel-height-monitor;
+    width: $full-width-monitor;
     height: $panel-height-monitor*($water-fill-percentage+0.01);
     border-top-left-radius: 0rem;
     border-top-right-radius: 0rem;
     border-bottom-left-radius: 0.16*$panel-height-monitor;
     border-bottom-right-radius: 0.44*$panel-height-monitor;
     @media screen and (max-height: 770px) {
-      width: 0.64*$panel-height-laptop + 13*0.23*$panel-height-laptop + 0.64*$panel-height-laptop;
+      width: $full-width-laptop;
       height: $panel-height-laptop*($water-fill-percentage+0.01);
       border-bottom-left-radius: 0.16*$panel-height-laptop;
       border-bottom-right-radius: 0.44*$panel-height-laptop;
@@ -249,11 +274,11 @@ export default {
     box-shadow: 8px 4px 18px 10px rgba($shadow-color, 0.25);
   }
   .start {
-    width: 0.64*$panel-height-monitor;
+    width: $start-end-percentage*$panel-height-monitor;
     border-top-left-radius: 0.16*$panel-height-monitor;
     border-bottom-left-radius: 0.16*$panel-height-monitor;
     @media screen and (max-height: 770px) {
-      width: 0.64*$panel-height-laptop;
+      width: $start-end-percentage*$panel-height-laptop;
       border-top-left-radius: 0.16*$panel-height-laptop;
       border-bottom-left-radius: 0.16*$panel-height-laptop;
     }
@@ -267,11 +292,11 @@ export default {
     box-shadow: 0 4px 18px 8px rgba($shadow-color, 0.3);
   }
   .end {
-    width: 0.64*$panel-height-monitor;
+    width: $start-end-percentage*$panel-height-monitor;
     border-top-right-radius: 0.44*$panel-height-monitor;
     border-bottom-right-radius: 0.44*$panel-height-monitor;
     @media screen and (max-height: 770px) {
-      width: 0.64*$panel-height-laptop;
+      width: $start-end-percentage*$panel-height-laptop;
       border-top-right-radius: 0.44*$panel-height-laptop;
       border-bottom-right-radius: 0.44*$panel-height-laptop;
     }
@@ -285,13 +310,13 @@ export default {
     box-shadow: 6px 4px 18px 8px rgba($shadow-color, 0.25);
   }
   .neck {
-    width: 0.06*$panel-height-monitor;
+    width: $neck-percentage*$panel-height-monitor;
     height: 0.23*$panel-height-monitor;
     align-self: center;
     border-radius: 0rem;
     background: linear-gradient(0deg, #DAE6EF, #DAE6EF 31%, white 31.5%);
     @media screen and (max-height: 770px) {
-      width: 0.06*$panel-height-laptop;
+      width: $neck-percentage*$panel-height-laptop;
       height: 0.23*$panel-height-laptop;
     }
     @media screen and (max-width: 600px) {
@@ -301,7 +326,7 @@ export default {
     }
   }
   .cap {
-    width: 0.12*$panel-height-monitor;
+    width: $cap-percentage*$panel-height-monitor;
     height: 0.27*$panel-height-monitor;
     align-self: center;
     border-top-left-radius: 0rem;
@@ -311,7 +336,7 @@ export default {
     background: white;
     box-shadow: 4px 2px 14px 4px rgba($shadow-color, 0.2);
     @media screen and (max-height: 770px) {
-      width: 0.12*$panel-height-laptop;
+      width: $cap-percentage*$panel-height-laptop;
       height: 0.27*$panel-height-laptop;
       border-top-right-radius: 0.04*$panel-height-laptop;
       border-bottom-right-radius: 0.04*$panel-height-laptop;
