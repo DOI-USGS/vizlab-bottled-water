@@ -122,3 +122,11 @@ download_from_sb <- function(sb_id, filename, dest_dir) {
   
   return(filepath)
 }
+
+resize_and_export_image <- function(image_file, base_path, file_extension, width, density, compression_option) {
+  out_file <- sprintf('%s/%s.%s', base_path, tools::file_path_sans_ext(basename(image_file)), file_extension)
+  image_read(image_file) |>
+    image_scale(sprintf("%sx", width)) |>
+    image_write(out_file, density = density, compression = compression_option)
+  return(out_file)
+}
