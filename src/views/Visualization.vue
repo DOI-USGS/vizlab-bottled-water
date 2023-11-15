@@ -1,7 +1,7 @@
 <template>
   <div id="visualization">
     <header id="grid-container-title">
-      <div id="panel-container">
+      <div id="panel-container" :class="{ mobile: mobileView}">
         <div class="panel-wrap">
           <div class="panel start start-shadow glass-under" /> 
           <div
@@ -68,12 +68,12 @@
         </h1>
       </div>
       <div id="overlay-container" class="panel-wrap overlay">
-          <div
-            id="overlay-panel"
-            class="glass-over"
-            :class="{ mobile: mobileView}"
-          />
-        </div>
+        <div
+          id="overlay-panel"
+          class="glass-over"
+          :class="{ mobile: mobileView}"
+        />
+      </div>
     </header>
     <InventorySection />
     <WaterSourceSection />
@@ -125,12 +125,14 @@ export default {
   $shadow-color: rgba(87, 103, 130);
   $panel-height-monitor: 25rem;
   $panel-height-laptop: 17rem;
+  $panel-height-mobile: 10rem;
   $water-fill-percentage: 0.45;
   $start-end-percentage: 0.64;
   $neck-percentage: 0.06;
   $cap-percentage: 0.12;
   $full-width-monitor: $start-end-percentage*$panel-height-monitor*2 + 13*0.23*$panel-height-monitor + $neck-percentage*$panel-height-monitor + $cap-percentage*$panel-height-monitor;
   $full-width-laptop: $start-end-percentage*$panel-height-laptop*2 + 13*0.23*$panel-height-laptop + $neck-percentage*$panel-height-laptop + $cap-percentage*$panel-height-laptop;
+  $full-width-mobile: 2.55rem*9 + 4.5rem*2 + 0.75rem + 2.25rem;
   #visualization {
     width: 86vw;
     position: relative;
@@ -171,15 +173,22 @@ export default {
     grid-template-rows: max-content;
     grid-template-areas:
       "title";
-    justify-content: center;
     align-content: center;
     text-align: center;
+    margin: auto;
+    @media screen and (max-width: 600px) {
+      width: $full-width-mobile;
+    }
   }
   #page-title {
     grid-area: title;
     align-self: center;
+    margin-right: $neck-percentage*$panel-height-monitor + $cap-percentage*$panel-height-monitor;
+    @media screen and (max-height: 770px) {
+      margin-right: $neck-percentage*$panel-height-laptop + $cap-percentage*$panel-height-laptop;
+    }
     @media screen and (max-width: 600px) {
-      margin: 0rem 0rem 0rem 1.5rem;
+      margin-right: 0.75rem + 2.25rem;
     }
   }
   .highlight-words {
@@ -196,24 +205,21 @@ export default {
       height: $panel-height-laptop;
       width: $full-width-laptop;
     }
+    @media screen and (max-width: 600px) {
+      height: $panel-height-mobile;
+      width: $full-width-mobile;
+    }
+  }
+  #panel-container.mobile {
+    height: $panel-height-mobile;
+    width: $full-width-mobile;
   }
   .panel-wrap {
     align-self: center;
     justify-self: center;
     display: flex;
     flex-wrap: nowrap;
-    margin-left: 0.08*$panel-height-monitor;
     position: absolute;
-    @media screen and (max-width: 600px) {
-      top: 3.5rem; // same as top padding on #visualization -0.5rem
-      margin-left: 0.25rem;
-    }
-  }
-  .panel-wrap.overlay {
-    @media screen and (max-width: 600px) {
-      top: (1 - $water-fill-percentage)*10; // same as top padding on #visualization -0.5rem
-      margin-left: 0.25rem;
-    }
   }
   .panel {
     width: 0.23*$panel-height-monitor;
@@ -227,7 +233,7 @@ export default {
     @media screen and (max-width: 600px) {
       width: 2.55rem;
       border-radius: 0.8rem;
-      height: 10rem;
+      height: $panel-height-mobile;
     }
   }
   .panel.mobile {
@@ -236,14 +242,17 @@ export default {
     @media screen and (max-width: 600px) {
       width: 2.55rem;
       border-radius: 0.8rem;
-      height: 10rem;
+      height: $panel-height-mobile;
     }
   }
   #overlay-container {
     grid-area: title;
     align-self: end;
+    position: relative;
+    justify-self: center;
   }
   #overlay-panel {
+    // background: red;
     width: $full-width-monitor;
     height: $panel-height-monitor*($water-fill-percentage+0.01);
     border-top-left-radius: 0rem;
@@ -260,12 +269,12 @@ export default {
   #overlay-panel.mobile {
     width: 5rem;
     @media screen and (max-width: 600px) {
-      width: 4.5*2rem + 2.55*9rem;
+      width: $full-width-mobile;
+      height: $panel-height-mobile*($water-fill-percentage+0.01);
       border-top-left-radius: 0rem;
       border-top-right-radius: 0rem;
       border-bottom-left-radius: 2rem;
       border-bottom-right-radius: 4rem;
-      height: 10rem*($water-fill-percentage+0.01);
     }
   }
   .glass-under {
@@ -342,8 +351,8 @@ export default {
       border-bottom-right-radius: 0.04*$panel-height-laptop;
     }
     @media screen and (max-width: 600px) {
-      height: 3.5rem;
       width: 2.25rem;
+      height: 3.5rem;
       border-top-right-radius: 0.6rem;
       border-bottom-right-radius: 0.6rem;
     }

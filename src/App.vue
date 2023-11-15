@@ -125,8 +125,8 @@
       line-height: 6rem;
     }
     @media screen and (max-width: 600px) {
-      font-size: 4.5rem;
-      line-height: 8.5rem;
+      font-size: 4rem;
+      line-height: 4rem;
     }
   }
   h2{
