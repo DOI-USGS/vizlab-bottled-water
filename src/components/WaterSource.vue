@@ -14,37 +14,11 @@
         <p v-html="sourceText.paragraph1" />
         <br>
         <p v-html="sourceText.paragraph2" />
-      </div>
-      <div id="grid-container-illustration">
-        <div
-          id="img-illustration-public-supply"
-          class="img-container"
-        >
-          <img
-            class="illustration"
-            src="../assets/images/public-supply.webp"
-            alt="Illustration showing examples of two public supply systems, one using surface water intakes and one using groundwater intake wells. The surface-water system withdraws water from a reservoir, treats it at a water treatment plant, and then distributes it to buildings throughout a city. The groundwater system withdraws groundwater using a well and distributes it to residents of a town, a hospital, and an industrial building."
-          >
-        </div>
-        <div
-          id="img-illustration-self-supply"
-          class="img-container"
-        >
-          <img
-            class="illustration"
-            src="../assets/images/self-supply.webp"
-            alt="Illustration showing examples of self-supply systems, where private users extract water from a private source. Examples include a building using water from springs; a thermoelectric power plant, industrial building, livestock pasture, and crop irrigation fields using surface water intakes; and a commercial building, residential building, livestock troughs, and crop irrigation systems using groundwater intake wells."
-          >
-        </div>
-      </div>
-      <div
-        id="text2"
-        class="text-container"
-      >
+        <br>
         <p v-html="sourceText.paragraph3" />
       </div>
       <div
-        id="text3"
+        id="text2"
         class="text-container"
       >
         <p v-html="sourceText.paragraph4" />
@@ -96,13 +70,11 @@
   #grid-container-source {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 0.5fr max-content max-content max-content max-content;
+    grid-template-rows: 0.5fr max-content max-content max-content;
     grid-template-areas:
       "title"
       "text1"
-      "illustration"
       "text2"
-      "text3"
       "source-bars";
     justify-content: center;
   }
@@ -118,39 +90,7 @@
     grid-area: text2;
     justify-self: start;
   }
-  #text3 {
-    grid-area: text3;
-    justify-self: start;
-  }
   #source-barplots {
     grid-area: source-bars;
-  }
-  #grid-container-illustration {
-    grid-area: illustration;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: max-content;
-    grid-template-areas:
-      "public-supply self-supply";
-    justify-content: center;
-    margin: 4rem auto 4rem auto;
-    max-width: 1400px;
-    @media screen and (max-width: 600px) {
-      grid-template-columns: 1fr;
-      grid-template-rows: max-content max-content;
-      row-gap: 2rem;
-      grid-template-areas:
-        "public-supply"
-        "self-supply";
-    }
-  }
-  #img-illustration-public-supply {
-    grid-area: public-supply;
-  }
-  #img-illustration-self-supply {
-    grid-area: self-supply;
-  }
-  .illustration {
-    width: 90%;
   }
 </style>

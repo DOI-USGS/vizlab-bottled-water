@@ -208,7 +208,10 @@ p1_targets <- list(
              format = 'file'),
   
   # Koppen climate classifications
-  # http://www.gloh2o.org/koppen/ - need to download zipfile and place in 1_fetch/in
+  # http://www.gloh2o.org/koppen/
+  # Used V1 of the maps described in Beck et al. (2018)
+  # need to download zipfile and place in 1_fetch/in
+  # https://figshare.com/articles/dataset/Present_and_future_K_ppen-Geiger_climate_classification_maps_at_1-km_resolution/6396959/2
   tar_target(p1_climate_zip,
              '1_fetch/in/Beck_KG_V1.zip',
              format = 'file'),

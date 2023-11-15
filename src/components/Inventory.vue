@@ -73,7 +73,7 @@ export default {
   #inventory_intro {
     margin-top: 2rem;
     @media screen and (max-height: 770px) {
-      margin-top: 5rem;
+      margin-top: 2rem;
     }
     @media screen and (max-width: 600px) {
       margin-top: 0.2rem;

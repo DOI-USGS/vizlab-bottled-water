@@ -1,7 +1,10 @@
 <template>
   <section>
     <div id="grid-container-barplots">
-      <div id="toggle-container" class="text-container">
+      <div
+        id="toggle-container"
+        class="text-container"
+      >
         <div class="graph-buttons-switch">
           <input
             id="id_Count"
@@ -32,8 +35,12 @@
           >Percent</label>
           <span class="graph-buttons-switch-selection" />
         </div>
-        <p v-if="!mobileView">of facilities by water source</p>
-        <p v-if="mobileView">of facilities</p>
+        <p v-if="!mobileView">
+          of facilities by water source
+        </p>
+        <p v-if="mobileView">
+          of facilities
+        </p>
       </div>
       <div id="legend-container" />
       <div id="barplot-container" />
@@ -42,6 +49,7 @@
 </template>
 <script>
 import * as d3Base from 'd3';
+import texturesBase from 'textures';
 import { isMobile } from 'mobile-device-detect';
 
 export default {
@@ -52,6 +60,8 @@ export default {
     return {
 
       d3: null,
+      textures: null,
+      textureCombination: null,
       publicPath: import.meta.env.BASE_URL, // find the files when on different deployment roots
       mobileView: isMobile, // test for mobile
       sourceSummary: null,
@@ -66,6 +76,7 @@ export default {
   },
   mounted(){      
     this.d3 = Object.assign(d3Base);
+    this.textures = Object.assign(texturesBase);
 
     const self = this;
     this.loadData() // read in data 
@@ -247,18 +258,22 @@ export default {
         .attr("tabindex", 0)
         .attr("contenteditable", "true")
         .attr("aria-label", "bar plot bars")
+
+      // Add textures - https://riccardoscalco.it/textures/
+      this.textureCombination = this.textures.lines().stroke('#6F927C').strokeWidth(5).size(9).orientation("2/8").background("white");;
+      barplotSVG.call(this.textureCombination);
     },
     makeColorScale(data) {
       const self = this;
 
       const categoryColors = {
-        'Public supply': '#E2A625',
-        'Surface water intake': '#213958',
-        'Spring': '#3f6ca6',
-        'Well': '#90aed5',
-        'Combination': '#787979',
+        'Public supply': '#AB9230',
+        'Surface water intake': '#283A70',
+        'Spring': '#4365A8',
+        'Well': '#8E9CBE',
+        'Combination': this.textureCombination.url(),
         'Undetermined': '#D4D4D4'
-      };
+      }; //Combination base color: '#6F927C'
 
       const colorScale = this.d3.scaleOrdinal()
         .domain(data)
@@ -448,7 +463,7 @@ export default {
       legendGroup.append("rect")
         .attr("width", legendRectSize)
         .attr("height", legendRectSize)
-        .attr("fill", d => this.colorScale(d));
+        .style("fill", d => this.colorScale(d))
 
       // Add text for each group
       legendGroup.append("text")

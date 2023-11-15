@@ -115,18 +115,18 @@
     }
   }
   h1{
-    font-size: 8rem;
+    font-size: 7.5rem;
     font-weight: 700;
     font-family: $AveriaSansLibre;
-    line-height: 15rem;
+    line-height: 8rem;
     color: $textcolor;
     @media screen and (max-height: 770px) {
-      font-size: 7rem;
-      line-height: 12rem;
+      font-size: 5rem;
+      line-height: 6rem;
     }
     @media screen and (max-width: 600px) {
-      font-size: 4.5rem;
-      line-height: 8.5rem;
+      font-size: 4rem;
+      line-height: 4rem;
     }
   }
   h2{
@@ -172,6 +172,9 @@
     // padding: 1em 0 0 0; 
     font-family: $SourceSans;
     color: $textcolor;
+  }
+  a:-webkit-any-link {
+    color: #4365A8;
   }
   li {
     margin-left: 1rem;

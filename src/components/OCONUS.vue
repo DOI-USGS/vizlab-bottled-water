@@ -222,7 +222,7 @@ export default {
       self.initChart()
 
       // set primary colors
-      this.focalColor = "#1599CF";
+      this.focalColor = "#4365A8";
       this.defaultColor = "#B5B5B5";
 
       // Draw initial view ('all states and territories' on desktop, 'Alabama' on mobile)
@@ -262,6 +262,7 @@ export default {
         .append("select")
         .attr("id", "state-dropdown")
         .attr("class", "dropdown")
+        .attr("aria-label", "state dropdown")
         .attr("tabindex", 0)
         .on("change", function() {
           // Update dropdown text + width
@@ -1498,9 +1499,10 @@ export default {
       "legend map"
       "text map";
     align-items: start;
-    margin: 3rem 0rem 5rem 0rem;
+    margin: 1rem 0rem 5rem 0rem;
     @media screen and (max-height: 770px) {
       row-gap: 4vh;
+      margin: 2rem 0rem 5rem 0rem;
     }
   }
   #grid-container-interactive.mobile {
@@ -1513,6 +1515,7 @@ export default {
       "legend"
       "chart";
     position: relative;
+    margin: 3rem 0rem 4rem 0rem;
     padding: 0.5rem 0.5rem 0.5rem 0.5rem;
     row-gap: 1.5vh;
   }
