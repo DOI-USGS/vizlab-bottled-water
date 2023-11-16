@@ -125,30 +125,41 @@
   $full-width-monitor: $start-end-percentage*$panel-height-monitor*2 + 13*0.23*$panel-height-monitor + $neck-percentage*$panel-height-monitor + $cap-percentage*$panel-height-monitor;
   $full-width-laptop: $start-end-percentage*$panel-height-laptop*2 + 13*0.23*$panel-height-laptop + $neck-percentage*$panel-height-laptop + $cap-percentage*$panel-height-laptop;
   $full-width-mobile: 2.55rem*9 + 4.5rem*2 + 0.75rem + 2.25rem;
-  
+
   #grid-container-title {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: min(86vw, 1600px);
     grid-template-rows: max-content;
     grid-template-areas:
       "title";
     align-content: center;
     text-align: center;
     margin: auto;
+    @media screen and (max-height: 770px) {
+      grid-template-columns: min(90vw, 1600px);
+    }
     @media screen and (max-width: 600px) {
+      grid-template-columns: 100%;
       width: $full-width-mobile;
     }
   }
   #page-title {
     grid-area: title;
     align-self: center;
-    margin-right: $neck-percentage*$panel-height-monitor + $cap-percentage*$panel-height-monitor;
+    width: min(86vw, 1600px);
+    padding-right: $neck-percentage*$panel-height-monitor + $cap-percentage*$panel-height-monitor;
     @media screen and (max-height: 770px) {
-      margin-right: $neck-percentage*$panel-height-laptop + $cap-percentage*$panel-height-laptop;
+      width: min(90vw, 1600px);
+      padding-right: $neck-percentage*$panel-height-laptop + $cap-percentage*$panel-height-laptop;
     }
     @media screen and (max-width: 600px) {
-      margin-right: 0.75rem + 2.25rem;
+      width: 100%;
+      padding-right: 0.75rem + 2.25rem;
     }
+  }
+  #page-title.mobile {
+    width: 100%;
+    padding-right: 0.75rem + 2.25rem;
   }
   .highlight-words {
     color: #4365A8; 
@@ -157,7 +168,6 @@
   #panel-container {
     grid-area: title;
     position: relative;
-    justify-self: center;
     height: $panel-height-monitor;
     width: $full-width-monitor;
     @media screen and (max-height: 770px) {
@@ -174,11 +184,17 @@
     width: $full-width-mobile;
   }
   .panel-wrap {
-    align-self: center;
-    justify-self: center;
+    justify-content: center;
     display: flex;
     flex-wrap: nowrap;
     position: absolute;
+    width: min(86vw, 1600px);
+    @media screen and (max-height: 770px) {
+      width: min(90vw, 1600px);
+    }
+  }
+  .panel-wrap.mobile {
+    width: 100%;
   }
   .panel {
     width: 0.23*$panel-height-monitor;
@@ -209,9 +225,15 @@
     align-self: end;
     position: relative;
     justify-self: center;
+    width: min(86vw, 1600px);
+    @media screen and (max-height: 770px) {
+      width: min(90vw, 1600px);
+    }
+  }
+  #overlay-container.mobile {
+    width: 100%;
   }
   #overlay-panel {
-    // background: red;
     width: $full-width-monitor;
     height: $panel-height-monitor*($water-fill-percentage+0.01);
     border-top-left-radius: 0rem;
