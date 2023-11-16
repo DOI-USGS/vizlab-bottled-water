@@ -54,7 +54,7 @@
   }
   /* header (only) nav */
   .header-nav {
-    background: black;
+    background: #151515;
 ;
   }
   .logo-header img {
