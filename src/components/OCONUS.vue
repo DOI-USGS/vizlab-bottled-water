@@ -112,6 +112,10 @@ export default {
     }
   },
   mounted(){
+    this.$nextTick(() => {
+      this.$store.commit('changeBooleanStateOnMapRender');
+    });
+
     this.d3 = Object.assign(d3Base);
 
     const self = this;
@@ -389,7 +393,7 @@ export default {
       const width = 900;
       this.mapDimensions = {
         width,
-        height: this.mobileView ? width * 0.9 : width * 0.45,
+        height: this.mobileView ? width * 0.8 : width * 0.45,
         margin: {
           top: this.mobileView ? 5 : 58,
           right: 0,
@@ -668,7 +672,7 @@ export default {
 
       // Function to compute the radii for the legend point, based on sizeScale, the scale, and a multiplier
       function adjustedSizeScale(dataVal) {
-        const radiusMultiplier = self.mobileView ? 0.305 : 1.085; // Not totally sure why this multiplier is necessary... might change if legendDims or height of oconus-container change
+        const radiusMultiplier = self.mobileView ? 0.356 : 1.085; // Not totally sure why this multiplier is necessary... might change if legendDims or height of oconus-container change
         return sizeScale(dataVal) * scale * radiusMultiplier; 
       }
 
@@ -1499,10 +1503,10 @@ export default {
       "legend map"
       "text map";
     align-items: start;
-    margin: 1rem 0rem 5rem 0rem;
+    margin: 3rem 0rem 5rem 0rem;
     @media screen and (max-height: 770px) {
       row-gap: 4vh;
-      margin: 2rem 0rem 5rem 0rem;
+      margin: 4rem 0rem 5rem 0rem;
     }
   }
   #grid-container-interactive.mobile {
@@ -1536,9 +1540,6 @@ export default {
     grid-area: map;
     height: 100%;
     max-height: 70vh;
-  }
-  #oconus-container.mobile {
-    height: 40vh;
   }
   #map-label-container {
     pointer-events: none;

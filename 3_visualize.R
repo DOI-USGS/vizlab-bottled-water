@@ -442,7 +442,7 @@ p3_targets <- list(
   tar_target(p3_national_source_facilities_sankey_png,
              generate_national_sankey(supply_summary = p2_supply_summary,
                                      supply_colors = p3_supply_colors_new,
-                                     type_colors = c('grey80', 'grey80', 'grey80', 'grey80', 'grey80', "#1599CF"),
+                                     type_colors = c('grey80', 'grey80', 'grey80', 'grey80', 'grey80', "grey80"),
                                      reorder_facilities_category = c('Winery','Soft drinks', 'Ice', 'Distillery', 'Brewery', 'Bottled water'),
                                      square_instagram = FALSE,
                                      label_size = 6,
@@ -459,7 +459,7 @@ p3_targets <- list(
   tar_target(p3_national_source_facilities_sankey_ig_png,
              generate_national_sankey(supply_summary = p2_supply_summary,
                                       supply_colors = p3_supply_colors_new,
-                                      type_colors = c('grey80', 'grey80', 'grey80', 'grey80', 'grey80', "#1599CF"),
+                                      type_colors = c('grey80', 'grey80', 'grey80', 'grey80', 'grey80', "grey80"),
                                       reorder_facilities_category = c('Winery','Soft drinks', 'Ice', 'Distillery', 'Brewery', 'Bottled water'),
                                       square_instagram = TRUE,
                                       label_size = 1.6,
@@ -587,11 +587,45 @@ p3_targets <- list(
                                 bkgd_color = 'white',
                                 text_color = 'black',
                                 font_legend = p3_font_legend,
-                                outfile_template = 'src/assets/images/map_bottled_water_%s.png',
+                                outfile_template = '3_visualize/out/map_bottled_water_%s.png',
                                 dpi = 300),
              pattern = map(p3_source_count_bottled_water_basemap_list, p3_source_perc_bottled_water_basemap_list,
                            p3_source_bw_count_legend_list, p3_source_bw_perc_legend_list, p3_source_category_list),
              format = 'file'),
+  
+  tar_target(
+    ## export as resized png
+    p3_source_perc_count_bottled_water_map_scaled_pngs,
+    {
+      scaled_files <- purrr::map(p3_source_perc_count_bottled_water_map_pngs, 
+                                 ~resize_and_export_image(image_file = .x, 
+                                               base_path = 'src/assets/images',
+                                               file_extension = 'png',
+                                               width = 700,
+                                               density = 150,
+                                               compression_option = 'None')) |>
+        unlist()
+    },
+    pattern = map(p3_source_perc_count_bottled_water_map_pngs),
+    format = 'file'
+  ),
+  tar_target(
+    ## export as webp to optimize browser delivery
+    p3_source_perc_count_bottled_water_map_webps,
+    {
+    webp_files <- purrr::map(p3_source_perc_count_bottled_water_map_pngs, 
+                             ~resize_and_export_image(image_file = .x, 
+                                                      base_path = 'src/assets/images',
+                                                      file_extension = 'webp',
+                                                      width = 700,
+                                                      density = 150,
+                                                      compression_option = 'WebP')) |>
+        unlist()
+      return(webp_files)
+    },
+    pattern = map(p3_source_perc_count_bottled_water_map_pngs),
+    format = 'file'
+  ),
 
   # Percent water source stacked barplots with expanded self supply facilities
   tar_target(p3_perc_expanded_self_supply_barplot_png,
@@ -674,9 +708,28 @@ p3_targets <- list(
                                    supply_color = p3_wu_availability_facilities_colors,
                                    bkgd_color = 'white',
                                    text_color = 'black',
-                                   outfile_template = 'src/assets/images/annual_bottled_water_use_beeswarm.png',
+                                   outfile_template = '3_visualize/out/annual_bottled_water_use_beeswarm.png',
                                    dpi = 300),
              format = 'file'),
+  
+  tar_target(p3_annual_bw_wu_beeswarm_scaled_png,
+             resize_and_export_image(image_file = p3_annual_bw_wu_beeswarm_png, 
+                                     base_path = 'src/assets/images',
+                                     file_extension = 'png',
+                                     width = 1500,
+                                     density = 150,
+                                     compression_option = 'None'),
+             format = 'file'),
+  
+  tar_target(p3_annual_bw_wu_beeswarm_webp,
+             resize_and_export_image(image_file = p3_annual_bw_wu_beeswarm_png, 
+                                     base_path = 'src/assets/images',
+                                     file_extension = 'webp',
+                                     width = 1500,
+                                     density = 150,
+                                     compression_option = 'WebP'),
+             format = 'file'),
+  
   # Beeswarm displaying annual bottled water use (MGD) - mobile version
   tar_target(p3_annual_bw_wu_beeswarm_mobile_png,
              annual_bw_wu_beeswarm(sites_wu_sf = p2_inventory_sites_wu_conus_sf,
@@ -693,9 +746,28 @@ p3_targets <- list(
                                    supply_color = p3_wu_availability_facilities_colors,
                                    bkgd_color = 'white',
                                    text_color = 'black',
-                                   outfile_template = 'src/assets/images/annual_bottled_water_use_beeswarm_mobile.png',
+                                   outfile_template = '3_visualize/out/annual_bottled_water_use_beeswarm_mobile.png',
                                    dpi = 300),
              format = 'file'),
+  
+  tar_target(p3_annual_bw_wu_beeswarm_mobile_scaled_png,
+             resize_and_export_image(image_file = p3_annual_bw_wu_beeswarm_mobile_png, 
+                                     base_path = 'src/assets/images',
+                                     file_extension = 'png',
+                                     width = 600,
+                                     density = 150,
+                                     compression_option = 'None'),
+             format = 'file'),
+  
+  tar_target(p3_annual_bw_wu_beeswarm_mobile_webp,
+             resize_and_export_image(image_file = p3_annual_bw_wu_beeswarm_mobile_png, 
+                                     base_path = 'src/assets/images',
+                                     file_extension = 'webp',
+                                     width = 600,
+                                     density = 150,
+                                     compression_option = 'WebP'),
+             format = 'file'),
+  
   # Combined barplots displaying % water use availability, % bottled water facilities, and % sources of bottled water facilities
   tar_target(p3_water_use_availablity_barplots_png,
              water_use_barplots(sites_wu_summary_sf = p2_inventory_sites_wu_conus_summary_sf,

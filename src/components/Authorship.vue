@@ -10,7 +10,7 @@
     >
       <p>
         <span id="primary-author-statment">
-          The {{ appTitle }} data visualization was made by the USGS VizLab in collaboration with the USGS Water Use program. Development was led by 
+          The {{ appTitle }} data visualization was made by the <a href="https://labs.waterdata.usgs.gov/visualizations/index.html#/" target="_blank">USGS Vizlab</a> in collaboration with the USGS Water Use program. Development was led by 
           <span
             v-for="(author, index) in primaryAuthors" 
             :id="`initial-${author.initials}`"

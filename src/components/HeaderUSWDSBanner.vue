@@ -108,6 +108,12 @@
 </script>
 <style scoped lang="scss">
   @import '../../node_modules/@uswds/uswds/dist/css/uswds.css';
+  .usa-banner {
+    background-color: #151515;
+  }
+  .usa-banner p, text {
+    color: #F0F0F0;
+  }
   .usa-banner__inner {
     margin-left: 1rem;
     padding-left: 0.5rem;
@@ -124,6 +130,22 @@
   }
   .usa-banner__button {
     font-size: 1.3rem;
+    color: #78B4E8;
+  }
+  .usa-banner__button::after {
+    background-color: #78B4E8;
+  }
+  .usa-banner__button[aria-expanded=true]::after {
+    background-color: #78B4E8;
+  }
+  .usa-banner__button:hover {
+    color: #A2CCF1;
+  }
+  .usa-banner__button:hover::after {
+    background-color: #A2CCF1;
+  }
+  .usa-banner__button[aria-expanded=true]:hover::after {
+    background-color: #A2CCF1;
   }
   .usa-banner .grid-row.grid-gap-lg > *[data-v-e71764b8] {
       padding-left: 2rem;

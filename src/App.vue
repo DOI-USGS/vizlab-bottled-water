@@ -103,7 +103,7 @@
     background-color: #ffffff;
     margin: 0;
     padding: 0;
-    font-family: $SourceSans;
+    font-family: $SourceSans, Sans-Serif;
     line-height: 1.2;
     font-size: 2rem;
     font-weight: 400;
@@ -117,7 +117,7 @@
   h1{
     font-size: 7.5rem;
     font-weight: 700;
-    font-family: $AveriaSansLibre;
+    font-family: $AveriaSansLibre, Sans-Serif;
     line-height: 8rem;
     color: $textcolor;
     @media screen and (max-height: 770px) {

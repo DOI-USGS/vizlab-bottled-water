@@ -409,7 +409,9 @@ export default {
     addLegend(data) {
       const self = this;
 
-      const width = document.getElementById("legend-container").offsetWidth; // Match #legend-container settings
+      const containerWidth = document.getElementById("legend-container").offsetWidth; // Match #legend-container settings
+      const desktopWidth = containerWidth > 870 ? containerWidth : 870
+      const width = this.mobileView ? containerWidth : desktopWidth;
       const height = this.mobileView ? 110 : 60;
       const legendDimensions = {
         width,

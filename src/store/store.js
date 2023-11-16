@@ -8,7 +8,7 @@ export const store = new Vuex.Store({
         usgsHeaderRendered: false,
         windowWidth: 0,
         windowHeight: 0,
-        splashRenderedOnInitialLoad: false
+        mapRenderedOnInitialLoad: false
     },
     mutations: {
         recordWindowWidth (state, payload) {
@@ -17,8 +17,8 @@ export const store = new Vuex.Store({
         recordWindowHeight (state, payload) {
             state.windowHeight = payload
         },
-        changeBooleanStateOnSplashRender (state) {
-            state.splashRenderedOnInitialLoad = true
+        changeBooleanStateOnMapRender (state) {
+            state.mapRenderedOnInitialLoad = true
         }
     }
 });
