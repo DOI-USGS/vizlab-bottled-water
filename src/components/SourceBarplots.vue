@@ -410,7 +410,8 @@ export default {
       const self = this;
 
       const containerWidth = document.getElementById("legend-container").offsetWidth; // Match #legend-container settings
-      const width = containerWidth > 870 ? containerWidth : 870;
+      const desktopWidth = containerWidth > 870 ? containerWidth : 870
+      const width = this.mobileView ? containerWidth : desktopWidth;
       const height = this.mobileView ? 110 : 60;
       const legendDimensions = {
         width,
