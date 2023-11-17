@@ -540,12 +540,15 @@ export default {
       // Add map groups to svg
       this.mapBounds.append("g")
         .attr("class", "counties")
+        .attr("aria-hidden", "true")
 
       this.mapBounds.append("g")
         .attr("class", "county_centroids")
+        .attr("aria-hidden", "true")
 
       this.mapBounds.append("g")
         .attr("class", "states")
+        .attr("aria-hidden", "true")
 
     },
     initLegend() {
