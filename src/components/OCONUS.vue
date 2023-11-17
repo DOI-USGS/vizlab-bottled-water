@@ -839,7 +839,7 @@ export default {
       const identifierAccessor = d => d.WB_TYPE.replace(' ', '-')
 
       //add title
-      this.d3.select("#chart-container").select("Title")
+      this.d3.select("#chart-container").select("title")
         .text(`Bar chart of distribution of facility types for ${state}`)
 
       // create x scale
@@ -959,6 +959,7 @@ export default {
       const barText = rectGroups.select("text")
         .transition(self.getUpdateTransition())
           .attr("class", "bar-label chart-text")
+          .attr("aria-hidden", "true") // hide from screen reader since have aria-label for rect groups
           .attr("y", d => this.yScale(yAccessor(d)) + this.yScale.bandwidth() / 2)
           .attr("x", 0)
           .style("text-anchor", "start")
