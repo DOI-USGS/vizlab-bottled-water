@@ -937,13 +937,19 @@ export default {
       rectGroups.each(function() {
         this.addEventListener("keypress", function(event) {
             if (event.key === 'Enter' | event.keyCode === 13) {
+              // Extract info on what type of facility was selected
               let targetId = event.target.id
               let targetIdSplit = targetId.split('-')
-              this.currentType = targetIdSplit.length === 4 ? (targetIdSplit[2] + ' ' + targetIdSplit[3]) : targetIdSplit[2]
-              let currentIdentifier = this.currentType.replace(' ', '-')
+              const selectedType = targetIdSplit.length === 4 ? (targetIdSplit[2] + ' ' + targetIdSplit[3]) : targetIdSplit[2];
+              
+              // Get identifier for selection by id
+              let currentIdentifier = selectedType.replace(' ', '-')
+
+              // reset value of currentType
+              self.currentType = selectedType
 
               // NOTE: need to use self.currentState, not `state` b/c `state` gets stale when attached to event listener
-              self.drawCountyPoints(self.currentState, self.currentScale, this.currentType)
+              self.drawCountyPoints(self.currentState, self.currentScale, self.currentType)
 
               self.d3.selectAll('.bar')
                 .transition(self.getUpdateTransition())
