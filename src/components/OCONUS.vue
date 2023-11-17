@@ -1516,6 +1516,7 @@ export default {
     }
   }
   #grid-container-interactive.mobile {
+    max-width: 70vw;
     grid-template-columns: 100%;
     grid-template-rows: max-content max-content max-content max-content 25vh;
     grid-template-areas:
@@ -1525,10 +1526,11 @@ export default {
       "legend"
       "chart";
     position: relative;
-    margin: 3rem 0rem 4rem 0rem;
+    margin: 3rem auto 4rem auto;
     padding: 0.5rem 0.5rem 0.5rem 0.5rem;
     row-gap: 1.5vh;
     @media screen and (max-width: 600px) {
+      max-width: calc(100vw - 1rem);
       grid-template-columns: 100%;
       grid-template-rows: max-content max-content max-content max-content max-content;
       grid-template-areas:
