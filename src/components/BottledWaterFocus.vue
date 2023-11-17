@@ -298,9 +298,9 @@
   }
   #img-bw-use-beeswarm {
     grid-area: bw-use-source;
-    margin: 4rem 0rem 4rem 0rem;
+    margin: 4rem 0rem 0.5rem 0rem;
     @media screen and (max-width: 600px) {
-      margin: 3rem 0rem 3rem 0rem;
+      margin: 3rem 0rem 0.5rem 0rem;
     }
   }
   .beeswarm {

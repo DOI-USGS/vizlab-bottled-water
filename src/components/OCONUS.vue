@@ -6,7 +6,7 @@
     >
       <div id="title">
         <h2 class="grid-title">
-          Counts of bottling facilities in <span id="state-dropdown-container" /> by county
+          <span id="grid-title-start">Counts of bottling facilities in </span><span id="state-dropdown-container" /> by county
         </h2>
       </div>
       <div id="text">
@@ -35,7 +35,10 @@
         id="oconus-container"
         :class="{ mobile: mobileView}"
       />
-      <div id="chart-container" />
+      <div
+        id="chart-container"
+        :class="{ mobile: mobileView}"
+      />
       <div id="point-legend-container" />
       <div
         v-if="!mobileView"
@@ -265,7 +268,7 @@ export default {
       const dropdown = dropdownContainer
         .append("select")
         .attr("id", "state-dropdown")
-        .attr("class", "dropdown")
+        .attr("class", this.mobileView ? "dropdown mobile" : "dropdown")
         .attr("aria-label", "state dropdown")
         .attr("tabindex", 0)
         .on("change", function() {
@@ -768,7 +771,7 @@ export default {
       // Build legend title into final text label on mobile
       const circleText = circleGroups.select("text")
         .transition(self.getUpdateTransition())
-        .attr("class", "point-legend-text")
+        .attr("class", this.mobileView ? "point-legend-text mobile" : "point-legend-text")
         .attr("x", (d, i) => {
           const horizontalPosition = getHorizontalPosition(d.value, i);
           const mobilePosition = i === (numLegendValues - 1) ? (horizontalPosition - 8) : horizontalPosition;
@@ -1434,6 +1437,12 @@ export default {
       font-size: 1.6rem;
     }
   }
+  .point-legend-text.mobile {
+    font-size: 1.3rem;
+    @media screen and (max-width: 600px) {
+      font-size: 1.6rem;
+    }
+  }
   .chart-text {
     user-select: none;
     @media screen and (max-height: 770px) {
@@ -1458,7 +1467,7 @@ export default {
     border-right: 1rem solid transparent; // Add space to right of dropdown arrow
     transition: width 2s, transform 1s;
     background-color: white;
-    margin: 0rem 0.5rem 0rem 0.5rem;
+    margin: 0rem 0.5rem 0rem 0rem;
     padding: 0.5rem 0rem 0.5rem 1rem;
     box-shadow:  rgba(0, 0, 0, 0.2) 0rem 0.6rem 1rem 0rem,
     rgba(0, 0, 0, 0.1) 0rem 0rem 0rem 0.1rem;
@@ -1468,6 +1477,9 @@ export default {
   .dropdown:hover {
     box-shadow:  rgba(0, 0, 0, 0.3) 0rem 0.6rem 1rem 0rem,
     rgba(0, 0, 0, 0.2) 0rem 0rem 0rem 0.1rem;
+  }
+  .dropdown.mobile {    
+    margin-top: 0.6rem;
   }
   .tmp-dropdown {
     font-size: 3.25rem; // style same as h2 in App.vue
@@ -1493,6 +1505,9 @@ export default {
       padding-bottom: 0rem;
     }
   }
+  #grid-title-start {
+    margin: 0rem 0.5rem 0rem 0rem;
+  }
   #grid-container-interactive {
     display: grid;
     grid-template-columns: 20% 78%;
@@ -1512,8 +1527,9 @@ export default {
     }
   }
   #grid-container-interactive.mobile {
+    max-width: 70vw;
     grid-template-columns: 100%;
-    grid-template-rows: max-content max-content max-content max-content max-content;
+    grid-template-rows: max-content max-content max-content max-content 25vh;
     grid-template-areas:
       "title"
       "text"
@@ -1521,9 +1537,24 @@ export default {
       "legend"
       "chart";
     position: relative;
-    margin: 3rem 0rem 4rem 0rem;
+    margin: 3rem auto 4rem auto;
     padding: 0.5rem 0.5rem 0.5rem 0.5rem;
     row-gap: 1.5vh;
+    @media screen and (max-width: 600px) {
+      max-width: calc(100vw - 1rem);
+      grid-template-columns: 100%;
+      grid-template-rows: max-content max-content max-content max-content max-content;
+      grid-template-areas:
+        "title"
+        "text"
+        "map"
+        "legend"
+        "chart";
+      position: relative;
+      margin: 3rem 0rem 4rem 0rem;
+      padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+      row-gap: 1.5vh;
+    }  
   }
   #title {
     grid-area: title;
@@ -1534,6 +1565,14 @@ export default {
   }
   #chart-container {
     grid-area: chart;
+  }
+  #chart-container.mobile {
+    height: 100%;
+    justify-self: start;
+    @media screen and (max-width: 600px) {
+      height: auto;
+      justify-self: auto;
+    }  
   }
   #point-legend-container {
     grid-area: legend;
