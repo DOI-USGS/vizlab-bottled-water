@@ -1,78 +1,96 @@
 <template>
   <header id="grid-container-title">
     <div
-        id="panel-container"
-        :class="{ mobile: mobileView}"
+      id="panel-container"
+      :class="{ mobile: mobileView}"
     >
-      <div class="panel-wrap" :class="{ mobile: mobileView}">
-        <div class="panel start start-shadow glass-under" :class="{ mobile: mobileView}"/> 
+      <div
+        class="panel-wrap"
+        :class="{ mobile: mobileView}"
+      >
         <div
-            class="panel glass-under"
-            :class="{ mobile: mobileView}"
+          class="panel start start-shadow glass-under"
+          :class="{ mobile: mobileView}"
+        /> 
+        <div
+          class="panel glass-under"
+          :class="{ mobile: mobileView}"
         />        
         <div
-            class="panel glass-under"
-            :class="{ mobile: mobileView}"
+          class="panel glass-under"
+          :class="{ mobile: mobileView}"
         />
         <div
-            class="panel glass-under"
-            :class="{ mobile: mobileView}"
+          class="panel glass-under"
+          :class="{ mobile: mobileView}"
         />
         <div
-            class="panel glass-under"
-            :class="{ mobile: mobileView}"
+          class="panel glass-under"
+          :class="{ mobile: mobileView}"
         />
         <div
-            class="panel glass-under"
-            :class="{ mobile: mobileView}"
+          class="panel glass-under"
+          :class="{ mobile: mobileView}"
         />
         <div
-            class="panel glass-under"
-            :class="{ mobile: mobileView}"
+          class="panel glass-under"
+          :class="{ mobile: mobileView}"
         />
         <div
-            class="panel glass-under"
-            :class="{ mobile: mobileView}"
+          class="panel glass-under"
+          :class="{ mobile: mobileView}"
         />
         <div
-            class="panel glass-under"
-            :class="{ mobile: mobileView}"
+          class="panel glass-under"
+          :class="{ mobile: mobileView}"
         />
         <div
-            class="panel glass-under"
-            :class="{ mobile: mobileView}"
+          class="panel glass-under"
+          :class="{ mobile: mobileView}"
         />
         <div
-            v-if="!mobileView"
-            class="panel glass-under"
-            :class="{ mobile: mobileView}"
+          v-if="!mobileView"
+          class="panel glass-under"
+          :class="{ mobile: mobileView}"
         />
         <div
-            v-if="!mobileView"
-            class="panel glass-under"
+          v-if="!mobileView"
+          class="panel glass-under"
         />
         <div
-            v-if="!mobileView"
-            class="panel glass-under"
+          v-if="!mobileView"
+          class="panel glass-under"
         />
         <div
-            v-if="!mobileView"
-            class="panel glass-under"
+          v-if="!mobileView"
+          class="panel glass-under"
         />
-        <div class="panel end end-shadow glass-under" :class="{ mobile: mobileView}"/>
-        <div class="panel neck end-shadow glass-under" :class="{ mobile: mobileView}"/>
-        <div class="panel cap end-shadow glass-under" :class="{ mobile: mobileView}"/>
+        <div
+          class="panel end end-shadow glass-under"
+          :class="{ mobile: mobileView}"
+        />
+        <div
+          class="panel neck end-shadow glass-under"
+          :class="{ mobile: mobileView}"
+        />
+        <div
+          class="panel cap end-shadow glass-under"
+          :class="{ mobile: mobileView}"
+        />
       </div>
     </div>
-    <div id="page-title" :class="{ mobile: mobileView}">
+    <div
+      id="page-title"
+      :class="{ mobile: mobileView}"
+    >
       <h1>
         <span class="highlight-words">Water bottling</span><br v-if="mobileView"><span class="later-words"> across the U.S.</span>
       </h1>
     </div>
     <div
-    id="overlay-container"
-    class="overlay"
-    :class="{ mobile: mobileView}"
+      id="overlay-container"
+      class="overlay"
+      :class="{ mobile: mobileView}"
     >
       <div
         id="overlay-panel"

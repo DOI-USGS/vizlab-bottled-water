@@ -35,7 +35,10 @@
         id="oconus-container"
         :class="{ mobile: mobileView}"
       />
-      <div id="chart-container" :class="{ mobile: mobileView}"/>
+      <div
+        id="chart-container"
+        :class="{ mobile: mobileView}"
+      />
       <div id="point-legend-container" />
       <div
         v-if="!mobileView"
