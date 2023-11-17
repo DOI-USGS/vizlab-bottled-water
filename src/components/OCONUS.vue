@@ -9,9 +9,9 @@
           Counts of bottling facilities in <span id="state-dropdown-container" /> by county
         </h2>
       </div>
-      <div id="text">
+      <div id="text" aria-hidden="true">
         <div v-if="!mobileView">
-          <p class="viz-comment">
+          <p class="viz-comment" >
             Click on the dropdown menu, bar chart, or map to explore
           </p>
           <br>
