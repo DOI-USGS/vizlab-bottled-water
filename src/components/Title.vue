@@ -5,7 +5,7 @@
             :class="{ mobile: mobileView}"
         >
             <div class="panel-wrap" :class="{ mobile: mobileView}">
-                <div class="panel start start-shadow glass-under" /> 
+                <div class="panel start start-shadow glass-under" :class="{ mobile: mobileView}"/> 
                 <div
                     class="panel glass-under"
                     :class="{ mobile: mobileView}"
@@ -59,9 +59,9 @@
                     v-if="!mobileView"
                     class="panel glass-under"
                 />
-                <div class="panel end end-shadow glass-under" />
-                <div class="panel neck end-shadow glass-under" />
-                <div class="panel cap end-shadow glass-under" />
+                <div class="panel end end-shadow glass-under" :class="{ mobile: mobileView}"/>
+                <div class="panel neck end-shadow glass-under" :class="{ mobile: mobileView}"/>
+                <div class="panel cap end-shadow glass-under" :class="{ mobile: mobileView}"/>
             </div>
         </div>
         <div id="page-title" :class="{ mobile: mobileView}">
@@ -71,7 +71,7 @@
         </div>
         <div
         id="overlay-container"
-        class="panel-wrap overlay"
+        class="overlay"
         :class="{ mobile: mobileView}"
         >
             <div
@@ -117,14 +117,16 @@
   $shadow-color: rgba(87, 103, 130);
   $panel-height-monitor: 25rem;
   $panel-height-laptop: 17rem;
-  $panel-height-mobile: 10rem;
+  $panel-height-mobile-large: 18rem;
+  $panel-height-mobile-small: 10rem;
   $water-fill-percentage: 0.45;
   $start-end-percentage: 0.64;
   $neck-percentage: 0.06;
   $cap-percentage: 0.12;
   $full-width-monitor: $start-end-percentage*$panel-height-monitor*2 + 13*0.23*$panel-height-monitor + $neck-percentage*$panel-height-monitor + $cap-percentage*$panel-height-monitor;
   $full-width-laptop: $start-end-percentage*$panel-height-laptop*2 + 13*0.23*$panel-height-laptop + $neck-percentage*$panel-height-laptop + $cap-percentage*$panel-height-laptop;
-  $full-width-mobile: 2.55rem*9 + 4.5rem*2 + 0.75rem + 2.25rem;
+  $full-width-mobile-large: 4.5rem*9 + 11rem*2 + 1rem + 2.5rem;
+  $full-width-mobile-small: 2.55rem*9 + 4.5rem*2 + 0.75rem + 2.25rem;
 
   #grid-container-title {
     display: grid;
@@ -140,7 +142,7 @@
     }
     @media screen and (max-width: 600px) {
       grid-template-columns: 100%;
-      width: $full-width-mobile;
+      width: $full-width-mobile-small;
     }
   }
   #page-title {
@@ -158,8 +160,12 @@
     }
   }
   #page-title.mobile {
-    width: 100%;
-    padding-right: 0.75rem + 2.25rem;
+    width: min(86vw, 1600px);
+    padding-right: 1rem + 2.5rem;
+    @media screen and (max-width: 600px) {
+      width: 100%;
+      padding-right: 0.75rem + 2.25rem;
+    }
   }
   .highlight-words {
     color: #4365A8; 
@@ -175,13 +181,17 @@
       width: $full-width-laptop;
     }
     @media screen and (max-width: 600px) {
-      height: $panel-height-mobile;
-      width: $full-width-mobile;
+      height: $panel-height-mobile-small;
+      width: $full-width-mobile-small;
     }
   }
   #panel-container.mobile {
-    height: $panel-height-mobile;
-    width: $full-width-mobile;
+    height: $panel-height-mobile-large;
+    width: $full-width-mobile-large;
+    @media screen and (max-width: 600px) {
+      height: $panel-height-mobile-small;
+      width: $full-width-mobile-small;
+    }
   }
   .panel-wrap {
     justify-content: center;
@@ -194,7 +204,10 @@
     }
   }
   .panel-wrap.mobile {
-    width: 100%;
+    width: min(86vw, 1600px);
+    @media screen and (max-width: 600px) {
+      width: 100%;
+    }
   }
   .panel {
     width: 0.23*$panel-height-monitor;
@@ -208,23 +221,23 @@
     @media screen and (max-width: 600px) {
       width: 2.55rem;
       border-radius: 0.8rem;
-      height: $panel-height-mobile;
+      height: $panel-height-mobile-small;
     }
   }
   .panel.mobile {
-    width: 5rem;
-    border-radius: 1.5rem;
+    width: 4.5rem; //5rem;
+    height: $panel-height-mobile-large;
+    border-radius: 1.3rem;
     @media screen and (max-width: 600px) {
       width: 2.55rem;
       border-radius: 0.8rem;
-      height: $panel-height-mobile;
+      height: $panel-height-mobile-small;
     }
   }
   #overlay-container {
     grid-area: title;
     align-self: end;
     position: relative;
-    justify-self: center;
     width: min(86vw, 1600px);
     @media screen and (max-height: 770px) {
       width: min(90vw, 1600px);
@@ -234,6 +247,7 @@
     width: 100%;
   }
   #overlay-panel {
+    margin: auto;
     width: $full-width-monitor;
     height: $panel-height-monitor*($water-fill-percentage+0.01);
     border-top-left-radius: 0rem;
@@ -248,10 +262,15 @@
     }
   }
   #overlay-panel.mobile {
-    width: 5rem;
+    width: $full-width-mobile-large;
+    height: $panel-height-mobile-large*($water-fill-percentage+0.01);
+    border-top-left-radius: 0rem;
+    border-top-right-radius: 0rem;
+    border-bottom-left-radius: 4rem;
+    border-bottom-right-radius: 7.5rem;
     @media screen and (max-width: 600px) {
-      width: $full-width-mobile;
-      height: $panel-height-mobile*($water-fill-percentage+0.01);
+      width: $full-width-mobile-small;
+      height: $panel-height-mobile-small*($water-fill-percentage+0.01);
       border-top-left-radius: 0rem;
       border-top-right-radius: 0rem;
       border-bottom-left-radius: 2rem;
@@ -278,6 +297,16 @@
       border-bottom-left-radius: 2rem;
     }
   }
+  .start.mobile {
+    width: 11rem;
+    border-top-left-radius: 4rem;
+    border-bottom-left-radius: 4rem;
+    @media screen and (max-width: 600px) {
+      width: 4.5rem;
+      border-top-left-radius: 2rem;
+      border-bottom-left-radius: 2rem;
+    }
+  }
   .start-shadow {
     box-shadow: 0 4px 18px 8px rgba($shadow-color, 0.3);
   }
@@ -296,6 +325,16 @@
       border-bottom-right-radius: 5rem;
     }
   }
+  .end.mobile {
+    width: 11rem;
+    border-top-right-radius: 7.5rem;
+    border-bottom-right-radius: 7.5rem;
+    @media screen and (max-width: 600px) {
+      width: 4.5rem;
+      border-top-right-radius: 5rem;
+      border-bottom-right-radius: 5rem;
+    }
+  }
   .end-shadow {
     box-shadow: 6px 4px 18px 8px rgba($shadow-color, 0.25);
   }
@@ -304,11 +343,23 @@
     height: 0.23*$panel-height-monitor;
     align-self: center;
     border-radius: 0rem;
-    background: linear-gradient(0deg, #DAE6EF, #DAE6EF 31%, white 31.5%);
+    background: linear-gradient(0deg, #DAE6EF, #DAE6EF 31.5%, white 32%);
     @media screen and (max-height: 770px) {
       width: $neck-percentage*$panel-height-laptop;
       height: 0.23*$panel-height-laptop;
     }
+    @media screen and (max-width: 600px) {
+      height: 2.94rem;
+      width: 0.75rem;
+      background: linear-gradient(0deg, #DAE6EF, #DAE6EF 34.5%, white 35%);
+    }
+  }
+  .neck.mobile {
+    width: 1rem;
+    height: 4.5rem;
+    align-self: center;
+    border-radius: 0rem;
+    background: linear-gradient(0deg, #DAE6EF, #DAE6EF 31%, white 31.5%);
     @media screen and (max-width: 600px) {
       height: 2.94rem;
       width: 0.75rem;
@@ -331,6 +382,20 @@
       border-top-right-radius: 0.04*$panel-height-laptop;
       border-bottom-right-radius: 0.04*$panel-height-laptop;
     }
+    @media screen and (max-width: 600px) {
+      width: 2.25rem;
+      height: 3.5rem;
+      border-top-right-radius: 0.6rem;
+      border-bottom-right-radius: 0.6rem;
+    }
+  }
+  .cap.mobile {
+    width: 2.5rem;
+    height: 5.5rem;
+    border-top-left-radius: 0rem;
+    border-bottom-left-radius: 0rem;
+    border-top-right-radius: 0.6rem;
+      border-bottom-right-radius: 0.6rem;
     @media screen and (max-width: 600px) {
       width: 2.25rem;
       height: 3.5rem;
