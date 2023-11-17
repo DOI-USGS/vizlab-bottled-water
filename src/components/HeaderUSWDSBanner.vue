@@ -135,6 +135,9 @@
   .usa-banner__button::after {
     background-color: #78B4E8;
   }
+  .usa-banner__button[aria-expanded=true]::before {
+    background-color: #151515;
+  }
   .usa-banner__button[aria-expanded=true]::after {
     background-color: #78B4E8;
   }
