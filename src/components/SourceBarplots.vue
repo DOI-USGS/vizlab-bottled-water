@@ -190,8 +190,6 @@ export default {
 
       // assign role for accessibility
       barplotSVG.attr("role", "figure")
-        .attr("tabindex", 0)
-        .attr("contenteditable", "true")
         .append("title")
         .text("Sources of water used by bottling facilities")
 
@@ -256,7 +254,6 @@ export default {
       this.bars = this.barplotBounds.append("g")
         .attr("class", "rects")
         .attr("role", "list")
-        .attr("tabindex", 0)
         .attr("contenteditable", "true")
         .attr("aria-label", "bar plot bars")
 
@@ -375,7 +372,6 @@ export default {
             enter => enter
                 .append("rect")
                 .attr("class", d => d.key + ' ' + d.data[0])
-                .attr("tabindex", "0")
                 .attr("role", "listitem")
                 .attr("x", d => this.xScale(d.data[0]))
                 .attr("y", d => this.yScale(0))
