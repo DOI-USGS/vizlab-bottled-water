@@ -654,10 +654,11 @@ export default {
         .domain([0, numLegendValues - 1])
         .range([1, dataMax])
 
-      // function to round legend values, based on dataMax
-      function roundScale(dataVal) { 
+      // function to generate evenly spaced legend values, based on dataMax, then round those values.
+      // amount of rounding depends on dataMax
+      function roundScale(index) { 
         let roundInterval;
-        if (dataMax < 10) {
+        if (dataMax < 20) {
           roundInterval = 1
         } else if (dataMax < 50) {
           roundInterval = 5
@@ -666,7 +667,8 @@ export default {
         } else {
           roundInterval = 25
         }
-        const roundedValue = Math.round(numberScale(dataVal)/roundInterval) * roundInterval
+        const dataValue = numberScale(index);
+        const roundedValue = Math.round(dataValue/roundInterval) * roundInterval
         return roundedValue === 0 ? 1 : roundedValue;
       }
 
