@@ -30,16 +30,17 @@
             Tap on the dropdown or bar chart to explore
           </p>
         </div>
-      </div>
+      </div>        
+      <div id="chart-container" />
+      <div id="point-legend-container" />
       <div
         id="oconus-container"
         :class="{ mobile: mobileView}"
       />
-      <div id="chart-container" />
-      <div id="point-legend-container" />
       <div
         v-if="!mobileView"
         id="map-label-container"
+        aria-hidden="true"
       >
         <mapLabels
           id="map-inset-svg"
