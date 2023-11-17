@@ -890,6 +890,16 @@ export default {
       // update rectGroups to include new points
       rectGroups = newRectGroups.merge(rectGroups)
 
+      // make sure aria-labels are updated
+      rectGroups
+        .attr("aria-label", d => `There are ${
+          xAccessor(d)
+        } ${
+          yAccessor(d)
+        } facilities in ${
+          state
+        }`)
+
       const barRects = rectGroups.select("rect")
 
       // Update bars based on data values
