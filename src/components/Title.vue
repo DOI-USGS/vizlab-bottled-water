@@ -343,7 +343,7 @@
     height: 0.23*$panel-height-monitor;
     align-self: center;
     border-radius: 0rem;
-    background: linear-gradient(0deg, #DAE6EF, #DAE6EF 31.5%, white 32%);
+    background: linear-gradient(0deg, #DAE6EF, #DAE6EF 30%, white 30.5%);
     @media screen and (max-height: 770px) {
       width: $neck-percentage*$panel-height-laptop;
       height: 0.23*$panel-height-laptop;
