@@ -98,6 +98,9 @@
         :class="{ mobile: mobileView}"
       />
     </div>
+    <p class="sr-only">
+      This is an data visualization website highlighting a USGS inventory of bottling facilities across the United States. It contains an interactive map of the U.S. displaying county-level count of different types of water bottling facilities, such as bottled water facilities, breweries, distilleries, ice facilities, soft drink facilities, and wineries. It also includes sections discussing where water bottling facilities source their water, the availability of water use data, and source and use data for bottled water facilities in particular. Navigate through the page to learn more.
+    </p>
   </header>
 </template>
 <script>
@@ -430,5 +433,13 @@
   }
   .glass-over.neck {
     z-index: -1;
+  }
+  .sr-only {
+    position:absolute;
+    left:-10000px;
+    top:auto;
+    width:1px;
+    height:1px;
+    overflow:hidden;
   }
 </style>
