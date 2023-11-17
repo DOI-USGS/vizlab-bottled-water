@@ -4,6 +4,7 @@
       <div
         id="toggle-container"
         class="text-container"
+        aria-hidden="true"
       >
         <div class="graph-buttons-switch">
           <input
