@@ -717,7 +717,7 @@ p3_targets <- list(
                                      base_path = 'src/assets/images',
                                      file_extension = 'png',
                                      width = 1500,
-                                     density = 150,
+                                     density = 200,
                                      compression_option = 'None'),
              format = 'file'),
   
@@ -726,7 +726,7 @@ p3_targets <- list(
                                      base_path = 'src/assets/images',
                                      file_extension = 'webp',
                                      width = 1500,
-                                     density = 150,
+                                     density = 200,
                                      compression_option = 'WebP'),
              format = 'file'),
   
@@ -754,8 +754,8 @@ p3_targets <- list(
              resize_and_export_image(image_file = p3_annual_bw_wu_beeswarm_mobile_png, 
                                      base_path = 'src/assets/images',
                                      file_extension = 'png',
-                                     width = 600,
-                                     density = 150,
+                                     width = 800,
+                                     density = 200,
                                      compression_option = 'None'),
              format = 'file'),
   
@@ -763,8 +763,8 @@ p3_targets <- list(
              resize_and_export_image(image_file = p3_annual_bw_wu_beeswarm_mobile_png, 
                                      base_path = 'src/assets/images',
                                      file_extension = 'webp',
-                                     width = 600,
-                                     density = 150,
+                                     width = 800,
+                                     density = 200,
                                      compression_option = 'WebP'),
              format = 'file'),
   
