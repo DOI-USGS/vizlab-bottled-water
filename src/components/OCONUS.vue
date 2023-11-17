@@ -6,7 +6,7 @@
     >
       <div id="title">
         <h2 class="grid-title">
-          Counts of bottling facilities in <span id="state-dropdown-container" /> by county
+          <span id="grid-title-start">Counts of bottling facilities in </span><span id="state-dropdown-container" /> by county
         </h2>
       </div>
       <div id="text">
@@ -265,7 +265,7 @@ export default {
       const dropdown = dropdownContainer
         .append("select")
         .attr("id", "state-dropdown")
-        .attr("class", "dropdown")
+        .attr("class", this.mobileView ? "dropdown mobile" : "dropdown")
         .attr("aria-label", "state dropdown")
         .attr("tabindex", 0)
         .on("change", function() {
@@ -1462,7 +1462,7 @@ export default {
     border-right: 1rem solid transparent; // Add space to right of dropdown arrow
     transition: width 2s, transform 1s;
     background-color: white;
-    margin: 0rem 0.5rem 0rem 0.5rem;
+    margin: 0rem 0.5rem 0rem 0rem;
     padding: 0.5rem 0rem 0.5rem 1rem;
     box-shadow:  rgba(0, 0, 0, 0.2) 0rem 0.6rem 1rem 0rem,
     rgba(0, 0, 0, 0.1) 0rem 0rem 0rem 0.1rem;
@@ -1472,6 +1472,9 @@ export default {
   .dropdown:hover {
     box-shadow:  rgba(0, 0, 0, 0.3) 0rem 0.6rem 1rem 0rem,
     rgba(0, 0, 0, 0.2) 0rem 0rem 0rem 0.1rem;
+  }
+  .dropdown.mobile {    
+    margin-top: 0.6rem;
   }
   .tmp-dropdown {
     font-size: 3.25rem; // style same as h2 in App.vue
@@ -1496,6 +1499,9 @@ export default {
       padding-top: 0rem;
       padding-bottom: 0rem;
     }
+  }
+  #grid-title-start {
+    margin: 0rem 0.5rem 0rem 0rem;
   }
   #grid-container-interactive {
     display: grid;
