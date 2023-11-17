@@ -415,6 +415,7 @@ export default {
 
       // assign role for accessibility
       this.wrapper.attr("role", "figure")
+        .append("title")
 
       this.mapBounds = this.wrapper.append("g")
         .style("transform", `translate(${
@@ -1195,6 +1196,10 @@ export default {
         // Get max value for state, in any category except 'All'
         dataMax = this.d3.max(dataPoints, d => parseInt(d.properties.max_count))
       }
+
+      // append title to map image for screenreader
+      this.d3.select("#oconus-container").select("title")
+        .text(`Map showing counts of of ${type} facilities in ${state}, by county`)
 
       // create scales
       const scaleNumerator = scale > 15 ? 1.5 : 1.3
