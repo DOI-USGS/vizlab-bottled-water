@@ -104,7 +104,7 @@
   import { isMobile } from 'mobile-device-detect';
   
   export default {
-    name: "Title",
+    name: "VizTitle",
     components: {
     },
     props: {

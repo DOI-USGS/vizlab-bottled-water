@@ -1,6 +1,6 @@
 <template>
   <div id="visualization">
-    <Title />
+    <VizTitle />
     <OCONUS />
     <InventorySection v-if="checkIfMapIsRendered" />
     <WaterSourceSection v-if="checkIfMapIsRendered" />
@@ -17,7 +17,7 @@ import { isMobile } from 'mobile-device-detect';
 export default {
     name: 'VisualizationContent',
     components: {
-      Title: () => import("./../components/Title.vue"),
+      VizTitle: () => import("./../components/VizTitle.vue"),
       OCONUS: () => import("./../components/OCONUS.vue"),
       InventorySection: () => import("./../components/Inventory.vue"),
       WaterSourceSection: () => import("./../components/WaterSource.vue"),
