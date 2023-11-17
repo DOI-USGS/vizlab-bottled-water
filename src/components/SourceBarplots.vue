@@ -434,6 +434,7 @@ export default {
           .attr("width", "100%")
           .attr("height", "100%")
           .attr("id", "legend-svg")
+          .attr("aria-hidden", "true")
 
       const legendRectSize = 15; // Size of legend color rectangles
       const interItemSpacing = this.mobileView ? 15 : 25;
