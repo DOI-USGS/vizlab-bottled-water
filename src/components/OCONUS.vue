@@ -577,7 +577,7 @@ export default {
           .attr("width", "100%")
           .attr("height", "100%")
           .attr("id", "point-legend-svg")
-          .attr("role", "figure")
+          .attr("aria-hidden", "true")
 
       this.legendBounds = legendSVG.append("g")
         .style("transform", `translate(${
