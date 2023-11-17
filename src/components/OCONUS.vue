@@ -766,7 +766,7 @@ export default {
       // Build legend title into final text label on mobile
       const circleText = circleGroups.select("text")
         .transition(self.getUpdateTransition())
-        .attr("class", "point-legend-text")
+        .attr("class", this.mobileView ? "point-legend-text mobile" : "point-legend-text")
         .attr("x", (d, i) => {
           const horizontalPosition = getHorizontalPosition(d.value, i);
           const mobilePosition = i === (numLegendValues - 1) ? (horizontalPosition - 8) : horizontalPosition;
@@ -1428,6 +1428,12 @@ export default {
   }
   .point-legend-text {
     font-size: 1.7rem;
+    @media screen and (max-width: 600px) {
+      font-size: 1.6rem;
+    }
+  }
+  .point-legend-text.mobile {
+    font-size: 1.3rem;
     @media screen and (max-width: 600px) {
       font-size: 1.6rem;
     }
