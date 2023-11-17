@@ -35,7 +35,7 @@
         id="oconus-container"
         :class="{ mobile: mobileView}"
       />
-      <div id="chart-container" />
+      <div id="chart-container" :class="{ mobile: mobileView}"/>
       <div id="point-legend-container" />
       <div
         v-if="!mobileView"
@@ -1511,7 +1511,7 @@ export default {
   }
   #grid-container-interactive.mobile {
     grid-template-columns: 100%;
-    grid-template-rows: max-content max-content max-content max-content max-content;
+    grid-template-rows: max-content max-content max-content max-content 25vh;
     grid-template-areas:
       "title"
       "text"
@@ -1522,6 +1522,20 @@ export default {
     margin: 3rem 0rem 4rem 0rem;
     padding: 0.5rem 0.5rem 0.5rem 0.5rem;
     row-gap: 1.5vh;
+    @media screen and (max-width: 600px) {
+      grid-template-columns: 100%;
+      grid-template-rows: max-content max-content max-content max-content max-content;
+      grid-template-areas:
+        "title"
+        "text"
+        "map"
+        "legend"
+        "chart";
+      position: relative;
+      margin: 3rem 0rem 4rem 0rem;
+      padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+      row-gap: 1.5vh;
+    }  
   }
   #title {
     grid-area: title;
@@ -1532,6 +1546,14 @@ export default {
   }
   #chart-container {
     grid-area: chart;
+  }
+  #chart-container.mobile {
+    height: 100%;
+    justify-self: start;
+    @media screen and (max-width: 600px) {
+      height: auto;
+      justify-self: auto;
+    }  
   }
   #point-legend-container {
     grid-area: legend;
