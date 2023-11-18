@@ -415,6 +415,7 @@ export default {
           .attr("width", "100%")
           .attr("height", "100%")
           .attr("id", "map-svg")
+          .attr("tabindex", 0)
 
       // assign role for accessibility
       this.wrapper.attr("role", "figure")
@@ -1215,16 +1216,66 @@ export default {
           // Get max value for nation, in any category except 'All'
           dataMax = this.d3.max(this.countyPoints, d => parseInt(d.properties.max_count))
         }
-
       } else {
         dataPoints = this.countyPoints.filter(d => d.properties.STATE_NAME === state)
         // Get max value for state, in any category except 'All'
         dataMax = this.d3.max(dataPoints, d => parseInt(d.properties.max_count))
       }
 
-      // append title to map image for screenreader
+      // Get max value for type, and which county/counties have that max for type
+      const typeMin = this.d3.min(dataPoints, d => parseInt(d.properties[type]))
+      const typeMax = this.d3.max(dataPoints, d => parseInt(d.properties[type]))
+      const typeMaxData = dataPoints.filter(d => parseInt(d.properties[type]) === typeMax)
+
+      // construct map title for screenreader
+      let typeTitle;
+      let typeTitlePlural;
+      switch(type) {
+        case 'Brewery':
+          typeTitlePlural = 'Breweries';
+          typeTitle = typeMax > 1 ? typeTitlePlural : type;
+          break;
+        case 'Distillery':
+          typeTitlePlural = 'Distilleries';
+          typeTitle = typeMax > 1 ? typeTitlePlural : type;
+          break;
+        case 'Winery':
+          typeTitlePlural = 'Wineries';
+          typeTitle = typeMax > 1 ? typeTitlePlural : type;
+          break;
+        case 'Soft drinks':
+          typeTitlePlural = 'Soft drink facilities';
+          typeTitle = typeMax > 1 ? typeTitlePlural : 'Soft drink facility';
+          break;
+        default:
+          typeTitlePlural = type + ' facilities';
+          typeTitle =  typeMax > 1 ? typeTitlePlural : type + ' facility';
+      }
+      let mapTitle = `Map showing counts of ${typeTitlePlural} in ${state}, by county. `;
+      if (typeMax === 0) {
+        mapTitle += `There are no inventoried ${typeTitlePlural} in ${state}.`;
+      } else {
+        mapTitle += ` Across counties in ${state} the count of ${typeTitlePlural} ranges from ${typeMin} to ${typeMax}. `;
+        if (typeMaxData.length === 1) {
+          mapTitle += `${typeMaxData[0].properties.NAMELSAD}, ${typeMaxData[0].properties.STATE_NAME} has the most ${typeTitlePlural}, with ${typeMax} ${typeMax === 1 ? typeTitle : typeTitlePlural}.`
+        } else {
+          for (let i = 0; i < typeMaxData.length; i++) {
+            mapTitle += `${typeMaxData[i].properties.NAMELSAD}`
+            if (i < typeMaxData.length - 2) {
+              mapTitle += ', '
+            } else if (i < typeMaxData.length - 1 && typeMaxData.length === 2) {
+              mapTitle += ' and '
+            } else if (i < typeMaxData.length - 1 && typeMaxData.length > 2) {
+              mapTitle += ', and '
+            }
+          }
+          mapTitle += `, ${typeMaxData[i].properties.STATE_NAME} have the most ${typeTitlePlural}, with ${typeMax} ${typeMax === 1 ? typeTitle : typeTitlePlural} each.`
+        }
+      }
+
+      // append title to map svg
       this.d3.select("#oconus-container").select("title")
-        .text(`Map showing counts of of ${type} facilities in ${state}, by county`)
+        .text(mapTitle)
 
       // create scales
       const scaleNumerator = scale > 15 ? 1.5 : 1.3
