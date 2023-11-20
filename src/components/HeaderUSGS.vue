@@ -9,13 +9,13 @@
         <a
           class="logo-header"
           href="https://www.usgs.gov/mission-areas/water-resources/science/water-data-visualizations"
-          title="Home"
+          aria-label="Water data visualizations homepage on USGS.gov"
           target="_blank"
         >
           <img
             class="img"
             src="@/assets/usgsHeaderAndFooter/images/usgsLogo_white-01.png"
-            alt="Home"
+            alt="USGS logo. Science for a changing world."
           >
         </a>
       </div>
@@ -54,7 +54,7 @@
   }
   /* header (only) nav */
   .header-nav {
-    background: black;
+    background: #151515;
 ;
   }
   .logo-header img {

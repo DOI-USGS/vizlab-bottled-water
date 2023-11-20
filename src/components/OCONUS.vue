@@ -6,12 +6,12 @@
     >
       <div id="title">
         <h2 class="grid-title">
-          Counts of bottling facilities in <span id="state-dropdown-container" /> by county
+          <span id="grid-title-start">Counts of bottling facilities in </span><span id="state-dropdown-container" /> by county
         </h2>
       </div>
-      <div id="text">
+      <div id="text" aria-hidden="true">
         <div v-if="!mobileView">
-          <p class="viz-comment">
+          <p class="viz-comment" >
             Click on the dropdown menu, bar chart, or map to explore
           </p>
           <br>
@@ -30,16 +30,20 @@
             Tap on the dropdown or bar chart to explore
           </p>
         </div>
-      </div>
+      </div>        
+      <div
+        id="chart-container"
+        :class="{ mobile: mobileView}"
+      />
+      <div id="point-legend-container" />
       <div
         id="oconus-container"
         :class="{ mobile: mobileView}"
       />
-      <div id="chart-container" />
-      <div id="point-legend-container" />
       <div
         v-if="!mobileView"
         id="map-label-container"
+        aria-hidden="true"
       >
         <mapLabels
           id="map-inset-svg"
@@ -112,6 +116,10 @@ export default {
     }
   },
   mounted(){
+    this.$nextTick(() => {
+      this.$store.commit('changeBooleanStateOnMapRender');
+    });
+
     this.d3 = Object.assign(d3Base);
 
     const self = this;
@@ -261,7 +269,7 @@ export default {
       const dropdown = dropdownContainer
         .append("select")
         .attr("id", "state-dropdown")
-        .attr("class", "dropdown")
+        .attr("class", this.mobileView ? "dropdown mobile" : "dropdown")
         .attr("aria-label", "state dropdown")
         .attr("tabindex", 0)
         .on("change", function() {
@@ -389,7 +397,7 @@ export default {
       const width = 900;
       this.mapDimensions = {
         width,
-        height: this.mobileView ? width * 0.9 : width * 0.45,
+        height: this.mobileView ? width * 0.8 : width * 0.45,
         margin: {
           top: this.mobileView ? 5 : 58,
           right: 0,
@@ -407,9 +415,11 @@ export default {
           .attr("width", "100%")
           .attr("height", "100%")
           .attr("id", "map-svg")
+          .attr("tabindex", 0)
 
       // assign role for accessibility
       this.wrapper.attr("role", "figure")
+        .append("title")
 
       this.mapBounds = this.wrapper.append("g")
         .style("transform", `translate(${
@@ -534,12 +544,15 @@ export default {
       // Add map groups to svg
       this.mapBounds.append("g")
         .attr("class", "counties")
+        .attr("aria-hidden", "true")
 
       this.mapBounds.append("g")
         .attr("class", "county_centroids")
+        .attr("aria-hidden", "true")
 
       this.mapBounds.append("g")
         .attr("class", "states")
+        .attr("aria-hidden", "true")
 
     },
     initLegend() {
@@ -568,7 +581,7 @@ export default {
           .attr("width", "100%")
           .attr("height", "100%")
           .attr("id", "point-legend-svg")
-          .attr("role", "figure")
+          .attr("aria-hidden", "true")
 
       this.legendBounds = legendSVG.append("g")
         .style("transform", `translate(${
@@ -650,10 +663,11 @@ export default {
         .domain([0, numLegendValues - 1])
         .range([1, dataMax])
 
-      // function to round legend values, based on dataMax
-      function roundScale(dataVal) { 
+      // function to generate evenly spaced legend values, based on dataMax, then round those values.
+      // amount of rounding depends on dataMax
+      function roundScale(index) { 
         let roundInterval;
-        if (dataMax < 10) {
+        if (dataMax < 20) {
           roundInterval = 1
         } else if (dataMax < 50) {
           roundInterval = 5
@@ -662,13 +676,14 @@ export default {
         } else {
           roundInterval = 25
         }
-        const roundedValue = Math.round(numberScale(dataVal)/roundInterval) * roundInterval
+        const dataValue = numberScale(index);
+        const roundedValue = Math.round(dataValue/roundInterval) * roundInterval
         return roundedValue === 0 ? 1 : roundedValue;
       }
 
       // Function to compute the radii for the legend point, based on sizeScale, the scale, and a multiplier
       function adjustedSizeScale(dataVal) {
-        const radiusMultiplier = self.mobileView ? 0.305 : 1.085; // Not totally sure why this multiplier is necessary... might change if legendDims or height of oconus-container change
+        const radiusMultiplier = self.mobileView ? 0.356 : 1.085; // Not totally sure why this multiplier is necessary... might change if legendDims or height of oconus-container change
         return sizeScale(dataVal) * scale * radiusMultiplier; 
       }
 
@@ -762,7 +777,7 @@ export default {
       // Build legend title into final text label on mobile
       const circleText = circleGroups.select("text")
         .transition(self.getUpdateTransition())
-        .attr("class", "point-legend-text")
+        .attr("class", this.mobileView ? "point-legend-text mobile" : "point-legend-text")
         .attr("x", (d, i) => {
           const horizontalPosition = getHorizontalPosition(d.value, i);
           const mobilePosition = i === (numLegendValues - 1) ? (horizontalPosition - 8) : horizontalPosition;
@@ -830,7 +845,7 @@ export default {
       const identifierAccessor = d => d.WB_TYPE.replace(' ', '-')
 
       //add title
-      this.d3.select("#chart-container").select("Title")
+      this.d3.select("#chart-container").select("title")
         .text(`Bar chart of distribution of facility types for ${state}`)
 
       // create x scale
@@ -881,6 +896,16 @@ export default {
       // update rectGroups to include new points
       rectGroups = newRectGroups.merge(rectGroups)
 
+      // make sure aria-labels are updated
+      rectGroups
+        .attr("aria-label", d => `There are ${
+          xAccessor(d)
+        } ${
+          yAccessor(d)
+        } facilities in ${
+          state
+        }`)
+
       const barRects = rectGroups.select("rect")
 
       // Update bars based on data values
@@ -928,13 +953,19 @@ export default {
       rectGroups.each(function() {
         this.addEventListener("keypress", function(event) {
             if (event.key === 'Enter' | event.keyCode === 13) {
+              // Extract info on what type of facility was selected
               let targetId = event.target.id
               let targetIdSplit = targetId.split('-')
-              this.currentType = targetIdSplit.length === 4 ? (targetIdSplit[2] + ' ' + targetIdSplit[3]) : targetIdSplit[2]
-              let currentIdentifier = this.currentType.replace(' ', '-')
+              const selectedType = targetIdSplit.length === 4 ? (targetIdSplit[2] + ' ' + targetIdSplit[3]) : targetIdSplit[2];
+              
+              // Get identifier for selection by id
+              let currentIdentifier = selectedType.replace(' ', '-')
+
+              // reset value of currentType
+              self.currentType = selectedType
 
               // NOTE: need to use self.currentState, not `state` b/c `state` gets stale when attached to event listener
-              self.drawCountyPoints(self.currentState, self.currentScale, this.currentType)
+              self.drawCountyPoints(self.currentState, self.currentScale, self.currentType)
 
               self.d3.selectAll('.bar')
                 .transition(self.getUpdateTransition())
@@ -950,6 +981,7 @@ export default {
       const barText = rectGroups.select("text")
         .transition(self.getUpdateTransition())
           .attr("class", "bar-label chart-text")
+          .attr("aria-hidden", "true") // hide from screen reader since have aria-label for rect groups
           .attr("y", d => this.yScale(yAccessor(d)) + this.yScale.bandwidth() / 2)
           .attr("x", 0)
           .style("text-anchor", "start")
@@ -1184,12 +1216,66 @@ export default {
           // Get max value for nation, in any category except 'All'
           dataMax = this.d3.max(this.countyPoints, d => parseInt(d.properties.max_count))
         }
-
       } else {
         dataPoints = this.countyPoints.filter(d => d.properties.STATE_NAME === state)
         // Get max value for state, in any category except 'All'
         dataMax = this.d3.max(dataPoints, d => parseInt(d.properties.max_count))
       }
+
+      // Get max value for type, and which county/counties have that max for type
+      const typeMin = this.d3.min(dataPoints, d => parseInt(d.properties[type]))
+      const typeMax = this.d3.max(dataPoints, d => parseInt(d.properties[type]))
+      const typeMaxData = dataPoints.filter(d => parseInt(d.properties[type]) === typeMax)
+
+      // construct map title for screenreader
+      let typeTitle;
+      let typeTitlePlural;
+      switch(type) {
+        case 'Brewery':
+          typeTitlePlural = 'Breweries';
+          typeTitle = typeMax > 1 ? typeTitlePlural : type;
+          break;
+        case 'Distillery':
+          typeTitlePlural = 'Distilleries';
+          typeTitle = typeMax > 1 ? typeTitlePlural : type;
+          break;
+        case 'Winery':
+          typeTitlePlural = 'Wineries';
+          typeTitle = typeMax > 1 ? typeTitlePlural : type;
+          break;
+        case 'Soft drinks':
+          typeTitlePlural = 'Soft drink facilities';
+          typeTitle = typeMax > 1 ? typeTitlePlural : 'Soft drink facility';
+          break;
+        default:
+          typeTitlePlural = type + ' facilities';
+          typeTitle =  typeMax > 1 ? typeTitlePlural : type + ' facility';
+      }
+      let mapTitle = `Map showing counts of ${typeTitlePlural} in ${state}, by county. `;
+      if (typeMax === 0) {
+        mapTitle += `There are no inventoried ${typeTitlePlural} in ${state}.`;
+      } else {
+        mapTitle += ` Across counties in ${state} the count of ${typeTitlePlural} ranges from ${typeMin} to ${typeMax}. `;
+        if (typeMaxData.length === 1) {
+          mapTitle += `${typeMaxData[0].properties.NAMELSAD}, ${typeMaxData[0].properties.STATE_NAME} has the most ${typeTitlePlural}, with ${typeMax} ${typeMax === 1 ? typeTitle : typeTitlePlural}.`
+        } else {
+          for (let i = 0; i < typeMaxData.length; i++) {
+            mapTitle += `${typeMaxData[i].properties.NAMELSAD}`
+            if (i < typeMaxData.length - 2) {
+              mapTitle += ', '
+            } else if (i < typeMaxData.length - 1 && typeMaxData.length === 2) {
+              mapTitle += ' and '
+            } else if (i < typeMaxData.length - 1 && typeMaxData.length > 2) {
+              mapTitle += ', and '
+            }
+          }
+          mapTitle += `, ${typeMaxData[i].properties.STATE_NAME} have the most ${typeTitlePlural}, with ${typeMax} ${typeMax === 1 ? typeTitle : typeTitlePlural} each.`
+        }
+      }
+
+      // append title to map svg
+      this.d3.select("#oconus-container").select("title")
+        .text(mapTitle)
 
       // create scales
       const scaleNumerator = scale > 15 ? 1.5 : 1.3
@@ -1428,6 +1514,12 @@ export default {
       font-size: 1.6rem;
     }
   }
+  .point-legend-text.mobile {
+    font-size: 1.3rem;
+    @media screen and (max-width: 600px) {
+      font-size: 1.6rem;
+    }
+  }
   .chart-text {
     user-select: none;
     @media screen and (max-height: 770px) {
@@ -1452,7 +1544,7 @@ export default {
     border-right: 1rem solid transparent; // Add space to right of dropdown arrow
     transition: width 2s, transform 1s;
     background-color: white;
-    margin: 0rem 0.5rem 0rem 0.5rem;
+    margin: 0rem 0.5rem 0rem 0rem;
     padding: 0.5rem 0rem 0.5rem 1rem;
     box-shadow:  rgba(0, 0, 0, 0.2) 0rem 0.6rem 1rem 0rem,
     rgba(0, 0, 0, 0.1) 0rem 0rem 0rem 0.1rem;
@@ -1462,6 +1554,9 @@ export default {
   .dropdown:hover {
     box-shadow:  rgba(0, 0, 0, 0.3) 0rem 0.6rem 1rem 0rem,
     rgba(0, 0, 0, 0.2) 0rem 0rem 0rem 0.1rem;
+  }
+  .dropdown.mobile {    
+    margin-top: 0.6rem;
   }
   .tmp-dropdown {
     font-size: 3.25rem; // style same as h2 in App.vue
@@ -1487,6 +1582,9 @@ export default {
       padding-bottom: 0rem;
     }
   }
+  #grid-title-start {
+    margin: 0rem 0.5rem 0rem 0rem;
+  }
   #grid-container-interactive {
     display: grid;
     grid-template-columns: 20% 78%;
@@ -1499,15 +1597,16 @@ export default {
       "legend map"
       "text map";
     align-items: start;
-    margin: 1rem 0rem 5rem 0rem;
+    margin: 3rem 0rem 5rem 0rem;
     @media screen and (max-height: 770px) {
       row-gap: 4vh;
-      margin: 2rem 0rem 5rem 0rem;
+      margin: 4rem 0rem 5rem 0rem;
     }
   }
   #grid-container-interactive.mobile {
+    max-width: 70vw;
     grid-template-columns: 100%;
-    grid-template-rows: max-content max-content max-content max-content max-content;
+    grid-template-rows: max-content max-content max-content max-content 25vh;
     grid-template-areas:
       "title"
       "text"
@@ -1515,9 +1614,24 @@ export default {
       "legend"
       "chart";
     position: relative;
-    margin: 3rem 0rem 4rem 0rem;
+    margin: 3rem auto 4rem auto;
     padding: 0.5rem 0.5rem 0.5rem 0.5rem;
     row-gap: 1.5vh;
+    @media screen and (max-width: 600px) {
+      max-width: calc(100vw - 1rem);
+      grid-template-columns: 100%;
+      grid-template-rows: max-content max-content max-content max-content max-content;
+      grid-template-areas:
+        "title"
+        "text"
+        "map"
+        "legend"
+        "chart";
+      position: relative;
+      margin: 3rem 0rem 4rem 0rem;
+      padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+      row-gap: 1.5vh;
+    }  
   }
   #title {
     grid-area: title;
@@ -1529,6 +1643,14 @@ export default {
   #chart-container {
     grid-area: chart;
   }
+  #chart-container.mobile {
+    height: 100%;
+    justify-self: start;
+    @media screen and (max-width: 600px) {
+      height: auto;
+      justify-self: auto;
+    }  
+  }
   #point-legend-container {
     grid-area: legend;
   }
@@ -1536,9 +1658,6 @@ export default {
     grid-area: map;
     height: 100%;
     max-height: 70vh;
-  }
-  #oconus-container.mobile {
-    height: 40vh;
   }
   #map-label-container {
     pointer-events: none;

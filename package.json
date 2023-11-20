@@ -1,6 +1,6 @@
 {
   "name": "bottled-water",
-  "version": "0.0.1",
+  "version": "v1.0-prod",
   "private": true,
   "scripts": {
     "dev": "vite --mode test_tier",
