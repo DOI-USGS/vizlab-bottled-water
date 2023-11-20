@@ -9,9 +9,9 @@
           <span id="grid-title-start">Counts of bottling facilities in </span><span id="state-dropdown-container" /> by county
         </h2>
       </div>
-      <div id="text">
+      <div id="text" aria-hidden="true">
         <div v-if="!mobileView">
-          <p class="viz-comment">
+          <p class="viz-comment" >
             Click on the dropdown menu, bar chart, or map to explore
           </p>
           <br>
@@ -30,19 +30,20 @@
             Tap on the dropdown or bar chart to explore
           </p>
         </div>
-      </div>
-      <div
-        id="oconus-container"
-        :class="{ mobile: mobileView}"
-      />
+      </div>        
       <div
         id="chart-container"
         :class="{ mobile: mobileView}"
       />
       <div id="point-legend-container" />
       <div
+        id="oconus-container"
+        :class="{ mobile: mobileView}"
+      />
+      <div
         v-if="!mobileView"
         id="map-label-container"
+        aria-hidden="true"
       >
         <mapLabels
           id="map-inset-svg"
@@ -414,9 +415,11 @@ export default {
           .attr("width", "100%")
           .attr("height", "100%")
           .attr("id", "map-svg")
+          .attr("tabindex", 0)
 
       // assign role for accessibility
       this.wrapper.attr("role", "figure")
+        .append("title")
 
       this.mapBounds = this.wrapper.append("g")
         .style("transform", `translate(${
@@ -541,12 +544,15 @@ export default {
       // Add map groups to svg
       this.mapBounds.append("g")
         .attr("class", "counties")
+        .attr("aria-hidden", "true")
 
       this.mapBounds.append("g")
         .attr("class", "county_centroids")
+        .attr("aria-hidden", "true")
 
       this.mapBounds.append("g")
         .attr("class", "states")
+        .attr("aria-hidden", "true")
 
     },
     initLegend() {
@@ -575,7 +581,7 @@ export default {
           .attr("width", "100%")
           .attr("height", "100%")
           .attr("id", "point-legend-svg")
-          .attr("role", "figure")
+          .attr("aria-hidden", "true")
 
       this.legendBounds = legendSVG.append("g")
         .style("transform", `translate(${
@@ -839,7 +845,7 @@ export default {
       const identifierAccessor = d => d.WB_TYPE.replace(' ', '-')
 
       //add title
-      this.d3.select("#chart-container").select("Title")
+      this.d3.select("#chart-container").select("title")
         .text(`Bar chart of distribution of facility types for ${state}`)
 
       // create x scale
@@ -890,6 +896,16 @@ export default {
       // update rectGroups to include new points
       rectGroups = newRectGroups.merge(rectGroups)
 
+      // make sure aria-labels are updated
+      rectGroups
+        .attr("aria-label", d => `There are ${
+          xAccessor(d)
+        } ${
+          yAccessor(d)
+        } facilities in ${
+          state
+        }`)
+
       const barRects = rectGroups.select("rect")
 
       // Update bars based on data values
@@ -937,13 +953,19 @@ export default {
       rectGroups.each(function() {
         this.addEventListener("keypress", function(event) {
             if (event.key === 'Enter' | event.keyCode === 13) {
+              // Extract info on what type of facility was selected
               let targetId = event.target.id
               let targetIdSplit = targetId.split('-')
-              this.currentType = targetIdSplit.length === 4 ? (targetIdSplit[2] + ' ' + targetIdSplit[3]) : targetIdSplit[2]
-              let currentIdentifier = this.currentType.replace(' ', '-')
+              const selectedType = targetIdSplit.length === 4 ? (targetIdSplit[2] + ' ' + targetIdSplit[3]) : targetIdSplit[2];
+              
+              // Get identifier for selection by id
+              let currentIdentifier = selectedType.replace(' ', '-')
+
+              // reset value of currentType
+              self.currentType = selectedType
 
               // NOTE: need to use self.currentState, not `state` b/c `state` gets stale when attached to event listener
-              self.drawCountyPoints(self.currentState, self.currentScale, this.currentType)
+              self.drawCountyPoints(self.currentState, self.currentScale, self.currentType)
 
               self.d3.selectAll('.bar')
                 .transition(self.getUpdateTransition())
@@ -959,6 +981,7 @@ export default {
       const barText = rectGroups.select("text")
         .transition(self.getUpdateTransition())
           .attr("class", "bar-label chart-text")
+          .attr("aria-hidden", "true") // hide from screen reader since have aria-label for rect groups
           .attr("y", d => this.yScale(yAccessor(d)) + this.yScale.bandwidth() / 2)
           .attr("x", 0)
           .style("text-anchor", "start")
@@ -1193,12 +1216,66 @@ export default {
           // Get max value for nation, in any category except 'All'
           dataMax = this.d3.max(this.countyPoints, d => parseInt(d.properties.max_count))
         }
-
       } else {
         dataPoints = this.countyPoints.filter(d => d.properties.STATE_NAME === state)
         // Get max value for state, in any category except 'All'
         dataMax = this.d3.max(dataPoints, d => parseInt(d.properties.max_count))
       }
+
+      // Get max value for type, and which county/counties have that max for type
+      const typeMin = this.d3.min(dataPoints, d => parseInt(d.properties[type]))
+      const typeMax = this.d3.max(dataPoints, d => parseInt(d.properties[type]))
+      const typeMaxData = dataPoints.filter(d => parseInt(d.properties[type]) === typeMax)
+
+      // construct map title for screenreader
+      let typeTitle;
+      let typeTitlePlural;
+      switch(type) {
+        case 'Brewery':
+          typeTitlePlural = 'Breweries';
+          typeTitle = typeMax > 1 ? typeTitlePlural : type;
+          break;
+        case 'Distillery':
+          typeTitlePlural = 'Distilleries';
+          typeTitle = typeMax > 1 ? typeTitlePlural : type;
+          break;
+        case 'Winery':
+          typeTitlePlural = 'Wineries';
+          typeTitle = typeMax > 1 ? typeTitlePlural : type;
+          break;
+        case 'Soft drinks':
+          typeTitlePlural = 'Soft drink facilities';
+          typeTitle = typeMax > 1 ? typeTitlePlural : 'Soft drink facility';
+          break;
+        default:
+          typeTitlePlural = type + ' facilities';
+          typeTitle =  typeMax > 1 ? typeTitlePlural : type + ' facility';
+      }
+      let mapTitle = `Map showing counts of ${typeTitlePlural} in ${state}, by county. `;
+      if (typeMax === 0) {
+        mapTitle += `There are no inventoried ${typeTitlePlural} in ${state}.`;
+      } else {
+        mapTitle += ` Across counties in ${state} the count of ${typeTitlePlural} ranges from ${typeMin} to ${typeMax}. `;
+        if (typeMaxData.length === 1) {
+          mapTitle += `${typeMaxData[0].properties.NAMELSAD}, ${typeMaxData[0].properties.STATE_NAME} has the most ${typeTitlePlural}, with ${typeMax} ${typeMax === 1 ? typeTitle : typeTitlePlural}.`
+        } else {
+          for (let i = 0; i < typeMaxData.length; i++) {
+            mapTitle += `${typeMaxData[i].properties.NAMELSAD}`
+            if (i < typeMaxData.length - 2) {
+              mapTitle += ', '
+            } else if (i < typeMaxData.length - 1 && typeMaxData.length === 2) {
+              mapTitle += ' and '
+            } else if (i < typeMaxData.length - 1 && typeMaxData.length > 2) {
+              mapTitle += ', and '
+            }
+          }
+          mapTitle += `, ${typeMaxData[i].properties.STATE_NAME} have the most ${typeTitlePlural}, with ${typeMax} ${typeMax === 1 ? typeTitle : typeTitlePlural} each.`
+        }
+      }
+
+      // append title to map svg
+      this.d3.select("#oconus-container").select("title")
+        .text(mapTitle)
 
       // create scales
       const scaleNumerator = scale > 15 ? 1.5 : 1.3

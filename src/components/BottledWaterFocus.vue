@@ -47,7 +47,7 @@
               loading="lazy"
               decoding="async"
               class="source-map"
-              alt="CONUS, county level proportional symbols map, binned into five categories: 25, 50, 100, 300, and 600, show counts of bottled water facilities that source water from self-supply. Generally, many counties across Texas, Florida, California, and Colorado display the greatest count of bottled water facilities sourcing water from self-supply. The top three counties with the greatest number of bottled water facilities using self-supply include Harris County, Texas (33), Palm Beach County (14) and Lee County, Florida (14)."
+              alt="CONUS, county level proportional symbols map, binned into five categories: 25, 50, 100, 300, and 600, show counts of bottled water facilities in each county that source water from self-supply. Generally, many counties across Texas, Florida, California, and Colorado display the greatest count of bottled water facilities sourcing water from self-supply. The top three counties with the greatest number of bottled water facilities using self-supply include Harris County, Texas (33), Palm Beach County (14) and Lee County, Florida (14)."
             >
           </picture>
         </div>
@@ -66,7 +66,7 @@
               loading="lazy"
               decoding="async"
               class="source-map"
-              alt="CONUS, county level choropleth map, binned into five categories: 1, 25, 50, 75, and 100%, show percents of bottled water facilities that source water from self-supply. Generally, many counties across the Eastern, South Central, and Western United States have a high proportion of bottled water facilities that source water from self-supply."
+              alt="CONUS, county level choropleth map, binned into five categories: 1, 25, 50, 75, and 100%, show percents of bottled water facilities in each county that source water from self-supply. Generally, many counties across the Eastern, South Central, and Western United States have a high proportion of bottled water facilities that source water from self-supply."
             >
           </picture>
         </div>
@@ -85,7 +85,7 @@
           <img
             class="source-map"
             src="../assets/images/map_bottled_water_combination_count.webp"
-            alt="CONUS, county level proportional symbols map, binned into five categories: 25, 50, 100, 300, and 600, show counts of bottled water facilities that source water from a combination of sources. Massachusetts, California, New York, and Illinois lead in the number of bottled water facilities that use a combination of sources. The top three counties with the greatest number of bottled water facilities using a combination of sources include Middlesex County, Massachusetts (21), Los Angeles County, California (20), and San Diego County, California (18)."
+            alt="CONUS, county level proportional symbols map, binned into five categories: 25, 50, 100, 300, and 600, show counts of bottled water facilities in each county that source water from a combination of sources. Massachusetts, California, New York, and Illinois lead in the number of bottled water facilities that use a combination of sources. The top three counties with the greatest number of bottled water facilities using a combination of sources include Middlesex County, Massachusetts (21), Los Angeles County, California (20), and San Diego County, California (18)."
           >
         </div>
         <div
@@ -95,7 +95,7 @@
           <img
             class="source-map"
             src="../assets/images/map_bottled_water_combination_perc.webp"
-            alt="CONUS, county level choropleth map, binned into five categories: 1, 25, 50, 75, and 100%, show percents of bottled water facilities that source water from a combination of sources. A large portion of counties in the Midwest and Eastern United States have the highest percentage of bottled water facilities utilizing a combination of sources for their water supply."
+            alt="CONUS, county level choropleth map, binned into five categories: 1, 25, 50, 75, and 100%, show percents of bottled water facilities in each county that source water from a combination of sources. A large portion of counties in the Midwest and Eastern United States have the highest percentage of bottled water facilities utilizing a combination of sources for their water supply."
           >
         </div>
         <div
@@ -113,7 +113,7 @@
           <img
             class="source-map"
             src="../assets/images/map_bottled_water_public_supply_count.webp"
-            alt="CONUS, county level proportional symbols map, binned into five categories: 25, 50, 100, 300, and 600, show counts of bottled water facilities that source water from public supply. Largely, California, Texas, and Florida lead in the number of bottled water facilities that source from public supply. The top three counties with the greatest number of bottled water facilities that use public supply water include Los Angeles County, California (679), Orange County, California (259), and San Diego County, California (165)."
+            alt="CONUS, county level proportional symbols map, binned into five categories: 25, 50, 100, 300, and 600, show counts of bottled water facilities in each county that source water from public supply. Largely, California, Texas, and Florida lead in the number of bottled water facilities that source from public supply. The top three counties with the greatest number of bottled water facilities that use public supply water include Los Angeles County, California (679), Orange County, California (259), and San Diego County, California (165)."
           >
         </div>
         <div
@@ -123,7 +123,7 @@
           <img
             class="source-map"
             src="../assets/images/map_bottled_water_public_supply_perc.webp"
-            alt="CONUS, county level choropleth map, binned into five categories: 1, 25, 50, 75, and 100%, show percents of bottled water facilities that source water from public supply. Many counties in the Western and Southwestern United States have high percentages of bottled water facilities that obtain their water from public supply sources"
+            alt="CONUS, county level choropleth map, binned into five categories: 1, 25, 50, 75, and 100%, show percents of bottled water facilities in each county that source water from public supply. Many counties in the Western and Southwestern United States have high percentages of bottled water facilities that obtain their water from public supply sources"
           >
         </div>
       </div>
