@@ -431,6 +431,8 @@ p3_targets <- list(
                                                    supply_summary_state = p2_supply_summary_state,
                                                    supply_colors = p3_supply_colors_new,
                                                    reorder_source_category = c("Undetermined", "Self-supply", "Combination", "Public supply"),
+                                                   supply_pattern = c("Combination" = 'stripe', 'Public supply' = "none",
+                                                                      "Self-supply" = "none", "Undetermined" = "none"),
                                                    selected_facility_type = "Bottled water",
                                                    title_label = 'Distribution of water sources\nfor %s facilities',
                                                    subtitle_label = ' Barplots display percent of bottled water facilities\n in each category',

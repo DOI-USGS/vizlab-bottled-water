@@ -1256,6 +1256,7 @@ generate_facility_source_facet_map <- function(supply_summary, supply_summary_st
 #' @param supply_summary_state dataframe with count of facilities by water
 #' source, by state
 #' @param supply_colors vector of colors to use for water source categories
+#' @param supply_pattern vector of patterns to use for water source categories
 #' @param reorder_source_category, character vector of reorganized source categories to reorder tile plots by
 #' @param selected_facility_type type of facility to plot. If 'All', summary
 #' across facility types is plotted
@@ -1271,7 +1272,7 @@ generate_facility_source_facet_map <- function(supply_summary, supply_summary_st
 #' @param logo_path, character path for USGS logo
 #' @return the filepath of the saved plot
 generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary_state,
-                                               supply_colors, selected_facility_type,
+                                               supply_colors, supply_pattern, selected_facility_type,
                                                width, height, bkgd_color, text_color,
                                                outfile_template, dpi, reorder_source_category,
                                                title_label, subtitle_label, source_label, logo_path) {
@@ -1321,7 +1322,7 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
       with_background = FALSE
     ) +
     scale_fill_manual(name = 'source_category', values = supply_colors) +
-    scale_pattern_manual(values = c("Combination" = 'stripe', 'Public supply' = "none", "Self-supply" = "none", "Undetermined" = "none")) +
+    scale_pattern_manual(values = supply_pattern) +
     theme_bw() +
     theme_facet(base = 12, bkgd_color = bkgd_color, text_color = text_color) +
     theme(strip.text = element_text(family = font_legend, vjust = -1),
@@ -1339,7 +1340,7 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
                      pattern_colour  = 'white') +
     scale_fill_manual(name = 'source_category', values = supply_colors) +
     scale_pattern_manual(name = "Water source",
-                         values = c("Combination" = 'stripe', 'Public supply' = "none", "Self-supply" = "none", "Undetermined" = "none")) +
+                         values = supply_pattern) +
     scale_x_discrete(expand = c(0,0)) +
     scale_y_continuous(breaks = rev(c(0, 25, 50, 75, 100)),
                        labels = rev(c("0%", "25%", "50%", "75%", "100%")),
