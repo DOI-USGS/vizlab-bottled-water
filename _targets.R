@@ -31,6 +31,7 @@ tar_option_set(packages = c("tidyverse",
                             'ggfx',
                             'ggsankey',
                             'ggdist',
+                            'ggpattern',
                             'FedData')) # need development version
 
 # Phase target makefiles
