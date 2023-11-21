@@ -21,7 +21,6 @@ p2_targets <- list(
   tar_target(p2_conus_sf,
              p2_conus_oconus_sf %>%
                filter(STUSPS %in% state.abb[!state.abb %in% c('AK', 'HI')]) %>%
-               add_centroids() %>%
                mutate(location = 'mainland')),
 
   # All U.S. counties
