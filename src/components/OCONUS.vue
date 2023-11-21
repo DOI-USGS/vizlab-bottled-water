@@ -6,13 +6,13 @@
     >
       <div id="title">
         <h2 class="grid-title">
-          <span id="grid-title-start">Counts of {{ formattedType }} in </span><span id="state-dropdown-container" /> by county
+          <span class="pre-dropdown-text">Counts of </span><span id="type-dropdown-container" /><span class="pre-dropdown-text"> in </span><span id="state-dropdown-container" /> by county
         </h2>
       </div>
       <div id="text" aria-hidden="true">
         <div v-if="!mobileView">
           <p class="viz-comment" >
-            Click on the dropdown menu, bar chart, or map to explore
+            Click on the dropdown menus, bar chart, or map to explore
           </p>
           <br>
           <p
@@ -27,7 +27,7 @@
           class="text-container"
         >
           <p class="viz-comment">
-            Tap on the dropdown or bar chart to explore
+            Tap on the dropdowns or bar chart to explore
           </p>
         </div>
       </div>        
@@ -217,11 +217,15 @@ export default {
       // set display type
       this.formattedType = self.getFormattedType(this.currentType);
 
-      // Set up dropdown
+      // Set up type dropdown
+      const typeList = [... new Set(this.dataAll.map(d => self.getFormattedType(d.WB_TYPE)))]
+      self.addTypeDropdown(typeList)
+
+      // Set up state dropdown
       // get list of unique states
       const stateList = [... new Set(this.dataAll.map(d => d.NAME))]
       if (!this.mobileView) stateList.unshift(this.nationalViewName)
-      // add dropdown
+      // add state dropdown
       self.addDropdown(stateList)
 
       // Initialize map
@@ -285,20 +289,97 @@ export default {
       }
       return formattedType;
     },
-    addDropdown(data) {
+    getRawType(formattedType) {
+      let currentType;
+      switch(formattedType) {
+        case 'breweries':
+          currentType = 'Brewery';
+          break;
+        case 'distilleries':
+          currentType = 'Distillery';
+          break;
+        case 'wineries':
+          currentType = 'Winery';
+          break;
+        case 'soft drink facilities':
+          currentType = 'Soft drinks';
+          break;
+        case 'ice facilities':
+          currentType = 'Ice';
+          break;
+        case 'bottled water facilities':
+          currentType = 'Bottled water';
+          break;
+      }
+      return currentType;
+    },
+    addTypeDropdown(data) {
       const self = this;
 
-      const dropdownContainer = this.d3.select("#state-dropdown-container")
+      const dropdownID = 'type-dropdown'
+      const dropdownContainer = this.d3.select("#" + dropdownID + "-container")
 
       const dropdown = dropdownContainer
         .append("select")
-        .attr("id", "state-dropdown")
+        .attr("id", dropdownID)
+        .attr("class", this.mobileView ? "dropdown mobile" : "dropdown")
+        .attr("aria-label", "facility type dropdown")
+        .attr("tabindex", 0)
+        .on("change", function() {
+          // Update dropdown text + width
+          self.updateDropdown(this.options[this.selectedIndex].text, dropdownID)
+
+          const selectedFormattedType = this.value
+          const selectedType = self.getRawType(selectedFormattedType)
+          
+          // set current type
+          self.currentType = selectedType
+
+          // get formatted type, for title
+          self.formattedType = selectedFormattedType;
+
+          // build identifier for d3 selection
+          let currentIdentifier = self.currentType.replace(' ', '-')
+
+          // update map
+          self.drawCountyPoints(self.currentState, self.currentScale, self.currentType)
+
+          // style bar chart
+          self.d3.selectAll('.bar')
+            .transition(self.getUpdateTransition())
+            .style("fill", self.defaultColor)
+
+          self.d3.selectAll('#rect-' + currentIdentifier)
+            .transition(self.getUpdateTransition())
+            .style("fill", self.focalColor)
+        })
+
+      // Append options to dropdown
+      let typeOptions = dropdown.selectAll("typeOptions")
+        .data(data)
+        .enter()
+        .append("option")
+        .attr("value", d => d)
+        .text(d => d)
+
+      // Set default value and width of dropdown
+      self.updateDropdown(this.formattedType, dropdownID)
+    },
+    addDropdown(data) {
+      const self = this;
+
+      const dropdownID = 'state-dropdown'
+      const dropdownContainer = this.d3.select("#" + dropdownID + "-container")
+
+      const dropdown = dropdownContainer
+        .append("select")
+        .attr("id", dropdownID)
         .attr("class", this.mobileView ? "dropdown mobile" : "dropdown")
         .attr("aria-label", "state dropdown")
         .attr("tabindex", 0)
         .on("change", function() {
           // Update dropdown text + width
-          self.updateDropdown(this.options[this.selectedIndex].text)
+          self.updateDropdown(this.options[this.selectedIndex].text, dropdownID)
 
           let selectedArea = this.value
 
@@ -350,11 +431,11 @@ export default {
         .text(d => d)
 
       // Set default value and width of dropdown
-      self.updateDropdown(this.currentState)
+      self.updateDropdown(this.currentState, dropdownID)
     },
-    updateDropdown(text) {
+    updateDropdown(text, dropdownID) {
       // Update dropdown text
-      this.d3.select('#state-dropdown')
+      this.d3.select('#' + dropdownID)
         .property('value', text)
 
       // Add tmp dropdown, which will only ever have one option (the current one)
@@ -371,7 +452,7 @@ export default {
       
       // Update dropdown width based on width of tmp dropdown
       const tmpDropdownWidth = tmpSelect.offsetWidth / 10 // Divide by 10 to get in rem instead of px
-      const dropdownElement = document.getElementById("state-dropdown");
+      const dropdownElement = document.getElementById(dropdownID);
       const bufferForBorder = 2 // in rem, same as border-right in .dropdown class PLUS room for arrow background image
       dropdownElement.style.width = tmpDropdownWidth + bufferForBorder + "rem";
 
@@ -966,6 +1047,10 @@ export default {
           // get formatted type, for title
           this.formattedType = self.getFormattedType(this.currentType);
 
+          // update dropdown
+          // Update dropdown text and width
+          self.updateDropdown(this.formattedType, 'type-dropdown')
+
           // build identifier for d3 selection
           let currentIdentifier = this.currentType.replace(' ', '-')
 
@@ -999,6 +1084,10 @@ export default {
 
               // get formatted type, for title
               self.formattedType = self.getFormattedType(self.currentType);
+
+              // update dropdown
+              // Update dropdown text and width
+              self.updateDropdown(self.formattedType, 'type-dropdown')
 
               // NOTE: need to use self.currentState, not `state` b/c `state` gets stale when attached to event listener
               self.drawCountyPoints(self.currentState, self.currentScale, self.currentType)
@@ -1457,7 +1546,7 @@ export default {
       if (callMethod === 'click') {
         let dropdown = this.d3.select('select')
         // Update dropdown text and width
-        self.updateDropdown(zoomedState)
+        self.updateDropdown(zoomedState, 'state-dropdown')
       }
 
       // Hide the inset map borders and labels
@@ -1511,7 +1600,7 @@ export default {
       this.currentScale = 1;
 
       // Update dropdown value and width
-      self.updateDropdown(this.nationalViewName)
+      self.updateDropdown(this.nationalViewName, 'state-dropdown')
 
       this.d3.select("#map-inset-svg")
         .classed("hide", false)
@@ -1618,7 +1707,7 @@ export default {
       padding-bottom: 0rem;
     }
   }
-  #grid-title-start {
+  .pre-dropdown-text {
     margin: 0rem 0.5rem 0rem 0rem;
   }
   #grid-container-interactive {
