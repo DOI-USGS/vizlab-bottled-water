@@ -6,7 +6,7 @@
     >
       <div id="title">
         <h2 class="grid-title">
-          <span id="grid-title-start">Counts of bottling facilities in </span><span id="state-dropdown-container" /> by county
+          <span id="grid-title-start">Counts of {{ formattedType }} in </span><span id="state-dropdown-container" /> by county
         </h2>
       </div>
       <div id="text" aria-hidden="true">
@@ -106,6 +106,7 @@ export default {
       focalColor: null,
       defaultColor: null,
       currentType: null,
+      formattedType: null,
       stateGroups: null,
       countyGroups: null,
       countyCentroidGroups: null,
@@ -213,6 +214,9 @@ export default {
       this.currentType = 'Bottled water'
       this.defaultType = 'Bottled water'
 
+      // set display type
+      this.formattedType = self.getFormattedType(this.currentType);
+
       // Set up dropdown
       // get list of unique states
       const stateList = [... new Set(this.dataAll.map(d => d.NAME))]
@@ -260,6 +264,26 @@ export default {
       if (this.mobileView) {
         self.zoomToState(currentStateData, this.mapPath, 'dropdown')
       }
+    },
+    getFormattedType(currentType) {
+      let formattedType;
+      switch(currentType) {
+        case 'Brewery':
+          formattedType = 'breweries';
+          break;
+        case 'Distillery':
+          formattedType = 'distilleries';
+          break;
+        case 'Winery':
+          formattedType = 'wineries';
+          break;
+        case 'Soft drinks':
+          formattedType = 'soft drink facilities';
+          break;
+        default:
+          formattedType =  currentType.toLowerCase() + ' facilities';
+      }
+      return formattedType;
     },
     addDropdown(data) {
       const self = this;
@@ -936,10 +960,19 @@ export default {
       // Set up interaction
       rectGroups
         .on("click", (event, d) => {
+          // set current type
           this.currentType = colorAccessor(d)
+
+          // get formatted type, for title
+          this.formattedType = self.getFormattedType(this.currentType);
+
+          // build identifier for d3 selection
           let currentIdentifier = this.currentType.replace(' ', '-')
+
+          // update map
           self.drawCountyPoints(state, this.currentScale, this.currentType)
 
+          // style bar chart
           this.d3.selectAll('.bar')
             .transition(self.getUpdateTransition())
             .style("fill", this.defaultColor)
@@ -961,8 +994,11 @@ export default {
               // Get identifier for selection by id
               let currentIdentifier = selectedType.replace(' ', '-')
 
-              // reset value of currentType
+              // set value of currentType
               self.currentType = selectedType
+
+              // get formatted type, for title
+              self.formattedType = self.getFormattedType(self.currentType);
 
               // NOTE: need to use self.currentState, not `state` b/c `state` gets stale when attached to event listener
               self.drawCountyPoints(self.currentState, self.currentScale, self.currentType)
