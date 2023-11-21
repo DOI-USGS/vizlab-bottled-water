@@ -991,10 +991,11 @@ export default {
         }`)
 
       // append rects and set default x and width, so that when appear, come out from left
+      const barHeight = this.yScale.bandwidth() / 6
       newRectGroups.append("rect")
-        .attr("y", d => this.yScale(yAccessor(d)))
+        .attr("y", d => this.yScale(yAccessor(d)) + this.yScale.bandwidth() - barHeight)
         .attr("x", 0)
-        .attr("height", this.yScale.bandwidth())
+        .attr("height", barHeight)
         .attr("width", 0)
         .style("fill", d => d.WB_TYPE === this.currentType ? this.focalColor : this.defaultColor)
 
@@ -1014,7 +1015,6 @@ export default {
       const barRects = rectGroups.select("rect")
 
       // Update bars based on data values
-      const barHeight = this.yScale.bandwidth() / 6
       barRects.transition(self.getUpdateTransition())
           .attr("id", d => 'rect-' + identifierAccessor(d))
           .attr("y", d => this.yScale(yAccessor(d)) + this.yScale.bandwidth() - barHeight)
