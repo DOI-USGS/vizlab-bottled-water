@@ -448,7 +448,6 @@ p3_targets <- list(
   tar_target(p3_national_source_facilities_sankey_png,
              generate_national_sankey(supply_summary = p2_supply_summary,
                                      supply_colors = p3_supply_colors_new,
-                                     #type_colors = c('grey80', 'grey80', 'grey80', 'grey80', 'grey80', "#1599CF"),
                                      type_colors = rep(c("white"), 6),
                                      type_colors = c('grey80', 'grey80', 'grey80', 'grey80', 'grey80', "grey80"),
                                      reorder_facilities_category = c('Winery','Soft drinks', 'Ice', 'Distillery', 'Brewery', 'Bottled water'),
