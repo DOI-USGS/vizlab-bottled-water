@@ -1256,6 +1256,7 @@ generate_facility_source_facet_map <- function(supply_summary, supply_summary_st
 #' @param supply_summary_state dataframe with count of facilities by water
 #' source, by state
 #' @param supply_colors vector of colors to use for water source categories
+#' @param supply_pattern vector of patterns to use for water source categories
 #' @param reorder_source_category, character vector of reorganized source categories to reorder tile plots by
 #' @param selected_facility_type type of facility to plot. If 'All', summary
 #' across facility types is plotted
@@ -1265,11 +1266,16 @@ generate_facility_source_facet_map <- function(supply_summary, supply_summary_st
 #' @param text_color color for text
 #' @param outfile_template filepath template for saving the final plot
 #' @param dpi dpi at which to save the final plot
+#' @param subtitle_label, subtitle text to describe geofacet
+#' @param title_label, title text for geofacet
+#' @param source_label, character vector of doi link
+#' @param logo_path, character path for USGS logo
 #' @return the filepath of the saved plot
 generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary_state,
-                                               supply_colors, selected_facility_type,
+                                               supply_colors, supply_pattern, selected_facility_type,
                                                width, height, bkgd_color, text_color,
-                                               outfile_template, dpi, reorder_source_category) {
+                                               outfile_template, dpi, reorder_source_category,
+                                               title_label, subtitle_label, source_label, logo_path) {
 
   supply_summary_state <- process_supply_state_sum(supply_summary_state = supply_summary_state,
                                                    selected_facility_type = selected_facility_type)
@@ -1298,9 +1304,16 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
 
   state_cartogram <- supply_summary_state %>%
     mutate(source_category = factor(source_category, levels = reorder_source_category)) |>
-    ggplot(aes(1, y = percent)) +
+    ggplot(aes(1, y = percent, fill = source_category)) +
     ggfx::with_shadow(
-      geom_bar(aes(fill = source_category), stat = 'identity'),
+      geom_bar_pattern(
+        aes(pattern = source_category),
+        stat = 'identity',
+        pattern_density = 0.01,
+        pattern_size = 0.25,
+        pattern_fill = 'white',
+        pattern_colour = 'white',
+      ),
       colour = "black",
       x_offset = 2,
       y_offset = 2,
@@ -1308,8 +1321,8 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
       stack = TRUE,
       with_background = FALSE
     ) +
-    # geom_bar(aes(fill = source_category), stat = 'identity') +
     scale_fill_manual(name = 'source_category', values = supply_colors) +
+    scale_pattern_manual(values = supply_pattern) +
     theme_bw() +
     theme_facet(base = 12, bkgd_color = bkgd_color, text_color = text_color) +
     theme(strip.text = element_text(family = font_legend, vjust = -1),
@@ -1320,9 +1333,14 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
 
   national_plot <- supply_summary %>%
     mutate(source_category = factor(source_category, levels = reorder_source_category)) |>
-    ggplot(aes(1, y = percent)) +
-    geom_bar(aes(fill = source_category), stat = 'identity') +
+    ggplot(aes(1, y = percent, fill = source_category)) +
+    geom_bar_pattern(stat = 'identity', pattern = c("stripe", "none", "none", "none"),
+                     pattern_density = .15,
+                     pattern_fill    = 'white',
+                     pattern_colour  = 'white') +
     scale_fill_manual(name = 'source_category', values = supply_colors) +
+    scale_pattern_manual(name = "Water source",
+                         values = supply_pattern) +
     scale_x_discrete(expand = c(0,0)) +
     scale_y_continuous(breaks = rev(c(0, 25, 50, 75, 100)),
                        labels = rev(c("0%", "25%", "50%", "75%", "100%")),
@@ -1344,6 +1362,11 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
 
   plot_margin <- 0.005
 
+  # Load in USGS logo (also a black logo available)
+  usgs_logo <- magick::image_read(logo_path)|>
+    magick::image_colorize(100, text_color) |>
+    magick::image_scale('250x')
+
   # background
   canvas <- grid::rectGrob(
     x = 0, y = 0,
@@ -1358,8 +1381,16 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
                                guides(
                                  fill = guide_legend(title = "Water source",
                                                      nrow = 1,
-                                                     reverse = TRUE)
-                               ))
+                                                     reverse = TRUE,
+                             override.aes = list(
+                               pattern = c(
+                                 'Public Supply' = 'none',
+                                 'Combination' = 'stripe',
+                                 'Self-supply' = 'none',
+                                 'Undetermined' = 'none'
+                               )))))
+
+
   plot_arrow_tx <- ggplot() +
     theme_void() +
     geom_curve(aes(x = -2.5, y = 5.5, xend = -1.25, yend = 6),
@@ -1389,7 +1420,7 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
     # national-level plot
     draw_plot(national_plot + theme(legend.position = 'none'),
               x = 0.025,
-              y = 0.3,
+              y = 0.25,
               height = 0.45 ,
               width = 0.32 - plot_margin * 2) +
     # state cartogram
@@ -1403,13 +1434,24 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
     # add legend
     draw_plot(facet_legend,
               x = 0.05,
-              y = 0.19,
+              y = 0.14,
               height = 0.13 ,
               width = 0.3 - plot_margin) +
-    draw_label(sprintf('Distribution of water sources\n for %s facilities',
+    # add title
+    draw_label(sprintf(title_label,
                        tolower(selected_facility_type)),
                x = 0.025, y = 0.93,
                size = 38,
+               hjust = 0,
+               vjust = 1,
+               color = 'black',
+               lineheight = 1,
+               fontfamily = font_legend,
+               fontface = "bold") +
+    # add subtitle
+    draw_label(subtitle_label,
+               x = 0.025, y = 0.79,
+               size = 20,
                hjust = 0,
                vjust = 1,
                color = 'black',
@@ -1431,12 +1473,12 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
     # plot arrow - combination = mix of sources callout
     draw_plot(plot_arrow_combo,
               x = 0.348,
-              y = 0.520,
+              y = 0.46,
               height = 0.08,
               width = 0.035 - plot_margin) +
     draw_label("Combination =\n a mix of sources",
                x = 0.381,
-               y = 0.487,
+               y = 0.427,
                size = 16,
                color = text_color,
                fontfamily = annotate_legend) +
@@ -1463,7 +1505,24 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
                y = 0.922,
                size = 16,
                color = text_color,
-               fontfamily = annotate_legend)
+               fontfamily = annotate_legend) +
+    # explainer text
+    draw_label(source_label,
+               fontfamily = font_legend,
+               x = 0.978,
+               y = 0.029,
+               size = 12,
+               hjust = 1,
+               vjust = 0,
+               color = text_color) +
+    # Add logo
+    draw_image(usgs_logo,
+               x = 0.025,
+               y = 0.024,
+               width = 0.1,
+               hjust = 0, vjust = 0,
+               halign = 0, valign = 0)
+
 
 
   outfile <- ifelse(selected_facility_type == 'All', outfile_template,
@@ -1489,11 +1548,14 @@ generate_facility_bw_source_facet_map <- function(supply_summary, supply_summary
 #' @param dpi dpi at which to save the final plot
 #' @param square_instagram, if else statement where if TRUE, create Instagram version of sankey in 1:1 format
 #' if FALSE, return Twitter version of sankey in 16:9 format.
+#' @param subtitle_label, subtitle text to describe sankey
+#' @param title_label, title text for sankey
 #' @return the filepath of the saved plot
 generate_national_sankey <- function(supply_summary, supply_colors, type_colors,
                                      reorder_facilities_category, label_size, source_label,
                                      font_legend, width, height, square_instagram,
-                                     bkgd_color, text_color, outfile_template, logo_path, dpi) {
+                                     bkgd_color, text_color, outfile_template, logo_path, dpi,
+                                     title_label, subtitle_label) {
 
   # import font (p3_font_legend doesn't seem to work on Mac)
   font_legend <- 'Source Sans Pro'
@@ -1523,7 +1585,7 @@ generate_national_sankey <- function(supply_summary, supply_colors, type_colors,
   subset_plot <- bind_rows(subset_node_1, subset_node_2) %>%
     mutate(x = ifelse(node %in% subset_categories, 1, 2)) %>%
     dplyr::select(x, node, next_x, next_node, site_count) %>%
-    mutate(nudge_x = ifelse(x == 1, -0.08, 0.08),
+    mutate(nudge_x = ifelse(x == 1, -0.08, -0.02),
            nudge_x_ig = ifelse(x == 1, -0.07, 0.07), # adjust spacing between plot and labels
            h_just = ifelse(x == 1, 0.85, 0.15),
            h_just_ig = ifelse(x == 1, 0.68, 0.31)) %>% # adjust label justification
@@ -1574,16 +1636,26 @@ generate_national_sankey <- function(supply_summary, supply_colors, type_colors,
                 geom_sankey() +
                 geom_sankey_label(aes(x = x + nudge_x, hjust = h_just), size = label_size, color = "black", fill = "white",
                                   label.size = NA, family = font_legend),
-              x = 0.978,
-              y = 0.078,
+              x = 0.984,
+              y = 0.076,
               height = 0.8,
               width = 1 - (0.03 + plot_margin * 4),
               hjust = 1,
               vjust = 0) +
     # add title
-    draw_label("Distribution of water sources by facility types",
+    draw_label(title_label,
                x = 0.025, y = 0.94,
                size = 38,
+               hjust = 0,
+               vjust = 1,
+               color = text_color,
+               lineheight = 1,
+               fontfamily = font_legend,
+               fontface = "bold") +
+    # add subtitle
+    draw_label(subtitle_label,
+               x = 0.025, y = 0.88,
+               size = 20,
                hjust = 0,
                vjust = 1,
                color = text_color,
@@ -1632,7 +1704,7 @@ generate_national_sankey <- function(supply_summary, supply_colors, type_colors,
                 height = 0.8,
                 width = (1-plot_margin)) +
       # Add gage location title
-      draw_label("Distribution of water sources\n by facility types",
+      draw_label(title_label,
                  x = plot_margin*1.8,
                  y = 1-plot_margin*0.9,
                  size = 14.5,
