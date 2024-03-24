@@ -14,7 +14,7 @@
               <a href="https://www.usgs.gov/laws/policies_notices.html" target="_blank">Legal</a>
             </li>
             <li class="leaf menu-links menu-level-1">
-              <a href="https://www2.usgs.gov/laws/accessibility.html" target="_blank">Accessibility</a>
+              <a href="https://www.usgs.gov/accessibility" target="_blank">Accessibility</a>
             </li>
             <li class="leaf menu-links menu-level-1">
               <a href="https://www.usgs.gov/sitemap.html" target="_blank">Site Map</a>
@@ -45,7 +45,7 @@
               <a href="https://www.doi.gov/pmb/eeo/no-fear-act" target="_blank">No Fear Act</a>
             </li>
             <li class="last leaf menu-links menu-level-1">
-              <a href="https://www2.usgs.gov/foia" target="_blank">FOIA</a>
+              <a href="https://www.usgs.gov/foia" target="_blank">FOIA</a>
             </li>
           </ul>
         </div>
