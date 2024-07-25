@@ -323,7 +323,7 @@ export default {
         .append("select")
         .attr("id", dropdownID)
         .attr("class", this.mobileView ? "dropdown mobile" : "dropdown")
-        .attr("aria-label", "facility type dropdown")
+        .attr("title", "facility type dropdown")
         .attr("tabindex", 0)
         .on("change", function() {
           // Update dropdown text + width
@@ -375,7 +375,7 @@ export default {
         .append("select")
         .attr("id", dropdownID)
         .attr("class", this.mobileView ? "dropdown mobile" : "dropdown")
-        .attr("aria-label", "state dropdown")
+        .attr("title", "state dropdown")
         .attr("tabindex", 0)
         .on("change", function() {
           // Update dropdown text + width
@@ -437,6 +437,7 @@ export default {
       // Update dropdown text
       this.d3.select('#' + dropdownID)
         .property('value', text)
+        .attr("aria-label", text)
 
       // Add tmp dropdown, which will only ever have one option (the current one)
       // https://stackoverflow.com/questions/20091481/auto-resizing-the-select-element-according-to-selected-options-width
