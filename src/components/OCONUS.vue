@@ -1394,7 +1394,7 @@ export default {
               mapTitle += ', and '
             }
           }
-          mapTitle += `, ${typeMaxData[i].properties.STATE_NAME} have the most ${typeTitlePlural}, with ${typeMax} ${typeMax === 1 ? typeTitle : typeTitlePlural} each.`
+          mapTitle += `, ${typeMaxData[0].properties.STATE_NAME} have the most ${typeTitlePlural}, with ${typeMax} ${typeMax === 1 ? typeTitle : typeTitlePlural} each.`
         }
       }
 
