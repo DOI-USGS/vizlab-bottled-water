@@ -8,7 +8,7 @@
     <InternetExplorerPage v-if="isInternetExplorer" />
     <WorkInProgressWarning v-if="checkTypeOfEnv === '-beta build-' & !isInternetExplorer" />
     <!-- an empty string in this case means the 'prod' version of the application   -->
-     <ShutdownBanner />
+     <!-- <ShutdownBanner /> -->
     <router-view
       v-if="!isInternetExplorer"
     /> 
@@ -22,7 +22,7 @@
     import WindowSize from "./components/WindowSize.vue";
     import HeaderUSGS from './components/HeaderUSGS.vue';
     import HeaderUSWDSBanner from "./components/HeaderUSWDSBanner";
-    import ShutdownBanner from "./components/ShutdownBanner";
+    // import ShutdownBanner from "./components/ShutdownBanner";
     import WorkInProgressWarning from "./components/WorkInProgressWarning";
     import { isMobile } from 'mobile-device-detect';
     export default {
@@ -32,7 +32,7 @@
             HeaderUSGS,
             HeaderUSWDSBanner,
             WorkInProgressWarning,
-            ShutdownBanner,
+            // ShutdownBanner,
             InternetExplorerPage: () => import( "./components/InternetExplorerPage.vue"),
             PreFooterCodeLinks: () => import(  "./components/PreFooterCodeLinks.vue"),
             FooterUSGS: () => import(  "./components/FooterUSGS.vue") 
