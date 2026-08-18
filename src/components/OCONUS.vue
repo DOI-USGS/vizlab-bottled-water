@@ -59,7 +59,6 @@
 <script>
 import * as d3Base from 'd3';
 import * as topojson from "topojson-client";
-import { csv } from 'd3';
 import { isMobile } from 'mobile-device-detect';
 import mapLabels from '@/components/MapLabels.vue'
 import { useMapRenderStore } from '@/stores/MapRenderStore'
@@ -68,7 +67,6 @@ export default {
   name: "OCONUS",
   components: {
     mapLabels
-    // DropdownMenu
   },
   data() {
     return {
