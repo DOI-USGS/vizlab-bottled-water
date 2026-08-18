@@ -155,6 +155,11 @@ li {
 input[type='button'] {
   font-family: var(--default-font);
 }
+/* Chart/figure captions - smaller italic text, matching the other Vizlab sites */
+.caption {
+  font-size: 0.8em;
+  font-style: italic;
+}
 figcaption {
   font-style: italic;
   font-size: 1.6rem;

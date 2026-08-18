@@ -1641,6 +1641,14 @@ export default {
     width: 50px;
   }
   .dropdown {
+    // Selects don't inherit type from their parent by default. This dropdown
+    // sits inside the section's h2 and is sized to match it - updateDropdown()
+    // measures the option text at h2 size to compute the select's width, so the
+    // rendered text has to be h2-sized too or the box ends up far too wide.
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
     appearance: none; // removes default dropdown styling
     -moz-appearance: none; // removes default dropdown styling
     -webkit-appearance: none; // removes default dropdown styling

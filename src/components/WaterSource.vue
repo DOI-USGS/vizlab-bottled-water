@@ -17,12 +17,19 @@
       </div>
       <sourceBarplots id="source-barplots" />
       <div
+        id="chart-caption"
+        class="text-container"
+      >
+        <p
+          class="caption"
+          v-html="sourceText.paragraph4"
+        />
+      </div>
+      <div
         id="text-detail"
         class="text-container"
       >
         <p v-html="sourceText.paragraph3" />
-        <br>
-        <p v-html="sourceText.paragraph4" />
       </div>
     </div>
   </section>
@@ -38,11 +45,12 @@
   #grid-container-source {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 0.5fr max-content max-content max-content;
+    grid-template-rows: 0.5fr max-content max-content max-content max-content;
     grid-template-areas:
       "title"
       "text-intro"
       "source-bars"
+      "chart-caption"
       "text-detail";
     justify-content: center;
   }
@@ -56,6 +64,10 @@
   }
   #source-barplots {
     grid-area: source-bars;
+  }
+  #chart-caption {
+    grid-area: chart-caption;
+    justify-self: start;
   }
   #text-detail {
     grid-area: text-detail;
