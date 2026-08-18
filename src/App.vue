@@ -19,7 +19,7 @@
   import HeaderUSWDSBanner from "@/components/HeaderUSWDSBanner.vue";
   import HeaderUSGS from '@/components/HeaderUSGS.vue';
   import WorkInProgressWarning from "@/components/WorkInProgressWarning.vue";
-  // eslint-disable-next-line no-unused-vars -- rendered only during a government shutdown
+  // Rendered only during a government shutdown - see the commented tag above
   import ShutdownBanner from "@/components/ShutdownBanner.vue";
   import PreFooterCodeLinks from "@/components/PreFooterCodeLinks.vue";
   import FooterUSGS from '@/components/FooterUSGS.vue';

@@ -3,7 +3,7 @@
     "name": "vizlab-bottled-water",
     "organization": "U.S. Geological Survey",
     "description": "Water bottling across the U.S.",
-    "version": "main",
+    "version": "2.0.0",
     "status": "Production",
     "permissions": {
       "usageType": "openSource",
@@ -34,7 +34,7 @@
       "email": "hcorson-dosch@usgs.gov"
     },
     "date": {
-      "metadataLastUpdated": "2023-11-17"
+      "metadataLastUpdated": "2026-08-17"
     }
   }
 ]

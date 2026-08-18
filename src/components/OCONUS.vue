@@ -9,9 +9,12 @@
           <span class="pre-dropdown-text">Counts of </span><span id="type-dropdown-container" /><span class="pre-dropdown-text"> in </span><span id="state-dropdown-container" /> by county
         </h2>
       </div>
-      <div id="text" aria-hidden="true">
+      <div
+        id="text"
+        aria-hidden="true"
+      >
         <div v-if="!mobileView">
-          <p class="viz-comment" >
+          <p class="viz-comment">
             Click on the dropdown menus, bar chart, or map to explore
           </p>
           <br>

@@ -18,12 +18,12 @@
   import { storeToRefs } from 'pinia';
   import VizTitle from "@/components/VizTitle.vue";
   import OCONUS from "@/components/OCONUS.vue";
-  import InventorySection from "@/components/Inventory.vue";
+  import InventorySection from "@/components/InventorySection.vue";
   import WaterSourceSection from "@/components/WaterSource.vue";
   import WaterUseSection from "@/components/WaterUse.vue";
   import BottledWaterFocusSection from "@/components/BottledWaterFocus.vue";
-  import AuthorshipSection from "@/components/Authorship.vue";
-  import ReferencesSection from "@/components/References.vue";
+  import AuthorshipSection from "@/components/AuthorshipSection.vue";
+  import ReferencesSection from "@/components/ReferencesSection.vue";
   import { useMapRenderStore } from '@/stores/MapRenderStore';
 
   // Keep these in step with the datePublished/dateModified in index.html
