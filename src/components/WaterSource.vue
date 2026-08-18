@@ -23,43 +23,11 @@
     </div>
   </section>
 </template>
-<script>
-  import { isMobile } from 'mobile-device-detect';
-  import waterSourceText from "./../assets/text/waterSourceText.js";
+<script setup>
+  import sourceBarplots from "@/components/SourceBarplots.vue";
+  import waterSourceText from "@/assets/text/waterSourceText.js";
 
-  export default {
-    name: "WaterSourceSection",
-    components: {
-      sourceBarplots: () => import("./../components/SourceBarplots.vue"),
-    },
-    props: {
-      data: Object
-    },
-    data() {
-      return {
-        selectedOption: 'all states and territories',
-        dropdownOptions: [],
-
-        d3: null,
-        publicPath: import.meta.env.BASE_URL, // find the files when on different deployment roots
-        mobileView: isMobile, // test for mobile
-        
-        sourceText: waterSourceText.waterSourceText
-      }
-    },
-    mounted(){      
-      const self = this;
-    },
-    methods:{
-      isMobile() {
-        if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-            return true
-        } else {
-            return false
-        }
-      }
-    }
-  }
+  const sourceText = waterSourceText.waterSourceText;
 </script>
 <style lang="scss">
 

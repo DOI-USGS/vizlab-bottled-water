@@ -58,9 +58,8 @@ import * as d3Base from 'd3';
 import * as topojson from "topojson-client";
 import { csv } from 'd3';
 import { isMobile } from 'mobile-device-detect';
-// import DropdownMenu from '@/components/Dropdown.vue'
-import { ref, onMounted } from 'vue'
 import mapLabels from '@/components/MapLabels.vue'
+import { useMapRenderStore } from '@/stores/MapRenderStore'
 
 export default {
   name: "OCONUS",
@@ -68,19 +67,9 @@ export default {
     mapLabels
     // DropdownMenu
   },
-  props: {
-    data: Object
-  },
-  setup() {
-    const self = this;
-
-    onMounted(async () => {
-    })
-
-    return { }
-  },
   data() {
     return {
+      mapRenderStore: useMapRenderStore(),
       d3: null,
       publicPath: import.meta.env.BASE_URL, // find the files when on different deployment roots
       mobileView: isMobile, // test for mobile
@@ -118,7 +107,7 @@ export default {
   },
   mounted(){
     this.$nextTick(() => {
-      this.$store.commit('changeBooleanStateOnMapRender');
+      this.mapRenderStore.recordMapRender();
     });
 
     this.d3 = Object.assign(d3Base);
@@ -128,13 +117,6 @@ export default {
 
   },
   methods:{
-    isMobile() {
-            if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                return true
-            } else {
-                return false
-            }
-    },
     loadData(data) {
       const self = this;
 

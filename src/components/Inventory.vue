@@ -34,38 +34,10 @@
     </div>
   </section>
 </template>
-<script>
-import { isMobile } from 'mobile-device-detect';
-import inventoryText from "./../assets/text/inventoryText.js";
+<script setup>
+  import inventoryTextContent from "@/assets/text/inventoryText.js";
 
-export default {
-  name: "InventorySection",
-  components: {
-  },
-  props: {
-    data: Object
-  },
-  data() {
-    return {
-      publicPath: import.meta.env.BASE_URL, // find the files when on different deployment roots
-      mobileView: isMobile, // test for mobile
-      
-      inventoryText: inventoryText.inventoryText
-    }
-  },
-  mounted(){      
-    const self = this; 
-  },
-  methods:{
-    isMobile() {
-            if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                return true
-            } else {
-                return false
-            }
-    }
-  }
-}
+  const inventoryText = inventoryTextContent.inventoryText;
 </script>
 <style lang="scss">
 

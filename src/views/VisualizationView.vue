@@ -11,45 +11,20 @@
   </div>
 </template>
 
-<script>
-import { ref } from 'vue'
-import { isMobile } from 'mobile-device-detect';
-export default {
-    name: 'VisualizationContent',
-    components: {
-      VizTitle: () => import("./../components/VizTitle.vue"),
-      OCONUS: () => import("./../components/OCONUS.vue"),
-      InventorySection: () => import("./../components/Inventory.vue"),
-      WaterSourceSection: () => import("./../components/WaterSource.vue"),
-      WaterUseSection: () => import("./../components/WaterUse.vue"),
-      BottledWaterFocusSection: () => import("./../components/BottledWaterFocus.vue"),
-      AuthorshipSection: () => import("./../components/Authorship.vue"),
-      ReferencesSection: () => import("./../components/References.vue"),
-    },
-    setup() {
-      const title = ref('Water bottling across the United States')
+<script setup>
+  import { storeToRefs } from 'pinia';
+  import VizTitle from "@/components/VizTitle.vue";
+  import OCONUS from "@/components/OCONUS.vue";
+  import InventorySection from "@/components/Inventory.vue";
+  import WaterSourceSection from "@/components/WaterSource.vue";
+  import WaterUseSection from "@/components/WaterUse.vue";
+  import BottledWaterFocusSection from "@/components/BottledWaterFocus.vue";
+  import AuthorshipSection from "@/components/Authorship.vue";
+  import ReferencesSection from "@/components/References.vue";
+  import { useMapRenderStore } from '@/stores/MapRenderStore';
 
-      return {
-        title
-      }
-    },
-    data() {
-      return {
-        mobileView: isMobile,
-      };
-    },
-    computed: {
-      checkIfMapIsRendered() {
-        return this.$store.state.mapRenderedOnInitialLoad;
-      }
-    },
-    mounted(){
-      console.log("App loaded");
-    },
-    methods:{
-
-    }
-} 
+  // The sections below the map wait for the map's initial render
+  const { mapRenderedOnInitialLoad: checkIfMapIsRendered } = storeToRefs(useMapRenderStore());
 </script>
 
 <style lang="scss">

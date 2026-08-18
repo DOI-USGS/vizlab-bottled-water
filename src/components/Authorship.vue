@@ -11,7 +11,7 @@
       <p>
         <span id="primary-author-statment">
           The {{ appTitle }} data visualization was made by the <a
-            href="https://labs.waterdata.usgs.gov/visualizations/index.html#/"
+            href="https://water.usgs.gov/vizlab/"
             target="_blank"
           >USGS Vizlab</a> in collaboration with the USGS Water Use program. Development was led by 
           <span
@@ -84,44 +84,26 @@
   </section>
 </template>
 
-<script>
-import { isMobile } from 'mobile-device-detect';
-import authors from "@/assets/text/authors";
-export default {
-  name: "AuthorshipSection",
-    components: {
-    },
-    props: {
-    },
-    data() {
-      return {
-        publicPath: import.meta.env.BASE_URL, // allows the application to find the files when on different deployment roots
-        appTitle: import.meta.env.VITE_APP_TITLE, // Pull in title of page from Vue environment (set in .env)
-        mobileView: isMobile, // test for mobile
-        primaryAuthors: authors.primaryAuthors,
-        additionalAuthors: authors.additionalAuthors,
-        showAuthors: null, // Turn on or off attribution for all authors
-        showAdditionalAuthors: null, // If showAuthors is true, turn on or off attribution for additional authors
-        showContributionStatements: true, // If showAuthors is true, turn on or off contribution statements for ALL authors
-        showAditionalContributionStatement: null // If showAuthors is true and if showContributionStatements is true, turn on or off contriubtion statements for ADDITIONAL authors
-      }
-    },
-    mounted(){   
-      console.log(this.appTitle)
-      this.showAuthors = this.primaryAuthors.length > 0 ? true: false; // Show author statements for any authors
-      this.showAdditionalAuthors =  this.additionalAuthors.length > 0 ? true : false; // Show author statements for additional authors if any are listed
-      this.showAditionalContributionStatement = this.additionalAuthors.length > 0 ? true : false; // Show contributions statements for additional authors if any are listed AND showContributionStatements is true
-    },
-    methods:{
-      isMobile() {
-              if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                  return true
-              } else {
-                  return false
-              }
-          }
-    }
-}
+<script setup>
+  import { computed } from "vue";
+  import authors from "@/assets/text/authors";
+
+  const appTitle = import.meta.env.VITE_APP_TITLE; // Pull in title of page from Vue environment (set in .env)
+  const primaryAuthors = authors.primaryAuthors;
+  const additionalAuthors = authors.additionalAuthors;
+
+  // Turn on or off contribution statements for ALL authors
+  const showContributionStatements = true;
+
+  // Show author statements for any authors
+  const showAuthors = computed(() => primaryAuthors.length > 0);
+  // Show author statements for additional authors if any are listed
+  const showAdditionalAuthors = computed(() => additionalAuthors.length > 0);
+  // Show contribution statements for additional authors if any are listed
+  // AND showContributionStatements is true
+  const showAditionalContributionStatement = computed(
+    () => showContributionStatements && additionalAuthors.length > 0
+  );
 </script>
 <style>
   #author-container {

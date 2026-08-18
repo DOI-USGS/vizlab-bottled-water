@@ -21,16 +21,10 @@
   </section>
 </template>
 
-<script>
-    import referencesText from "@/assets/text/referencesText";
-    export default {
-        name: 'ReferencesSection',
-        data() {
-            return {
-                text: referencesText.referencesContent
-            }
-        }
-    }
+<script setup>
+  import referencesText from "@/assets/text/referencesText";
+
+  const text = referencesText.referencesContent;
 </script>
 <style scoped lang="scss">
   button:not([disabled]):focus{

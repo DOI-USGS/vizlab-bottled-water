@@ -103,36 +103,10 @@
     </p>
   </header>
 </template>
-<script>
+<script setup>
   import { isMobile } from 'mobile-device-detect';
-  
-  export default {
-    name: "VizTitle",
-    components: {
-    },
-    props: {
-      data: Object
-    },
-    data() {
-      return {
-        publicPath: import.meta.env.BASE_URL, // find the files when on different deployment roots
-        mobileView: isMobile, // test for mobile
 
-      }
-    },
-    mounted(){      
-      const self = this; 
-    },
-    methods:{
-      isMobile() {
-        if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-            return true
-        } else {
-            return false
-        }
-      }
-    }
-  }
+  const mobileView = isMobile; // test for mobile
 </script>
 <style lang="scss">
   $shadow-color: rgba(87, 103, 130);

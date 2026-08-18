@@ -191,39 +191,12 @@
     </div>
   </section>
 </template>
-<script>
+<script setup>
   import { isMobile } from 'mobile-device-detect';
-  import bottledWaterFocusText from "./../assets/text/bottledWaterFocusText.js";
+  import bottledWaterFocusContent from "@/assets/text/bottledWaterFocusText.js";
 
-  export default {
-    name: "BottledWaterFocusSection",
-    components: {
-    },
-    props: {
-      data: Object
-    },
-    data() {
-      return {
-
-        publicPath: import.meta.env.BASE_URL, // find the files when on different deployment roots
-        mobileView: isMobile, // test for mobile
-
-        bottledWaterFocusText: bottledWaterFocusText.bottledWaterFocusText
-      }
-    },
-    mounted(){
-      const self = this;
-    },
-    methods:{
-      isMobile() {
-              if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                  return true
-              } else {
-                  return false
-              }
-      }
-    }
-  }
+  const mobileView = isMobile; // test for mobile
+  const bottledWaterFocusText = bottledWaterFocusContent.bottledWaterFocusText;
 </script>
 <style scoped lang="scss">
 
