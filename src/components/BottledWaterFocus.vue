@@ -18,8 +18,6 @@
         class="text-container"
       >
         <p v-html="bottledWaterFocusText.paragraph2" />
-        <br>
-        <p v-html="bottledWaterFocusText.paragraph3" />
       </div>
       <div
         id="grid-container-source-maps"
@@ -128,6 +126,15 @@
         </div>
       </div>
       <div
+        id="source-maps-caption"
+        class="text-container"
+      >
+        <p
+          class="caption"
+          v-html="bottledWaterFocusText.paragraph3"
+        />
+      </div>
+      <div
         id="text3"
         class="text-container"
       >
@@ -177,6 +184,15 @@
         >
       </div>
       <div
+        id="beeswarm-caption"
+        class="text-container"
+      >
+        <p
+          class="caption"
+          v-html="bottledWaterFocusText.beeswarmCaption"
+        />
+      </div>
+      <div
         id="title2"
         class="text-container title-text"
       >
@@ -209,11 +225,13 @@
       "text1"
       "text2"
       "source-maps"
+      "source-maps-caption"
       "text3"
       "infographic-bw-top"
       "infographic-bw-bottom"
       "text4"
       "bw-use-source"
+      "beeswarm-caption"
       "title2"
       "text5";
     justify-content: center;
@@ -269,6 +287,10 @@
       width: 90%;
     }
   }
+  #beeswarm-caption {
+    grid-area: beeswarm-caption;
+    justify-self: start;
+  }
   #img-bw-use-beeswarm {
     grid-area: bw-use-source;
     margin: 4rem 0rem 0.5rem 0rem;
@@ -282,6 +304,10 @@
   }
   .beeswarm-mobile {
     max-width: 400px;
+  }
+  #source-maps-caption {
+    grid-area: source-maps-caption;
+    justify-self: start;
   }
   #grid-container-source-maps {
     grid-area: source-maps;
