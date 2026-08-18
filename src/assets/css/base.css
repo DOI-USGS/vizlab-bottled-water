@@ -30,6 +30,20 @@
   --color-prefooter-highlight: var(--medium-blue);
 }
 
+/* The USGS Viz ID stylesheet (common.css) applies `box-sizing: border-box`
+ * globally. This site's layout predates that reset and is built against the
+ * default content-box model - most visibly the map dropdowns, whose widths are
+ * measured in JS and then re-applied with a fixed buffer for their padding,
+ * transparent border, and arrow image (see OCONUS.vue updateDropdown).
+ * Restore content-box for the page content; the USGS header, footer, and
+ * USWDS banner are designed against border-box and keep it. */
+#visualization,
+#visualization *,
+#visualization *::before,
+#visualization *::after {
+  box-sizing: content-box;
+}
+
 /* whole page except header fit within viewport - no scrolling */
 #app {
   width: 100%;

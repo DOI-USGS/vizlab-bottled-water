@@ -8,18 +8,22 @@
         <h2 v-html="sourceText.title" />
       </div>
       <div
-        id="text"
+        id="text-intro"
         class="text-container"
       >
         <p v-html="sourceText.paragraph1" />
         <br>
         <p v-html="sourceText.paragraph2" />
-        <br>
+      </div>
+      <sourceBarplots id="source-barplots" />
+      <div
+        id="text-detail"
+        class="text-container"
+      >
         <p v-html="sourceText.paragraph3" />
         <br>
         <p v-html="sourceText.paragraph4" />
       </div>
-      <sourceBarplots id="source-barplots" />
     </div>
   </section>
 </template>
@@ -37,19 +41,24 @@
     grid-template-rows: 0.5fr max-content max-content max-content;
     grid-template-areas:
       "title"
-      "text"
-      "source-bars";
+      "text-intro"
+      "source-bars"
+      "text-detail";
     justify-content: center;
   }
   #title {
     grid-area: title;
     justify-self: start;
   }
-  #text {
-    grid-area: text;
+  #text-intro {
+    grid-area: text-intro;
     justify-self: start;
   }
   #source-barplots {
     grid-area: source-bars;
+  }
+  #text-detail {
+    grid-area: text-detail;
+    justify-self: start;
   }
 </style>
