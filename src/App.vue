@@ -4,6 +4,8 @@
     <HeaderUSWDSBanner v-if="typeOfEnv !== '-test build-'" />
     <HeaderUSGS />
     <WorkInProgressWarning v-if="typeOfEnv === '-beta build-'" />
+    <!-- Uncomment during a lapse in government funding -->
+    <!-- <ShutdownBanner /> -->
     <RouterView />
     <PreFooterCodeLinks />
     <FooterUSGS />
@@ -17,6 +19,8 @@
   import HeaderUSWDSBanner from "@/components/HeaderUSWDSBanner.vue";
   import HeaderUSGS from '@/components/HeaderUSGS.vue';
   import WorkInProgressWarning from "@/components/WorkInProgressWarning.vue";
+  // eslint-disable-next-line no-unused-vars -- rendered only during a government shutdown
+  import ShutdownBanner from "@/components/ShutdownBanner.vue";
   import PreFooterCodeLinks from "@/components/PreFooterCodeLinks.vue";
   import FooterUSGS from '@/components/FooterUSGS.vue';
   import { useWindowSizeStore } from '@/stores/WindowSizeStore';
