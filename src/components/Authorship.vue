@@ -9,76 +9,12 @@
       class="text-container"
     >
       <p>
-        <span id="primary-author-statment">
-          The {{ appTitle }} data visualization was made by the <a
-            href="https://water.usgs.gov/vizlab/"
-            target="_blank"
-          >USGS Vizlab</a> in collaboration with the USGS Water Use program. Development was led by 
-          <span
-            v-for="(author, index) in primaryAuthors" 
-            :id="`initial-${author.initials}`"
-            :key="`${author.initials}-attribution`"
-            :class="'author first'"
-          >
-            <a
-              :href="author.profile_link"
-              target="_blank"
-              v-text="author.fullName"
-            />
-            <span v-if="index != Object.keys(primaryAuthors).length - 1 && Object.keys(primaryAuthors).length > 2">, </span>
-            <span v-if="index == Object.keys(primaryAuthors).length - 2"> and </span>
-          </span>
-        </span>
-        <span>
-          with contributions from
-        </span>
-        <span
+        This visualization was developed by the <a
+          href="https://water.usgs.gov/vizlab/"
+          target="_blank"
+        >USGS Vizlab</a> and led by <span v-html="formatAuthors(primaryAuthors)" /><span
           v-if="showAdditionalAuthors"
-          id="additional-author-statement"
-        >
-          <span
-            v-for="(author, index) in additionalAuthors" 
-            :id="`author-${author.initials}`"
-            :key="`${author.initials}-attribution`"
-            :class="'author'"
-          >
-            <a
-              :href="author.profile_link"
-              target="_blank"
-              v-text="author.fullName"
-            />
-            <span v-if="index != Object.keys(additionalAuthors).length - 1 && Object.keys(additionalAuthors).length > 2">, </span>
-            <span v-if="index == Object.keys(additionalAuthors).length - 2"> and </span>
-          </span>.
-        </span>
-        <span
-          v-if="showContributionStatements"
-          id="contribution-statements"
-        >
-          <span id="primary-author-contribution">
-            <span
-              v-for="author in primaryAuthors" 
-              :id="`author-${author.initials}`"
-              :key="`${author.initials}-contribution`"
-              :class="'author'"
-            >
-              <span v-text="author.firstName" /> <span v-text="author.contribution" />. 
-            </span>
-          </span>
-          <span
-            v-if="showAditionalContributionStatement"
-            id="additional-author-contribution"
-          >
-            <span
-              v-for="author in additionalAuthors" 
-              :id="`author-${author.initials}`"
-              :key="`${author.initials}-contribution`"
-              :class="'author'"
-            >
-              <span v-text="author.firstName" /> <span v-text="author.contribution" />. 
-            </span>
-          </span>
-        </span>
+        >, with contributions from <span v-html="formatAuthors(additionalAuthors)" /></span>.
       </p>
     </div>
   </section>
@@ -88,26 +24,36 @@
   import { computed } from "vue";
   import authors from "@/assets/text/authors";
 
-  const appTitle = import.meta.env.VITE_APP_TITLE; // Pull in title of page from Vue environment (set in .env)
   const primaryAuthors = authors.primaryAuthors;
   const additionalAuthors = authors.additionalAuthors;
 
-  // Turn on or off contribution statements for ALL authors
-  const showContributionStatements = true;
-
-  // Show author statements for any authors
   const showAuthors = computed(() => primaryAuthors.length > 0);
-  // Show author statements for additional authors if any are listed
   const showAdditionalAuthors = computed(() => additionalAuthors.length > 0);
-  // Show contribution statements for additional authors if any are listed
-  // AND showContributionStatements is true
-  const showAditionalContributionStatement = computed(
-    () => showContributionStatements && additionalAuthors.length > 0
-  );
+
+  // Link the author's name to their staff profile, where they have one
+  function createLink(author) {
+    return author.profile_link
+      ? `<a href="${author.profile_link}" target="_blank">${author.fullName}</a>`
+      : author.fullName;
+  }
+
+  // Join names as "A", "A and B", or "A, B, and C"
+  function formatAuthors(list) {
+    const names = list.map(createLink);
+    if (names.length < 2) return names.join("");
+    if (names.length === 2) return names.join(" and ");
+    return `${names.slice(0, -1).join(", ")}, and ${names.slice(-1)}`;
+  }
 </script>
+
 <style>
   #author-container {
     height: auto;
     padding: 10px 0px 0px 0px;
+    font-style: italic;
+    font-weight: 300;
+  }
+  #author-container a {
+    font-weight: 400;
   }
 </style>
