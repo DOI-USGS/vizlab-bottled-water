@@ -15,7 +15,6 @@
             target="_blank"
           ><span v-html="reference.title" /></a><span v-if="reference.type != ''">, </span><span v-html="reference.type" /><span v-if="reference.ref != ''">, </span><span v-html="reference.ref" />.
         </p>
-        <br>
       </div>
     </div>
   </section>
@@ -27,6 +26,11 @@
   const text = referencesText.referencesContent;
 </script>
 <style scoped lang="scss">
+  // One blank line between entries. The markup previously carried a <br> on top
+  // of the default paragraph margins, which double-spaced the list.
+  p {
+    margin: 0 0 2rem 0;
+  }
   button:not([disabled]):focus{
     outline: none;
   }
