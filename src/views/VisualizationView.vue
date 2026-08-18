@@ -1,6 +1,9 @@
 <template>
   <div id="visualization">
     <VizTitle />
+    <p id="byline">
+      U.S. Geological Survey<span class="byline-sep"> &middot; </span><span class="pub-date">Published {{ datePublished }} &middot; Updated {{ dateUpdated }}</span>
+    </p>
     <OCONUS />
     <InventorySection v-if="checkIfMapIsRendered" />
     <WaterSourceSection v-if="checkIfMapIsRendered" />
@@ -23,11 +26,34 @@
   import ReferencesSection from "@/components/References.vue";
   import { useMapRenderStore } from '@/stores/MapRenderStore';
 
+  // Keep these in step with the datePublished/dateModified in index.html
+  const datePublished = 'November 21, 2023';
+  const dateUpdated = 'August 17, 2026';
+
   // The sections below the map wait for the map's initial render
   const { mapRenderedOnInitialLoad: checkIfMapIsRendered } = storeToRefs(useMapRenderStore());
 </script>
 
 <style lang="scss">
+  #byline {
+    text-align: center;
+    font-style: italic;
+    font-size: 0.8em;
+    margin: 1.5rem auto 0 auto;
+    color: #6E6E6E;
+  }
+  .pub-date {
+    color: #6E6E6E;
+  }
+  @media screen and (max-width: 600px) {
+    // stack the dates onto their own line rather than letting them wrap awkwardly
+    #byline .byline-sep {
+      display: none;
+    }
+    #byline .pub-date {
+      display: block;
+    }
+  }
   #visualization {
     width: 86vw;
     position: relative;
