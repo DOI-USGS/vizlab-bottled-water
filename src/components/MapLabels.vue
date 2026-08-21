@@ -108,10 +108,7 @@
   </svg>
 </template>
 
-<script>
-export default {
-    name: "MapLabels"
-}
+<script setup>
 </script>
 <style lang="scss" scoped>
   .labels {

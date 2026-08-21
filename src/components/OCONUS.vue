@@ -9,9 +9,12 @@
           <span class="pre-dropdown-text">Counts of </span><span id="type-dropdown-container" /><span class="pre-dropdown-text"> in </span><span id="state-dropdown-container" /> by county
         </h2>
       </div>
-      <div id="text" aria-hidden="true">
+      <div
+        id="text"
+        aria-hidden="true"
+      >
         <div v-if="!mobileView">
-          <p class="viz-comment" >
+          <p class="viz-comment">
             Click on the dropdown menus, bar chart, or map to explore
           </p>
           <br>
@@ -56,31 +59,18 @@
 <script>
 import * as d3Base from 'd3';
 import * as topojson from "topojson-client";
-import { csv } from 'd3';
 import { isMobile } from 'mobile-device-detect';
-// import DropdownMenu from '@/components/Dropdown.vue'
-import { ref, onMounted } from 'vue'
 import mapLabels from '@/components/MapLabels.vue'
+import { useMapRenderStore } from '@/stores/MapRenderStore'
 
 export default {
   name: "OCONUS",
   components: {
     mapLabels
-    // DropdownMenu
-  },
-  props: {
-    data: Object
-  },
-  setup() {
-    const self = this;
-
-    onMounted(async () => {
-    })
-
-    return { }
   },
   data() {
     return {
+      mapRenderStore: useMapRenderStore(),
       d3: null,
       publicPath: import.meta.env.BASE_URL, // find the files when on different deployment roots
       mobileView: isMobile, // test for mobile
@@ -118,7 +108,7 @@ export default {
   },
   mounted(){
     this.$nextTick(() => {
-      this.$store.commit('changeBooleanStateOnMapRender');
+      this.mapRenderStore.recordMapRender();
     });
 
     this.d3 = Object.assign(d3Base);
@@ -128,13 +118,6 @@ export default {
 
   },
   methods:{
-    isMobile() {
-            if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                return true
-            } else {
-                return false
-            }
-    },
     loadData(data) {
       const self = this;
 
@@ -1659,6 +1642,14 @@ export default {
     width: 50px;
   }
   .dropdown {
+    // Selects don't inherit type from their parent by default. This dropdown
+    // sits inside the section's h2 and is sized to match it - updateDropdown()
+    // measures the option text at h2 size to compute the select's width, so the
+    // rendered text has to be h2-sized too or the box ends up far too wide.
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
     appearance: none; // removes default dropdown styling
     -moz-appearance: none; // removes default dropdown styling
     -webkit-appearance: none; // removes default dropdown styling

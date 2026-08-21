@@ -1,43 +1,26 @@
-import "regenerator-runtime/runtime";
-import Vue from "vue";
-import router from "./router";
-import { store } from "./store/store";
-import App from "./App.vue";
-import browserDetect from "vue-browser-detect-plugin";
-// import { uswds } from "@uswds/uswds";
-import Vuetify from "vuetify";
+import './assets/css/main.css'
+
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import VueUswds from "vue-uswds"
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import "vuetify/dist/vuetify.min.css";
-import VueImg from 'v-img';
 
-
-// social icons
-import { faTwitterSquare } from "@fortawesome/free-brands-svg-icons";
-import { faFacebookSquare } from "@fortawesome/free-brands-svg-icons";
-import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import { faFlickr } from "@fortawesome/free-brands-svg-icons";
-import { faYoutubeSquare } from "@fortawesome/free-brands-svg-icons";
-import { faInstagram } from "@fortawesome/free-brands-svg-icons";
-
-const vueImgConfig = {
-  altAsTitle: true
-}
-
-Vue.component("FontAwesomeIcon", FontAwesomeIcon);
+// dropdown chevron
+import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 
 // social icons
-library.add(faTwitterSquare, faFacebookSquare, faGithub, faFlickr, faYoutubeSquare, faInstagram);
+import { faSquareXTwitter, faFacebookSquare, faGithub, faFlickr, faYoutubeSquare, faInstagram } from "@fortawesome/free-brands-svg-icons";
+library.add(faAngleDown, faSquareXTwitter, faFacebookSquare, faGithub, faFlickr, faYoutubeSquare, faInstagram);
 
-Vue.config.productionTip = false;
-Vue.use(browserDetect);
-// Vue.use(uswds);
-Vue.use(Vuetify);
-Vue.use(VueImg, vueImgConfig);
+import App from './App.vue'
+import router from './router'
 
+const app = createApp(App)
 
-const app = new Vue({
-  router,
-  store,
-  render: (h) => h(App),
-}).$mount("#app");
+app.use(createPinia())
+app.use(VueUswds)
+app.use(router)
+app.component("FontAwesomeIcon", FontAwesomeIcon)
+
+app.mount('#app')

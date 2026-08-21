@@ -79,18 +79,10 @@ export default {
     this.d3 = Object.assign(d3Base);
     this.textures = Object.assign(texturesBase);
 
-    const self = this;
     this.loadData() // read in data 
  
   },
   methods:{
-    isMobile() {
-            if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                return true
-            } else {
-                return false
-            }
-    },
     loadData(data) {
       const self = this;
 
@@ -740,7 +732,11 @@ export default {
   #toggle-container {
     grid-area: toggle;
     display: flex;
+    align-items: center;
     width: 100%;
+  }
+  #toggle-container p {
+    margin: 0;
   }
   .graph-buttons-switch {
     display: flex;
