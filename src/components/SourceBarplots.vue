@@ -732,7 +732,11 @@ export default {
   #toggle-container {
     grid-area: toggle;
     display: flex;
+    align-items: center;
     width: 100%;
+  }
+  #toggle-container p {
+    margin: 0;
   }
   .graph-buttons-switch {
     display: flex;
